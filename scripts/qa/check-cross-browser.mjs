@@ -12,6 +12,7 @@ import { completeSuccessfulRead, observeReadDuringAction } from "./read-completi
 import { revealTargetWithWheel } from "./scroll-target.mjs";
 import { decodedGalleryImage } from "./gallery-image.mjs";
 import { assertBrowserDiagnostics, createBrowserDiagnostics } from "../browser-diagnostics.mjs";
+import { verifyInitialRundumHero, verifyRundumUi } from "./rundum-ui.mjs";
 
 const output = resolve(".qa-output/cross-browser");
 await mkdir(output, { recursive: true });
@@ -146,11 +147,22 @@ try {
             const visit = async () => {
               const response = await page.goto(qaBase + path, { waitUntil: "networkidle" });
               assert.equal(response.status(), 200, `${name} ${path}`);
-              await rejectConsent(page);
+              if (path === "/") report.checks.push(await verifyInitialRundumHero(page, {
+                label: `${name}-${width}`,
+                screenshot: (filename) => screenshot(page, filename),
+              }));
+              else await rejectConsent(page);
               await verifyLayout(page, `${name} ${width} ${path}`);
             };
             if (path === "/") {
               await verifyHomepageReviews(page, `${name}-${width}: before next navigation`, visit);
+              report.checks.push(await verifyRundumUi(page, {
+                label: `${name}-${width}`,
+                screenshot: async (filename, target) => {
+                  await target.screenshot({ path: resolve(output, filename) });
+                  report.screenshots.push(filename);
+                },
+              }));
               await page.evaluate(() => window.scrollTo(0, 0));
             } else await visit();
             await screenshot(page, `${name}-${width}-${path.replace(/\W+/g, "-") || "home"}.png`);

@@ -7,6 +7,7 @@ type RequestStorage = Pick<Storage, "getItem" | "setItem" | "removeItem">;
 export function createBookingRequestIdStore(
   storage: () => RequestStorage | null,
   randomId: () => string,
+  storageKey = STORAGE_KEY,
 ) {
   let current: string | null = null;
   let loaded = false;
@@ -16,7 +17,7 @@ export function createBookingRequestIdStore(
       if (!loaded) {
         loaded = true;
         try {
-          const saved = storage()?.getItem(STORAGE_KEY);
+          const saved = storage()?.getItem(storageKey);
           if (saved && UUID.test(saved)) current = saved;
         } catch {
           // Private browsing can deny storage; retries still share the in-memory ID.
@@ -26,7 +27,7 @@ export function createBookingRequestIdStore(
       if (!UUID.test(next)) throw new Error("Die Anfrage-ID konnte nicht erstellt werden.");
       current = next;
       try {
-        storage()?.setItem(STORAGE_KEY, current);
+        storage()?.setItem(storageKey, current);
       } catch {
         // The request is safe to submit even if persistence is unavailable.
       }
@@ -36,7 +37,7 @@ export function createBookingRequestIdStore(
       current = null;
       loaded = true;
       try {
-        storage()?.removeItem(STORAGE_KEY);
+        storage()?.removeItem(storageKey);
       } catch {
         // No customer data needs to be removed when storage is unavailable.
       }

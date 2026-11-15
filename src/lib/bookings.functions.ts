@@ -1,5 +1,5 @@
-import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { createServerFn } from "@tanstack/react-start";
 import { getSql } from "@/lib/db";
 import { kickBookingDelivery } from "@/lib/booking-delivery";
 import { saveBookingRequest } from "@/lib/booking-workflow";
@@ -7,25 +7,15 @@ import { reportOpenAiLead } from "@/lib/openai-conversions.server";
 import { assertPublicPostLimit } from "@/lib/rate-limit";
 import { assertSameSiteRequest } from "@/lib/auth/isolation.server";
 import { publicBookingSchema } from "@/lib/booking-schema";
-import { MAX_BASE64_UPLOAD_CHARS, validateUploadBatch } from "@/lib/booking-photos";
-import { createHash } from "node:crypto";
-import { saveBookingPhotos } from "@/lib/booking-photo-storage";
-import { MAX_UPLOAD_FILES } from "@/lib/upload-policy";
-import {
-  createRequestUploadCapability,
-  verifyUploadCapability,
-} from "@/lib/booking-upload-capability";
-import { getBookingUploadCookie, setBookingUploadCookie } from "@/lib/booking-upload-cookie.server";
+import { createRequestUploadCapability } from "@/lib/booking-upload-capability";
+import { setBookingUploadCookie } from "@/lib/booking-upload-cookie.server";
+import { deliverPanelIntake } from "@/lib/panel-intake";
+import { panelOnlyEnabled } from "@/lib/booking-backend";
+import { rundumInquirySchema, publicInquirySchema } from "@/lib/rundum-schema";
+import { saveRundumInquiry, saveTextInquiry } from "@/lib/rundum-workflow";
 
 export { publicBookingSchema };
 export type { PublicBookingInput } from "@/lib/booking-schema";
-
-const SHOP = "white-gloss";
-function rejectHoneypot(website?: string) {
-  if (website && website.trim().length > 0) {
-    throw new Error("Anfrage abgelehnt.");
-  }
-}
 
 export const createPublicBooking = createServerFn({ method: "POST" })
   .validator((input: unknown) => publicBookingSchema.parse(input))
@@ -40,162 +30,53 @@ export const createPublicBooking = createServerFn({ method: "POST" })
     if (expires) capability.expiresAt = new Date(expires).toISOString();
     setBookingUploadCookie(result.booking.id, capability);
     // Provider failures never roll back the committed request or its durable outbox.
-    kickBookingDelivery(sql);
     if (!result.replayed) {
       const measurementStatus = await reportOpenAiLead(data.idempotencyKey, openAiMeasurement);
       if (measurementStatus === "failed") console.warn("OpenAI conversion delivery failed");
     }
+    const handoff = panelOnlyEnabled()
+      ? await deliverPanelIntake(sql, result.booking.id)
+      : { panelSaved: false };
+    kickBookingDelivery(sql);
     return {
+      ...handoff,
       id: result.booking.id,
-      reference: `WG-${result.booking.id}`,
+      reference: "reference" in handoff ? handoff.reference : `WG-${result.booking.id}`,
       total: result.booking.total_cents / 100,
       pickupOnRequest: result.quote.pickupOnRequest,
       confirmed: false,
     };
   });
 
-export const createPublicPhotoInquiry = createServerFn({ method: "POST" })
-  .validator((input: unknown) =>
-    z
-      .object({
-        title: z.string().min(2).max(160),
-        requestId: z.string().uuid(),
-        name: z.string().trim().min(2).max(120),
-        phone: z.string().trim().min(6).max(40),
-        email: publicBookingSchema.shape.email.optional(),
-        reviewEmailConsent: z.boolean().optional(),
-        text: z.string().max(2000),
-        files: z
-          .array(
-            z.object({
-              name: z.string().min(1).max(180),
-              mime: z.string().min(3).max(80),
-              base64: z.string().min(1).max(MAX_BASE64_UPLOAD_CHARS),
-            }),
-          )
-          .max(8),
-        privacy: z.literal(true),
-        website: z.string().max(120).optional(),
-      })
-      .parse(input),
-  )
+export const createPublicRundumInquiry = createServerFn({ method: "POST" })
+  .validator((input: unknown) => rundumInquirySchema.parse(input))
   .handler(async ({ data }) => {
     assertSameSiteRequest();
-    assertPublicPostLimit("photo-inquiry", 6);
-    rejectHoneypot(data.website);
+    assertPublicPostLimit("rundum-inquiry", 6);
     const sql = await getSql();
-    if (data.files.length) validateUploadBatch(data.files);
-    {
-      const key = createHash("sha256").update(`photo:${data.requestId}`).digest("hex");
-      const fingerprint = createHash("sha256")
-        .update(
-          JSON.stringify({
-            title: data.title,
-            name: data.name,
-            phone: data.phone,
-            email: data.email || "",
-            reviewEmailConsent: data.reviewEmailConsent === true,
-            text: data.text,
-          }),
-        )
-        .digest("hex");
-      const capability = createRequestUploadCapability(data.requestId);
-      const row = await sql.transaction(async (tx) => {
-        await tx`update booking_workflow_locks set revision=revision+1 where shop_id=${SHOP}`;
-        const [existing] = await tx<{
-          id: number;
-          version: number;
-          request_fingerprint: string;
-        }>`select id,version,request_fingerprint from bookings where shop_id=${SHOP} and request_key_hash=${key}`;
-        if (existing) {
-          if (existing.request_fingerprint !== fingerprint)
-            throw new Error("Bitte laden Sie das Formular für eine neue Anfrage neu.");
-          return existing;
-        }
-        const [created] = await tx<{
-          id: number;
-          version: number;
-        }>`insert into bookings(shop_id,customer_name,phone,package_id,class_id,extra_ids,total_cents,note,request_key_hash,request_fingerprint,upload_token_hash,upload_token_expires_at)
-          values(${SHOP},${data.name},${data.phone},'photo-inquiry','kompakt','[]',0,${data.title + "\n" + data.text},${key},${fingerprint},${capability.hash},${capability.expiresAt}::timestamptz) returning id,version`;
-        await tx`update bookings set email=${data.email || null},review_email_consent=${data.reviewEmailConsent === true}
-          where id=${created.id} and shop_id=${SHOP}`;
-        return created;
-      });
-      setBookingUploadCookie(row.id, capability);
-      // No remote processing until the selected files have been durably uploaded.
-      if (data.files.length) await saveBookingPhotos(sql, row.id, data.files);
-      const { queueCrmBooking } = await import("@/lib/booking-crm");
-      await queueCrmBooking(sql, row);
-      kickBookingDelivery(sql);
-      return { ok: true as const };
-    }
+    const { booking } = await saveRundumInquiry(sql, data);
+    const handoff = await deliverPanelIntake(sql, Number(booking.id));
+    kickBookingDelivery(sql);
+    return handoff;
   });
 
-const attachBookingPhotosSchema = z.object({
-  vorgang: z
-    .string()
-    .trim()
-    .regex(/^WG-(\d+)$/i, "Ungültige Vorgangsnummer."),
-  files: z
-    .array(
-      z.object({
-        name: z.string().trim().min(1).max(180),
-        mime: z.string().trim().min(3).max(80),
-        base64: z
-          .string()
-          .min(1)
-          .max(MAX_BASE64_UPLOAD_CHARS, "Die Datei ist zu groß (höchstens 12 MB)."),
-      }),
-    )
-    .min(1)
-    .max(MAX_UPLOAD_FILES),
-});
-
-export const attachBookingPhotos = createServerFn({ method: "POST" })
-  .validator((input: unknown) => attachBookingPhotosSchema.parse(input))
+export const createPublicPhotoInquiry = createServerFn({ method: "POST" })
+  .validator((input: unknown) => publicInquirySchema.parse(input))
   .handler(async ({ data }) => {
     assertSameSiteRequest();
-    assertPublicPostLimit("booking-photos", 24);
-
-    const match = /^WG-(\d+)$/i.exec(data.vorgang.trim());
-    const bookingId = Number(match?.[1] ?? 0);
-    if (!Number.isInteger(bookingId) || bookingId < 1) {
-      throw new Error("Ungültige Vorgangsnummer.");
-    }
-
+    assertPublicPostLimit("service-inquiry", 6);
     const sql = await getSql();
-    const bookings = await sql<{
-      id: number;
-      customer_name: string;
-      upload_token_hash: string | null;
-      upload_token_expires_at: string | Date | null;
-    }>`
-      select id, customer_name, upload_token_hash, upload_token_expires_at
-      from bookings
-      where id = ${bookingId} and shop_id = ${SHOP}
-      limit 1
-    `;
-    const booking = bookings[0];
-    if (
-      !booking ||
-      !verifyUploadCapability(
-        getBookingUploadCookie(bookingId),
-        booking.upload_token_hash,
-        booking.upload_token_expires_at,
-      )
-    ) {
-      throw new Error(
-        "Fotos können nur im Browser der ursprünglichen Anfrage innerhalb von sieben Tagen nachgereicht werden. Bitte kontaktieren Sie uns bei Bedarf.",
-      );
-    }
+    const { booking } = await saveTextInquiry(sql, data);
+    const handoff = await deliverPanelIntake(sql, Number(booking.id));
+    kickBookingDelivery(sql);
+    return { ok: true as const, ...handoff };
+  });
 
-    const saved = await saveBookingPhotos(sql, bookingId, data.files);
-    const [row] = await sql<{ id: number; version: number }>`
-      select id, version from bookings where id = ${bookingId} and shop_id = ${SHOP} limit 1`;
-    if (row) {
-      const { queueCrmPhotos } = await import("@/lib/booking-crm");
-      await queueCrmPhotos(sql, row);
-      kickBookingDelivery(sql);
-    }
-    return saved;
+/** Historical files stay intact; customer uploads now require the panel session. */
+export const attachBookingPhotos = createServerFn({ method: "POST" })
+  .validator((input: unknown) =>
+    z.object({ vorgang: z.string(), files: z.array(z.unknown()).max(8) }).parse(input),
+  )
+  .handler(async (): Promise<{ count: number }> => {
+    throw new Error("Fotos kannst du nach deiner Anfrage in deinem Kundenbereich ergänzen.");
   });

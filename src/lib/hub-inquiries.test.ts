@@ -14,6 +14,7 @@ import { quoteTotal } from "../data/site.ts";
 const TOKEN = "hub-test-only-" + "t".repeat(40);
 const KEYS = [
   "id",
+  "intake_version",
   "customer_name",
   "phone",
   "email",
@@ -29,6 +30,11 @@ const KEYS = [
   "preferred_slot",
   "address",
   "review_email_consent",
+  "request_kind",
+  "requested_services",
+  "pickup_requested",
+  "vehicle_make",
+  "vehicle_model",
 ].sort();
 
 function wrap(pg: Pick<PGlite, "query">, transaction?: Sql["transaction"]): Sql {
@@ -263,7 +269,7 @@ test("hub route: only open requests, newest first, at most 40", async () => {
   assert.equal(page[0].customer_name, "Kunde 44");
 });
 
-test("hub route: note stays under 1500 chars and carries no photo paths", async () => {
+test("hub route: note preserves supported descriptions with bounded output and carries no photo paths", async () => {
   process.env.HUB_SYNC_TOKEN = TOKEN;
   const sql = await database();
   const booking = await book(sql, form({ note: "Fotos anbei.\nhttps://example.invalid/a.jpg" }));
@@ -278,7 +284,7 @@ test("hub route: note stays under 1500 chars and carries no photo paths", async 
 
   await sql`update bookings set note=${"n".repeat(3000)} where id=${booking.id}`;
   [row] = (await list(sql)).inquiries;
-  assert.ok((row.note as string).length < 1500);
+  assert.ok((row.note as string).length <= 2600);
 });
 
 test("hub route: database failure answers 500 without details, never 410", async () => {

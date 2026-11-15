@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
-import { compareSource, inspectDesignContent } from "./check-design-content.mjs";
+import { compareSource, compareApprovedRundumContent, inspectDesignContent } from "./check-design-content.mjs";
 
 const fixture = `
 const goals = ["Sauber im Alltag.", "Dauerhafter Schutz."];
@@ -316,4 +317,18 @@ test("SEO blob pins cover only the exact reviewed TSX and protected data", () =>
       approvedSeoBlobs: { "src/unknown.ts": "1".repeat(40) },
     }), /Invalid approved SEO Git blob/);
   });
+});
+
+const blob = (source) => createHash("sha1").update(`blob ${Buffer.byteLength(source)}\0`).update(source).digest("hex");
+test("Rundum approval records exact semantic removals and requires their approved replacements", () => {
+  const before = 'const Page = () => <><h1>Aufbereitung</h1><p>Fotos hier hochladen.</p><Link to="/preise" hash="buchung">Pakete</Link></>;',
+    after = before.replace("Fotos hier hochladen.", "Fotos später im Kundenbereich ergänzen."),
+    approval = { beforeBlob: blob(before), removed: { text: [{ value: "Fotos hier hochladen.", count: 1 }] }, added: { text: [{ value: "Fotos später im Kundenbereich ergänzen.", count: 1 }] } };
+  const compare = (current, original = before) => compareApprovedRundumContent(original, current, "src/routes/index.tsx", approval);
+  assert.deepEqual(compare(after), []);
+  assert.ok(compare(after.replace("Fotos später im Kundenbereich ergänzen.", "Beliebiger Ersatz")).some((item) => item.kind === "text"));
+  assert.ok(compare(after.replace("<h1>Aufbereitung</h1>", "")).some((item) => item.kind === "headings"));
+  assert.ok(compare(after.replace('hash="buchung"', 'hash="anderes-formular"')).some((item) => item.kind === "links"));
+  assert.ok(compare(after, before + " ").some((item) => item.kind === "rundum-baseline"));
+  assert.ok(compareApprovedRundumContent(before, after, "src/routes/index.tsx", { ...approval, removed: { text: [{ value: "Fotos hier hochladen.", count: 2 }] } }).some((item) => item.kind === "rundum-approval"));
 });

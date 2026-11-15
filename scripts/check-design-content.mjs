@@ -12,6 +12,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import ts from "typescript";
+import rundumContentApproval from "./rundum-content-approval.json" with { type: "json" };
 
 export const DESIGN_BASE = "db305e3c190cf53a0213c90ea3e788625ece091d";
 // PR #327 was approved and merged after the visual redesign. Its immutable
@@ -260,11 +261,44 @@ export function compareSource(before, after, filename, { approvedCtaLabels = fal
   ));
 }
 
+/**
+ * Explicit semantic deltas authorized by the 15 November Rundum-Service task.
+ * Each entry records the immutable current source and exact removed/required
+ * added inventory, rather than exempting a form or route from the guard.
+ * Unrelated copy, headings, links, package expressions and SEO still compare.
+ */
+export const APPROVED_RUNDUM_CONTENT = rundumContentApproval;
+export function compareApprovedRundumContent(before, after, filename, approval) {
+  if (!approval || sourceBlobId(before) !== approval.beforeBlob)
+    return [{ file: filename, kind: "rundum-baseline", value: "Immutable approved source baseline differs", count: 1 }];
+  const original = extractContent(before, filename), changed = extractContent(after, filename), failures = [];
+  for (const kind of Object.keys(original)) {
+    const expected = new Map(original[kind]);
+    for (const { value, count } of approval.removed[kind] ?? []) {
+      if (!Number.isSafeInteger(count) || count < 1 || (expected.get(value) ?? 0) < count) {
+        failures.push({ file: filename, kind: "rundum-approval", value: "Invalid removal: " + value, count: 1 });
+        continue;
+      }
+      expected.set(value, expected.get(value) - count);
+    }
+    for (const { value, count } of approval.added[kind] ?? []) {
+      if (!Number.isSafeInteger(count) || count < 1) {
+        failures.push({ file: filename, kind: "rundum-approval", value: "Invalid addition: " + value, count: 1 });
+        continue;
+      }
+      expected.set(value, (expected.get(value) ?? 0) + count);
+    }
+    failures.push(...missing(expected, changed[kind]).map((entry) => ({ file: filename, kind, ...entry })));
+  }
+  return failures;
+}
+
 export function inspectDesignContent({
   base = DESIGN_BASE,
   cwd = process.cwd(),
   sourceBaselines,
   approvedSeoBlobs,
+  approvedRundumContent,
 } = {}) {
   const git = (args) => execFileSync("git", args, { cwd, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], maxBuffer: 16 * 1024 * 1024 });
   // Resolve once to reject unknown revisions before inspecting any content.
@@ -303,6 +337,11 @@ export function inspectDesignContent({
       throw new Error(`Invalid approved SEO Git blob for ${name}`);
     }
   }
+  const rundum = approvedRundumContent ?? (commit === DESIGN_BASE ? APPROVED_RUNDUM_CONTENT : { files: {} });
+  for (const name of Object.keys(rundum.files ?? {})) {
+    if (!sources.includes(name) || !/^[a-f0-9]{40}$/.test(rundum.commit ?? ""))
+      throw new Error(`Invalid approved Rundum content source: ${name}`);
+  }
   const failures = [];
   const verifySeoBlob = (name, source) => {
     if (source && sourceBlobId(source) === seoBlobs[name]) return;
@@ -313,20 +352,28 @@ export function inspectDesignContent({
   let linkEntries = 0;
   let seoEntries = 0;
   for (const name of sources) {
-    const sourceCommit = actualSourceBaselines[name].commit;
+    const taskApproval = rundum.files?.[name];
+    const sourceCommit = taskApproval ? rundum.commit : actualSourceBaselines[name].commit;
     let before;
     try { before = git(["show", `${sourceCommit}:${name}`]); }
     catch { throw new Error(`Source baseline file unavailable: ${sourceCommit}:${name}`); }
     let after;
-    try { after = readFileSync(resolve(cwd, name), "utf8"); }
-    catch { failures.push({ file: name, kind: "file", value: "Existing source file removed", count: 1 }); continue; }
+    try {
+      after = readFileSync(resolve(cwd, name), "utf8");
+      if (taskApproval?.deleted) failures.push({ file: name, kind: "rundum-file", value: "Approved obsolete public upload component must remain removed", count: 1 });
+    }
+    catch {
+      if (taskApproval?.deleted) after = "";
+      else { failures.push({ file: name, kind: "file", value: "Existing source file removed", count: 1 }); continue; }
+    }
     const inventory = extractContent(before, name);
     const total = (kind) => [...inventory[kind].values()].reduce((sum, count) => sum + count, 0);
     textEntries += total("text") + total("copy");
     headingEntries += total("headings");
     linkEntries += total("links");
     seoEntries += total("seo");
-    if (Object.hasOwn(seoBlobs, name)) verifySeoBlob(name, after);
+    if (taskApproval) failures.push(...compareApprovedRundumContent(before, after, name, taskApproval));
+    else if (Object.hasOwn(seoBlobs, name)) verifySeoBlob(name, after);
     else failures.push(...compareSource(before, after, name, { approvedCtaLabels: commit === DESIGN_BASE }));
   }
   for (const name of protectedPresent) {
@@ -339,6 +386,7 @@ export function inspectDesignContent({
   }
   return { base: commit, sourceBaselines: actualSourceBaselines, protectedBase: commit, approvedSeoBlobs: seoBlobs,
     approvedCtaLabels: commit === DESIGN_BASE ? APPROVED_CTA_LABELS : {},
+    approvedRundumContent: rundum,
     sourceFiles: sources.length, protectedFiles: protectedPresent.length,
     textEntries, headingEntries, linkEntries, seoEntries, failures, passed: failures.length === 0 };
 }

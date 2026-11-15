@@ -1,0 +1,784 @@
+{
+  "commit": "38996d2ba9adfd54bde1dd22949b60c7afb9d0fd",
+  "authorization": "Rundum-Service und Kundenzugang, Betreiberauftrag 15.11.2026; exakt beauftragte Rundum-Texte, Formularfelder und Entfernung öffentlicher Kunden-Uploads. Keine pauschale Dateiausnahme.",
+  "files": {
+    "src/components/booking-media-picker.tsx": {
+      "beforeBlob": "c1e5f0f4705a5b7bfaef48f34725dda6f21859fa",
+      "deleted": true,
+      "removed": {
+        "text": [
+          {
+            "value": "Optionale Fahrzeugfotos",
+            "count": 1
+          },
+          {
+            "value": "Fahrzeugfotos (optional)",
+            "count": 1
+          },
+          {
+            "value": "Bis zu acht Aufnahmen, je 12 MB. JPEG, PNG, WebP, MP4, MOV oder WebM. Die Anfrage ist auch ohne Fotos möglich.",
+            "count": 1
+          },
+          {
+            "value": "Aufnahmen auswählen",
+            "count": 1
+          },
+          {
+            "value": "Entfernen",
+            "count": 1
+          },
+          {
+            "value": "Ersetzen",
+            "count": 1
+          },
+          {
+            "value": "Aufnahme",
+            "count": 1
+          },
+          {
+            "value": "ersetzen",
+            "count": 1
+          }
+        ],
+        "headings": [
+          {
+            "value": "h3: Fahrzeugfotos (optional)",
+            "count": 1
+          }
+        ],
+        "components": [
+          {
+            "value": "Preview",
+            "count": 1
+          }
+        ],
+        "expressions": [
+          {
+            "value": "file.name",
+            "count": 1
+          },
+          {
+            "value": "aria-label=`Aufnahme ${index + 1} ersetzen`",
+            "count": 1
+          },
+          {
+            "value": "error",
+            "count": 1
+          }
+        ]
+      },
+      "added": {}
+    },
+    "src/components/booking-photo-upload.tsx": {
+      "beforeBlob": "2a6ae6fc9d16a9c32d1df69fc61e94a5f3ea0330",
+      "deleted": true,
+      "removed": {
+        "text": [
+          {
+            "value": "Eine Aufnahme ist eingegangen. Wir prüfen sie im Zusammenhang mit Ihrer Anfrage.",
+            "count": 1
+          },
+          {
+            "value": "Aufnahmen sind eingegangen. Wir prüfen sie im Zusammenhang mit Ihrer Anfrage.",
+            "count": 1
+          },
+          {
+            "value": "Fahrzeugfotos zum Vorgang hochladen",
+            "count": 1
+          },
+          {
+            "value": "Fahrzeugfotos nachreichen",
+            "count": 1
+          },
+          {
+            "value": "Optional bis zu 8 Aufnahmen zu",
+            "count": 1
+          },
+          {
+            "value": ". JPEG, PNG oder WebP bevorzugt — kurze Videos (MP4, WebM, MOV) sind möglich. Die Dateien werden geschützt gespeichert und Ihrem Auftrag zur Begutachtung zugeordnet. Höchstens 12 MB pro Aufnahme. Bitte innerhalb von 7 Tagen im Browser Ihrer Anfrage nachreichen.",
+            "count": 1
+          },
+          {
+            "value": "Fotos oder kurzes Video (max. 8)",
+            "count": 1
+          },
+          {
+            "value": "Datei ausgewählt",
+            "count": 1
+          },
+          {
+            "value": "Dateien ausgewählt",
+            "count": 1
+          },
+          {
+            "value": "Wird hochgeladen …",
+            "count": 1
+          },
+          {
+            "value": "Aufnahmen senden",
+            "count": 1
+          }
+        ],
+        "headings": [
+          {
+            "value": "h2: Fahrzeugfotos nachreichen",
+            "count": 1
+          }
+        ],
+        "links": [
+          {
+            "value": "id=\"booking-photos\"",
+            "count": 2
+          },
+          {
+            "value": "id=\"booking-photos-error\"",
+            "count": 1
+          }
+        ],
+        "components": [
+          {
+            "value": "SubmissionResult",
+            "count": 1
+          },
+          {
+            "value": "Field",
+            "count": 1
+          },
+          {
+            "value": "Button",
+            "count": 1
+          }
+        ],
+        "expressions": [
+          {
+            "value": "count === 1 ? \"Eine Aufnahme ist eingegangen. Wir prüfen sie im Zusammenhang mit Ihrer Anfrage.\" : `${count} Aufnahmen sind eingegangen. Wir prüfen sie im Zusammenhang mit Ihrer Anfrage.`",
+            "count": 1
+          },
+          {
+            "value": "vorgang",
+            "count": 1
+          },
+          {
+            "value": "files.length",
+            "count": 1
+          },
+          {
+            "value": "files.length === 1 ? \"Datei ausgewählt\" : \"Dateien ausgewählt\"",
+            "count": 1
+          },
+          {
+            "value": "file.name",
+            "count": 1
+          },
+          {
+            "value": "error",
+            "count": 1
+          },
+          {
+            "value": "pending ? \"Wird hochgeladen …\" : \"Aufnahmen senden\"",
+            "count": 1
+          }
+        ]
+      },
+      "added": {}
+    },
+    "src/components/configurator.tsx": {
+      "beforeBlob": "ef8579268e12f5db18f00c9e05519efd5f9db342",
+      "removed": {
+        "text": [
+          {
+            "value": "Ihre Anfrage",
+            "count": 1
+          },
+          {
+            "value": "ist angekommen. Nur die übrigen Fotos konnten wir noch nicht übernehmen. Sie können diese erneut senden oder später nachreichen. Eine neue Anfrage ist nicht nötig.",
+            "count": 1
+          },
+          {
+            "value": "ausgewählt",
+            "count": 1
+          },
+          {
+            "value": "Aufnahmen",
+            "count": 1
+          },
+          {
+            "value": "So geht es weiter: Wir prüfen Ihre Fotos, Leistungen und den Wunschtermin. Erst nach unserer Prüfung stimmen wir den verbindlichen Preis und Termin mit Ihnen ab. Die Rechnung folgt nach erbrachter Leistung.",
+            "count": 1
+          },
+          {
+            "value": "Fotos später nachreichen",
+            "count": 1
+          },
+          {
+            "value": "Übrige Fotos erneut senden",
+            "count": 1
+          }
+        ],
+        "components": [
+          {
+            "value": "BookingMediaPicker",
+            "count": 1
+          }
+        ],
+        "expressions": [
+          {
+            "value": "uploadProgress",
+            "count": 1
+          },
+          {
+            "value": "media.length",
+            "count": 1
+          },
+          {
+            "value": "media.length ? \"Fotos später nachreichen\" : \"Zur Bestätigungsseite\"",
+            "count": 1
+          },
+          {
+            "value": "pending ? \"Wird gesendet …\" : savedReference ? media.length ? \"Übrige Fotos erneut senden\" : \"Zur Eingangsbestätigung\" : \"Unverbindliche Anfrage prüfen\"",
+            "count": 1
+          }
+        ]
+      },
+      "added": {
+        "text": [
+          {
+            "value": "Fotos kannst du nach deiner Anfrage in deinem Kundenbereich ergänzen.",
+            "count": 1
+          },
+          {
+            "value": "So geht es weiter: Wir prüfen Ihre Angaben, Leistungen und den Wunschtermin. Erst nach unserer Prüfung stimmen wir den verbindlichen Preis und Termin mit Ihnen ab. Die Rechnung folgt nach erbrachter Leistung.",
+            "count": 1
+          }
+        ],
+        "expressions": [
+          {
+            "value": "pending ? \"Wird gesendet …\" : savedReference ? \"Zur Eingangsbestätigung\" : \"Unverbindliche Anfrage prüfen\"",
+            "count": 1
+          }
+        ]
+      }
+    },
+    "src/components/photo-inquiry.tsx": {
+      "beforeBlob": "27fe44c8c10a44680daf01b3cffd840cac0b3f2f",
+      "removed": {
+        "text": [
+          {
+            "value": "Ihre Anfrage ist eingegangen. Wir prüfen Ihre Beschreibung und die ausgewählten Fotos und melden uns über Ihre angegebenen Kontaktdaten. Den Fixpreis und einen Termin vereinbaren wir nach der Begutachtung.",
+            "count": 1
+          },
+          {
+            "value": "Ihre Kontaktdaten, Beschreibung und ausgewählten Aufnahmen werden geschützt übermittelt und Ihrer Anfrage zugeordnet. Den Fixpreis erhalten Sie erst nach unserer Begutachtung.",
+            "count": 1
+          },
+          {
+            "value": "Aufnahmen auswählen (optional, max. 8 Dateien, je höchstens 12 MB)",
+            "count": 1
+          },
+          {
+            "value": "media",
+            "count": 1
+          },
+          {
+            "value": "Datei ausgewählt",
+            "count": 1
+          },
+          {
+            "value": "Dateien ausgewählt",
+            "count": 1
+          },
+          {
+            "value": "Telefon",
+            "count": 1
+          },
+          {
+            "value": "E-Mail für das Angebot (optional)",
+            "count": 1
+          },
+          {
+            "value": "Name, Kontaktdaten, Beschreibung und ausgewählte Aufnahmen werden zur Bearbeitung Ihrer Anfrage geschützt übermittelt. Siehe",
+            "count": 1
+          }
+        ],
+        "links": [
+          {
+            "value": "id=\"media\"",
+            "count": 2
+          }
+        ],
+        "components": [
+          {
+            "value": "SubmissionResult",
+            "count": 1
+          },
+          {
+            "value": "Field",
+            "count": 1
+          }
+        ],
+        "expressions": [
+          {
+            "value": "fieldError(\"media\")",
+            "count": 1
+          },
+          {
+            "value": "files.length",
+            "count": 1
+          },
+          {
+            "value": "files.length === 1 ? \"Datei ausgewählt\" : \"Dateien ausgewählt\"",
+            "count": 1
+          }
+        ]
+      },
+      "added": {
+        "text": [
+          {
+            "value": "Die Anfrage ist unverbindlich. Den Preis und einen Termin stimmen wir nach der Begutachtung mit Ihnen ab.",
+            "count": 1
+          },
+          {
+            "value": "Fotos kannst du nach deiner Anfrage in deinem Kundenbereich ergänzen.",
+            "count": 1
+          },
+          {
+            "value": "Telefon (optional)",
+            "count": 1
+          },
+          {
+            "value": "E-Mail für das Kundenkonto",
+            "count": 1
+          },
+          {
+            "value": "Name, Kontaktdaten und Beschreibung werden zur Bearbeitung Ihrer Anfrage geschützt übermittelt. Siehe",
+            "count": 1
+          }
+        ],
+        "components": [
+          {
+            "value": "InquiryConfirmation",
+            "count": 1
+          }
+        ]
+      }
+    },
+    "src/components/whatsapp-photo-cta.tsx": {
+      "beforeBlob": "e63d139c3d86b2b9817157bfaadefa1c24020393",
+      "removed": {
+        "text": [
+          {
+            "value": "Erste Einschätzung per Foto",
+            "count": 1
+          },
+          {
+            "value": "Sparen Sie Zeit: Senden Sie uns einfach 2–3 Fotos von Lack oder Innenraum per WhatsApp. Lars Hägele sieht sich die Aufnahmen an und empfiehlt Ihnen die passenden Arbeiten. Den verbindlichen Preis stimmen wir nach der Fahrzeugprüfung mit Ihnen ab.",
+            "count": 1
+          },
+          {
+            "value": "Fotos per WhatsApp senden",
+            "count": 1
+          }
+        ]
+      },
+      "added": {
+        "text": [
+          {
+            "value": "Persönliche Beratung",
+            "count": 1
+          },
+          {
+            "value": "Beschreiben Sie uns Ihr Anliegen per WhatsApp. Lars Hägele berät Sie zu den passenden Arbeiten. Fotos können Sie nach einer Website-Anfrage im geschützten Kundenbereich ergänzen. Den verbindlichen Preis stimmen wir nach der Fahrzeugprüfung mit Ihnen ab.",
+            "count": 1
+          },
+          {
+            "value": "Beratung per WhatsApp",
+            "count": 1
+          }
+        ]
+      }
+    },
+    "src/routes/danke.tsx": {
+      "beforeBlob": "b2074702a03fa43bc9c9f889aa41dfd3c5ef22a7",
+      "removed": {
+        "text": [
+          {
+            "value": "Vielen Dank für Ihre Anfrage. Ich prüfe Ihre Angaben und die eingegangenen Fotos. Danach erhalten Sie Ihr persönliches Angebot mit Preis und Terminvorschlag.",
+            "count": 1
+          },
+          {
+            "value": "Vorgang",
+            "count": 1
+          }
+        ],
+        "links": [
+          {
+            "value": "id={Number(vorgang.slice(3))}",
+            "count": 1
+          }
+        ],
+        "components": [
+          {
+            "value": "BookingPhotoUpload",
+            "count": 1
+          },
+          {
+            "value": "BookingStatus",
+            "count": 1
+          }
+        ],
+        "copy": [
+          {
+            "value": "Ihre Anfrage ist gespeichert. Falls noch Fotos fehlen, können Sie diese hier nachreichen. Preis und Wunschtermin sind noch nicht verbindlich bestätigt.",
+            "count": 1
+          },
+          {
+            "value": "Fotos, Fixpreis und Termin prüfen",
+            "count": 1
+          },
+          {
+            "value": "Wir begutachten Ihre Fotos und klären die Leistungen, den vollständigen Endpreis und den Termin. Bei Rückfragen melden wir uns bei Ihnen.",
+            "count": 1
+          }
+        ],
+        "expressions": [
+          {
+            "value": "vorgang",
+            "count": 1
+          }
+        ]
+      },
+      "added": {
+        "text": [
+          {
+            "value": "Vielen Dank für Ihre Anfrage. Wir prüfen Ihre Angaben und stimmen Angebot, Preis und Termin persönlich mit Ihnen ab. Die Anfrage ist unverbindlich.",
+            "count": 1
+          },
+          {
+            "value": "Fotos kannst du nach deiner Anfrage in deinem Kundenbereich ergänzen.",
+            "count": 1
+          },
+          {
+            "value": "Zum Kundenbereich",
+            "count": 1
+          }
+        ],
+        "links": [
+          {
+            "value": "href=\"https://panel.white-gloss.de/auth/customer\"",
+            "count": 1
+          }
+        ],
+        "components": [
+          {
+            "value": "InquiryConfirmation",
+            "count": 1
+          }
+        ],
+        "copy": [
+          {
+            "value": "Nach dem Eingang prüfen wir Ihre Angaben. Preis und Wunschtermin sind noch nicht verbindlich bestätigt.",
+            "count": 1
+          },
+          {
+            "value": "Angaben, Preis und Termin prüfen",
+            "count": 1
+          },
+          {
+            "value": "Wir klären die Leistungen, den vollständigen Endpreis und den Termin. Fotos können Sie im geschützten Kundenbereich ergänzen. Bei Rückfragen melden wir uns bei Ihnen.",
+            "count": 1
+          }
+        ]
+      }
+    },
+    "src/routes/datenschutz.tsx": {
+      "beforeBlob": "382564804a4a0d9eeee1324c56a9c7566d4395a4",
+      "removed": {
+        "text": [
+          {
+            "value": "Technisch notwendige Speicherung kann im geschützten Betriebspanel zur Anmeldung und Sicherheit verwendet werden (Sitzung). Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO. Das Cookie für das Nachreichen von Fahrzeugfotos ist in Abschnitt 7 beschrieben.",
+            "count": 1
+          },
+          {
+            "value": "Über die Seiten „Zustand prüfen lassen“ und „Dellen- und Hagelschäden“ können Sie uns eine Beschreibung sowie ausgewählte Fotos oder kurze Videos übermitteln. Die Dateien werden über unseren Server in einem privaten Speicherbereich bei Supabase gespeichert. Wir verwenden Name, Telefonnummer, Beschreibung und Aufnahmen zur Zuordnung, Prüfung und Terminabstimmung. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO.",
+            "count": 1
+          },
+          {
+            "value": "Die Anfrage wird in RO App bearbeitet. Dafür übermitteln wir die Kontaktdaten, Beschreibung und geschützte Links zu den Aufnahmen an RO App. Einen Fixpreis bestätigen wir erst nach der Begutachtung und manuellen Freigabe.",
+            "count": 1
+          },
+          {
+            "value": "Nach einer Terminanfrage können Sie auf der Bestätigungsseite optional Fahrzeugfotos oder kurze Videos zum Vorgang nachreichen. Bei dieser Uploadfunktion werden die tatsächlichen Dateien über unseren Server in einem privaten Speicherbereich bei Supabase gespeichert. Dateiname, Dateityp, Dateigröße und die Zuordnung zum Vorgang werden ebenfalls gespeichert. Die Aufnahmen sind nicht öffentlich zugänglich und dienen der Prüfung Ihrer Anfrage.",
+            "count": 1
+          },
+          {
+            "value": "Für das Nachreichen speichert Ihr Browser nach der Anfrage eine zufällige, vorgangsgebundene Upload-Berechtigung in einem HttpOnly-Cookie. Diese Berechtigung läuft nach sieben Tagen ab. Der Upload setzt voraus, dass das Cookie im Browser der ursprünglichen Anfrage noch vorhanden ist. Die siebentägige Frist betrifft die Upload-Berechtigung; bereits gespeicherte Aufnahmen werden dadurch nicht automatisch gelöscht. Für ihre Speicherdauer gilt Abschnitt 10.",
+            "count": 1
+          }
+        ]
+      },
+      "added": {
+        "text": [
+          {
+            "value": "Technisch notwendige Speicherung kann im geschützten Betriebspanel zur Anmeldung und Sicherheit verwendet werden (Sitzung). Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO. Fotos werden ausschließlich im geschützten Kundenbereich ergänzt; siehe Abschnitt 7.",
+            "count": 1
+          },
+          {
+            "value": "Die öffentlichen Anfrage- und Buchungsformulare übermitteln Ihre Kontaktdaten, Fahrzeugangaben und Beschreibung an unser White-Gloss-Panel. Sie enthalten keinen Foto-Upload. Name und E-Mail-Adresse ermöglichen die Zuordnung und den Zugang zu Ihrem Kundenkonto. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO.",
+            "count": 1
+          },
+          {
+            "value": "Nach Ihrer Anfrage können Sie Fotos und weitere unterstützte Dateien im geschützten Kundenbereich des Panels ergänzen. Die Dateien werden privat gespeichert und Ihrer Anfrage zugeordnet. Dateiname, Dateityp und Dateigröße werden ebenfalls gespeichert. Nur berechtigte Personen können auf die Dateien zugreifen. Wir verwenden sie zur Begutachtung, Angebotserstellung und Abstimmung der vereinbarten Leistungen.",
+            "count": 1
+          },
+          {
+            "value": "Neue Kunden erhalten zusammen mit der Eingangsbestätigung einen zeitlich begrenzten, einmaligen Link zur Passwortvergabe. Ein bestehendes Passwort wird dabei nicht zurückgesetzt. Danach erfolgt die Anmeldung mit E-Mail-Adresse und selbst gewähltem Passwort. Das Konto bleibt bestehen; Sitzungen und Einrichtungslinks sind zeitlich begrenzt. Eine sichere Wiederherstellung steht im Kundenbereich zur Verfügung.",
+            "count": 1
+          },
+          {
+            "value": "Bereits gespeicherte Kundenfotos und Dokumente werden durch diese Umstellung nicht gelöscht. Sie bleiben geschützt. Für ihre Speicherdauer gilt Abschnitt 10.",
+            "count": 1
+          }
+        ]
+      }
+    },
+    "src/routes/dellen-hagelschaden.tsx": {
+      "beforeBlob": "51f02eea7c43c0ea6347c3bcc80a3fd19e4b487e",
+      "removed": {
+        "text": [
+          {
+            "value": "Schaden per WhatsApp senden",
+            "count": 1
+          },
+          {
+            "value": "Hilfreich sind eine Gesamtansicht, eine Nahaufnahme und ein Foto bei schrägem Lichteinfall. Beschreiben Sie den Schaden und fügen Sie passende Aufnahmen bei.",
+            "count": 1
+          }
+        ]
+      },
+      "added": {
+        "text": [
+          {
+            "value": "Lieber per WhatsApp",
+            "count": 1
+          },
+          {
+            "value": "Beschreiben Sie kurz den Schaden. Fotos ergänzen Sie nach der Anfrage in Ihrem Kundenbereich.",
+            "count": 1
+          }
+        ]
+      }
+    },
+    "src/routes/fahrzeug-zustand.tsx": {
+      "beforeBlob": "cdb714b2ba165dc389d0887f4e4e4667669b4cc7",
+      "removed": {
+        "text": [
+          {
+            "value": "Wir geben Ihnen eine kostenlose, unverbindliche Ersteinschätzung. Senden Sie uns eine Beschreibung und passende Fotos Ihres Fahrzeugs.",
+            "count": 1
+          },
+          {
+            "value": "Beschreiben Sie den Zustand Ihres Fahrzeugs und fügen Sie passende Aufnahmen bei.",
+            "count": 1
+          }
+        ],
+        "seo": [
+          {
+            "value": "pageHead({ title: `Fahrzeugzustand prüfen lassen | ${site.name}`, description: \"Fotos senden und ehrlich erfahren, welche Aufbereitung sinnvoll ist. Kostenlos und unverbindlich. Horb am Neckar.\", path: \"/fahrzeug-zustand\", preloadShot: \"atelier\", })",
+            "count": 1
+          }
+        ]
+      },
+      "added": {
+        "text": [
+          {
+            "value": "Wir geben Ihnen eine kostenlose, unverbindliche Ersteinschätzung. Beschreiben Sie uns Ihr Fahrzeug. Fotos können Sie anschließend im geschützten Kundenbereich ergänzen.",
+            "count": 1
+          },
+          {
+            "value": "Für spätere Fotos im Kundenbereich sind diese Ansichten hilfreich:",
+            "count": 1
+          },
+          {
+            "value": "Beschreiben Sie kurz den Zustand Ihres Fahrzeugs. Fotos ergänzen Sie später im Kundenbereich.",
+            "count": 1
+          }
+        ],
+        "seo": [
+          {
+            "value": "pageHead({ title: `Fahrzeugzustand prüfen lassen | ${site.name}`, description: \"Fahrzeugzustand beschreiben und ehrlich erfahren, welche Aufbereitung sinnvoll ist. Kostenlos und unverbindlich. Horb am Neckar.\", path: \"/fahrzeug-zustand\", preloadShot: \"atelier\", })",
+            "count": 1
+          }
+        ]
+      }
+    },
+    "src/routes/index.tsx": {
+      "beforeBlob": "bab5cb42ba1e34d60af4ead159a0211d9a55b243",
+      "removed": {
+        "text": [
+          {
+            "value": "Wir stimmen die Pflege von Lack, Leder und Felgen auf den Zustand Ihres Fahrzeugs ab. Alle Arbeiten führen wir in unserer Werkstatt in Horb am Neckar aus.",
+            "count": 1
+          },
+          {
+            "value": "Sie geben uns den Schlüssel.",
+            "count": 1
+          },
+          {
+            "value": "Wir kümmern uns um den Rest.",
+            "count": 1
+          }
+        ],
+        "headings": [
+          {
+            "value": "h2: {[\"Sie geben uns den Schlüssel.\", \"Wir kümmern uns um den Rest.\"]}",
+            "count": 1
+          }
+        ],
+        "expressions": [
+          {
+            "value": "lines=[\"Sie geben uns den Schlüssel.\", \"Wir kümmern uns um den Rest.\"]",
+            "count": 1
+          }
+        ]
+      },
+      "added": {
+        "text": [
+          {
+            "value": "Rundum-Service",
+            "count": 1
+          },
+          {
+            "value": "Wir stimmen die Pflege von Lack, Leder und Felgen auf den Zustand Ihres Fahrzeugs ab. Die Fahrzeugaufbereitung führen wir in unserer Werkstatt in Horb am Neckar aus.",
+            "count": 1
+          },
+          {
+            "value": "Abholen. Aufbereiten.",
+            "count": 1
+          },
+          {
+            "value": "Zurückbringen.",
+            "count": 1
+          }
+        ],
+        "headings": [
+          {
+            "value": "h2: {[\"Abholen. Aufbereiten.\", \"Zurückbringen.\"]}",
+            "count": 1
+          }
+        ],
+        "links": [
+          {
+            "value": "href=\"#rundum-anfrage\"",
+            "count": 1
+          }
+        ],
+        "components": [
+          {
+            "value": "RundumServiceIntro",
+            "count": 1
+          },
+          {
+            "value": "RundumServiceInquiry",
+            "count": 1
+          }
+        ],
+        "expressions": [
+          {
+            "value": "lines=[\"Abholen. Aufbereiten.\", \"Zurückbringen.\"]",
+            "count": 1
+          }
+        ]
+      }
+    },
+    "src/routes/leistungen.$slug.index.tsx": {
+      "beforeBlob": "0dbf9aaa955f95afaaa3501ce90be32432f1f913",
+      "removed": {
+        "text": [
+          {
+            "value": "Für eine erste Einschätzung helfen uns diese Angaben. Fotos können Sie auch direkt per WhatsApp senden.",
+            "count": 1
+          }
+        ]
+      },
+      "added": {
+        "text": [
+          {
+            "value": "Für eine erste Einschätzung helfen uns diese Angaben. Fotos können Sie nach der Anfrage im geschützten Kundenbereich ergänzen.",
+            "count": 1
+          }
+        ]
+      }
+    },
+    "src/components/city-landing.tsx": {
+      "beforeBlob": "7489070ee8d138d5880711bfd41e925905151209",
+      "removed": {
+        "text": [
+          {
+            "value": "Fotos per WhatsApp",
+            "count": 1
+          },
+          {
+            "value": "Fotos zur Ersteinschätzung senden",
+            "count": 1
+          }
+        ],
+        "copy": [
+          {
+            "value": "Beschreiben Sie Ihr Anliegen im Formular oder senden Sie uns eine Nachricht mit Fotos per WhatsApp. Wir geben Ihnen eine erste Einschätzung.",
+            "count": 1
+          }
+        ]
+      },
+      "added": {
+        "text": [
+          {
+            "value": "Beratung per WhatsApp",
+            "count": 1
+          },
+          {
+            "value": "Anliegen kurz beschreiben",
+            "count": 1
+          }
+        ],
+        "copy": [
+          {
+            "value": "Beschreiben Sie Ihr Anliegen im Formular oder per WhatsApp. Fotos ergänzen Sie nach Ihrer Website-Anfrage im geschützten Kundenbereich. Wir geben Ihnen eine erste Einschätzung.",
+            "count": 1
+          }
+        ]
+      }
+    },
+    "src/components/scroll-film-hero.tsx": {
+      "beforeBlob": "a1792ea8042918a5b4779699bd05c446b929443c",
+      "removed": {},
+      "added": {
+        "text": [
+          {
+            "value": "Abholung, Aufbereitung und Reparaturen mit unseren Partnerbetrieben.",
+            "count": 1
+          },
+          {
+            "value": "Rundum-Service anfragen",
+            "count": 1
+          }
+        ],
+        "links": [
+          {
+            "value": "to=\"/\"",
+            "count": 1
+          },
+          {
+            "value": "hash=\"rundum-anfrage\"",
+            "count": 1
+          }
+        ],
+        "components": [
+          {
+            "value": "Link",
+            "count": 1
+          }
+        ]
+      }
+    }
+  }
+}

@@ -19,7 +19,10 @@ export async function queueCrmPhotos(sql: Sql, booking: Booking) {
   return queueBitrixPhotos(sql, booking);
 }
 export async function runCrmSync(sql: Sql) {
-  if (panelOnlyEnabled()) return { backend: "panel", skipped: 1 };
+  if (panelOnlyEnabled()) {
+    const { runPanelIntake } = await import("./panel-intake.ts");
+    return { backend: "panel", ...(await runPanelIntake(sql)) };
+  }
   if (roappOnlyEnabled()) {
     const { runRoappSync } = await import("./roapp-sync.ts");
     const { reconcileRoOrders } = await import("./roapp-callback.ts");

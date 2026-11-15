@@ -1,3 +1,4 @@
+import { panelOnlyEnabled } from "./booking-backend.ts";
 import { createHash } from "node:crypto";
 import { packages, site } from "../data/site.ts";
 import { bookingOwnerNotifyTargets, type BookingLite, type QueueTarget } from "./ops.ts";
@@ -145,6 +146,7 @@ export async function queueBookingEvent(
     undefined;
   const targets: QueueTarget[] = [];
   const notifyCustomer =
+    !(panelOnlyEnabled() && event === "booking.created") &&
     options.notifyCustomer !== false &&
     isEmailAddress(booking.email) &&
     !["booking.completed", "booking.no_show", "booking.confirmed"].includes(event);

@@ -37,6 +37,7 @@ export const expectedMigrations = [
   "0023_roapp_invoices.sql",
   "0024_qonto_webhook.sql",
   "0025_website_studio.sql",
+  "0026_panel_intake.sql",
 ];
 const tables = [
   "_migrations",

@@ -64,6 +64,8 @@ process.env.WHATSAPP_TIMEOUT_MS = "1000";
 process.env.ADMIN_WHATSAPP_NUMBER = "+490000000000";
 const state = {
   mails: [],
+  panelIntakes: [],
+  failPanel: false,
   whatsapp: [],
   uploads: [],
   objects: [],
@@ -79,6 +81,25 @@ const state = {
 const originalFetch = globalThis.fetch;
 globalThis.fetch = async (input, init) => {
   const url = new URL(typeof input === "string" || input instanceof URL ? input : input.url);
+  if (url.origin === "https://panel.white-gloss.de" && url.pathname === "/api/website/intake") {
+    const request = typeof input === "object" && !(input instanceof URL) ? input : null;
+    const headers = new Headers(init?.headers ?? request?.headers);
+    if ((init?.method ?? request?.method) !== "POST" || headers.get("authorization") !== "Bearer " + process.env.HUB_SYNC_TOKEN) {
+      state.blocked.push(url.origin + url.pathname);
+      throw new Error("Unexpected unauthenticated panel intake in isolated verification");
+    }
+    if (state.failPanel) return Response.json({ error: "Simulated panel outage" }, { status: 503 });
+    const { inquiry } = JSON.parse(init?.body ?? await request.text());
+    if (!Number.isSafeInteger(inquiry?.id) || !inquiry.email || inquiry.intake_version !== 1)
+      return Response.json({ error: "Invalid synthetic intake contract" }, { status: 400 });
+    const existing = state.panelIntakes.find((item) => item.inquiry.id === inquiry.id);
+    if (existing && JSON.stringify(existing.inquiry) !== JSON.stringify(inquiry))
+      return Response.json({ error: "Conflicting synthetic intake replay" }, { status: 409 });
+    const saved = existing ?? { inquiry, reference: "WG-" + String(inquiry.id).padStart(6, "0"), emailStatus: "accepted" };
+    if (!existing) state.panelIntakes.push(saved);
+    // This sink proves the website's handoff, not the real panel/email implementation.
+    return Response.json({ saved: true, reference: saved.reference, emailStatus: saved.emailStatus });
+  }
   if (url.hostname === "api.resend.com") {
     state.mails.push(JSON.parse(init.body));
     return Response.json(
@@ -171,7 +192,7 @@ createServer(async (req, res) => {
         res.end(JSON.stringify({ ok: true, bookingBackend: "panel", externalFetch: "blocked" }));
         return;
       }
-      for (const key of ["failMail", "failWhatsApp", "failStorage", "failCms"])
+      for (const key of ["failMail", "failWhatsApp", "failStorage", "failCms", "failPanel"])
         if (typeof flags[key] === "boolean") state[key] = flags[key];
       if (Number.isInteger(flags.failStorageNth))
         state.failStorageAt = flags.failStorageNth

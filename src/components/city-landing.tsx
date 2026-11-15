@@ -29,7 +29,7 @@ const steps = [
   {
     n: "01.",
     title: "Zustand zeigen",
-    text: "Beschreiben Sie Ihr Anliegen im Formular oder senden Sie uns eine Nachricht mit Fotos per WhatsApp. Wir geben Ihnen eine erste Einschätzung.",
+    text: "Beschreiben Sie Ihr Anliegen im Formular oder per WhatsApp. Fotos ergänzen Sie nach Ihrer Website-Anfrage im geschützten Kundenbereich. Wir geben Ihnen eine erste Einschätzung.",
   },
   {
     n: "02.",
@@ -102,7 +102,7 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
             </Link>
             <a href={wa} className={ctaGhost} target="_blank" rel="noopener noreferrer">
               <IconMessage className="size-4" aria-hidden />
-              Fotos per WhatsApp
+              Beratung per WhatsApp
             </a>
           </div>
           {selectedService ? (
@@ -361,7 +361,7 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
       >
         <span>
           <span className="block text-sm font-medium text-fg">Preisschätzung per WhatsApp</span>
-          <span className="block text-xs text-subtle">Fotos zur Ersteinschätzung senden</span>
+          <span className="block text-xs text-subtle">Anliegen kurz beschreiben</span>
         </span>
         <IconMessage className="size-5 shrink-0" aria-hidden />
       </a>

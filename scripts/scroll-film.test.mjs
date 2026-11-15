@@ -280,6 +280,7 @@ for (const options of [
   { memory: 2 },
   { cores: 2 },
   { hash: "#buchung" },
+  { hash: "#rundum-anfrage" },
   { hasCustomHero: true },
 ]) {
   test(`static fallback avoids all video traffic: ${JSON.stringify(options)}`, () => {

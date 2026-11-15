@@ -3,11 +3,12 @@ import { PageHero } from "@/components/page-hero";
 import { ctaGhost, ctaPrimary } from "@/components/ui";
 import { site } from "@/data/site";
 import { pageHead } from "@/lib/seo";
-import { BookingPhotoUpload } from "@/components/booking-photo-upload";
-import { BookingStatus } from "@/components/booking-status";
+import { InquiryConfirmation } from "@/components/inquiry-confirmation";
 
 type ThanksSearch = {
   vorgang?: string;
+  uebergabe?: "panel" | "ausstehend";
+  mail?: string;
 };
 
 function asVorgang(value: unknown): string | undefined {
@@ -19,6 +20,15 @@ function asVorgang(value: unknown): string | undefined {
 export const Route = createFileRoute("/danke")({
   validateSearch: (search: Record<string, unknown>): ThanksSearch => ({
     vorgang: asVorgang(search.vorgang),
+    uebergabe:
+      search.uebergabe === "panel" || search.uebergabe === "ausstehend"
+        ? search.uebergabe
+        : undefined,
+    mail: ["queued", "accepted", "unknown", "failed", "not_configured"].includes(
+      String(search.mail),
+    )
+      ? String(search.mail)
+      : undefined,
   }),
   component: ThanksPage,
   head: () =>
@@ -31,18 +41,18 @@ export const Route = createFileRoute("/danke")({
 });
 
 function ThanksPage() {
-  const { vorgang } = Route.useSearch();
+  const { vorgang, uebergabe, mail } = Route.useSearch();
 
   const steps = [
     [
       "01",
       "Anfrage eingegangen",
-      "Ihre Anfrage ist gespeichert. Falls noch Fotos fehlen, können Sie diese hier nachreichen. Preis und Wunschtermin sind noch nicht verbindlich bestätigt.",
+      "Nach dem Eingang prüfen wir Ihre Angaben. Preis und Wunschtermin sind noch nicht verbindlich bestätigt.",
     ],
     [
       "02",
-      "Fotos, Fixpreis und Termin prüfen",
-      "Wir begutachten Ihre Fotos und klären die Leistungen, den vollständigen Endpreis und den Termin. Bei Rückfragen melden wir uns bei Ihnen.",
+      "Angaben, Preis und Termin prüfen",
+      "Wir klären die Leistungen, den vollständigen Endpreis und den Termin. Fotos können Sie im geschützten Kundenbereich ergänzen. Bei Rückfragen melden wir uns bei Ihnen.",
     ],
     [
       "03",
@@ -63,7 +73,7 @@ function ThanksPage() {
         alt="Werkstatt von White Gloss in Horb am Neckar"
         kicker="Anfrage eingegangen"
         title="Danke. Anfrage erhalten."
-        lead="Vielen Dank für Ihre Anfrage. Ich prüfe Ihre Angaben und die eingegangenen Fotos. Danach erhalten Sie Ihr persönliches Angebot mit Preis und Terminvorschlag."
+        lead="Vielen Dank für Ihre Anfrage. Wir prüfen Ihre Angaben und stimmen Angebot, Preis und Termin persönlich mit Ihnen ab. Die Anfrage ist unverbindlich."
         crumbs={[{ label: "Startseite", to: "/" }, { label: "Danke" }]}
         actions={
           <>
@@ -78,16 +88,23 @@ function ThanksPage() {
       />
 
       <section className="section mx-auto max-w-3xl px-4 sm:px-6">
-        {vorgang ? (
-          <>
-            <p className="border border-line bg-surface px-5 py-4">
-              <span className="block text-xs uppercase tracking-[0.18em] text-subtle">Vorgang</span>
-              <span className="mt-2 block font-display text-3xl tracking-tight">{vorgang}</span>
-            </p>
-            <BookingPhotoUpload vorgang={vorgang} />
-            <BookingStatus id={Number(vorgang.slice(3))} />
-          </>
-        ) : null}
+        {vorgang && uebergabe ? (
+          <InquiryConfirmation
+            reference={vorgang}
+            panelSaved={uebergabe === "panel"}
+            emailStatus={mail}
+          />
+        ) : (
+          <p className="border border-line bg-surface px-5 py-4 text-sm text-muted">
+            Fotos kannst du nach deiner Anfrage in deinem Kundenbereich ergänzen.{" "}
+            <a
+              href="https://panel.white-gloss.de/auth/customer"
+              className="underline hover:text-fg"
+            >
+              Zum Kundenbereich
+            </a>
+          </p>
+        )}
 
         <ol className="mt-12 divide-y divide-line border-y border-line">
           {steps.map(([n, title, text]) => (

@@ -1,8 +1,17 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { bookingFormErrors, photoInquiryErrors } from "./public-form-validation.ts";
+import {
+  bookingFormErrors,
+  photoInquiryErrors,
+  rundumInquiryErrors,
+} from "./public-form-validation.ts";
 
-const contact = { name: "Anna Test", phone: "+49 123456789", privacy: true };
+const contact = {
+  email: "anna@example.org",
+  name: "Anna Test",
+  phone: "+49 123456789",
+  privacy: true,
+};
 const booking = {
   ...contact,
   email: "anna@example.org",
@@ -27,9 +36,11 @@ describe("public form feedback before submitting", () => {
         name,
         phone,
         text: "Prüfung",
-        files: [],
       });
-      assert.deepEqual(Object.keys(photoErrors).sort(), ["name", "phone"]);
+      assert.deepEqual(
+        Object.keys(photoErrors).sort(),
+        phone.trim() ? ["name", "phone"] : ["name"],
+      );
     }
   });
 
@@ -72,21 +83,33 @@ describe("public form feedback before submitting", () => {
     assert.deepEqual(Object.keys(errors).sort(), ["date", "email", "note", "privacy"]);
   });
 
-  it("accepts a photo inquiry with either a description or a filename", () => {
-    assert.deepEqual(photoInquiryErrors({ ...contact, text: "Delle an der Tür", files: [] }), {});
-    assert.deepEqual(
-      photoInquiryErrors({ ...contact, text: "", files: [{ name: "fahrzeug.jpg" }] }),
-      {},
-    );
-    assert.ok(photoInquiryErrors({ ...contact, text: "  ", files: [] }).text);
+  it("accepts description inquiries without photos and makes only email mandatory for account access", () => {
+    assert.deepEqual(photoInquiryErrors({ ...contact, phone: "", text: "Delle an der Tür" }), {});
+    assert.ok(photoInquiryErrors({ ...contact, text: "  " }).text);
+    assert.ok(photoInquiryErrors({ ...contact, email: "", text: "Prüfung" }).email);
+    assert.ok(photoInquiryErrors({ ...contact, text: "x".repeat(2001) }).text);
   });
 
-  it("explains oversized description and filename values before contacting the server", () => {
-    const errors = photoInquiryErrors({
+  it("validates Rundum-Service choices and vehicle while leaving phone and date optional", () => {
+    const inquiry = {
       ...contact,
-      text: "x".repeat(2001),
-      files: [{ name: "x".repeat(181) }],
-    });
-    assert.deepEqual(Object.keys(errors).sort(), ["media", "text"]);
+      phone: "",
+      text: "Delle an der Tür",
+      services: ["Dellenentfernung", "Felgenreparatur"],
+      vehicleMake: "Test",
+      vehicleModel: "Modell",
+      date: "",
+    };
+    assert.deepEqual(rundumInquiryErrors(inquiry, today), {});
+    assert.deepEqual(
+      Object.keys(
+        rundumInquiryErrors(
+          { ...inquiry, services: [], vehicleMake: "", vehicleModel: "", date: "2026-09-05" },
+          today,
+        ),
+      ).sort(),
+      ["date", "services", "vehicleMake", "vehicleModel"],
+    );
+    assert.ok(rundumInquiryErrors({ ...inquiry, services: ["Erfunden"] }, today).services);
   });
 });
