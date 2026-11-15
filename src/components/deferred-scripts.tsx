@@ -10,8 +10,8 @@ type ScriptAsset = RouterManagedTag & { preventScriptHoist?: boolean };
 /**
  * Server-side counterpart of Start's `<Scripts />`: renders every body script
  * unchanged except the module entry, which moves into the deferred bootstrap
- * together with the remaining module preloads. The homepage route is already
- * prepared by one high-priority head hint; execution still starts only through
+ * together with the remaining module preloads. The homepage route and entry
+ * are already prepared by head hints; execution still starts only through
  * the unchanged painted-hero bootstrap gate.
  */
 function ServerDeferredScripts() {
@@ -53,7 +53,9 @@ function ServerDeferredScripts() {
     scripts.push({
       tag: "script",
       attrs: { nonce },
-      children: deferredBootstrapSource(entries, [...new Set(preloads)]),
+      children: deferredBootstrapSource(entries, [...new Set(preloads)].filter(
+        (href) => router.state.location.pathname !== "/" || !entries.includes(href),
+      )),
     });
   }
   // Same order as Start's composeSsrBodyScripts: hydration data first, the
