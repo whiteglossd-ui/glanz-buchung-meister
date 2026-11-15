@@ -18,6 +18,7 @@ export async function verifyTypography(page, label) {
     const selectors = {
       body: "body", h1: "h1", h2: "h2", h3: "h3",
       button: "button", label: ".kicker",
+      rundumAction: ".scroll-film-rundum-link",
       number: ".type-number, .package-price strong, .booking-price strong",
       navigation: ".header-quick-nav a, .film-menu-link, [data-shell='app'] nav a",
       menu: ".film-menu-link",
@@ -50,6 +51,7 @@ export async function verifyTypography(page, label) {
     h2: ["Syne", "700", mobile ? 26 : 32],
     h3: ["Syne", "700", mobile ? 19 : 22],
     button: ["Syne", "700", mobile ? 14 : 15],
+    rundumAction: ["Syne", "700", mobile ? 14 : 15],
     label: ["Syne", "700", mobile ? 11 : 12],
     number: ["Syne", "800", mobile ? 24 : 30],
     navigation: ["Syne", "700", 16],
