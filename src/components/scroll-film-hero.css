@@ -109,7 +109,6 @@ html:has(#rundum-anfrage:target) .scroll-film[data-motion="scroll"] {
   gap: 0.75rem;
   min-height: 2.75rem;
   color: var(--color-fg);
-  font-size: 0.8125rem;
   text-decoration: underline;
   text-underline-offset: 0.25rem;
 }
