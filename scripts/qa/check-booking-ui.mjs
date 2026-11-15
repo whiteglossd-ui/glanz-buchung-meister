@@ -278,7 +278,7 @@ try {
 
     await step(3);
     await page.locator("#name").waitFor({ state: "visible" });
-    assert.ok(await page.locator('button[type="submit"]').isVisible());
+    assert.ok(await page.locator('form.booking-flow button[type="submit"]').isVisible());
     await captureBookingStep(page, "desktop-1280-kontakt.png");
     await step(2);
     assert.equal(await page.locator("#extra-felgen").isChecked(), true, "Selection is kept");
