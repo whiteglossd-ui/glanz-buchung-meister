@@ -266,12 +266,19 @@ try {
   await prepareBrowserFixture({ runId, scenario: "browser-suite" });
   await runCheck(server, "sitemap", ["scripts/qa/check-sitemap.mjs"]);
   await runCheck(server, "seo", ["scripts/qa/check-seo.mjs"]);
+  const diagnosticFailures = [];
   // The expanded city list adds 18 full scroll-throughs across three viewports.
   // Keep every page and assertion; only this stage gets a bounded extra minute.
-  await runCheck(server, "responsive", ["scripts/qa/check-responsive.mjs"], 180_000);
+  // Its read-only browser closes on failure. Collect the failure without hiding
+  // independent booking/performance evidence; the release gate still fails below.
+  try {
+    await runCheck(server, "responsive", ["scripts/qa/check-responsive.mjs"], 180_000);
+  } catch (error) {
+    diagnosticFailures.push(error.message);
+    log(`QA: ${error.message}`);
+  }
   await runCheck(server, "booking-ui", ["scripts/qa/check-booking-ui.mjs"]);
   await runCheck(server, "booking-recovery", ["scripts/qa/check-booking-recovery.mjs"]);
-  const diagnosticFailures = [];
   for (const check of [
     {
       name: "lighthouse",

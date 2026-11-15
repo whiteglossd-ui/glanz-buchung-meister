@@ -84,22 +84,79 @@ async function settleBookingGeometry(page, timeout, evidence) {
   }
 }
 async function returnToHero(page, evidence) {
+  const deadline = Date.now() + 10000;
+  const remaining = () => {
+    const timeout = deadline - Date.now();
+    assert.ok(timeout > 0, "Wheel receipt and settling share the existing ten-second reset deadline");
+    return timeout;
+  };
   evidence.before = await bookingGeometry(page);
+  evidence.wheelHits = [];
+  await page.evaluate(() => {
+    const inspect = (element) => {
+      const style = getComputedStyle(element);
+      return { tag: element.tagName, id: element.id, type: element.getAttribute("type"),
+        overflowY: style.overflowY, overscrollY: style.overscrollBehaviorY,
+        scrollTop: element.scrollTop, clientHeight: element.clientHeight, scrollHeight: element.scrollHeight,
+        nativeControl: ["INPUT", "TEXTAREA", "SELECT", "OPTION"].includes(element.tagName),
+        nestedScroller: !["HTML", "BODY"].includes(element.tagName) && /^(?:auto|scroll)$/.test(style.overflowY) && element.scrollHeight > element.clientHeight + 1,
+        wheelPrevent: ["data-lenis-prevent", "data-lenis-prevent-wheel", "data-lenis-prevent-vertical"].some((name) => element.hasAttribute(name)) };
+    };
+    const probe = { inspect, count: 0, events: [] };
+    probe.listener = (event) => {
+      probe.count++;
+      probe.events.push({ event, trusted: event.isTrusted, deltaY: event.deltaY, x: event.clientX, y: event.clientY,
+        path: event.composedPath().filter((node) => node instanceof HTMLElement).map(inspect) });
+    };
+    window.__qaReturnWheel = probe;
+    window.addEventListener("wheel", probe.listener, { capture: true, passive: true });
+  });
   try {
     const result = await scrollHeroWithWheel({
       readY: () => page.evaluate(() => scrollY),
       wheel: async (deltaY) => {
-        const viewport = page.viewportSize();
-        await page.mouse.move(viewport.width / 2, viewport.height / 2);
+        const hit = await page.evaluate(() => {
+          const probe = window.__qaReturnWheel;
+          const measure = (x, y) => {
+            const element = document.elementFromPoint(x, y), path = [];
+            for (let node = element; node instanceof HTMLElement; node = node.parentElement) path.push(probe.inspect(node));
+            return { x, y, path, rootSurface: !!element && ["MAIN", "SECTION", "BODY", "HTML"].includes(element.tagName) };
+          };
+          const blocked = (point) => point.path.some((node) => node.nativeControl || node.nestedScroller || node.wheelPrevent);
+          const center = measure(innerWidth / 2, innerHeight / 2);
+          // A real native form scroller may legitimately own wheel input. Use
+          // a measured empty page gutter only when that interception is proven.
+          const gutter = blocked(center) ? [measure(8, innerHeight / 2), measure(innerWidth - 8, innerHeight / 2)]
+            .find((point) => point.rootSurface && !blocked(point)) : undefined;
+          return { center, selected: gutter ?? center, reason: gutter ? "measured-control-or-nested-scroller" : "original-page-center", beforeCount: probe.count };
+        });
+        evidence.wheelHits.push(hit);
+        await page.mouse.move(hit.selected.x, hit.selected.y);
         await page.mouse.wheel(0, deltaY);
+        // Playwright's wheel promise does not await delivery or scrolling.
+        // Observe the actual trusted event before checking settled geometry.
+        await page.waitForFunction(({ count, direction }) => {
+          const probe = window.__qaReturnWheel;
+          return probe.count > count && probe.events.slice(count).some((record) => record.trusted && Math.sign(record.deltaY) === direction);
+        }, { count: hit.beforeCount, direction: Math.sign(deltaY) }, { timeout: remaining() });
       },
-      settle: (timeout) => settleBookingGeometry(page, timeout, evidence),
-    }, 0, { onAttempt: (attempt) => evidence.attempts.push(attempt) });
+      settle: (timeout) => settleBookingGeometry(page, Math.min(timeout, remaining()), evidence),
+    }, 0, { timeoutMs: remaining(), onAttempt: (attempt) => evidence.attempts.push(attempt) });
     assert.ok(result.actual <= 1, "A real wheel return must reach the top before reactivating the same hash");
     return result;
   } catch (error) {
+    evidence.wheelEvents = await page.evaluate(() => window.__qaReturnWheel.events.map(({ event, ...record }) => ({
+      ...record, defaultPrevented: event.defaultPrevented, lenisStopPropagation: event.lenisStopPropagation === true,
+    })));
     console.error("RESPONSIVE_RETURN_FAILURE:" + JSON.stringify({ ...progress, evidence }));
     throw new Error(`Return to hero failed: ${JSON.stringify({ ...progress, evidence })}`, { cause: error });
+  } finally {
+    evidence.wheelEvents = await page.evaluate(() => {
+      const probe = window.__qaReturnWheel;
+      window.removeEventListener("wheel", probe.listener, true);
+      return probe.events.map(({ event, ...record }) => ({ ...record,
+        defaultPrevented: event.defaultPrevented, lenisStopPropagation: event.lenisStopPropagation === true }));
+    });
   }
 }
 async function assertBookingArrival(page, label) {
