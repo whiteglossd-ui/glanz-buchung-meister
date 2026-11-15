@@ -243,11 +243,18 @@ export async function verifyRundumIntentLoading(page, { label, base }) {
   assert.equal(await form.locator("#rundum-name").inputValue(), draft, `${label}: a hash change keeps unsent input`);
   await page.locator(".scroll-film-rundum").getByRole("link", { name: "Rundum-Service anfragen", exact: true }).click();
   await page.waitForFunction(() => location.hash === "#rundum-anfrage");
+  // The preceding #buchung visit starts the real calendar read. Leaving Home
+  // unmounts Configurator and deliberately aborts it; finish begun reads first
+  // so that this harness navigation cannot manufacture a requestfailed error.
+  const beforePrices = await reads.complete(`${label}: before client route to prices`, { timeoutMs: 5000 });
+  console.log(`RUNDUM-NAV-READS:${JSON.stringify(beforePrices)}`);
   await page.locator(".scroll-film-prices").click();
   await page.waitForURL((url) => url.pathname === "/preise");
   await page.goBack({ waitUntil: "networkidle" });
   await form.waitFor({ state: "visible", timeout: 5000 });
   assert.equal(await form.locator("#rundum-name").inputValue(), draft, `${label}: client route and back keep unsent input`);
+  const beforeReload = await reads.complete(`${label}: before direct hash navigation`, { timeoutMs: 5000 });
+  console.log(`RUNDUM-NAV-READS:${JSON.stringify(beforeReload)}`);
   await page.goto(`${base}/#rundum-anfrage`, { waitUntil: "networkidle" });
   await form.waitFor({ state: "visible", timeout: 5000 });
   await assertStableRundumArrival(page, `${label}: direct hash`, reads);
