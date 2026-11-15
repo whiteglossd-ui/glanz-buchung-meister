@@ -52,6 +52,8 @@ export const Route = createRootRoute({
       ],
       links: [
         { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+        // Discover the existing install icon before the manifest requests it after hydration.
+        { rel: "preload", as: "image", type: "image/png", href: "/favicon-192.png", fetchPriority: "low" as const },
         ...fontPreloads,
         { rel: "manifest", href: "/__grok/manifest.webmanifest" },
         { rel: "apple-touch-icon", href: "/__grok/icon-180.png" },

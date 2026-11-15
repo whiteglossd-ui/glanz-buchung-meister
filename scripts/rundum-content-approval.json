@@ -264,6 +264,10 @@
       "removed": {
         "text": [
           {
+            "value": "Ihre Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es erneut oder kontaktieren Sie uns telefonisch oder per WhatsApp.",
+            "count": 1
+          },
+          {
             "value": "Ihre Anfrage ist eingegangen. Wir prüfen Ihre Beschreibung und die ausgewählten Fotos und melden uns über Ihre angegebenen Kontaktdaten. Den Fixpreis und einen Termin vereinbaren wir nach der Begutachtung.",
             "count": 1
           },
@@ -333,6 +337,10 @@
       },
       "added": {
         "text": [
+          {
+            "value": "Wir konnten den Eingang Ihrer Anfrage nicht bestätigen. Sie können dieselbe Anfrage erneut senden oder uns telefonisch bzw. per WhatsApp kontaktieren.",
+            "count": 1
+          },
           {
             "value": "Die Anfrage ist unverbindlich. Den Preis und einen Termin stimmen wir nach der Begutachtung mit Ihnen ab.",
             "count": 1

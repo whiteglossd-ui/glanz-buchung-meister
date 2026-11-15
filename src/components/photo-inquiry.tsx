@@ -63,7 +63,7 @@ export function PhotoInquiry({ title, hint }: { title: string; hint: string }) {
       requestIds.clear();
     } catch {
       setError(
-        "Ihre Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es erneut oder kontaktieren Sie uns telefonisch oder per WhatsApp.",
+        "Wir konnten den Eingang Ihrer Anfrage nicht bestätigen. Sie können dieselbe Anfrage erneut senden oder uns telefonisch bzw. per WhatsApp kontaktieren.",
       );
       submitting.current = false;
       setPending(false);

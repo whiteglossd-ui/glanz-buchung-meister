@@ -36,7 +36,7 @@ export function InquiryConfirmation({ reference, panelSaved, emailStatus }: Inqu
       <p className="text-sm text-muted">
         {panelSaved
           ? inquiryMailText(emailStatus)
-          : "Die Anfrage ist auf der Website gespeichert. Die Übergabe an den Kundenbereich steht noch aus. Bitte nicht erneut anfragen."}
+          : "Die Anfrage ist auf der Website gespeichert. Die Übergabe an den Kundenbereich ist noch nicht bestätigt. Bitte nicht erneut anfragen."}
       </p>
       <p className="text-sm text-muted">
         Fotos kannst du nach deiner Anfrage in deinem Kundenbereich ergänzen.

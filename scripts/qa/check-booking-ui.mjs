@@ -11,7 +11,7 @@ import { qaBase } from "./ports.mjs";
 import { qaClientHeaders } from "./client-identity.mjs";
 import { prepareBrowserFixture } from "./browser-fixture.mjs";
 import { assertBrowserDiagnostics, createBrowserDiagnostics } from "../browser-diagnostics.mjs";
-import { verifyInitialRundumHero, verifyRundumUi, verifyRundumIntentLoading } from "./rundum-ui.mjs";
+import { verifyInitialRundumHero, verifyRundumUi, verifyRundumIntentLoading, iconPreloadObservations } from "./rundum-ui.mjs";
 
 const output = ".qa-output/booking-ui";
 await mkdir(output, { recursive: true });
@@ -473,6 +473,7 @@ try {
     JSON.stringify({
       passed: results.length,
       results,
+      iconPreloadObservations,
       errors: evidence.flatMap((item) => item.errors),
       blocked: evidence.flatMap((item) => item.blocked),
       ignored: evidence.flatMap((item) => item.ignored),

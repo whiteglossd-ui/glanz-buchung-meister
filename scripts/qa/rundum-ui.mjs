@@ -2,12 +2,27 @@ import assert from "node:assert/strict";
 import { RUNDUM_SERVICES } from "../../src/lib/rundum-service.ts";
 import { site } from "../../src/data/site.ts";
 
+export const iconPreloadObservations = [];
+
 // Read-only controls and layout checks. The CI runner supplies the browser;
 // these actions never submit a request, upload a file or open WhatsApp.
 export async function verifyInitialRundumHero(page, { label, screenshot }) {
   const link = page.locator(".scroll-film-rundum").getByRole("link", { name: "Rundum-Service anfragen", exact: true });
   await link.waitFor({ state: "visible" });
   await page.evaluate(() => document.fonts.ready);
+  const icon = await page.evaluate(() => {
+    const hint = document.querySelector('link[rel="preload"][href="/favicon-192.png"]');
+    const resources = performance.getEntriesByType("resource");
+    const entry = resources.find((item) => new URL(item.name).pathname === "/favicon-192.png" && item.initiatorType === "link");
+    const main = resources.find((item) => /^\/assets\/index-[^/]+\.js$/.test(new URL(item.name).pathname));
+    return { hint: hint && { as: hint.getAttribute("as"), type: hint.getAttribute("type"), priority: hint.getAttribute("fetchpriority") },
+      icon: entry && { path: new URL(entry.name).pathname, initiatorType: entry.initiatorType, start: entry.startTime, end: entry.responseEnd, encodedBytes: entry.encodedBodySize, transfer: entry.transferSize },
+      main: main && { start: main.startTime, end: main.responseEnd } };
+  });
+  assert.deepEqual(icon.hint, { as: "image", type: "image/png", priority: "low" }, `${label}: the existing icon is preloaded at low priority`);
+  assert.ok(icon.icon && icon.main && icon.icon.start <= icon.main.end,
+    `${label}: actual icon preload starts before the main module finishes, rather than after hydration: ${JSON.stringify(icon)}`);
+  iconPreloadObservations.push({ label, ...icon });
   const initialFormRequests = await page.evaluate(() => performance.getEntriesByType("resource")
     .map((entry) => new URL(entry.name).pathname).filter((path) => /^\/assets\/rundum-service-form-[^/]+\.js$/.test(path)));
   assert.deepEqual(initialFormRequests, [], `${label}: initial view does not fetch the below-fold form chunk`);
@@ -95,6 +110,26 @@ export async function verifyRundumUi(page, { label, screenshot }) {
     return element.type !== "hidden" && element.tabIndex >= 0 && box.width > 0 && (box.left < -1 || box.right > innerWidth + 1);
   }).map((element) => element.id || element.name));
   assert.deepEqual(clipped, [], `${label}: no clipped controls`);
+  // The keyboard check scrolls to email. Reframe the complete section before
+  // recording it, including its heading below the real sticky navigation.
+  await section.evaluate((element) => {
+    const headerBottom = Math.max(0, document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 0);
+    window.scrollTo({ top: scrollY + element.getBoundingClientRect().top - headerBottom - 16, behavior: "instant" });
+    window.__qaRundumFrame = { top: element.getBoundingClientRect().top, since: performance.now() };
+  });
+  await page.waitForFunction(() => {
+    const top = document.querySelector("#rundum-anfrage").getBoundingClientRect().top;
+    const probe = window.__qaRundumFrame;
+    if (Math.abs(top - probe.top) > 0.5) { probe.top = top; probe.since = performance.now(); }
+    return performance.now() - probe.since >= 200;
+  }, undefined, { timeout: 2000 });
+  const frame = await section.evaluate((element) => {
+    const heading = element.querySelector("#rundum-anfrage-heading").getBoundingClientRect();
+    return { headingTop: heading.top, headingBottom: heading.bottom, sectionTop: element.getBoundingClientRect().top,
+      headerBottom: Math.max(0, document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 0), viewportHeight: innerHeight };
+  });
+  assert.ok(frame.sectionTop >= frame.headerBottom && frame.headingTop >= frame.headerBottom && frame.headingBottom <= frame.viewportHeight,
+    `${label}: final form capture frames the complete heading below the sticky header: ${JSON.stringify(frame)}`);
   await screenshot(`${label}-rundum-form.png`, section);
   return `${label}: compact prominent service, exact WhatsApp channel, request anchor, seven multiple choices, optional phone/date, no public upload, usable controls and layout`;
 }

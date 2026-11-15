@@ -57,6 +57,7 @@ const summary = {
   forwardedHost: "white-gloss.de (same production head rules as the Caddy proxy)",
   externalRequests: [],
   invalidAttempts: [],
+  iconPreloadRuns: [],
 };
 
 function cancel(signal) {
@@ -146,6 +147,18 @@ try {
     database: "in-memory-pglite",
     externalFetch: "blocked",
   });
+  const expectedIcon = await readFile(resolve("public/favicon-192.png"));
+  const iconSha256 = createHash("sha256").update(expectedIcon).digest("hex");
+  assert.equal(iconSha256, "73ec795e41e36843ecebba7edb10b69f303c139ddd27571fa2e3bd07ff69d42a",
+    "The preload reuses the existing reviewed icon bytes");
+  const iconResponse = await fetch(`${qaBase}/favicon-192.png`, {
+    redirect: "error", signal: AbortSignal.any([abort.signal, AbortSignal.timeout(5_000)]),
+  });
+  assert.equal(iconResponse.status, 200);
+  assert.match(iconResponse.headers.get("content-type"), /^image\/png(?:;|$)/);
+  const servedIcon = Buffer.from(await iconResponse.arrayBuffer());
+  assert.deepEqual(servedIcon, expectedIcon, "The controlled production build serves the unchanged icon");
+  summary.iconAsset = { path: "/favicon-192.png", bytes: servedIcon.length, sha256: iconSha256 };
 
   // Mirror production HTTP/2 using the same owned Nitro build. Trust only this
   // run's ephemeral certificate, without disabling general TLS validation.
@@ -321,6 +334,21 @@ try {
             0,
             "Initial external requests invalidate the isolated measurement",
           );
+          // Observe native Lighthouse requests without Playwright interception
+          // or cache overrides. Cached references may transfer zero bytes.
+          const iconRequests = networkRequests.filter((request) => new URL(request.url).pathname === "/favicon-192.png");
+          const mainRequest = networkRequests.find((request) => /^\/assets\/index-[^/]+\.js$/.test(new URL(request.url).pathname));
+          const wireRequests = iconRequests.filter((request) => request.transferSize > 0);
+          assert.equal(wireRequests.length, 1, `${profile} ${run}: exactly one icon wire transfer; cached references may have zero transfer`);
+          assert.equal(wireRequests[0].resourceSize, expectedIcon.length, "The actual browser icon response has the unchanged PNG size");
+          const iconDiscovery = result.artifacts.DevtoolsLog.find((entry) => entry.method === "Network.requestWillBeSent"
+            && new URL(entry.params.request.url).pathname === "/favicon-192.png");
+          assert.equal(iconDiscovery?.params.initiator.type, "parser", `${profile} ${run}: the parser discovers the icon preload`);
+          assert.ok(mainRequest && wireRequests[0].networkRequestTime <= mainRequest.networkEndTime,
+            `${profile} ${run}: the icon is requested before the main module finishes, not by a late post-hydration chain`);
+          summary.iconPreloadRuns.push({ profile, run, initiatorType: iconDiscovery.params.initiator.type,
+            requests: iconRequests.map((request) => ({ start: request.networkRequestTime, end: request.networkEndTime, transfer: request.transferSize, bytes: request.resourceSize })),
+            mainModule: { start: mainRequest.networkRequestTime, end: mainRequest.networkEndTime } });
           assert.equal(report.lighthouseVersion, lighthouseVersion);
           assert.equal(report.configSettings.formFactor, profile);
           assert.equal(report.configSettings.throttlingMethod, "simulate");
