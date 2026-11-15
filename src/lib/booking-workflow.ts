@@ -170,7 +170,11 @@ async function persistBookingRequest(
 ) {
   assertPricing(data);
   const key = hash(manual?.requestKey ?? data.idempotencyKey);
-  data = { ...data, extraIds: data.extraIds.filter((id) => !extraIncluded(data.packageId, id)) };
+  const paidExtras = data.extraIds.filter((id) => !extraIncluded(data.packageId, id));
+  data = {
+    ...data,
+    extraIds: extras.filter((extra) => paidExtras.includes(extra.id)).map((extra) => extra.id),
+  };
   const content = {
     ...data,
     idempotencyKey: undefined,
@@ -186,7 +190,28 @@ async function persistBookingRequest(
       const [existing] =
         await tx<WorkflowBooking>`select * from bookings where shop_id=${SHOP} and request_key_hash=${key}`;
       if (existing) {
-        if (existing.request_fingerprint !== fingerprint)
+        let matches = existing.request_fingerprint === fingerprint;
+        if (!matches) {
+          let original: unknown;
+          try {
+            original = JSON.parse(existing.extra_ids);
+          } catch {
+            original = null;
+          }
+          // Replay legacy selections in their stored order without rewriting
+          // their fingerprint, request, events or queued provider payload.
+          if (
+            Array.isArray(original) &&
+            original.length === data.extraIds.length &&
+            new Set(original).size === data.extraIds.length &&
+            original.every((id) => typeof id === "string" && data.extraIds.includes(id))
+          ) {
+            matches =
+              existing.request_fingerprint ===
+              hash(JSON.stringify({ ...content, extraIds: original }));
+          }
+        }
+        if (!matches)
           throw new Error(
             "Diese Anfragekennung wurde bereits verwendet. Bitte eine neue Anfrage beginnen.",
           );

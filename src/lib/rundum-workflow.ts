@@ -9,11 +9,13 @@ import {
   type TextInquiryInput,
 } from "./rundum-schema.ts";
 import type { Row } from "./hub-inquiries.ts";
+import { RUNDUM_SERVICES } from "./rundum-service.ts";
 
 const hash = (value: string) => createHash("sha256").update(value).digest("hex");
 export async function saveRundumInquiry(sql: Sql, raw: RundumInquiryInput) {
   const data = rundumInquirySchema.parse(raw);
-  return save(sql, data.idempotencyKey, "rundum-service", data, data.services);
+  const services = RUNDUM_SERVICES.filter((service) => data.services.includes(service));
+  return save(sql, data.idempotencyKey, "rundum-service", { ...data, services }, services);
 }
 export async function saveTextInquiry(sql: Sql, raw: TextInquiryInput) {
   const data = publicInquirySchema.parse(raw);
@@ -36,7 +38,37 @@ async function save(
       Row & { request_fingerprint: string }
     >`select * from bookings where shop_id='white-gloss' and request_key_hash=${key}`;
     if (existing) {
-      if (existing.request_fingerprint !== fingerprint)
+      let matches = existing.request_fingerprint === fingerprint;
+      if (!matches && "services" in data) {
+        let original: unknown;
+        try {
+          original =
+            typeof existing.requested_services === "string"
+              ? JSON.parse(existing.requested_services)
+              : existing.requested_services;
+        } catch {
+          original = null;
+        }
+        // Old requests retain their original array order, fingerprint and outbox.
+        // Only order may differ; every other field must still match its old hash.
+        if (
+          Array.isArray(original) &&
+          original.length === services.length &&
+          new Set(original).size === services.length &&
+          original.every((service) => typeof service === "string" && services.includes(service))
+        ) {
+          matches =
+            existing.request_fingerprint ===
+            hash(
+              JSON.stringify({
+                ...data,
+                services: original,
+                website: undefined,
+              }),
+            );
+        }
+      }
+      if (!matches)
         throw new Error(
           "Diese Anfragekennung wurde bereits verwendet. Bitte eine neue Anfrage beginnen.",
         );

@@ -316,6 +316,13 @@ try {
       await toggle.press("Enter");
       const menu = page.getByRole("dialog", { name: "Hauptnavigation", exact: true });
       await menu.waitFor({ state: "visible" });
+      // CSS can expose the portal before React's showModal/focus effect runs.
+      // Await the required native-modal/focus result; never inject focus here.
+      await page.waitForFunction(() => {
+        const dialog = document.getElementById("site-nav");
+        return dialog instanceof HTMLDialogElement && dialog.open && dialog.matches(":modal")
+          && dialog.contains(document.activeElement);
+      }, undefined, { timeout: 2000 });
       assert.equal(await menu.evaluate((element) => element.contains(document.activeElement)), true,
         `${width}px: keyboard focus enters the open menu.`);
       await page.keyboard.press("Escape");
