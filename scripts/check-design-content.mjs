@@ -40,6 +40,8 @@ export const APPROVED_CTA_LABELS = Object.freeze({
 // keep their original design or booking baselines. Hash the file locally so
 // the check also works with a shallow GitHub checkout and squash merges.
 export const APPROVED_SEO_BLOBS = Object.freeze({
+  // November 15: operator requested removing the headlight notice from prices.
+  "src/routes/preise.tsx": "57e1e97935bd2bf11accb237aadbc8f57871fe7e",
   "src/components/city-landing.tsx": "7489070ee8d138d5880711bfd41e925905151209",
   // November 15: operator explicitly requested retiring the ceramic-layers add-on.
   // Pin the reviewed catalog, guide and from-price labels; all other checks remain.
