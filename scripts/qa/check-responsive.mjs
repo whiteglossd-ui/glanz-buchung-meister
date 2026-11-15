@@ -9,6 +9,7 @@ import { qaClientHeaders } from "./client-identity.mjs";
 import { scrollHeroWithWheel } from "./hero-diagnostics.mjs";
 import { cities, services } from "../../src/data/site.ts";
 
+const responsiveStarted = Date.now();
 const browser = await chromium.launch({ headless: true });
 const results = [];
 const failures = [];
@@ -84,7 +85,8 @@ async function settleBookingGeometry(page, timeout, evidence) {
   }
 }
 async function returnToHero(page, evidence) {
-  const deadline = Date.now() + 10000;
+  const resetStarted = Date.now();
+  const deadline = resetStarted + 10000;
   const remaining = () => {
     const timeout = deadline - Date.now();
     assert.ok(timeout > 0, "Wheel receipt and settling share the existing ten-second reset deadline");
@@ -151,6 +153,7 @@ async function returnToHero(page, evidence) {
     console.error("RESPONSIVE_RETURN_FAILURE:" + JSON.stringify({ ...progress, evidence }));
     throw new Error(`Return to hero failed: ${JSON.stringify({ ...progress, evidence })}`, { cause: error });
   } finally {
+    evidence.durationMs = Date.now() - resetStarted;
     evidence.wheelEvents = await page.evaluate(() => {
       const probe = window.__qaReturnWheel;
       window.removeEventListener("wheel", probe.listener, true);
@@ -229,6 +232,7 @@ async function verifyBookingActivation(page, width, reducedMotion) {
   for (const [source, link] of [["header", headerCta], ["hero", heroCta]]) {
     for (const activation of ["mouse", "Enter"]) {
       progress = { stage: "booking-cta", path: "/", width, reducedMotion, source, activation, completed: results.length, updatedAt: new Date().toISOString() };
+      console.log("RESPONSIVE_RESET_START:" + JSON.stringify({ width, reducedMotion, source, activation, elapsedMs: Date.now() - responsiveStarted }));
       // Keep #buchung in the URL while leaving the destination. This catches
       // handlers that only react to a changed hash or retain the old focus.
       const reset = { source, activation, attempts: [], samples: [] };
@@ -266,7 +270,7 @@ async function verifyBookingActivation(page, width, reducedMotion) {
   console.log("RESPONSIVE_BOOKING_PROOF:" + JSON.stringify({ width, reducedMotion,
     neighbor: neighborLayout.state, resets: scrollResets.map((reset) => ({ source: reset.source, activation: reset.activation,
       beforeY: reset.before.scrollY, afterY: reset.state.scrollY, documentHeight: reset.state.documentHeight,
-      neighborReady: reset.state.neighborReady, attempts: reset.attempts })) }));
+      neighborReady: reset.state.neighborReady, durationMs: reset.durationMs, attempts: reset.attempts })) }));
   return { sameHashActivations: 4, bookingHeadingFocusedAndVisible: true, draftPreserved: true, neighborLayout, scrollResets };
 }
 const paths = [
@@ -351,6 +355,7 @@ try {
       await context.close();
     }
   }
+  console.log("RESPONSIVE_CRAWL_DONE:" + JSON.stringify({ cases: results.length, elapsedMs: Date.now() - responsiveStarted }));
   // This independent first visit keeps the crawl cases and their consent state
   // unchanged, while exercising the real dismiss/reopen controls on a city hub.
   {
@@ -394,6 +399,8 @@ try {
     .map((width) => ({ width, reducedMotion: "reduce" }));
   headerCases.push(...[390, 1440].map((width) => ({ width, reducedMotion: "no-preference" })));
   for (const { width, reducedMotion } of headerCases) {
+    const caseStarted = Date.now();
+    console.log("RESPONSIVE_CASE_START:" + JSON.stringify({ width, reducedMotion, elapsedMs: caseStarted - responsiveStarted }));
     const { context, page } = await openPage({ width, height: width <= 390 ? 844 : 1000 }, reducedMotion);
     try {
       progress = { stage: "header-navigation", path: "/", width, completed: results.length, updatedAt: new Date().toISOString() };
@@ -471,6 +478,7 @@ try {
       if (reducedMotion === "reduce") await header.screenshot({ path: `.qa-output/review-header-${width}.png` });
       const activation = await verifyBookingActivation(page, width, reducedMotion);
       results.push({ path: "/", width, reducedMotion, primaryHeaderBookingLinks: 1, desktopTerminVisible: width >= 960, menuKeyboardFocusReturned: true, ...activation });
+      console.log("RESPONSIVE_CASE_DONE:" + JSON.stringify({ width, reducedMotion, elapsedMs: Date.now() - responsiveStarted, durationMs: Date.now() - caseStarted }));
     } finally {
       await context.close();
     }
@@ -478,6 +486,7 @@ try {
   // Review the changed request path at phone and desktop sizes. These images
   // are produced by the existing isolated Linux CI job, never a local server.
   for (const width of [390, 1440]) {
+    console.log("RESPONSIVE_REVIEW_START:" + JSON.stringify({ width, elapsedMs: Date.now() - responsiveStarted }));
     const { context, page } = await openPage({ width, height: width === 390 ? 844 : 1000 });
     try {
       progress = { stage: "review-navigation", path: "/", width, completed: results.length, updatedAt: new Date().toISOString() };

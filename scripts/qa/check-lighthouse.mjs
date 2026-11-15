@@ -73,6 +73,20 @@ process.once("SIGINT", onInterrupt);
 process.once("SIGTERM", onTerminate);
 const watchdog = setTimeout(() => cancel("runtime budget"), budgetMs);
 
+function publicAssetHeaders(headers, allowed) {
+  return Object.fromEntries(Object.entries(headers ?? {})
+    .filter(([name]) => allowed.includes(name.toLowerCase()))
+    .map(([name, value]) => [name.toLowerCase(), String(value).slice(0, 300)]));
+}
+
+function validatesSameAsset(exchange, primary) {
+  const etag = primary?.responseHeaders.etag;
+  const condition = exchange.requestHeaders["if-none-match"];
+  if (condition) return Boolean(etag && condition.split(",").map((value) => value.trim()).includes(etag));
+  const modifiedSince = exchange.requestHeaders["if-modified-since"];
+  return Boolean(modifiedSince && modifiedSince === primary?.responseHeaders["last-modified"]);
+}
+
 function median(values) {
   assert.ok(values.length === 3 && values.every(Number.isFinite), "Three valid samples required");
   return [...values].sort((a, b) => a - b)[1];
@@ -344,35 +358,75 @@ try {
             .filter((entry) => entry.method === "Network.requestWillBeSent"
               && new URL(entry.params.request.url).pathname === "/favicon-192.png")
             .map((entry) => entry.params.requestId));
-          // Keep the observed CDP cache/transfer facts, never headers or cookies.
+          // Capture only public asset validators, never complete headers or cookies.
           const iconDevtools = result.artifacts.DevtoolsLog
             .filter((entry) => iconRequestIds.has(entry.params.requestId)
-              && ["Network.requestWillBeSent", "Network.responseReceived", "Network.requestServedFromCache", "Network.loadingFinished"].includes(entry.method))
+              && ["Network.requestWillBeSent", "Network.requestWillBeSentExtraInfo", "Network.responseReceived", "Network.responseReceivedExtraInfo", "Network.requestServedFromCache", "Network.dataReceived", "Network.loadingFinished"].includes(entry.method))
             .map(({ method, params }) => ({ method, requestId: params.requestId,
               timestamp: params.timestamp, url: params.request?.url ?? params.response?.url,
               initiatorType: params.initiator?.type, priority: params.request?.initialPriority,
-              status: params.response?.status, protocol: params.response?.protocol,
-              fromDiskCache: params.response?.fromDiskCache,
+              status: params.response?.status, actualStatus: params.statusCode,
+              protocol: params.response?.protocol, fromDiskCache: params.response?.fromDiskCache,
               fromServiceWorker: params.response?.fromServiceWorker,
               fromPrefetchCache: params.response?.fromPrefetchCache,
+              ...(method === "Network.requestWillBeSentExtraInfo" ? { requestHeaders: publicAssetHeaders(params.headers, ["if-none-match", "if-modified-since"]) } : {}),
+              ...(method === "Network.responseReceivedExtraInfo" ? { responseHeaders: publicAssetHeaders(params.headers, ["etag", "last-modified", "cache-control", "age"]) } : {}),
+              dataLength: params.dataLength,
               encodedDataLength: params.encodedDataLength ?? params.response?.encodedDataLength }));
+          const exchanges = [...iconRequestIds].map((requestId) => {
+            const events = iconDevtools.filter((entry) => entry.requestId === requestId);
+            const request = events.find((entry) => entry.method === "Network.requestWillBeSent");
+            const response = events.find((entry) => entry.method === "Network.responseReceived");
+            const extra = events.find((entry) => entry.method === "Network.responseReceivedExtraInfo");
+            const finished = events.find((entry) => entry.method === "Network.loadingFinished");
+            return { requestId, initiatorType: request?.initiatorType,
+              reportedStatus: response?.status, actualStatus: extra?.actualStatus ?? null,
+              requestHeaders: events.find((entry) => entry.method === "Network.requestWillBeSentExtraInfo")?.requestHeaders ?? {},
+              responseHeaders: extra?.responseHeaders ?? {},
+              encodedBodyBytes: events.filter((entry) => entry.method === "Network.dataReceived")
+                .reduce((sum, entry) => sum + (entry.encodedDataLength ?? 0), 0),
+              finishedBytes: finished?.encodedDataLength ?? null,
+              servedFromCache: events.some((entry) => entry.method === "Network.requestServedFromCache")
+                || response?.fromDiskCache === true || response?.fromPrefetchCache === true };
+          });
+          const fullPayloads = exchanges.filter((exchange) => exchange.actualStatus === 200
+            && exchange.finishedBytes >= expectedIcon.length);
+          const primary = fullPayloads[0];
+          const revalidations = exchanges.filter((exchange) => exchange.actualStatus === 304
+            && exchange.encodedBodyBytes === 0 && Number.isFinite(exchange.finishedBytes) && exchange.finishedBytes >= 0
+            && exchange.finishedBytes < expectedIcon.length && validatesSameAsset(exchange, primary));
+          const cacheReferences = exchanges.filter((exchange) => [200, null].includes(exchange.actualStatus)
+            && exchange.reportedStatus === 200 && exchange.finishedBytes === 0
+            && exchange.encodedBodyBytes === 0 && exchange.servedFromCache);
+          const classified = new Set([...fullPayloads, ...revalidations, ...cacheReferences].map((exchange) => exchange.requestId));
           const iconDiscovery = result.artifacts.DevtoolsLog.find((entry) => entry.method === "Network.requestWillBeSent"
             && new URL(entry.params.request.url).pathname === "/favicon-192.png");
-          const iconObservation = { profile, run,
+          const weightedAudits = report.categories.performance.auditRefs.filter((ref) => ref.weight > 0)
+            .map(({ id, weight }) => ({ id, weight, score: report.audits[id]?.score,
+              value: report.audits[id]?.numericValue, unit: report.audits[id]?.numericUnit }));
+          const totalWeight = weightedAudits.reduce((sum, audit) => sum + audit.weight, 0);
+          const iconObservation = { profile, run, lighthouseVersion: report.lighthouseVersion,
             reportedScores: Object.fromEntries(categories.map((id) => [id, report.categories[id]?.score])),
+            performanceComponents: weightedAudits,
+            computedFromReportedAuditScores: weightedAudits.reduce((sum, audit) => sum + audit.score * audit.weight, 0) / totalWeight,
             wireCount: wireRequests.length, requestCount: iconRequests.length,
-            initiatorType: iconDiscovery?.params.initiator.type ?? null,
-            requests: iconRequests, devtools: iconDevtools,
+            fullPngPayloadCount: fullPayloads.length, revalidationCount: revalidations.length,
+            cachedReferenceCount: cacheReferences.length, unclassifiedExchangeCount: exchanges.length - classified.size,
+            initiatorType: iconDiscovery?.params.initiator?.type ?? null,
+            requests: iconRequests, devtools: iconDevtools, exchanges,
             mainModule: mainRequest ? { start: mainRequest.networkRequestTime, end: mainRequest.networkEndTime } : null };
           summary.iconPreloadRuns.push(iconObservation);
           await writeFile(resolve(output, `${prefix}.icon-observation.json`), JSON.stringify(iconObservation, null, 2));
           console.log(`LH-ICON-CAPTURE ${JSON.stringify(iconObservation)}`);
-          // Preserve every native sample even when the additional icon proof fails.
-          // The same strict assertions remain fatal in the final combined gate.
+          // A verified 304 has no PNG body. Keep positive wire bytes visible while
+          // refusing a second full payload, unknown cache states or unmatched validators.
           try {
-            assert.equal(wireRequests.length, 1, `${profile} ${run}: exactly one icon wire transfer; cached references may have zero transfer`);
+            assert.equal(exchanges.length, iconRequests.length, `${profile} ${run}: every icon request needs matching CDP evidence`);
+            assert.equal(fullPayloads.length, 1, `${profile} ${run}: exactly one complete PNG payload`);
+            assert.equal(classified.size, exchanges.length, `${profile} ${run}: additional requests require proven 304 validation or explicit zero-byte cache reuse`);
+            assert.equal(primary.requestId, iconDiscovery?.params.requestId, `${profile} ${run}: the parser preload transfers the complete PNG`);
             assert.equal(wireRequests[0].resourceSize, expectedIcon.length, "The actual browser icon response has the unchanged PNG size");
-            assert.equal(iconDiscovery?.params.initiator.type, "parser", `${profile} ${run}: the parser discovers the icon preload`);
+            assert.equal(iconDiscovery?.params.initiator?.type, "parser", `${profile} ${run}: the parser discovers the icon preload`);
             assert.ok(mainRequest && wireRequests[0].networkRequestTime <= mainRequest.networkEndTime,
               `${profile} ${run}: the icon is requested before the main module finishes, not by a late post-hydration chain`);
           } catch (error) {

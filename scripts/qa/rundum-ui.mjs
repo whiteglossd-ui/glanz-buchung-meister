@@ -51,8 +51,8 @@ export function verifyOriginalIconHead(documentHtml, label) {
   const hints = [...markup.matchAll(/<link\b[^>]*>/gi)].filter((match) => /\brel=["']preload["']/i.test(match[0])
     && /\bhref=["']\/favicon-192\.png["']/i.test(match[0]));
   assert.equal(hints.length, 1, `${label}: exactly one actual icon preload occurs in the original head`);
-  for (const attribute of [/\bas=["']image["']/i, /\btype=["']image\/png["']/i, /\bfetchpriority=["']low["']/i])
-    assert.match(hints[0][0], attribute, `${label}: original icon hint preserves type and low priority`);
+  for (const attribute of [/\bas=["']image["']/i, /\btype=["']image\/png["']/i, /\bfetchpriority=["']high["']/i])
+    assert.match(hints[0][0], attribute, `${label}: original icon hint preserves type and the reviewed high priority`);
   const body = documentHtml.search(/<body(?:\s|>)/i), bootstrap = documentHtml.indexOf("(function(d,w,e,p)");
   const headEnd = head.index + head[0].length;
   assert.ok(body >= headEnd && bootstrap > body, `${label}: the actual head precedes the body and deferred module bootstrap`);
@@ -79,7 +79,7 @@ export async function verifyInitialRundumHero(page, { label, screenshot, documen
       ...(main ? { earlyDeadline: main.responseEnd } : {}),
       navigationDcl: navigation?.domContentLoadedEventStart };
   });
-  assert.deepEqual(icon.hint, { as: "image", type: "image/png", priority: "low" }, `${label}: the existing icon is preloaded at low priority`);
+  assert.deepEqual(icon.hint, { as: "image", type: "image/png", priority: "high" }, `${label}: the existing icon is preloaded at the reviewed high priority`);
   assert.ok(icon.icon && icon.icon.encodedBytes === 14984, `${label}: actual link preload fetches the unchanged icon size: ${JSON.stringify(icon)}`);
   if (page.context().browser().browserType().name() === "chromium")
     assert.ok(icon.main, `${label}: Chromium must expose its native main-module timing`);
