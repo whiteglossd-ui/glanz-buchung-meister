@@ -251,20 +251,30 @@ test("Node serves compressed build assets and revalidates mutable media", async 
       `${path} must not duplicate the external desktop stylesheet inline`);
     const earlyStylePreloads = [...head.matchAll(/<link\b(?=[^>]*rel="preload")(?=[^>]*as="style")[^>]*>/g)]
       .map(([tag]) => tag);
-    assert.equal(earlyStylePreloads.length, path === "/" ? 1 : 0,
-      `${path} prepares only the existing homepage CSS without another applied stylesheet`);
+    assert.equal(earlyStylePreloads.length, path === "/" ? 2 : 0,
+      `${path} prepares only the two existing homepage CSS assets without another applied stylesheet`);
     if (path === "/") {
       assert.ok(inlineCss.includes(homeCssSource), "The exact complete homepage CSS remains inline");
       assert.ok(inlineCss.indexOf(globals[0].source.trim()) < inlineCss.indexOf(homeCssSource),
         "The homepage CSS must keep its existing place after the global inline cascade");
-      assert.equal(earlyStylePreloads[0].match(/href="([^"]+)"/)?.[1], homeCssHref);
-      assert.equal(earlyStylePreloads[0].match(/fetchpriority="([^"]+)"/i)?.[1], "high");
-      assert.equal(earlyStylePreloads[0].match(/crossorigin="([^"]+)"/i)?.[1], "anonymous",
+      const homeStyleHint = earlyStylePreloads.find((tag) => tag.match(/href="([^"]+)"/)?.[1] === homeCssHref);
+      const desktopStyleHint = earlyStylePreloads.find((tag) => tag.match(/href="([^"]+)"/)?.[1] === `/assets/${desktopStyles[0].name}`);
+      assert.ok(homeStyleHint && desktopStyleHint);
+      assert.equal(homeStyleHint.match(/crossorigin="([^"]+)"/i)?.[1], "anonymous",
         "The style hint matches Vite's existing anonymous client stylesheet fetch");
+      assert.equal(desktopStyleHint.match(/crossorigin="([^"]+)"/i)?.[1], cssLinks[0].match(/crossorigin="([^"]+)"/i)?.[1],
+        "The desktop preparation keeps its existing stylesheet credential mode");
       const nonce = response.headers.get("content-security-policy")?.match(/'nonce-([A-Za-z0-9+/]{43}=)'/)?.[1];
       assert.ok(nonce);
-      assert.equal(earlyStylePreloads[0].match(/nonce="([^"]+)"/)?.[1], nonce);
+      for (const hint of earlyStylePreloads) {
+        assert.equal(hint.match(/fetchpriority="([^"]+)"/i)?.[1], "high");
+        assert.equal(hint.match(/nonce="([^"]+)"/)?.[1], nonce);
+      }
     }
+    const header = html.match(/<header\b(?=[^>]*class="[^"]*\bsite-header\b)[^>]*>[\s\S]*?<\/header>/)?.[0];
+    assert.ok(header);
+    assert.match(header, /<img\b(?=[^>]*loading="eager")(?=[^>]*fetchPriority="high")[^>]*>/i,
+      `${path} prioritizes the visible header logo`);
     const earlyModulePreloads = [...head.matchAll(/<link\b[^>]*rel="modulepreload"[^>]*>/g)]
       .map(([tag]) => tag);
     assert.equal(earlyModulePreloads.length, path === "/" ? 2 : 0,

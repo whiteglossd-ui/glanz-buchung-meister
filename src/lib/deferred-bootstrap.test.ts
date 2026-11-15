@@ -92,9 +92,10 @@ test("image preloads precede competing font hints while metadata and stylesheet 
   assert.deepEqual(tags, original);
 });
 
-test("the client entry starts only after eager hero images loaded, decoded and painted", async () => {
+test("the client entry starts only after eager hero and header logo loaded, decoded and painted", async () => {
   const hero = new FakeImage(false);
-  const page = fakePage({ images: [hero] });
+  const logo = new FakeImage(false);
+  const page = fakePage({ images: [hero, logo] });
   page.run(source);
   assert.equal(page.timers[0]?.delay, DEFERRED_BOOTSTRAP_FALLBACK_MS);
 
@@ -108,6 +109,10 @@ test("the client entry starts only after eager hero images loaded, decoded and p
   hero.emit("load");
   await settle();
   assert.ok(hero.decoded, "the hero image is decoded before it counts as painted");
+  assert.equal(page.frames.length, 0, "the existing image gate also waits for the header logo");
+  logo.emit("load");
+  await settle();
+  assert.ok(logo.decoded, "the header logo is decoded before the existing two frames");
   page.nextFrame();
   assert.equal(page.inserted.length, 0, "the first frame paints the hero image");
   page.nextFrame();

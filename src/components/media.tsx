@@ -384,7 +384,7 @@ export function BrandMark({
         )}
         loading={cfg.loading}
         decoding="async"
-        fetchPriority="low"
+        fetchPriority={variant === "header" ? "high" : "low"}
         sizes={cfg.sizes}
       />
     </picture>

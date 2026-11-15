@@ -105,6 +105,9 @@ export function ConsentBanner() {
 
   return (
     <>
+    <noscript>
+      <style nonce={nonce}>{'.consent-banner[data-consent-initial="true"] { display: none !important; }'}</style>
+    </noscript>
     <div
       ref={bannerRef}
       data-consent-initial={!ready ? "true" : undefined}
