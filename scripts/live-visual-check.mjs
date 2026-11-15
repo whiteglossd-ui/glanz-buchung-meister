@@ -123,7 +123,8 @@ try {
       suv,
       gsapLoaded: assets.some((path) => /\/assets\/gsap-/.test(path)),
     });
-    assert.equal(extras, 12, "Twelve bookable extras");
+    assert.equal(extras, 11, "Eleven bookable extras after retiring the ceramic add-on");
+    assert.equal(await page.locator("#extra-keramik-ultra").count(), 0, "Retired ceramic add-on stays unavailable");
     await context.close();
   }
   assertBrowserDiagnostics(diagnostics);
