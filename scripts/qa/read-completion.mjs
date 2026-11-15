@@ -34,21 +34,26 @@ export async function completeSuccessfulRead(response, { timeoutMs = 15000 } = {
 export function observePageReads(page, origin) {
   const allowedOrigin = new URL(origin).origin;
   const pending = new Set();
+  let generation = 0;
   page.on("request", (request) => {
     if (request.method() === "GET" && new URL(request.url()).origin === allowedOrigin &&
-        ["script", "stylesheet", "fetch", "xhr", "image"].includes(request.resourceType())) pending.add(request);
+        ["script", "stylesheet", "fetch", "xhr", "image"].includes(request.resourceType())) {
+      pending.add(request);
+      generation += 1;
+    }
   });
   page.on("requestfinished", (request) => pending.delete(request));
   // The independent browser diagnostics still records every failed request.
   page.on("requestfailed", (request) => pending.delete(request));
   return {
-    async complete(label, { timeoutMs = 15000 } = {}) {
+    async complete(label, { timeoutMs = 15000, quietMs = 150 } = {}) {
       let timer;
       const completed = [];
       try {
         await Promise.race([
           (async () => {
-            while (pending.size) {
+            for (;;) {
+              const before = generation;
               await Promise.all([...pending].map(async (request) => {
                 const response = await request.response();
                 assert.ok(response, `${label}: a started page read must receive a response`);
@@ -56,6 +61,12 @@ export function observePageReads(page, origin) {
                 completed.push({ path: new URL(request.url()).pathname, ...completion });
                 pending.delete(request);
               }));
+              // Scroll/resize observers can enqueue a lazy import on the next
+              // frame, after the current pending set has become empty. Require
+              // a quiet interval before replacing the document; never suppress
+              // the independent failed-request diagnostics.
+              if (quietMs) await new Promise((resolve) => setTimeout(resolve, quietMs));
+              if (!pending.size && generation === before) break;
             }
           })(),
           new Promise((_, reject) => {
