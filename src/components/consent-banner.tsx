@@ -1,8 +1,14 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useRouter } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { CONSENT_SETTINGS_EVENT, getStoredConsent, onConsentChange, setStoredConsent } from "@/lib/consent";
+import { CONSENT_INITIAL_LAYOUT_SCRIPT, CONSENT_INITIAL_STATE_SCRIPT, CONSENT_SETTINGS_EVENT, getStoredConsent, onConsentChange, setStoredConsent } from "@/lib/consent";
 import { loadGoogleTag, stopGoogleTag } from "@/lib/googleTag";
 import { ctaGhost, ctaPrimary } from "./ui";
+
+/** Runs before body paint; it neither changes a saved choice nor loads tracking. */
+export function ConsentInitialState() {
+  const nonce = useRouter().options.ssr?.nonce;
+  return <script nonce={nonce} dangerouslySetInnerHTML={{ __html: CONSENT_INITIAL_STATE_SCRIPT }} />;
+}
 
 export function CookieSettingsButton() {
   return <button type="button" className="link-draw inline-flex min-h-11 items-center text-left hover:text-fg" onClick={() => window.dispatchEvent(new Event(CONSENT_SETTINGS_EVENT))}>Cookie-Einstellungen</button>;
@@ -15,7 +21,9 @@ export function CookieSettingsButton() {
  * die Website keine Verbindung zu Google her.
  */
 export function ConsentBanner() {
-  const [visible, setVisible] = useState(false);
+  const nonce = useRouter().options.ssr?.nonce;
+  const [visible, setVisible] = useState(true);
+  const [ready, setReady] = useState(false);
   const [accepted, setAccepted] = useState(false);
   const bannerRef = useRef<HTMLDivElement>(null);
   const rejectRef = useRef<HTMLButtonElement>(null);
@@ -23,11 +31,15 @@ export function ConsentBanner() {
 
   useEffect(() => {
     const existing = getStoredConsent();
+    if (existing !== null) {
+      document.documentElement.removeAttribute("data-consent-initial-open");
+      document.documentElement.style.removeProperty("--consent-banner-height");
+    }
     setAccepted(existing === "accepted");
+    setVisible(existing === null);
+    setReady(true);
     if (existing === "accepted") {
       loadGoogleTag();
-    } else if (existing === null) {
-      setVisible(true);
     }
     const openSettings = () => setVisible(true);
     window.addEventListener(CONSENT_SETTINGS_EVENT, openSettings);
@@ -43,7 +55,7 @@ export function ConsentBanner() {
   }, []);
 
   useEffect(() => {
-    if (!visible) return;
+    if (!ready || !visible) return;
     document.body.dataset.consentBanner = "open";
     const banner = bannerRef.current;
     const updateHeight = () => {
@@ -53,6 +65,7 @@ export function ConsentBanner() {
       );
     };
     updateHeight();
+    document.documentElement.removeAttribute("data-consent-initial-open");
     const resizeObserver = new ResizeObserver(updateHeight);
     if (banner) resizeObserver.observe(banner);
     const active = document.activeElement;
@@ -64,7 +77,7 @@ export function ConsentBanner() {
       document.documentElement.style.removeProperty("--consent-banner-height");
       delete document.body.dataset.consentBanner;
     };
-  }, [visible]);
+  }, [ready, visible]);
 
   if (!visible) return null;
 
@@ -91,8 +104,10 @@ export function ConsentBanner() {
   }
 
   return (
+    <>
     <div
       ref={bannerRef}
+      data-consent-initial={!ready ? "true" : undefined}
       role="dialog"
       aria-modal="false"
       aria-labelledby="consent-title"
@@ -123,14 +138,16 @@ export function ConsentBanner() {
           </p>
         </div>
         <div className="flex shrink-0 gap-2">
-          <button ref={rejectRef} type="button" onClick={reject} className={ctaGhost}>
+          <button ref={rejectRef} type="button" disabled={!ready} onClick={reject} className={ctaGhost}>
             {accepted ? "Einwilligung widerrufen" : "Ablehnen"}
           </button>
-          <button type="button" onClick={accept} className={ctaPrimary}>
+          <button type="button" disabled={!ready} onClick={accept} className={ctaPrimary}>
             Akzeptieren
           </button>
         </div>
       </div>
     </div>
+    <script nonce={nonce} dangerouslySetInnerHTML={{ __html: CONSENT_INITIAL_LAYOUT_SCRIPT }} />
+    </>
   );
 }

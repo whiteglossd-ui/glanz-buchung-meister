@@ -13,7 +13,7 @@ export const Route = createFileRoute("/fahrzeug-zustand")({
     pageHead({
       title: `Fahrzeugzustand prüfen lassen | ${site.name}`,
       description:
-        "Fotos senden und ehrlich erfahren, welche Aufbereitung sinnvoll ist. Kostenlos und unverbindlich. Horb am Neckar.",
+        "Fahrzeugzustand beschreiben und ehrlich erfahren, welche Aufbereitung sinnvoll ist. Kostenlos und unverbindlich. Horb am Neckar.",
       path: "/fahrzeug-zustand",
       preloadShot: "atelier",
     }),
@@ -33,7 +33,7 @@ function ZustandPage() {
         alt="Werkstatt von White Gloss in Horb am Neckar"
         kicker="Ersteinschätzung"
         title="Fahrzeugzustand prüfen lassen"
-        lead="Wir geben Ihnen eine kostenlose, unverbindliche Ersteinschätzung. Senden Sie uns eine Beschreibung und passende Fotos Ihres Fahrzeugs."
+        lead="Wir geben Ihnen eine kostenlose, unverbindliche Ersteinschätzung. Beschreiben Sie uns Ihr Fahrzeug. Fotos können Sie anschließend im geschützten Kundenbereich ergänzen."
         crumbs={[{ label: "Startseite", to: "/" }, { label: "Zustand prüfen" }]}
         actions={
           <Link to="/" hash="buchung" className={ctaPrimary}>
@@ -42,7 +42,10 @@ function ZustandPage() {
         }
       />
       <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
-        <ul className="list-disc space-y-2 pl-5 text-sm text-muted">
+        <p className="text-sm text-muted">
+          Für spätere Fotos im Kundenbereich sind diese Ansichten hilfreich:
+        </p>
+        <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-muted">
           <li>Das ganze Fahrzeug von schräg vorn und schräg hinten</li>
           <li>Nahaufnahmen von Kratzern, matten Stellen oder Flecken</li>
           <li>Innenraum: Sitze, Fußräume, Armaturenbrett</li>
@@ -51,7 +54,7 @@ function ZustandPage() {
         <div id="buchung" className="mt-12">
           <PhotoInquiry
             title={context ? `${context} anfragen` : "Ersteinschätzung anfragen"}
-            hint="Beschreiben Sie den Zustand Ihres Fahrzeugs und fügen Sie passende Aufnahmen bei."
+            hint="Beschreiben Sie kurz den Zustand Ihres Fahrzeugs. Fotos ergänzen Sie später im Kundenbereich."
           />
         </div>
       </div>

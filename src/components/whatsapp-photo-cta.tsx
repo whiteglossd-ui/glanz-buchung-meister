@@ -7,8 +7,7 @@ interface WhatsAppPhotoCtaProps {
 
 export function WhatsAppPhotoCta({ className = "", headingLevel = 2 }: WhatsAppPhotoCtaProps) {
   const Heading = headingLevel === 3 ? "h3" : "h2";
-  const whatsappPhotoUrl =
-    "https://api.whatsapp.com/send?phone=4915233540284&text=Hallo%20White%20Gloss%2C%20ich%20h%C3%A4tte%20gerne%20eine%20kurze%20Foto-Einsch%C3%A4tzung%20f%C3%BCr%20mein%20Fahrzeug.";
+  const whatsappPhotoUrl = `${site.whatsappHref}&text=${encodeURIComponent("Hallo White Gloss, ich wünsche eine Beratung für mein Fahrzeug.")}`;
 
   return (
     <div
@@ -17,15 +16,15 @@ export function WhatsAppPhotoCta({ className = "", headingLevel = 2 }: WhatsAppP
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="max-w-2xl">
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-400">
-            Erste Einschätzung per Foto
+            Persönliche Beratung
           </div>
           <Heading className="heading-3 mt-3 text-xl sm:text-2xl">
             Unsicher, welches Paket Ihr Fahrzeug benötigt?
           </Heading>
           <p className="mt-3 text-sm sm:text-base text-muted leading-relaxed">
-            Sparen Sie Zeit: Senden Sie uns einfach 2–3 Fotos von Lack oder Innenraum per WhatsApp.
-            Lars Hägele sieht sich die Aufnahmen an und empfiehlt Ihnen die passenden Arbeiten.
-            Den verbindlichen Preis stimmen wir nach der Fahrzeugprüfung mit Ihnen ab.
+            Beschreiben Sie uns Ihr Anliegen per WhatsApp. Lars Hägele berät Sie zu den passenden
+            Arbeiten. Fotos können Sie nach einer Website-Anfrage im geschützten Kundenbereich
+            ergänzen. Den verbindlichen Preis stimmen wir nach der Fahrzeugprüfung mit Ihnen ab.
           </p>
           <div className="mt-4 flex flex-wrap gap-y-2 gap-x-6 text-xs text-subtle">
             <span>✓ Persönlicher Ansprechpartner</span>
@@ -53,7 +52,7 @@ export function WhatsAppPhotoCta({ className = "", headingLevel = 2 }: WhatsAppP
             >
               <path d="M7.9 20A9 9 0 1 0 4 16.1L3 21z" />
             </svg>
-            <span>Fotos per WhatsApp senden</span>
+            <span>Beratung per WhatsApp</span>
           </a>
           <span className="text-center text-xs text-subtle">
             Direkter Kontakt: {site.phoneDisplay}

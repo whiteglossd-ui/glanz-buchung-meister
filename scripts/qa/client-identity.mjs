@@ -1,8 +1,8 @@
 // Synthetic proxy identities for independent scenarios in the guarded Linux QA runner.
 import { createHash } from "node:crypto";
 
-const suites = new Set(["booking-ui", "responsive", "cross-browser", "website-studio", "hero-stability", "rate-limit-proof", "lighthouse"]);
-const customerDocumentSuites = new Set(["booking-ui", "responsive", "cross-browser", "hero-stability", "lighthouse"]);
+const suites = new Set(["booking-ui", "responsive", "cross-browser", "website-studio", "hero-stability", "rate-limit-proof", "lighthouse", "consent-startup"]);
+const customerDocumentSuites = new Set(["booking-ui", "responsive", "cross-browser", "hero-stability", "lighthouse", "consent-startup"]);
 
 export function qaClientHeaders(suite, scenario) {
   if (!suites.has(suite) || typeof scenario !== "string" || !scenario.trim()) {

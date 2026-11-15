@@ -6,8 +6,10 @@ import { writeFile } from "node:fs/promises";
 import { chromium } from "playwright";
 import { qaBase } from "./ports.mjs";
 import { qaClientHeaders } from "./client-identity.mjs";
+import { scrollHeroWithWheel } from "./hero-diagnostics.mjs";
 import { cities, services } from "../../src/data/site.ts";
 
+const responsiveStarted = Date.now();
 const browser = await chromium.launch({ headless: true });
 const results = [];
 const failures = [];
@@ -41,6 +43,125 @@ async function openPage(viewport, reducedMotion = "reduce") {
   }
 }
 const bookingCtaName = "Jetzt Termin anfragen";
+async function bookingGeometry(page) {
+  return page.evaluate(() => {
+    const booking = document.querySelector("#buchung")?.getBoundingClientRect();
+    const neighbor = document.querySelector('[data-inquiry-start="rundum"]')?.getBoundingClientRect();
+    return { path: location.pathname + location.hash, scrollY, documentHeight: document.documentElement.scrollHeight,
+      bookingDocumentTop: booking ? booking.top + scrollY : null,
+      activeElement: document.activeElement?.id || document.activeElement?.tagName,
+      htmlClasses: document.documentElement.className, bodyOverflow: getComputedStyle(document.body).overflow,
+      reducedMotion: matchMedia("(prefers-reduced-motion: reduce)").matches,
+      neighborReady: !!document.querySelector("#rundum-anfrage form"),
+      neighborWithinObserver: !!neighbor && neighbor.bottom >= -240 && neighbor.top <= innerHeight + 240,
+      formChunks: performance.getEntriesByType("resource").filter((entry) => /^\/assets\/rundum-service-form-[^/]+\.js$/.test(new URL(entry.name).pathname))
+        .map((entry) => ({ path: new URL(entry.name).pathname, start: entry.startTime, end: entry.responseEnd })) };
+  });
+}
+async function settleBookingGeometry(page, timeout, evidence) {
+  await page.evaluate(() => {
+    window.__qaBookingGeometry = { y: scrollY, height: document.documentElement.scrollHeight, since: performance.now(), lastSample: -Infinity, samples: [] };
+  });
+  try {
+    await page.waitForFunction(() => {
+      const probe = window.__qaBookingGeometry, now = performance.now(), height = document.documentElement.scrollHeight;
+      const neighbor = document.querySelector('[data-inquiry-start="rundum"]')?.getBoundingClientRect();
+      const ready = !!document.querySelector("#rundum-anfrage form");
+      const near = !!neighbor && neighbor.bottom >= -240 && neighbor.top <= innerHeight + 240;
+      if (Math.abs(scrollY - probe.y) > 0.5 || height !== probe.height || (near && !ready)) {
+        probe.y = scrollY; probe.height = height; probe.since = now;
+      }
+      if (now - probe.lastSample >= 150) {
+        probe.lastSample = now;
+        probe.samples.push({ at: Math.round(now), scrollY, documentHeight: height, neighborReady: ready, neighborWithinObserver: near,
+          activeElement: document.activeElement?.id || document.activeElement?.tagName });
+        if (probe.samples.length > 16) probe.samples.shift();
+      }
+      return now - probe.since >= 150;
+    }, undefined, { timeout });
+  } finally {
+    evidence.samples.push(...await page.evaluate(() => window.__qaBookingGeometry.samples));
+    evidence.state = await bookingGeometry(page);
+  }
+}
+async function returnToHero(page, evidence) {
+  const resetStarted = Date.now();
+  const deadline = resetStarted + 10000;
+  const remaining = () => {
+    const timeout = deadline - Date.now();
+    assert.ok(timeout > 0, "Wheel receipt and settling share the existing ten-second reset deadline");
+    return timeout;
+  };
+  evidence.before = await bookingGeometry(page);
+  evidence.wheelHits = [];
+  await page.evaluate(() => {
+    const inspect = (element) => {
+      const style = getComputedStyle(element);
+      return { tag: element.tagName, id: element.id, type: element.getAttribute("type"),
+        overflowY: style.overflowY, overscrollY: style.overscrollBehaviorY,
+        scrollTop: element.scrollTop, clientHeight: element.clientHeight, scrollHeight: element.scrollHeight,
+        nativeControl: ["INPUT", "TEXTAREA", "SELECT", "OPTION"].includes(element.tagName),
+        nestedScroller: !["HTML", "BODY"].includes(element.tagName) && /^(?:auto|scroll)$/.test(style.overflowY) && element.scrollHeight > element.clientHeight + 1,
+        wheelPrevent: ["data-lenis-prevent", "data-lenis-prevent-wheel", "data-lenis-prevent-vertical"].some((name) => element.hasAttribute(name)) };
+    };
+    const probe = { inspect, count: 0, events: [] };
+    probe.listener = (event) => {
+      probe.count++;
+      probe.events.push({ event, trusted: event.isTrusted, deltaY: event.deltaY, x: event.clientX, y: event.clientY,
+        path: event.composedPath().filter((node) => node instanceof HTMLElement).map(inspect) });
+    };
+    window.__qaReturnWheel = probe;
+    window.addEventListener("wheel", probe.listener, { capture: true, passive: true });
+  });
+  try {
+    const result = await scrollHeroWithWheel({
+      readY: () => page.evaluate(() => scrollY),
+      wheel: async (deltaY) => {
+        const hit = await page.evaluate(() => {
+          const probe = window.__qaReturnWheel;
+          const measure = (x, y) => {
+            const element = document.elementFromPoint(x, y), path = [];
+            for (let node = element; node instanceof HTMLElement; node = node.parentElement) path.push(probe.inspect(node));
+            return { x, y, path, rootSurface: !!element && ["MAIN", "SECTION", "BODY", "HTML"].includes(element.tagName) };
+          };
+          const blocked = (point) => point.path.some((node) => node.nativeControl || node.nestedScroller || node.wheelPrevent);
+          const center = measure(innerWidth / 2, innerHeight / 2);
+          // A real native form scroller may legitimately own wheel input. Use
+          // a measured empty page gutter only when that interception is proven.
+          const gutter = blocked(center) ? [measure(8, innerHeight / 2), measure(innerWidth - 8, innerHeight / 2)]
+            .find((point) => point.rootSurface && !blocked(point)) : undefined;
+          return { center, selected: gutter ?? center, reason: gutter ? "measured-control-or-nested-scroller" : "original-page-center", beforeCount: probe.count };
+        });
+        evidence.wheelHits.push(hit);
+        await page.mouse.move(hit.selected.x, hit.selected.y);
+        await page.mouse.wheel(0, deltaY);
+        // Playwright's wheel promise does not await delivery or scrolling.
+        // Observe the actual trusted event before checking settled geometry.
+        await page.waitForFunction(({ count, direction }) => {
+          const probe = window.__qaReturnWheel;
+          return probe.count > count && probe.events.slice(count).some((record) => record.trusted && Math.sign(record.deltaY) === direction);
+        }, { count: hit.beforeCount, direction: Math.sign(deltaY) }, { timeout: remaining() });
+      },
+      settle: (timeout) => settleBookingGeometry(page, Math.min(timeout, remaining()), evidence),
+    }, 0, { timeoutMs: remaining(), onAttempt: (attempt) => evidence.attempts.push(attempt) });
+    assert.ok(result.actual <= 1, "A real wheel return must reach the top before reactivating the same hash");
+    return result;
+  } catch (error) {
+    evidence.wheelEvents = await page.evaluate(() => window.__qaReturnWheel.events.map(({ event, ...record }) => ({
+      ...record, defaultPrevented: event.defaultPrevented, lenisStopPropagation: event.lenisStopPropagation === true,
+    })));
+    console.error("RESPONSIVE_RETURN_FAILURE:" + JSON.stringify({ ...progress, evidence }));
+    throw new Error(`Return to hero failed: ${JSON.stringify({ ...progress, evidence })}`, { cause: error });
+  } finally {
+    evidence.durationMs = Date.now() - resetStarted;
+    evidence.wheelEvents = await page.evaluate(() => {
+      const probe = window.__qaReturnWheel;
+      window.removeEventListener("wheel", probe.listener, true);
+      return probe.events.map(({ event, ...record }) => ({ ...record,
+        defaultPrevented: event.defaultPrevented, lenisStopPropagation: event.lenisStopPropagation === true }));
+    });
+  }
+}
 async function assertBookingArrival(page, label) {
   try {
     await page.waitForFunction(() => {
@@ -76,6 +197,16 @@ async function verifyBookingActivation(page, width, reducedMotion) {
   await assertBookingArrival(page, `${width}px ${reducedMotion}, first header click`);
   const form = page.locator("#buchung .booking-flow");
   await form.waitFor({ state: "visible" });
+  const neighborLayout = { samples: [] };
+  // A genuine jump can trigger the adjacent Rundum observer. Wait for its
+  // actual replacement and stable geometry instead of suppressing lazy loading.
+  try { await settleBookingGeometry(page, 5000, neighborLayout); }
+  catch (error) {
+    console.error("RESPONSIVE_LAYOUT_FAILURE:" + JSON.stringify({ width, reducedMotion, neighborLayout }));
+    throw error;
+  }
+  await assertBookingArrival(page, `${width}px ${reducedMotion}, stable first header arrival`);
+  const scrollResets = [];
   // Exercise existing client-side inputs only. The context still blocks every
   // write request, and no submit button, consent or file picker is activated.
   await form.locator('input[name="paket"][value="keramik"]').check();
@@ -83,6 +214,12 @@ async function verifyBookingActivation(page, width, reducedMotion) {
   await form.locator(".booking-steps button").nth(1).click();
   await form.locator("#city").selectOption("nagold");
   await form.locator(".booking-steps button").nth(2).click();
+  // changeStep focuses/scrolls in requestAnimationFrame. Observe that actual
+  // production effect before filling and before the later return-to-hero test.
+  await page.waitForFunction(() => {
+    const title = document.querySelector(".booking-step-title");
+    return title === document.activeElement && title?.textContent?.trim() === "Kontakt & Anfrage";
+  });
   await form.locator("#note").fill("Synthetische CI-Notiz: nur Navigation prüfen, keine Anfrage senden.");
   const readDraft = () => form.evaluate((element) => ({
     package: element.querySelector('input[name="paket"]:checked')?.value,
@@ -95,10 +232,12 @@ async function verifyBookingActivation(page, width, reducedMotion) {
   for (const [source, link] of [["header", headerCta], ["hero", heroCta]]) {
     for (const activation of ["mouse", "Enter"]) {
       progress = { stage: "booking-cta", path: "/", width, reducedMotion, source, activation, completed: results.length, updatedAt: new Date().toISOString() };
+      console.log("RESPONSIVE_RESET_START:" + JSON.stringify({ width, reducedMotion, source, activation, elapsedMs: Date.now() - responsiveStarted }));
       // Keep #buchung in the URL while leaving the destination. This catches
       // handlers that only react to a changed hash or retain the old focus.
-      await page.evaluate(() => window.scrollTo({ top: 0, left: 0, behavior: "instant" }));
-      await page.waitForFunction(() => window.scrollY <= 1);
+      const reset = { source, activation, attempts: [], samples: [] };
+      scrollResets.push(reset);
+      await returnToHero(page, reset);
       if (source === "hero") {
         // With motion enabled, the real film eases its copy back in after
         // scrollY reaches zero. Wait for that visible, interactive state before
@@ -128,7 +267,11 @@ async function verifyBookingActivation(page, width, reducedMotion) {
   if (reducedMotion === "reduce" && [390, 1440].includes(width)) {
     await page.screenshot({ path: `.qa-output/review-booking-target-${width}.png`, fullPage: false });
   }
-  return { sameHashActivations: 4, bookingHeadingFocusedAndVisible: true, draftPreserved: true };
+  console.log("RESPONSIVE_BOOKING_PROOF:" + JSON.stringify({ width, reducedMotion,
+    neighbor: neighborLayout.state, resets: scrollResets.map((reset) => ({ source: reset.source, activation: reset.activation,
+      beforeY: reset.before.scrollY, afterY: reset.state.scrollY, documentHeight: reset.state.documentHeight,
+      neighborReady: reset.state.neighborReady, durationMs: reset.durationMs, attempts: reset.attempts })) }));
+  return { sameHashActivations: 4, bookingHeadingFocusedAndVisible: true, draftPreserved: true, neighborLayout, scrollResets };
 }
 const paths = [
   ...new Set([
@@ -212,6 +355,7 @@ try {
       await context.close();
     }
   }
+  console.log("RESPONSIVE_CRAWL_DONE:" + JSON.stringify({ cases: results.length, elapsedMs: Date.now() - responsiveStarted }));
   // This independent first visit keeps the crawl cases and their consent state
   // unchanged, while exercising the real dismiss/reopen controls on a city hub.
   {
@@ -255,6 +399,8 @@ try {
     .map((width) => ({ width, reducedMotion: "reduce" }));
   headerCases.push(...[390, 1440].map((width) => ({ width, reducedMotion: "no-preference" })));
   for (const { width, reducedMotion } of headerCases) {
+    const caseStarted = Date.now();
+    console.log("RESPONSIVE_CASE_START:" + JSON.stringify({ width, reducedMotion, elapsedMs: caseStarted - responsiveStarted }));
     const { context, page } = await openPage({ width, height: width <= 390 ? 844 : 1000 }, reducedMotion);
     try {
       progress = { stage: "header-navigation", path: "/", width, completed: results.length, updatedAt: new Date().toISOString() };
@@ -316,6 +462,13 @@ try {
       await toggle.press("Enter");
       const menu = page.getByRole("dialog", { name: "Hauptnavigation", exact: true });
       await menu.waitFor({ state: "visible" });
+      // CSS can expose the portal before React's showModal/focus effect runs.
+      // Await the required native-modal/focus result; never inject focus here.
+      await page.waitForFunction(() => {
+        const dialog = document.getElementById("site-nav");
+        return dialog instanceof HTMLDialogElement && dialog.open && dialog.matches(":modal")
+          && dialog.contains(document.activeElement);
+      }, undefined, { timeout: 2000 });
       assert.equal(await menu.evaluate((element) => element.contains(document.activeElement)), true,
         `${width}px: keyboard focus enters the open menu.`);
       await page.keyboard.press("Escape");
@@ -325,6 +478,7 @@ try {
       if (reducedMotion === "reduce") await header.screenshot({ path: `.qa-output/review-header-${width}.png` });
       const activation = await verifyBookingActivation(page, width, reducedMotion);
       results.push({ path: "/", width, reducedMotion, primaryHeaderBookingLinks: 1, desktopTerminVisible: width >= 960, menuKeyboardFocusReturned: true, ...activation });
+      console.log("RESPONSIVE_CASE_DONE:" + JSON.stringify({ width, reducedMotion, elapsedMs: Date.now() - responsiveStarted, durationMs: Date.now() - caseStarted }));
     } finally {
       await context.close();
     }
@@ -332,6 +486,7 @@ try {
   // Review the changed request path at phone and desktop sizes. These images
   // are produced by the existing isolated Linux CI job, never a local server.
   for (const width of [390, 1440]) {
+    console.log("RESPONSIVE_REVIEW_START:" + JSON.stringify({ width, elapsedMs: Date.now() - responsiveStarted }));
     const { context, page } = await openPage({ width, height: width === 390 ? 844 : 1000 });
     try {
       progress = { stage: "review-navigation", path: "/", width, completed: results.length, updatedAt: new Date().toISOString() };

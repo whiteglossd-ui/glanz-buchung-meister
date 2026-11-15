@@ -1,4 +1,5 @@
 import { createRootRoute, type AnyRouteMatch } from "@tanstack/react-router";
+import { ConsentInitialState } from "@/components/consent-banner";
 import { DeferredScripts } from "@/components/deferred-scripts";
 import { PrioritizedHeadContent } from "@/components/prioritized-head-content";
 import { AuthProvider } from "@/lib/auth/provider";
@@ -52,6 +53,8 @@ export const Route = createRootRoute({
       ],
       links: [
         { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+        // Discover the existing install icon before the manifest requests it after hydration.
+        { rel: "preload", as: "image", type: "image/png", href: "/favicon-192.png", fetchPriority: "high" as const },
         ...fontPreloads,
         { rel: "manifest", href: "/__grok/manifest.webmanifest" },
         { rel: "apple-touch-icon", href: "/__grok/icon-180.png" },
@@ -83,6 +86,7 @@ export const Route = createRootRoute({
           {googleSiteVerificationMeta(import.meta.env.VITE_GOOGLE_SITE_VERIFICATION).map((tag) => (
             <meta key={tag.content} name={tag.name} content={tag.content} />
           ))}
+          <ConsentInitialState />
           <PrioritizedHeadContent />
           <link rel="stylesheet" href={forgeDesktopCss} media="(min-width: 960px)" />
         </head>

@@ -1,9 +1,18 @@
 import assert from "node:assert/strict";
 import { describe, it } from "vitest";
 import { cities, site } from "@/data/site";
-import { cityJsonLd, serviceCityHeading, serviceCityTitle } from "./city-seo.ts";
+import { cityJsonLd, serviceCityHeading, serviceCityTitle, whatsappForCity } from "./city-seo.ts";
 
 describe("city landing SEO", () => {
+  it("offers personal advice over WhatsApp without asking for public photos", () => {
+    const url = new URL(whatsappForCity("Nagold"));
+    const configured = new URL(site.whatsappHref);
+    assert.equal(url.origin, configured.origin);
+    assert.equal(url.pathname, configured.pathname);
+    assert.equal(url.searchParams.get("phone"), configured.searchParams.get("phone"));
+    assert.equal(url.searchParams.get("text"), "Hallo White Gloss, ich interessiere mich für eine Fahrzeugaufbereitung in Nagold und wünsche eine persönliche Beratung zu meinem Anliegen und dem voraussichtlichen Aufwand.");
+    assert.doesNotMatch(url.searchParams.get("text")!, /foto|hochlad|upload/i);
+  });
   const horb = cities.find((city) => city.slug === "horb-am-neckar");
   const nagold = cities.find((city) => city.slug === "nagold");
 

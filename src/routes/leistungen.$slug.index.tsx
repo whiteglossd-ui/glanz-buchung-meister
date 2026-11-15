@@ -41,7 +41,9 @@ export const Route = createFileRoute("/leistungen/$slug/")({
         description: loaderData?.service.description ?? "",
       }),
       path: `/leistungen/${loaderData?.service.slug ?? ""}`,
-      ...(studioHero(loaderData?.document) ? { preloadImage: studioHero(loaderData?.document)?.src } : {}),
+      ...(studioHero(loaderData?.document)
+        ? { preloadImage: studioHero(loaderData?.document)?.src }
+        : {}),
     }),
 });
 
@@ -115,7 +117,20 @@ function ServicePage() {
       <PageHero
         src={s.image}
         alt={hero?.alt ?? s.imageAlt}
-        media={hero ? <img src={hero.src} alt={hero.alt} width={hero.width} height={hero.height} loading="eager" fetchPriority="high" decoding="async" className="size-full object-cover" /> : undefined}
+        media={
+          hero ? (
+            <img
+              src={hero.src}
+              alt={hero.alt}
+              width={hero.width}
+              height={hero.height}
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              className="size-full object-cover"
+            />
+          ) : undefined
+        }
         kicker="Leistung"
         title={title}
         lead={lead}
@@ -161,9 +176,17 @@ function ServicePage() {
           ))}
         </ul>
         <div className="mt-8 space-y-4 text-muted leading-relaxed">
-          {document ? <WebsiteStudioContent content={document.content} assets={document.assets} headingLevel={1} showIntro={false} showHero={false} /> : s.body.map((p) => (
-            <p key={p}>{p}</p>
-          ))}
+          {document ? (
+            <WebsiteStudioContent
+              content={document.content}
+              assets={document.assets}
+              headingLevel={1}
+              showIntro={false}
+              showHero={false}
+            />
+          ) : (
+            s.body.map((p) => <p key={p}>{p}</p>)
+          )}
         </div>
         {s.comparison ? (
           <section className="mt-12" aria-labelledby="service-comparison-heading">
@@ -254,8 +277,8 @@ function ServicePage() {
               So fragen Sie an
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-muted">
-              Für eine erste Einschätzung helfen uns diese Angaben. Fotos können Sie auch direkt
-              per WhatsApp senden.
+              Für eine erste Einschätzung helfen uns diese Angaben. Fotos können Sie nach der
+              Anfrage im geschützten Kundenbereich ergänzen.
             </p>
             <ul className="mt-4 space-y-2">
               {(s.requestDetails ?? defaultRequestDetails).map((item) => (
@@ -323,4 +346,3 @@ function ServicePage() {
     </main>
   );
 }
-

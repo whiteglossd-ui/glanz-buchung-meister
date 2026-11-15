@@ -1,3 +1,5 @@
+import { panelOnlyEnabled } from "./booking-backend.ts";
+import { queuePanelIntake } from "./panel-intake.ts";
 import { assertWebsiteApprovalEnabled, assertWebsiteOperationsActive } from "./booking-backend.ts";
 import { createHash } from "node:crypto";
 import { bitrixCalendarEnabled } from "./bitrix-calendar.ts";
@@ -168,7 +170,11 @@ async function persistBookingRequest(
 ) {
   assertPricing(data);
   const key = hash(manual?.requestKey ?? data.idempotencyKey);
-  data = { ...data, extraIds: data.extraIds.filter((id) => !extraIncluded(data.packageId, id)) };
+  const paidExtras = data.extraIds.filter((id) => !extraIncluded(data.packageId, id));
+  data = {
+    ...data,
+    extraIds: extras.filter((extra) => paidExtras.includes(extra.id)).map((extra) => extra.id),
+  };
   const content = {
     ...data,
     idempotencyKey: undefined,
@@ -184,7 +190,28 @@ async function persistBookingRequest(
       const [existing] =
         await tx<WorkflowBooking>`select * from bookings where shop_id=${SHOP} and request_key_hash=${key}`;
       if (existing) {
-        if (existing.request_fingerprint !== fingerprint)
+        let matches = existing.request_fingerprint === fingerprint;
+        if (!matches) {
+          let original: unknown;
+          try {
+            original = JSON.parse(existing.extra_ids);
+          } catch {
+            original = null;
+          }
+          // Replay legacy selections in their stored order without rewriting
+          // their fingerprint, request, events or queued provider payload.
+          if (
+            Array.isArray(original) &&
+            original.length === data.extraIds.length &&
+            new Set(original).size === data.extraIds.length &&
+            original.every((id) => typeof id === "string" && data.extraIds.includes(id))
+          ) {
+            matches =
+              existing.request_fingerprint ===
+              hash(JSON.stringify({ ...content, extraIds: original }));
+          }
+        }
+        if (!matches)
           throw new Error(
             "Diese Anfragekennung wurde bereits verwendet. Bitte eine neue Anfrage beginnen.",
           );
@@ -207,6 +234,17 @@ async function persistBookingRequest(
         on conflict(shop_id,phone) do update set name=excluded.name,email=coalesce(excluded.email,customers.email)`;
       await tx`insert into inbox_messages(shop_id,channel,sender,subject,body,booking_id)
         values(${SHOP},'form',${data.name},${`Neue Anfrage WG-${booking.id}`},${`${data.name} · ${data.phone}${data.email ? ` · ${data.email}` : ""}\n${customerAddress({ customer_street: data.street, customer_postal_code: data.postalCode, customer_city: data.town }) || "Adresse offen"}\n${data.packageId}\nWunschtermin: ${data.date || "offen"} ${data.slot || ""}\nStatus: Wartet auf Bestätigung\n${note}`},${booking.id})`;
+      if (panelOnlyEnabled() && !manual) {
+        await tx`update bookings set request_kind='booking',intake_version=1,pickup_requested=${Boolean(data.citySlug)} where id=${booking.id}`;
+        await queuePanelIntake(tx, {
+          ...booking,
+          request_kind: "booking",
+          intake_version: 1,
+          pickup_requested: Boolean(data.citySlug),
+          requested_services: "[]",
+          review_email_consent: data.reviewEmailConsent === true,
+        });
+      }
       await event(tx, booking, null, "booking.created", manual?.actor ?? "customer", enqueue);
       return { booking, replayed: false, quote };
     });

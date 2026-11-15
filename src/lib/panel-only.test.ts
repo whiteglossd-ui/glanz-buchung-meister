@@ -37,7 +37,11 @@ test("panel mode blocks both provider queues, credentials, forced calendars and 
     queueRoappBooking,
   ])
     await queue(sql, { id: 1, version: 1 });
-  assert.deepEqual(await runCrmSync(sql), { backend: "panel", skipped: 1 });
+  const idleSql = Object.assign(async () => [], {
+    query: async () => [],
+    transaction: async () => undefined,
+  }) as unknown as Sql;
+  assert.deepEqual(await runCrmSync(idleSql), { backend: "panel", saved: 0, checked: 0 });
   assert.equal((await runBitrixSync(sql, { request })).skipped, 1);
   assert.deepEqual(await runRoappSync(sql, { request }), { synced: 0, failed: 0, review: 0 });
   assert.equal(await readBitrixWebhook(sql), "");

@@ -116,17 +116,14 @@ const input = {
 const booking = await rpc("createPublicBooking", input);
 assert.ok(booking.body.result?.reference, JSON.stringify(booking.body));
 assert.equal(booking.body.result.confirmed, false);
-assert.match(booking.cookieAttributes.join(""), /HttpOnly/i);
-assert.match(booking.cookieAttributes.join(""), /SameSite=Strict/i);
-assert.match(booking.cookieAttributes.join(""), /; Secure(?:;|$)/i);
-assert.match(booking.cookie, /^__Host-wg-upload-/);
+// A legacy status cookie may remain; the public upload endpoint rejects it below.
 let state = await evidence();
 assert.equal(state.tables.bookings.at(-1).total_cents, 34900);
 assert.equal(state.tables.bookings.at(-1).status, "neu");
 assert.equal(state.mails.length, 2);
 assert.equal(state.whatsapp.length, 1);
 results.push(
-  "Booking stays pending; persistence, inbox, owner WhatsApp and captured email; proxied HTTPS secure upload cookie",
+  "Booking stays pending without photos; persistence, inbox and isolated legacy notification sinks",
 );
 const duplicate = await rpc("createPublicBooking", input);
 assert.equal(duplicate.body.result?.id, booking.body.result.id);
@@ -138,94 +135,57 @@ assert.equal(state.tables.booking_events.length, 1);
 assert.equal(state.mails.length, 2);
 assert.equal(state.whatsapp.length, 1);
 results.push(
-  "Same request UUID is idempotent across response loss: one booking, customer, event and notification set; same upload capability",
+  "Same request UUID is idempotent across response loss: one booking, customer, event and notification set; no public upload capability",
 );
 const changedReplay = await rpc("createPublicBooking", { ...input, name: "Changed request" });
 assert.ok(changedReplay.body.error, "Reusing a UUID with changed data must fail");
 assert.equal((await evidence()).tables.bookings.length, 1);
 results.push("Reused UUID with different booking data is rejected");
-const file = {
-  name: "fahrzeug.webp",
-  mime: "image/webp",
-  base64: (await readFile("public/media/hero-720.webp")).toString("base64"),
-};
+const file = { name: "fahrzeug.webp", mime: "image/webp", base64: (await readFile("public/media/hero-720.webp")).toString("base64") };
 const payload = { vorgang: booking.body.result.reference, files: [file] };
-const denied = await rpc("attachBookingPhotos", payload);
-assert.ok(denied.body.error);
-assert.equal((await evidence()).uploads.length, 0);
-results.push("Upload without booking cookie rejected before storage");
-const invalid = await rpc(
-  "attachBookingPhotos",
-  {
-    ...payload,
-    files: [file, { name: "invalid.webp", mime: "image/webp", base64: "aW52YWxpZA==" }],
-  },
-  booking.cookie,
-);
-assert.ok(invalid.body.error);
-assert.equal((await evidence()).uploads.length, 0);
-results.push("Invalid second file rejects entire batch before first write");
-await control({ failStorage: true });
-const failed = await rpc("attachBookingPhotos", payload, booking.cookie);
-assert.ok(failed.body.error);
-assert.equal(
-  (await evidence()).tables.booking_photos.filter((row) => row.upload_state === "failed").length,
-  1,
-);
-await control({ failStorage: false });
-const uploaded = await rpc("attachBookingPhotos", payload, booking.cookie);
-assert.equal(uploaded.body.result?.count, 1);
+for (const cookie of ["", booking.cookie, "__Host-wg-upload-legacy=retained-old-value"]) {
+  const denied = await rpc("attachBookingPhotos", payload, cookie);
+  assert.ok(denied.body.error, "Public uploads are rejected even for a former request browser");
+}
 state = await evidence();
-assert.equal(state.uploads.length, 1);
-assert.equal(state.tables.booking_photos.length, 1);
-results.push("Storage failure reported; retry succeeds and persists exactly one photo");
-await control({ failStorageNth: 1 });
-const partial = await rpc(
-  "attachBookingPhotos",
-  {
-    ...payload,
-    files: [
-      file,
-      {
-        ...file,
-        name: "zweites-fahrzeug.webp",
-        base64: Buffer.concat([Buffer.from(file.base64, "base64"), Buffer.from([1])]).toString(
-          "base64",
-        ),
-      },
-    ],
-  },
-  booking.cookie,
-);
-assert.ok(partial.body.error);
-state = await evidence();
-assert.equal(state.objects.length, 1);
-assert.equal(state.tables.booking_photos.length, 2);
-assert.equal(state.tables.booking_photos.filter((row) => row.upload_state === "ready").length, 1);
-assert.equal(state.tables.booking_photos.filter((row) => row.upload_state === "failed").length, 1);
-await control({ failStorageNth: 0 });
-results.push("Retry deduplicates earlier files and preserves a recoverable failed reservation");
+assert.equal(state.uploads.length, 0);
+assert.equal(state.tables.booking_photos.length, 0);
+results.push("Public upload endpoint rejects all callers before storage; existing storage is not deleted");
 const photo = await rpc("createPublicPhotoInquiry", {
-  requestId: randomUUID(),
-  title: "Begutachtung Dellen",
-  name: "QA Fotoanfrage",
-  phone: "+490000000011",
-  text: "Delle links",
-  files: [file],
-  privacy: true,
-  website: "",
+  requestId: randomUUID(), title: "Begutachtung Dellen", name: "QA Beschreibung", phone: "",
+  email: "description@example.invalid", text: "Delle links", privacy: true, website: "",
 });
-assert.equal(photo.body.result?.ok, true);
+assert.equal(photo.body.result?.ok, true, JSON.stringify(photo.body));
 state = await evidence();
-assert.equal(state.objects.length, 2);
-const inquiry = state.tables.bookings.find((row) => row.package_id === "photo-inquiry");
-assert.ok(inquiry, "Photo inquiries must be durable orders for Bitrix24");
-assert.ok(
-  state.tables.booking_photos.some(
-    (row) => row.booking_id === inquiry.id && row.upload_state === "ready",
-  ),
-);
-results.push("Photo inquiry persists an order and usable photo for Bitrix24");
+assert.equal(state.objects.length, 0);
+const repairInquiry = state.tables.bookings.find((row) => row.email === "description@example.invalid");
+assert.ok(repairInquiry, "Existing repair form saves its customer's request");
+assert.equal(repairInquiry.package_id, "service-inquiry");
+assert.equal(repairInquiry.request_kind, "service-inquiry");
+assert.equal(repairInquiry.phone, "");
+assert.equal(repairInquiry.note, "Begutachtung Dellen\nDelle links");
+results.push("Existing repair inquiry persists without photos or a mandatory phone number");
+const rundumInput = {
+  idempotencyKey: randomUUID(), name: "QA Rundum", email: "rundum@example.invalid", phone: "",
+  vehicleMake: "Testmarke", vehicleModel: "Testmodell", services: ["Fahrzeugaufbereitung", "Felgenreparatur"],
+  text: "Individuelle Begutachtung gewünscht.", pickupRequested: true, date: "", privacy: true, website: "",
+};
+const rundum = await rpc("createPublicRundumInquiry", rundumInput);
+assert.ok(rundum.body.result?.reference, JSON.stringify(rundum.body));
+const rundumReplay = await rpc("createPublicRundumInquiry", rundumInput);
+assert.equal(rundumReplay.body.result?.reference, rundum.body.result.reference);
+state = await evidence();
+const rundumRow = state.tables.bookings.find((row) => row.email === rundumInput.email);
+assert.equal(state.tables.bookings.filter((row) => row.email === rundumInput.email).length, 1);
+assert.equal(rundumRow.request_kind, "rundum-service");
+assert.deepEqual(JSON.parse(rundumRow.requested_services), rundumInput.services);
+assert.equal(rundumRow.pickup_requested, true);
+assert.equal(rundumRow.vehicle_make, rundumInput.vehicleMake);
+assert.equal(rundumRow.vehicle_model, rundumInput.vehicleModel);
+assert.equal(rundumRow.total_cents, 0, "Unquoted repairs have no invented fixed price");
+assert.equal(rundumRow.status, "neu");
+assert.equal(state.tables.booking_photos.length, 0);
+results.push("Rundum request persists all service, vehicle and collection wishes once without photos or a confirmed appointment");
 await control({ failMail: true, failWhatsApp: true });
 const future = new Date();
 future.setUTCDate(future.getUTCDate() + 14);
@@ -262,7 +222,7 @@ const foreign = await rpc(
   booking.cookie,
 );
 assert.ok(foreign.body.error);
-assert.equal((await evidence()).objects.length, 2);
+assert.equal((await evidence()).objects.length, 0);
 results.push("Cookie for another booking cannot authorize upload");
 
 const secondRequest = {

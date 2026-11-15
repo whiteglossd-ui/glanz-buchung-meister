@@ -2,7 +2,7 @@
 import { assertIsolatedGithubCi } from "../hosting-policy.mjs";
 assertIsolatedGithubCi();
 import assert from "node:assert/strict";
-import { access, mkdir, readFile, realpath, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, readdir, realpath, writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { createHash, X509Certificate } from "node:crypto";
 import { connect } from "node:http2";
@@ -57,6 +57,12 @@ const summary = {
   forwardedHost: "white-gloss.de (same production head rules as the Caddy proxy)",
   externalRequests: [],
   invalidAttempts: [],
+  iconPreloadRuns: [],
+  iconProofFailures: [],
+  routePreloadRuns: [],
+  routePreloadFailures: [],
+  stylePreloadRuns: [],
+  stylePreloadFailures: [],
 };
 
 function cancel(signal) {
@@ -70,6 +76,20 @@ const onTerminate = () => cancel("SIGTERM");
 process.once("SIGINT", onInterrupt);
 process.once("SIGTERM", onTerminate);
 const watchdog = setTimeout(() => cancel("runtime budget"), budgetMs);
+
+function publicAssetHeaders(headers, allowed) {
+  return Object.fromEntries(Object.entries(headers ?? {})
+    .filter(([name]) => allowed.includes(name.toLowerCase()))
+    .map(([name, value]) => [name.toLowerCase(), String(value).slice(0, 300)]));
+}
+
+function validatesSameAsset(exchange, primary) {
+  const etag = primary?.responseHeaders.etag;
+  const condition = exchange.requestHeaders["if-none-match"];
+  if (condition) return Boolean(etag && condition.split(",").map((value) => value.trim()).includes(etag));
+  const modifiedSince = exchange.requestHeaders["if-modified-since"];
+  return Boolean(modifiedSince && modifiedSince === primary?.responseHeaders["last-modified"]);
+}
 
 function median(values) {
   assert.ok(values.length === 3 && values.every(Number.isFinite), "Three valid samples required");
@@ -146,6 +166,43 @@ try {
     database: "in-memory-pglite",
     externalFetch: "blocked",
   });
+  const manifests = (await readdir(resolve(".output/server")))
+    .filter((name) => name.startsWith("_tanstack-start-manifest_") && name.endsWith(".mjs"));
+  assert.equal(manifests.length, 1, "The current build must identify one SSR manifest");
+  const manifestModule = await import(pathToFileURL(resolve(".output/server", manifests[0])).href);
+  const manifestFactories = [...new Set([manifestModule, ...Object.values(manifestModule)]
+    .filter((value) => value && typeof value.tsrStartManifest === "function")
+    .map((value) => value.tsrStartManifest))];
+  assert.equal(manifestFactories.length, 1, "The actual build must expose the original virtual manifest factory");
+  const buildManifest = manifestFactories[0]();
+  const homeRoute = buildManifest.routes["/"];
+  assert.ok(homeRoute.filePath.endsWith("/src/routes/index.tsx"));
+  const expectedRoutePath = homeRoute.preloads[0];
+  assert.match(expectedRoutePath, /^\/assets\/[\w.-]+\.js$/);
+  assert.ok(!buildManifest.routes.__root__.scripts.some((script) => script.attrs?.src === expectedRoutePath),
+    "The early homepage hint must not select the bulk root entry");
+  const routeSource = await readFile(resolve(".output/public" + expectedRoutePath));
+  summary.routePreloadAsset = { path: expectedRoutePath, bytes: routeSource.length };
+  assert.equal(homeRoute.css.length, 1, "The current homepage has one existing client stylesheet");
+  const homeStylesheet = homeRoute.css[0];
+  const expectedStylePath = typeof homeStylesheet === "string" ? homeStylesheet : homeStylesheet.href;
+  assert.match(expectedStylePath, /^\/assets\/[\w.-]+\.css$/);
+  const styleSource = await readFile(resolve(".output/public" + expectedStylePath));
+  assert.equal(buildManifest.inlineCss.styles[expectedStylePath], styleSource.toString("utf8").trimEnd(),
+    "The prepared stylesheet must match the existing inline rules (Start trims the final newline)");
+  summary.stylePreloadAsset = { path: expectedStylePath, bytes: styleSource.length };
+  const expectedIcon = await readFile(resolve("public/favicon-192.png"));
+  const iconSha256 = createHash("sha256").update(expectedIcon).digest("hex");
+  assert.equal(iconSha256, "73ec795e41e36843ecebba7edb10b69f303c139ddd27571fa2e3bd07ff69d42a",
+    "The preload reuses the existing reviewed icon bytes");
+  const iconResponse = await fetch(`${qaBase}/favicon-192.png`, {
+    redirect: "error", signal: AbortSignal.any([abort.signal, AbortSignal.timeout(5_000)]),
+  });
+  assert.equal(iconResponse.status, 200);
+  assert.match(iconResponse.headers.get("content-type"), /^image\/png(?:;|$)/);
+  const servedIcon = Buffer.from(await iconResponse.arrayBuffer());
+  assert.deepEqual(servedIcon, expectedIcon, "The controlled production build serves the unchanged icon");
+  summary.iconAsset = { path: "/favicon-192.png", bytes: servedIcon.length, sha256: iconSha256 };
 
   // Mirror production HTTP/2 using the same owned Nitro build. Trust only this
   // run's ephemeral certificate, without disabling general TLS validation.
@@ -321,6 +378,132 @@ try {
             0,
             "Initial external requests invalidate the isolated measurement",
           );
+          // Observe native Lighthouse requests without Playwright interception
+          // or cache overrides. Cached references may transfer zero bytes.
+          const iconRequests = networkRequests.filter((request) => new URL(request.url).pathname === "/favicon-192.png");
+          const mainRequest = networkRequests.find((request) => /^\/assets\/index-[^/]+\.js$/.test(new URL(request.url).pathname));
+          const routeRequests = networkRequests.filter((request) => new URL(request.url).pathname === expectedRoutePath);
+          const routeDiscovery = result.artifacts.DevtoolsLog.find((entry) => entry.method === "Network.requestWillBeSent"
+            && new URL(entry.params.request.url).pathname === expectedRoutePath);
+          const routeObservation = { profile, run, path: expectedRoutePath,
+            initiatorType: routeDiscovery?.params.initiator?.type ?? null,
+            requests: routeRequests,
+            mainModule: mainRequest ? { start: mainRequest.networkRequestTime, end: mainRequest.networkEndTime } : null };
+          summary.routePreloadRuns.push(routeObservation);
+          await writeFile(resolve(output, `${prefix}.route-preload-observation.json`), JSON.stringify(routeObservation, null, 2));
+          console.log(`LH-ROUTE-CAPTURE ${JSON.stringify(routeObservation)}`);
+          try {
+            assert.equal(routeRequests.length, 1, `${profile} ${run}: reuse the single homepage route request`);
+            assert.equal(routeRequests[0].resourceSize, routeSource.length);
+            assert.equal(routeRequests[0].isLinkPreload, true);
+            assert.equal(routeRequests[0].priority, "High");
+            assert.equal(routeDiscovery?.params.initiator?.type, "parser");
+            assert.ok(mainRequest && routeRequests[0].networkRequestTime <= mainRequest.networkEndTime,
+              "The real route preload must begin before the bulk entry completes");
+          } catch (error) {
+            summary.routePreloadFailures.push({ profile, run, message: error.message, actual: error.actual, expected: error.expected });
+          }
+          const styleRequests = networkRequests.filter((request) => new URL(request.url).pathname === expectedStylePath);
+          const styleDiscovery = result.artifacts.DevtoolsLog.find((entry) => entry.method === "Network.requestWillBeSent"
+            && new URL(entry.params.request.url).pathname === expectedStylePath);
+          const styleObservation = { profile, run, path: expectedStylePath,
+            initiatorType: styleDiscovery?.params.initiator?.type ?? null,
+            requests: styleRequests,
+            mainModule: mainRequest ? { start: mainRequest.networkRequestTime, end: mainRequest.networkEndTime } : null };
+          summary.stylePreloadRuns.push(styleObservation);
+          await writeFile(resolve(output, `${prefix}.style-preload-observation.json`), JSON.stringify(styleObservation, null, 2));
+          console.log(`LH-STYLE-CAPTURE ${JSON.stringify(styleObservation)}`);
+          try {
+            assert.equal(styleRequests.length, 1, `${profile} ${run}: reuse the single homepage stylesheet request`);
+            assert.equal(styleRequests[0].resourceSize, styleSource.length);
+            assert.equal(styleRequests[0].isLinkPreload, true);
+            assert.ok(["High", "VeryHigh"].includes(styleRequests[0].priority),
+              "The stylesheet keeps high priority, including Chromium's stylesheet promotion");
+            assert.equal(styleDiscovery?.params.initiator?.type, "parser");
+            assert.ok(mainRequest && styleRequests[0].networkRequestTime <= mainRequest.networkEndTime,
+              "The real style preload must begin before the bulk entry completes");
+          } catch (error) {
+            summary.stylePreloadFailures.push({ profile, run, message: error.message, actual: error.actual, expected: error.expected });
+          }
+          const wireRequests = iconRequests.filter((request) => request.transferSize > 0);
+          const iconRequestIds = new Set(result.artifacts.DevtoolsLog
+            .filter((entry) => entry.method === "Network.requestWillBeSent"
+              && new URL(entry.params.request.url).pathname === "/favicon-192.png")
+            .map((entry) => entry.params.requestId));
+          // Capture only public asset validators, never complete headers or cookies.
+          const iconDevtools = result.artifacts.DevtoolsLog
+            .filter((entry) => iconRequestIds.has(entry.params.requestId)
+              && ["Network.requestWillBeSent", "Network.requestWillBeSentExtraInfo", "Network.responseReceived", "Network.responseReceivedExtraInfo", "Network.requestServedFromCache", "Network.dataReceived", "Network.loadingFinished"].includes(entry.method))
+            .map(({ method, params }) => ({ method, requestId: params.requestId,
+              timestamp: params.timestamp, url: params.request?.url ?? params.response?.url,
+              initiatorType: params.initiator?.type, priority: params.request?.initialPriority,
+              status: params.response?.status, actualStatus: params.statusCode,
+              protocol: params.response?.protocol, fromDiskCache: params.response?.fromDiskCache,
+              fromServiceWorker: params.response?.fromServiceWorker,
+              fromPrefetchCache: params.response?.fromPrefetchCache,
+              ...(method === "Network.requestWillBeSentExtraInfo" ? { requestHeaders: publicAssetHeaders(params.headers, ["if-none-match", "if-modified-since"]) } : {}),
+              ...(method === "Network.responseReceivedExtraInfo" ? { responseHeaders: publicAssetHeaders(params.headers, ["etag", "last-modified", "cache-control", "age"]) } : {}),
+              dataLength: params.dataLength,
+              encodedDataLength: params.encodedDataLength ?? params.response?.encodedDataLength }));
+          const exchanges = [...iconRequestIds].map((requestId) => {
+            const events = iconDevtools.filter((entry) => entry.requestId === requestId);
+            const request = events.find((entry) => entry.method === "Network.requestWillBeSent");
+            const response = events.find((entry) => entry.method === "Network.responseReceived");
+            const extra = events.find((entry) => entry.method === "Network.responseReceivedExtraInfo");
+            const finished = events.find((entry) => entry.method === "Network.loadingFinished");
+            return { requestId, initiatorType: request?.initiatorType,
+              reportedStatus: response?.status, actualStatus: extra?.actualStatus ?? null,
+              requestHeaders: events.find((entry) => entry.method === "Network.requestWillBeSentExtraInfo")?.requestHeaders ?? {},
+              responseHeaders: extra?.responseHeaders ?? {},
+              encodedBodyBytes: events.filter((entry) => entry.method === "Network.dataReceived")
+                .reduce((sum, entry) => sum + (entry.encodedDataLength ?? 0), 0),
+              finishedBytes: finished?.encodedDataLength ?? null,
+              servedFromCache: events.some((entry) => entry.method === "Network.requestServedFromCache")
+                || response?.fromDiskCache === true || response?.fromPrefetchCache === true };
+          });
+          const fullPayloads = exchanges.filter((exchange) => exchange.actualStatus === 200
+            && exchange.finishedBytes >= expectedIcon.length);
+          const primary = fullPayloads[0];
+          const revalidations = exchanges.filter((exchange) => exchange.actualStatus === 304
+            && exchange.encodedBodyBytes === 0 && Number.isFinite(exchange.finishedBytes) && exchange.finishedBytes >= 0
+            && exchange.finishedBytes < expectedIcon.length && validatesSameAsset(exchange, primary));
+          const cacheReferences = exchanges.filter((exchange) => [200, null].includes(exchange.actualStatus)
+            && exchange.reportedStatus === 200 && exchange.finishedBytes === 0
+            && exchange.encodedBodyBytes === 0 && exchange.servedFromCache);
+          const classified = new Set([...fullPayloads, ...revalidations, ...cacheReferences].map((exchange) => exchange.requestId));
+          const iconDiscovery = result.artifacts.DevtoolsLog.find((entry) => entry.method === "Network.requestWillBeSent"
+            && new URL(entry.params.request.url).pathname === "/favicon-192.png");
+          const weightedAudits = report.categories.performance.auditRefs.filter((ref) => ref.weight > 0)
+            .map(({ id, weight }) => ({ id, weight, score: report.audits[id]?.score,
+              value: report.audits[id]?.numericValue, unit: report.audits[id]?.numericUnit }));
+          const totalWeight = weightedAudits.reduce((sum, audit) => sum + audit.weight, 0);
+          const iconObservation = { profile, run, lighthouseVersion: report.lighthouseVersion,
+            reportedScores: Object.fromEntries(categories.map((id) => [id, report.categories[id]?.score])),
+            performanceComponents: weightedAudits,
+            computedFromReportedAuditScores: weightedAudits.reduce((sum, audit) => sum + audit.score * audit.weight, 0) / totalWeight,
+            wireCount: wireRequests.length, requestCount: iconRequests.length,
+            fullPngPayloadCount: fullPayloads.length, revalidationCount: revalidations.length,
+            cachedReferenceCount: cacheReferences.length, unclassifiedExchangeCount: exchanges.length - classified.size,
+            initiatorType: iconDiscovery?.params.initiator?.type ?? null,
+            requests: iconRequests, devtools: iconDevtools, exchanges,
+            mainModule: mainRequest ? { start: mainRequest.networkRequestTime, end: mainRequest.networkEndTime } : null };
+          summary.iconPreloadRuns.push(iconObservation);
+          await writeFile(resolve(output, `${prefix}.icon-observation.json`), JSON.stringify(iconObservation, null, 2));
+          console.log(`LH-ICON-CAPTURE ${JSON.stringify(iconObservation)}`);
+          // A verified 304 has no PNG body. Keep positive wire bytes visible while
+          // refusing a second full payload, unknown cache states or unmatched validators.
+          try {
+            assert.equal(exchanges.length, iconRequests.length, `${profile} ${run}: every icon request needs matching CDP evidence`);
+            assert.equal(fullPayloads.length, 1, `${profile} ${run}: exactly one complete PNG payload`);
+            assert.equal(classified.size, exchanges.length, `${profile} ${run}: additional requests require proven 304 validation or explicit zero-byte cache reuse`);
+            assert.equal(primary.requestId, iconDiscovery?.params.requestId, `${profile} ${run}: the parser preload transfers the complete PNG`);
+            assert.equal(wireRequests[0].resourceSize, expectedIcon.length, "The actual browser icon response has the unchanged PNG size");
+            assert.equal(iconDiscovery?.params.initiator?.type, "parser", `${profile} ${run}: the parser discovers the icon preload`);
+            assert.ok(mainRequest && wireRequests[0].networkRequestTime <= mainRequest.networkEndTime,
+              `${profile} ${run}: the icon is requested before the main module finishes, not by a late post-hydration chain`);
+          } catch (error) {
+            summary.iconProofFailures.push({ profile, run, message: error.message, actual: error.actual, expected: error.expected });
+          }
           assert.equal(report.lighthouseVersion, lighthouseVersion);
           assert.equal(report.configSettings.formFactor, profile);
           assert.equal(report.configSettings.throttlingMethod, "simulate");
@@ -468,7 +651,8 @@ try {
     }
   }
 
-  const failures = [];
+  const failures = [...summary.iconProofFailures, ...summary.routePreloadFailures, ...summary.stylePreloadFailures]
+    .map(({ profile, run, message }) => `${profile} ${run}: ${message}`);
   const shortfalls = [];
   for (const profile of ["mobile", "desktop"]) {
     const runs = summary.runs.filter((run) => run.profile === profile);

@@ -11,6 +11,7 @@ import { qaBase } from "./ports.mjs";
 import { qaClientHeaders } from "./client-identity.mjs";
 import { prepareBrowserFixture } from "./browser-fixture.mjs";
 import { assertBrowserDiagnostics, createBrowserDiagnostics } from "../browser-diagnostics.mjs";
+import { verifyInitialRundumHero, verifyRundumUi, verifyRundumIntentLoading, iconPreloadObservations, rundumArrivalObservations } from "./rundum-ui.mjs";
 
 const output = ".qa-output/booking-ui";
 await mkdir(output, { recursive: true });
@@ -182,6 +183,18 @@ async function capturePackageChapters(page) {
 
 try {
   await prepareBrowserFixture({ scenario: "booking-ui" });
+  for (const width of [390, 1440]) {
+    const { context, page } = await openContext({ viewport: { width, height: width < 700 ? 844 : 1000 }, reducedMotion: "reduce" });
+    try {
+      const response = await page.goto(`${qaBase}/`, { waitUntil: "networkidle" });
+      results.push(await verifyInitialRundumHero(page, {
+        label: `chromium-${width}`,
+        documentHtml: await response.text(),
+        screenshot: (name) => page.screenshot({ path: `${output}/${name}` }),
+      }));
+      results.push(await verifyRundumIntentLoading(page, { label: `chromium-${width}`, base: qaBase }));
+    } finally { await context.close(); }
+  }
   // Test the real API limit, then give each unrelated browser scenario its own
   // stable client. Never reset the limiter or hide a 429 in browser diagnostics.
   const availability = `${qaBase}/api/availability?from=2040-01-01&to=2040-02-01`;
@@ -267,7 +280,7 @@ try {
 
     await step(3);
     await page.locator("#name").waitFor({ state: "visible" });
-    assert.ok(await page.locator('button[type="submit"]').isVisible());
+    assert.ok(await page.locator('form.booking-flow button[type="submit"]').isVisible());
     await captureBookingStep(page, "desktop-1280-kontakt.png");
     await step(2);
     assert.equal(await page.locator("#extra-felgen").isChecked(), true, "Selection is kept");
@@ -389,7 +402,7 @@ try {
   }
 
   /* ---- Responsive widths required for the release ---- */
-  for (const width of [320, 375, 768, 1280, 1536]) {
+  for (const width of [320, 375, 768, 1024, 1280, 1440, 1536]) {
     const { context, page } = await openContext({
       viewport: { width, height: width < 700 ? 844 : 900 },
       reducedMotion: "reduce",
@@ -415,6 +428,12 @@ try {
           path: `${output}/${path === "/" ? "home" : "galerie"}-${width}.png`,
         });
       if (path === "/") {
+        if ([320, 768, 1024, 1440].includes(width)) results.push(await verifyRundumUi(page, {
+          label: `chromium-${width}`,
+          screenshot: async (name, target, options) => options
+            ? page.screenshot({ path: `${output}/${name}`, ...options })
+            : target.screenshot({ path: `${output}/${name}` }),
+        }));
         const packages = page.locator("#pakete");
         assert.equal(await packages.getAttribute("data-package-motion"), null,
           `Reduced motion @${width}: do not pin or crossfade the package chapters`);
@@ -457,6 +476,8 @@ try {
     JSON.stringify({
       passed: results.length,
       results,
+      iconPreloadObservations,
+      rundumArrivalObservations,
       errors: evidence.flatMap((item) => item.errors),
       blocked: evidence.flatMap((item) => item.blocked),
       ignored: evidence.flatMap((item) => item.ignored),

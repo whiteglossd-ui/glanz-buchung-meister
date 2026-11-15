@@ -7,6 +7,9 @@
 html:has(#buchung:target) .scroll-film[data-motion="scroll"] {
   height: auto;
 }
+html:has(#rundum-anfrage:target) .scroll-film[data-motion="scroll"] {
+  height: auto;
+}
 .scroll-film[data-motion="scroll"],
 .scroll-film[data-motion="fallback"] {
   height: 460svh;
@@ -95,6 +98,30 @@ html:has(#buchung:target) .scroll-film[data-motion="scroll"] {
 .scroll-film-cta:hover {
   border-color: #ebedef;
   background: #1b1e20;
+}
+.scroll-film-rundum {
+  max-width: 36rem;
+  margin-inline: auto;
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--color-line);
+  padding-top: 0.75rem;
+}
+.scroll-film-rundum p {
+  max-width: 44ch;
+  margin-inline: auto;
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+.scroll-film-rundum-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2.75rem;
+  color: var(--color-fg);
+  font-size: 0.8125rem;
+  text-decoration: underline;
+  text-underline-offset: 0.25rem;
 }
 .scroll-film-prices {
   display: inline-block;

@@ -15,7 +15,7 @@ import {
   type PackageId,
   type VehicleClass,
 } from "@/data/site";
-import { attachBookingPhotos, createPublicBooking } from "@/lib/bookings.functions";
+import { createPublicBooking } from "@/lib/bookings.functions";
 import { eur } from "@/lib/utils";
 import { bookingFormErrors } from "@/lib/public-form-validation";
 import { isCalendarDate } from "@/lib/calendar-date";
@@ -23,7 +23,7 @@ import { queueBookingConversion } from "@/lib/googleTag";
 import { bookingRequestId } from "@/lib/booking-request-id";
 import { applyBookingSelection } from "@/lib/booking-selection";
 import { usePublicFormErrors } from "./public-form-feedback";
-import { BookingMediaPicker, mediaBase64 } from "./booking-media-picker";
+import type { InquiryReceipt } from "./inquiry-confirmation";
 import { Button, Field, inputLine } from "./ui";
 import { useBookingDraft, clearBookingDraft, appliedBookingEntries } from "./booking-draft";
 import { berlinWallToUtc, defaultWorkEnd, rangesOverlap } from "@/lib/booking-time";
@@ -82,10 +82,8 @@ export function Configurator({
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
   const submitting = useRef(false);
-  const [media, setMedia] = useBookingDraft<File[]>("media", []);
   const [savedReference, setSavedReference] = useState<string | null>(null);
-  const saved = useRef<{ reference: string } | null>(null);
-  const [uploadProgress, setUploadProgress] = useState("");
+  const saved = useRef<InquiryReceipt | null>(null);
   const { fieldProps, fieldError, showErrors } = usePublicFormErrors();
 
   useEffect(() => {
@@ -188,19 +186,26 @@ export function Configurator({
     setExtraIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   }
 
-  async function finishSavedRequest(reference: string) {
-    await navigate({ to: "/danke", search: { vorgang: reference } });
+  async function finishSavedRequest(receipt: InquiryReceipt) {
+    await navigate({
+      to: "/danke",
+      search: {
+        vorgang: receipt.reference,
+        uebergabe: receipt.panelSaved ? "panel" : "ausstehend",
+        mail: receipt.emailStatus,
+      },
+    });
     clearBookingDraft();
     bookingRequestId.clear();
   }
 
-  async function continueWithoutPhotos() {
+  async function continueToConfirmation() {
     if (submitting.current || !saved.current) return;
     submitting.current = true;
     setPending(true);
     setError("");
     try {
-      await finishSavedRequest(saved.current.reference);
+      await finishSavedRequest(saved.current);
     } catch {
       setError(
         `Ihre Anfrage ${saved.current.reference} ist bereits gespeichert. Die Bestätigungsseite konnte nicht geöffnet werden. Bitte versuchen Sie es erneut.`,
@@ -242,7 +247,6 @@ export function Configurator({
     }
     submitting.current = true;
     setPending(true);
-    let uploading = false;
     try {
       const created =
         saved.current ??
@@ -275,33 +279,13 @@ export function Configurator({
       saved.current = created;
       setSavedReference(created.reference);
       queueBookingConversion(created.reference);
-      const remaining = [...media];
-      uploading = media.length > 0;
-      for (const [index, file] of media.entries()) {
-        setUploadProgress(`Aufnahme ${index + 1} von ${media.length} wird übertragen …`);
-        await attachBookingPhotos({
-          data: {
-            vorgang: created.reference,
-            files: [
-              { name: file.name.slice(0, 180), mime: file.type, base64: await mediaBase64(file) },
-            ],
-          },
-        });
-        remaining.shift();
-        setMedia([...remaining]);
-      }
-      setUploadProgress("");
-      uploading = false;
-      await finishSavedRequest(created.reference);
+      await finishSavedRequest(created);
     } catch {
       setError(
         saved.current
-          ? uploading
-            ? `Ihre Anfrage ${saved.current.reference} ist angekommen. Nur die übrigen Fotos konnten wir noch nicht übernehmen. Sie können diese erneut senden oder später nachreichen. Eine neue Anfrage ist nicht nötig.`
-            : `Ihre Anfrage ${saved.current.reference} ist bereits gespeichert. Die Bestätigungsseite konnte nicht geöffnet werden. Bitte versuchen Sie es erneut.`
+          ? `Ihre Anfrage ${saved.current.reference} ist bereits gespeichert. Die Bestätigungsseite konnte nicht geöffnet werden. Bitte versuchen Sie es erneut.`
           : "Wir konnten den Eingang Ihrer Anfrage nicht bestätigen. Sie können dieselbe Anfrage erneut senden oder uns telefonisch bzw. per WhatsApp kontaktieren.",
       );
-      setUploadProgress("");
       submitting.current = false;
       setPending(false);
     }
@@ -489,10 +473,7 @@ export function Configurator({
         </Field>
       </div>
 
-      <div
-        hidden={step !== 3}
-        className="booking-step-panel booking-contact space-y-5"
-      >
+      <div hidden={step !== 3} className="booking-step-panel booking-contact space-y-5">
         <p className="text-xs uppercase tracking-[0.16em] text-subtle">Unverbindliche Anfrage</p>
         <p className="font-display text-3xl text-fg" aria-live="polite">
           ab {eur(quote.total)}
@@ -729,12 +710,9 @@ export function Configurator({
             onChange={(e) => setWebsite(e.target.value)}
           />
         </div>
-        <BookingMediaPicker files={media} onChange={setMedia} disabled={pending} />
-        {uploadProgress ? (
-          <p role="status" className="text-sm">
-            {uploadProgress}
-          </p>
-        ) : null}
+        <p className="text-sm text-muted">
+          Fotos kannst du nach deiner Anfrage in deinem Kundenbereich ergänzen.
+        </p>
         {savedReference ? (
           <p role="status" className="text-sm">
             Anfrage {savedReference} gespeichert. Noch keine Terminzusage.
@@ -778,12 +756,10 @@ export function Configurator({
               {date || "Nach Absprache"}
               {slot ? ` · ${slot} Uhr` : ""}
             </dd>
-            <dt>Aufnahmen</dt>
-            <dd>{media.length} ausgewählt</dd>
           </dl>
         </section>
         <p className="text-sm text-muted">
-          So geht es weiter: Wir prüfen Ihre Fotos, Leistungen und den Wunschtermin. Erst nach
+          So geht es weiter: Wir prüfen Ihre Angaben, Leistungen und den Wunschtermin. Erst nach
           unserer Prüfung stimmen wir den verbindlichen Preis und Termin mit Ihnen ab. Die Rechnung
           folgt nach erbrachter Leistung.
         </p>
@@ -857,9 +833,9 @@ export function Configurator({
                 variant="line"
                 type="button"
                 disabled={pending}
-                onClick={() => void continueWithoutPhotos()}
+                onClick={() => void continueToConfirmation()}
               >
-                {media.length ? "Fotos später nachreichen" : "Zur Bestätigungsseite"}
+                Zur Bestätigungsseite
               </Button>
             ) : null}
           </div>
@@ -874,9 +850,7 @@ export function Configurator({
           {pending
             ? "Wird gesendet …"
             : savedReference
-              ? media.length
-                ? "Übrige Fotos erneut senden"
-                : "Zur Eingangsbestätigung"
+              ? "Zur Eingangsbestätigung"
               : "Unverbindliche Anfrage prüfen"}
         </Button>
         <a

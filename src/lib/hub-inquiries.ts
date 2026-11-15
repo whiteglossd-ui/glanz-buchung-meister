@@ -10,7 +10,7 @@ const SHOP = "white-gloss";
 const MIN_TOKEN = 32;
 const MAX_BODY = 4096;
 const MAX_INQUIRIES = 40;
-const MAX_NOTE = 1499;
+const MAX_NOTE = 2600;
 const MAX_PICKUP_CENTS = 50_000;
 const MAX_PHOTOS = 8;
 const PHOTO_PATH = /^bookings\/[1-9]\d*\/[a-f0-9]{32}\.(?:jpg|png|webp|mp4|webm|mov)$/;
@@ -25,7 +25,7 @@ const PHOTO_MIME = new Set([
 /** Pre-acceptance stages. Anything later is accepted, done, rejected or cancelled. */
 const OPEN_STAGES = ["anfrage_eingegangen", "in_pruefung", "kundenrueckmeldung"];
 
-type Row = {
+export type Row = {
   id: number | string;
   customer_name: string | null;
   phone: string | null;
@@ -39,14 +39,18 @@ type Row = {
   note: string | null;
   total_cents: number | string | null;
   pickup_cents: number | string | null;
-  vehicle_make: string | null;
-  vehicle_model: string | null;
-  vehicle_plate: string | null;
-  customer_street: string | null;
-  customer_postal_code: string | null;
-  customer_city: string | null;
-  review_email_consent: boolean | null;
-  photo_count: number | string | null;
+  vehicle_make?: string | null;
+  vehicle_model?: string | null;
+  vehicle_plate?: string | null;
+  customer_street?: string | null;
+  customer_postal_code?: string | null;
+  customer_city?: string | null;
+  review_email_consent?: boolean | null;
+  photo_count?: number | string | null;
+  request_kind?: string;
+  requested_services?: string | string[];
+  pickup_requested?: boolean;
+  intake_version?: number | null;
 };
 
 export type HubInquiry = {
@@ -66,6 +70,12 @@ export type HubInquiry = {
   preferred_slot: string;
   address: string;
   review_email_consent: boolean;
+  request_kind: string;
+  requested_services: string[];
+  pickup_requested: boolean;
+  intake_version?: number;
+  vehicle_make: string;
+  vehicle_model: string;
 };
 
 function json(body: unknown, status: number) {
@@ -103,14 +113,21 @@ function sameSecret(expected: string, presented: string) {
   return timingSafeEqual(a, b) && presented.length > 0;
 }
 
-async function readBody(request: Request): Promise<{ action: "list" } | { action: "photos"; id: number } | null> {
+async function readBody(
+  request: Request,
+): Promise<{ action: "list"; afterId?: number } | { action: "photos"; id: number } | null> {
   try {
     const raw = await request.text();
     if (raw.length > MAX_BODY) return null;
     const body = JSON.parse(raw) as unknown;
     if (typeof body !== "object" || body === null || Array.isArray(body)) return null;
     const action = (body as { action?: unknown }).action;
-    if (action === "list") return { action: "list" };
+    if (action === "list") {
+      const afterId = (body as { afterId?: unknown }).afterId;
+      if (afterId === undefined) return { action: "list" };
+      if (!Number.isSafeInteger(afterId) || Number(afterId) < 0) return null;
+      return { action: "list", afterId: Number(afterId) };
+    }
     if (action === "photos") {
       const id = Number((body as { id?: unknown }).id);
       if (!Number.isSafeInteger(id) || id < 1 || id > 1_000_000_000) return null;
@@ -189,6 +206,12 @@ export function toHubInquiry(row: Row): HubInquiry | null {
     preferred_slot: text(row.preferred_slot).slice(0, 16),
     address: [text(row.customer_street), place].filter(Boolean).join(", "),
     review_email_consent: row.review_email_consent === true,
+    request_kind: text(row.request_kind) || "booking",
+    requested_services: extras(row.requested_services ?? []),
+    pickup_requested: row.pickup_requested === true,
+    ...(row.intake_version === 1 ? { intake_version: 1 } : {}),
+    vehicle_make: text(row.vehicle_make),
+    vehicle_model: text(row.vehicle_model),
   };
 }
 
@@ -197,7 +220,11 @@ export async function readCustomerPhotos(
   bookingId: number,
   sign: (path: string) => Promise<string> = createSignedPhotoUrl,
 ) {
-  const rows = await sql.query<{ original_name: string | null; storage_path: string | null; mime: string | null }>(
+  const rows = await sql.query<{
+    original_name: string | null;
+    storage_path: string | null;
+    mime: string | null;
+  }>(
     `select original_name, storage_path, mime from booking_photos
      where shop_id = $1 and booking_id = $2 and upload_state = 'ready'
      order by id
@@ -217,7 +244,9 @@ export async function readCustomerPhotos(
     }
     if (!url.startsWith("https://") || url.length > 2000) continue;
     photos.push({
-      name: text(row.original_name).replace(/[\r\n]/g, " ").slice(0, 80),
+      name: text(row.original_name)
+        .replace(/[\r\n]/g, " ")
+        .slice(0, 80),
       mime,
       url,
     });
@@ -226,7 +255,7 @@ export async function readCustomerPhotos(
 }
 
 /** Open = still a request: not accepted, cancelled, rejected, done or billed anywhere. */
-export async function readOpenInquiries(sql: Sql): Promise<HubInquiry[]> {
+export async function readOpenInquiries(sql: Sql, afterId?: number): Promise<HubInquiry[]> {
   // RO tables and the address columns are partly created at runtime by other
   // paths. This route only reads, so it adapts instead of running DDL.
   const [optional] = await sql<{ ro_state: boolean; ro_invoices: boolean }>`
@@ -240,7 +269,7 @@ export async function readOpenInquiries(sql: Sql): Promise<HubInquiry[]> {
        to_jsonb(b)->>'customer_street' as customer_street,
        to_jsonb(b)->>'customer_postal_code' as customer_postal_code,
        to_jsonb(b)->>'customer_city' as customer_city,
-       b.review_email_consent,
+       b.review_email_consent, b.request_kind, b.requested_services, b.pickup_requested, b.intake_version,
        (select count(*) from booking_photos p
          where p.shop_id = b.shop_id and p.booking_id = b.id and p.upload_state = 'ready') as photo_count
      from bookings b
@@ -258,9 +287,10 @@ export async function readOpenInquiries(sql: Sql): Promise<HubInquiry[]> {
        and length(btrim(b.customer_name)) >= 2
        ${optional?.ro_state ? "and not exists (select 1 from roapp_order_state s where s.booking_id = b.id and (s.owner_confirmed_at is not null or s.completed_at is not null))" : ""}
        ${optional?.ro_invoices ? "and not exists (select 1 from roapp_invoices i where i.booking_id = b.id)" : ""}
-     order by b.created_at desc, b.id desc
+       ${afterId === undefined ? "" : "and b.id > $4"}
+     order by ${afterId === undefined ? "b.created_at desc, b.id desc" : "b.id asc"}
      limit $3`,
-    [SHOP, OPEN_STAGES, MAX_INQUIRIES],
+    [SHOP, OPEN_STAGES, MAX_INQUIRIES, ...(afterId === undefined ? [] : [afterId])],
   );
   return rows.map(toHubInquiry).filter((row): row is HubInquiry => row !== null);
 }
@@ -286,7 +316,19 @@ export async function handleHubInquiries(
     if (action.action === "photos") {
       return json({ photos: await readCustomerPhotos(sql, action.id, sign) }, 200);
     }
-    return json({ inquiries: await readOpenInquiries(sql) }, 200);
+    const inquiries = await readOpenInquiries(sql, action.afterId);
+    return json(
+      {
+        inquiries,
+        ...(action.afterId === undefined
+          ? {}
+          : {
+              nextAfterId:
+                inquiries.length === MAX_INQUIRIES ? (inquiries.at(-1)?.id ?? null) : null,
+            }),
+      },
+      200,
+    );
   } catch {
     // No query text, parameters or customer data in logs.
     console.error("[hub] list_failed");

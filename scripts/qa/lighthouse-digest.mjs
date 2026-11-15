@@ -194,6 +194,12 @@ export async function lighthouseDigest(outputRoot) {
     `Lighthouse digest: status=${summary.status} target100=${summary.targetAchieved ?? "n/a"}`,
   );
   if (summary.error) lines.push(`Lighthouse digest error: ${String(summary.error).split("\n")[0]}`);
+  if (summary.iconAsset) lines.push(`LH-ICON-ASSET ${JSON.stringify(summary.iconAsset)}`);
+  for (const observation of summary.iconPreloadRuns ?? [])
+    lines.push(`LH-ICON-NETWORK ${JSON.stringify(observation)}`);
+  const bookingUi = await readJson(resolve(outputRoot, "booking-ui/results.json"));
+  for (const observation of bookingUi?.iconPreloadObservations ?? [])
+    lines.push(`LH-ICON-RESOURCE-TIMING ${JSON.stringify(observation)}`);
   for (const run of summary.runs ?? []) {
     lines.push(
       `LH ${run.profile} ${run.run}: ` +

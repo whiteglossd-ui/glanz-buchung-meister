@@ -201,6 +201,23 @@ test("Node serves compressed build assets and revalidates mutable media", async 
   assert.equal(globals.length, 1, "the build must contain one complete global stylesheet");
   const desktopStyles = stylesheets.filter(({ name }) => /^forge-desktop-[\w-]+\.css$/.test(name));
   assert.equal(desktopStyles.length, 1, "the desktop composition must have one fingerprinted stylesheet");
+  const manifestDirectory = new URL("../.output/server/", import.meta.url);
+  const manifestNames = (await readdir(manifestDirectory))
+    .filter((name) => name.startsWith("_tanstack-start-manifest_") && name.endsWith(".mjs"));
+  assert.equal(manifestNames.length, 1);
+  const manifestModule = await import(new URL(manifestNames[0], manifestDirectory).href);
+  // The server bundler may expose the virtual module through a minified
+  // namespace export; its original named factory remains the module contract.
+  const manifestFactories = [...new Set([manifestModule, ...Object.values(manifestModule)]
+    .filter((value) => value && typeof value.tsrStartManifest === "function")
+    .map((value) => value.tsrStartManifest))];
+  assert.equal(manifestFactories.length, 1);
+  const manifest = manifestFactories[0]();
+  assert.equal(manifest.routes["/"].css.length, 1);
+  const homeCss = manifest.routes["/"].css[0];
+  const homeCssHref = typeof homeCss === "string" ? homeCss : homeCss.href;
+  const homeCssSource = manifest.inlineCss.styles[homeCssHref];
+  assert.ok(homeCssSource && homeCssSource.includes(".scroll-film{"));
   for (const path of [
     "/",
     "/preise",
@@ -232,15 +249,39 @@ test("Node serves compressed build assets and revalidates mutable media", async 
       `${path} must preserve the desktop overrides after the complete inline cascade`);
     assert.ok(!inlineCss.includes(desktopStyles[0].source.trim()),
       `${path} must not duplicate the external desktop stylesheet inline`);
-    assert.doesNotMatch(
-      head,
-      /<link\b[^>]*rel="modulepreload"/,
-      `${path} leaves hydration preloads to the deferred bootstrap`,
-    );
+    const earlyStylePreloads = [...head.matchAll(/<link\b(?=[^>]*rel="preload")(?=[^>]*as="style")[^>]*>/g)]
+      .map(([tag]) => tag);
+    assert.equal(earlyStylePreloads.length, path === "/" ? 1 : 0,
+      `${path} prepares only the existing homepage CSS without another applied stylesheet`);
+    if (path === "/") {
+      assert.ok(inlineCss.includes(homeCssSource), "The exact complete homepage CSS remains inline");
+      assert.ok(inlineCss.indexOf(globals[0].source.trim()) < inlineCss.indexOf(homeCssSource),
+        "The homepage CSS must keep its existing place after the global inline cascade");
+      assert.equal(earlyStylePreloads[0].match(/href="([^"]+)"/)?.[1], homeCssHref);
+      assert.equal(earlyStylePreloads[0].match(/fetchpriority="([^"]+)"/i)?.[1], "high");
+      assert.equal(earlyStylePreloads[0].match(/crossorigin="([^"]+)"/i)?.[1], "anonymous",
+        "The style hint matches Vite's existing anonymous client stylesheet fetch");
+      const nonce = response.headers.get("content-security-policy")?.match(/'nonce-([A-Za-z0-9+/]{43}=)'/)?.[1];
+      assert.ok(nonce);
+      assert.equal(earlyStylePreloads[0].match(/nonce="([^"]+)"/)?.[1], nonce);
+    }
+    const earlyModulePreloads = [...head.matchAll(/<link\b[^>]*rel="modulepreload"[^>]*>/g)]
+      .map(([tag]) => tag);
+    assert.equal(earlyModulePreloads.length, path === "/" ? 2 : 0,
+      `${path} prepares only the homepage route and client entry before the existing execution gate`);
+    const routeHint = earlyModulePreloads.find((tag) => /fetchpriority="high"/i.test(tag));
+    const entryHint = earlyModulePreloads.find((tag) => /fetchpriority="low"/i.test(tag));
+    const earlyRoutePreload = routeHint?.match(/href="([^"]+)"/)?.[1];
+    const earlyEntryPreload = entryHint?.match(/href="([^"]+)"/)?.[1];
+    if (path === "/") {
+      assert.ok(earlyRoutePreload && earlyEntryPreload, "Separate route and low-priority entry hints are required");
+      assert.notEqual(earlyRoutePreload, earlyEntryPreload);
+      assert.match(earlyRoutePreload, /^\/assets\/[\w.-]+\.js$/);
+    }
     assert.doesNotMatch(
       html,
       /<script\b[^>]*\bsrc="\/assets\//,
-      `${path} must not fetch the client entry before the first viewport has painted`,
+      `${path} must not execute the client entry before the first viewport has painted`,
     );
     const bootstraps = executableInlineScripts(html).filter(([, , source]) =>
       source.includes('t.type="module"'),
@@ -251,7 +292,13 @@ test("Node serves compressed build assets and revalidates mutable media", async 
     assert.ok(lists, `${path} bootstrap must end with its entry and preload lists`);
     const [entries, preloads] = [JSON.parse(lists[1]), JSON.parse(lists[2])];
     assert.ok(entries.length > 0 && preloads.length > 0, `${path} must retain Start's hydration assets`);
-    for (const asset of [...entries, ...preloads]) {
+    if (earlyRoutePreload) {
+      assert.ok(!entries.includes(earlyRoutePreload), "The route hint stays separate from the bulk entry hint");
+      assert.ok(!preloads.includes(earlyRoutePreload), "The route hint must not be inserted twice");
+      assert.deepEqual(entries, [earlyEntryPreload], "The low-priority hint must prepare exactly the deferred entry");
+      assert.ok(!preloads.includes(earlyEntryPreload), "The entry hint must not be inserted twice");
+    }
+    for (const asset of [...entries, ...preloads, ...(earlyRoutePreload ? [earlyRoutePreload] : [])]) {
       assert.match(asset, /^\/assets\/[\w.-]+\.js$/, `${path} hydration asset ${asset}`);
       const response = await fetch(new URL(asset, base), { signal: AbortSignal.timeout(15000) });
       assert.equal(response.status, 200, `${path} hydration asset ${asset}`);

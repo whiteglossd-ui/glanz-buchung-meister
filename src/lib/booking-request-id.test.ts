@@ -69,3 +69,37 @@ test("malformed stored IDs are replaced and invalid generators fail closed", () 
     ).get(),
   );
 });
+
+test("request forms keep separate persistent request identities", () => {
+  const values = new Map<string, string>();
+  const storage = {
+    getItem: (key: string) => values.get(key) ?? null,
+    setItem: (key: string, value: string) => {
+      values.set(key, value);
+    },
+    removeItem: (key: string) => {
+      values.delete(key);
+    },
+  };
+  const first = createBookingRequestIdStore(
+    () => storage,
+    () => "11111111-1111-4111-8111-111111111111",
+    "rundum",
+  );
+  const second = createBookingRequestIdStore(
+    () => storage,
+    () => "22222222-2222-4222-8222-222222222222",
+    "condition",
+  );
+  assert.notEqual(first.get(), second.get());
+  assert.equal(
+    createBookingRequestIdStore(
+      () => storage,
+      () => "33333333-3333-4333-8333-333333333333",
+      "rundum",
+    ).get(),
+    first.get(),
+  );
+  first.clear();
+  assert.equal(second.get(), "22222222-2222-4222-8222-222222222222");
+});

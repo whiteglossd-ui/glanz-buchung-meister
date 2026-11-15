@@ -38,39 +38,38 @@ function DellenPage() {
               Begutachtung anfragen
             </Link>
             <a href={site.whatsapp} className={ctaGhost} target="_blank" rel="noopener noreferrer">
-              Schaden per WhatsApp senden
+              Lieber per WhatsApp
             </a>
           </div>
         }
       />
       <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
-      <p className="text-sm text-muted leading-relaxed">
-        Einen Preis gibt es erst, wenn wir den Schaden gesehen haben. Wir beginnen erst mit Ihrer
-        Zustimmung. Bei kleinen Stellen reicht oft ein Foto
-        zur ersten Einschätzung.
-      </p>
-      <ul className="mt-10 grid gap-3 sm:grid-cols-2">
-        {[
-          ["Parkdellen", "Dellen durch Türen und enge Parkplätze"],
-          ["Karosseriedellen", "Kleinere Verformungen an zugänglichen Bauteilen"],
-          ["Hagelschäden", "Einzelne oder zahlreiche Hageldellen"],
-          ["Foto-Begutachtung", "Bei kleinen Schäden häufig ohne ersten Vor-Ort-Termin möglich"],
-        ].map(([t, d]) => (
-          <li key={t} className="border border-line bg-surface p-5">
-            <p className="font-display text-xl tracking-tight">{t}</p>
-            <p className="mt-2 text-sm text-muted">{d}</p>
-          </li>
-        ))}
-      </ul>
-      <div className="mt-12">
-        <WhatsAppPhotoCta />
-      </div>
-      <div id="buchung" className="mt-12">
-        <PhotoInquiry
-          title="Begutachtung anfragen"
-          hint="Hilfreich sind eine Gesamtansicht, eine Nahaufnahme und ein Foto bei schrägem Lichteinfall. Beschreiben Sie den Schaden und fügen Sie passende Aufnahmen bei."
-        />
-      </div>
+        <p className="text-sm text-muted leading-relaxed">
+          Einen Preis gibt es erst, wenn wir den Schaden gesehen haben. Wir beginnen erst mit Ihrer
+          Zustimmung. Bei kleinen Stellen reicht oft ein Foto zur ersten Einschätzung.
+        </p>
+        <ul className="mt-10 grid gap-3 sm:grid-cols-2">
+          {[
+            ["Parkdellen", "Dellen durch Türen und enge Parkplätze"],
+            ["Karosseriedellen", "Kleinere Verformungen an zugänglichen Bauteilen"],
+            ["Hagelschäden", "Einzelne oder zahlreiche Hageldellen"],
+            ["Foto-Begutachtung", "Bei kleinen Schäden häufig ohne ersten Vor-Ort-Termin möglich"],
+          ].map(([t, d]) => (
+            <li key={t} className="border border-line bg-surface p-5">
+              <p className="font-display text-xl tracking-tight">{t}</p>
+              <p className="mt-2 text-sm text-muted">{d}</p>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-12">
+          <WhatsAppPhotoCta />
+        </div>
+        <div id="buchung" className="mt-12">
+          <PhotoInquiry
+            title="Begutachtung anfragen"
+            hint="Beschreiben Sie kurz den Schaden. Fotos ergänzen Sie nach der Anfrage in Ihrem Kundenbereich."
+          />
+        </div>
       </div>
     </main>
   );

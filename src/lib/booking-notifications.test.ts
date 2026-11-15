@@ -128,6 +128,7 @@ type Message = {
 
 test("booking notifications persist against all production migrations", async (t) => {
   const environment = {
+    BOOKING_OPERATIONS: "bitrix",
     OWNER_EMAIL: "owner@example.invalid",
     OWNER_WHATSAPP: "+490000000000",
     ADMIN_WHATSAPP_NUMBER: "+490000000000",
@@ -203,6 +204,25 @@ test("booking notifications persist against all production migrations", async (t
           await sql<Message>`select * from outbound_queue where booking_id=${own.id} and channel='email'`;
         assert.equal(ownerOnly.length, 1);
         assert.match(ownerOnly[0].event_key, /:owner:/);
+      },
+    );
+
+    await t.test(
+      "panel intake owns the single customer receipt; website queues only operator notices",
+      async () => {
+        process.env.BOOKING_OPERATIONS = "panel";
+        try {
+          const row = await booking(sql);
+          const id = await event(sql, row, "booking.created");
+          await queueBookingEvent(sql, row, "booking.created", id, "customer");
+          const messages =
+            await sql<Message>`select * from outbound_queue where booking_id=${row.id}`;
+          assert.equal(messages.filter((message) => message.to_addr === row.email).length, 0);
+          assert.equal(messages.filter((message) => message.channel === "email").length, 1);
+          assert.ok(messages.every((message) => message.attachments.length === 0));
+        } finally {
+          process.env.BOOKING_OPERATIONS = "bitrix";
+        }
       },
     );
 

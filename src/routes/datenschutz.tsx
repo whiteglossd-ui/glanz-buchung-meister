@@ -136,13 +136,12 @@ function PrivacyPage() {
             Das Skript wird technisch erst geladen, nachdem Sie im Cookie-Banner „Akzeptieren“
             gewählt haben (§ 25 Abs. 1 TDDDG). Rechtsgrundlage für den Einsatz ist Ihre
             Einwilligung, Art. 6 Abs. 1 lit. a DSGVO. Wählen Sie „Ablehnen“, wird der Google Tag
-            nicht geladen. Über „Cookie-Einstellungen“ im Fußbereich jeder öffentlichen Seite
-            können Sie Ihre Auswahl jederzeit ändern. Mit „Einwilligung widerrufen“ wird die
-            Einwilligung sofort auf abgelehnt gesetzt. Die Seite lädt anschließend neu, um
-            bereits geladene Tracking-Skripte zu beenden. Erreichbare Google-Analyse- und
-            Werbe-Cookies dieser Website werden dabei entfernt. Ohne erneute Zustimmung
-            wird kein Google Tag geladen. Die Rechtmäßigkeit der Verarbeitung vor dem
-            Widerruf bleibt unberührt.
+            nicht geladen. Über „Cookie-Einstellungen“ im Fußbereich jeder öffentlichen Seite können
+            Sie Ihre Auswahl jederzeit ändern. Mit „Einwilligung widerrufen“ wird die Einwilligung
+            sofort auf abgelehnt gesetzt. Die Seite lädt anschließend neu, um bereits geladene
+            Tracking-Skripte zu beenden. Erreichbare Google-Analyse- und Werbe-Cookies dieser
+            Website werden dabei entfernt. Ohne erneute Zustimmung wird kein Google Tag geladen. Die
+            Rechtmäßigkeit der Verarbeitung vor dem Widerruf bleibt unberührt.
           </p>
           <p>
             Nach Ihrer Einwilligung können Daten wie Ihre IP-Adresse und Gerätekennungen an Google
@@ -150,13 +149,13 @@ function PrivacyPage() {
             Übermittlungen auf Standardvertragsklauseln der EU-Kommission.
           </p>
           <p>
-            Es wird kein Meta-Pixel geladen. Die gesonderte OpenAI-Anzeigenmessung ist
-            nachfolgend beschrieben.
+            Es wird kein Meta-Pixel geladen. Die gesonderte OpenAI-Anzeigenmessung ist nachfolgend
+            beschrieben.
           </p>
           <p>
             Technisch notwendige Speicherung kann im geschützten Betriebspanel zur Anmeldung und
             Sicherheit verwendet werden (Sitzung). Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO.
-            Das Cookie für das Nachreichen von Fahrzeugfotos ist in Abschnitt 7 beschrieben.
+            Fotos werden ausschließlich im geschützten Kundenbereich ergänzt; siehe Abschnitt 7.
           </p>
           <p>
             Die Standortkarte zeigt zuerst ein eigenes Kartenbild. Erst wenn Sie „Google Maps laden
@@ -172,22 +171,22 @@ function PrivacyPage() {
         <section>
           <h2>6a. Freiwillige OpenAI-Anzeigenmessung</h2>
           <p>
-            Wenn Sie das gesonderte, freiwillige Häkchen in der Terminanfrage setzen, darf
-            unser Server die erfolgreich gespeicherte Anfrage zur Erfolgsmessung unserer
-            Anzeigen an OpenAI übermitteln. Übermittelt werden Ereignisart, Zeitpunkt, eine
-            nicht im Klartext auf Ihre Anfrage verweisende Ereigniskennung, unsere Website-Adresse
-            ohne Zusatzparameter und eine gegebenenfalls in der aktuellen Seitenadresse vorhandene
+            Wenn Sie das gesonderte, freiwillige Häkchen in der Terminanfrage setzen, darf unser
+            Server die erfolgreich gespeicherte Anfrage zur Erfolgsmessung unserer Anzeigen an
+            OpenAI übermitteln. Übermittelt werden Ereignisart, Zeitpunkt, eine nicht im Klartext
+            auf Ihre Anfrage verweisende Ereigniskennung, unsere Website-Adresse ohne
+            Zusatzparameter und eine gegebenenfalls in der aktuellen Seitenadresse vorhandene
             Anzeigen-Klickkennung. Wir übermitteln dafür keine Kontakt- oder Fahrzeugangaben,
             Nachrichten, Kunden-IP-Adressen oder Browserkennungen und auch keine Hashwerte Ihrer
             Kontaktdaten. Wir laden kein OpenAI-Tracking-Skript in Ihren Browser.
           </p>
           <p>
-            Ihre Auswahl gilt nur für diese Anfrage und wird nicht im Browser gespeichert.
-            Ohne das Häkchen erfolgt diese Übermittlung nicht; die Anfrage bleibt möglich.
-            Sie können das Häkchen vor dem Absenden entfernen. Für Fragen oder einen späteren
-            Widerruf erreichen Sie uns über die oben genannten Kontaktdaten. Die Rechtmäßigkeit
-            der Verarbeitung vor dem Widerruf bleibt unberührt. Informationen zur Verarbeitung
-            durch OpenAI finden Sie in der{" "}
+            Ihre Auswahl gilt nur für diese Anfrage und wird nicht im Browser gespeichert. Ohne das
+            Häkchen erfolgt diese Übermittlung nicht; die Anfrage bleibt möglich. Sie können das
+            Häkchen vor dem Absenden entfernen. Für Fragen oder einen späteren Widerruf erreichen
+            Sie uns über die oben genannten Kontaktdaten. Die Rechtmäßigkeit der Verarbeitung vor
+            dem Widerruf bleibt unberührt. Informationen zur Verarbeitung durch OpenAI finden Sie in
+            der{" "}
             <a href="https://openai.com/policies/privacy-policy/">OpenAI-Datenschutzerklärung</a>.
           </p>
         </section>
@@ -195,32 +194,28 @@ function PrivacyPage() {
         <section>
           <h2>7. Fahrzeugfotos und Zustandsmeldungen</h2>
           <p>
-            Über die Seiten „Zustand prüfen lassen“ und „Dellen- und Hagelschäden“ können Sie uns
-            eine Beschreibung sowie ausgewählte Fotos oder kurze Videos übermitteln.
-            Die Dateien werden über unseren Server in einem privaten Speicherbereich bei Supabase
-            gespeichert. Wir verwenden Name, Telefonnummer, Beschreibung und Aufnahmen zur Zuordnung,
-            Prüfung und Terminabstimmung. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO.
+            Die öffentlichen Anfrage- und Buchungsformulare übermitteln Ihre Kontaktdaten,
+            Fahrzeugangaben und Beschreibung an unser White-Gloss-Panel. Sie enthalten keinen
+            Foto-Upload. Name und E-Mail-Adresse ermöglichen die Zuordnung und den Zugang zu Ihrem
+            Kundenkonto. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO.
           </p>
           <p>
-            Die Anfrage wird in RO App bearbeitet. Dafür übermitteln wir die Kontaktdaten,
-            Beschreibung und geschützte Links zu den Aufnahmen an RO App. Einen Fixpreis bestätigen
-            wir erst nach der Begutachtung und manuellen Freigabe.
+            Nach Ihrer Anfrage können Sie Fotos und weitere unterstützte Dateien im geschützten
+            Kundenbereich des Panels ergänzen. Die Dateien werden privat gespeichert und Ihrer
+            Anfrage zugeordnet. Dateiname, Dateityp und Dateigröße werden ebenfalls gespeichert. Nur
+            berechtigte Personen können auf die Dateien zugreifen. Wir verwenden sie zur
+            Begutachtung, Angebotserstellung und Abstimmung der vereinbarten Leistungen.
           </p>
           <p>
-            Nach einer Terminanfrage können Sie auf der Bestätigungsseite optional Fahrzeugfotos
-            oder kurze Videos zum Vorgang nachreichen. Bei dieser Uploadfunktion werden die
-            tatsächlichen Dateien über unseren Server in einem privaten Speicherbereich bei Supabase
-            gespeichert. Dateiname, Dateityp, Dateigröße und die Zuordnung zum Vorgang werden
-            ebenfalls gespeichert. Die Aufnahmen sind nicht öffentlich zugänglich und dienen der
-            Prüfung Ihrer Anfrage.
+            Neue Kunden erhalten zusammen mit der Eingangsbestätigung einen zeitlich begrenzten,
+            einmaligen Link zur Passwortvergabe. Ein bestehendes Passwort wird dabei nicht
+            zurückgesetzt. Danach erfolgt die Anmeldung mit E-Mail-Adresse und selbst gewähltem
+            Passwort. Das Konto bleibt bestehen; Sitzungen und Einrichtungslinks sind zeitlich
+            begrenzt. Eine sichere Wiederherstellung steht im Kundenbereich zur Verfügung.
           </p>
           <p>
-            Für das Nachreichen speichert Ihr Browser nach der Anfrage eine zufällige,
-            vorgangsgebundene Upload-Berechtigung in einem HttpOnly-Cookie. Diese Berechtigung läuft
-            nach sieben Tagen ab. Der Upload setzt voraus, dass das Cookie im Browser der
-            ursprünglichen Anfrage noch vorhanden ist. Die siebentägige Frist betrifft die
-            Upload-Berechtigung; bereits gespeicherte Aufnahmen werden dadurch nicht automatisch
-            gelöscht. Für ihre Speicherdauer gilt Abschnitt 10.
+            Bereits gespeicherte Kundenfotos und Dokumente werden durch diese Umstellung nicht
+            gelöscht. Sie bleiben geschützt. Für ihre Speicherdauer gilt Abschnitt 10.
           </p>
         </section>
 
@@ -300,7 +295,9 @@ function PrivacyPage() {
           </p>
         </section>
 
-        <p><CookieSettingsButton /></p>
+        <p>
+          <CookieSettingsButton />
+        </p>
         <p className="text-xs text-subtle">Stand: 25. September 2026</p>
       </article>
     </main>

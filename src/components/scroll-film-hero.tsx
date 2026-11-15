@@ -21,7 +21,12 @@ const HERO_LINES = ["Ihr Auto.", "Nicht nur sauber.", "Wieder besonders."];
  * „Ihr Auto. Nicht nur sauber. Wieder besonders.“
  */
 function HeroHeadline({ title }: { title?: string }) {
-  const lines = title ? title.split("\n").map((line) => line.trim()).filter(Boolean) : HERO_LINES;
+  const lines = title
+    ? title
+        .split("\n")
+        .map((line) => line.trim())
+        .filter(Boolean)
+    : HERO_LINES;
   let word = 0;
   return (
     <h1>
@@ -47,7 +52,15 @@ function HeroHeadline({ title }: { title?: string }) {
 }
 
 /** A fixed camera path from the supplied film, driven by native page scrolling. */
-export function ScrollFilmHero({ title, lead, heroImage }: { title?: string; lead?: string; heroImage?: StudioAsset }) {
+export function ScrollFilmHero({
+  title,
+  lead,
+  heroImage,
+}: {
+  title?: string;
+  lead?: string;
+  heroImage?: StudioAsset;
+}) {
   const hasCustomHero = Boolean(heroImage);
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
@@ -76,7 +89,9 @@ export function ScrollFilmHero({ title, lead, heroImage }: { title?: string; lea
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
     const mobile = window.matchMedia(scrollFilm.mobileQuery);
-    const shortLandscape = window.matchMedia("(max-height: 600px) and (orientation: landscape), (max-width: 359px), (max-width: 959px) and (max-height: 700px) and (orientation: portrait)");
+    const shortLandscape = window.matchMedia(
+      "(max-height: 600px) and (orientation: landscape), (max-width: 359px), (max-width: 959px) and (max-height: 700px) and (orientation: portrait)",
+    );
     const device = navigator as DeviceNavigator;
     const connection = device.connection;
     let disposed = false;
@@ -89,7 +104,7 @@ export function ScrollFilmHero({ title, lead, heroImage }: { title?: string; lea
     let distance = 1;
     let top = 0;
     let inView = false;
-    const directBooking = window.location.hash === "#buchung";
+    const directBooking = ["#buchung", "#rundum-anfrage"].includes(window.location.hash);
     let started = false;
     let firstFrame = false;
     let releaseVideo: (() => void) | undefined;
@@ -176,11 +191,24 @@ export function ScrollFilmHero({ title, lead, heroImage }: { title?: string; lea
       schedule();
     };
     const start = () => {
-      if (disposed || !enabled || !engaged || started || !inView || document.hidden || !poster.complete) return;
+      if (
+        disposed ||
+        !enabled ||
+        !engaged ||
+        started ||
+        !inView ||
+        document.hidden ||
+        !poster.complete
+      )
+        return;
       started = true;
       video.poster = poster.currentSrc || poster.src;
       video.preload = "auto";
-      releaseVideo = loadSeekableVideo(video, mobile.matches ? scrollFilm.mobileVideo : scrollFilm.desktopVideo, failed);
+      releaseVideo = loadSeekableVideo(
+        video,
+        mobile.matches ? scrollFilm.mobileVideo : scrollFilm.desktopVideo,
+        failed,
+      );
     };
     const resizeMedia = () => {
       if (!started) return;
@@ -300,11 +328,13 @@ export function ScrollFilmHero({ title, lead, heroImage }: { title?: string; lea
       <div ref={stageRef} className="scroll-film-stage">
         <div className="scroll-film-media">
           <picture>
-            {!heroImage && <source
-              media={scrollFilm.mobileQuery}
-              srcSet={scrollFilm.mobilePosters}
-              sizes="100vw"
-            />}
+            {!heroImage && (
+              <source
+                media={scrollFilm.mobileQuery}
+                srcSet={scrollFilm.mobilePosters}
+                sizes="100vw"
+              />
+            )}
             <img
               ref={imageRef}
               src={heroImage?.src ?? scrollFilm.desktopPoster}
@@ -312,7 +342,10 @@ export function ScrollFilmHero({ title, lead, heroImage }: { title?: string; lea
               sizes="100vw"
               width={heroImage?.width ?? 1920}
               height={heroImage?.height ?? 1080}
-              alt={heroImage?.alt ?? "Schwarzer Klassiker mit glänzendem Lack und Chromdetails im dunklen Studio"}
+              alt={
+                heroImage?.alt ??
+                "Schwarzer Klassiker mit glänzendem Lack und Chromdetails im dunklen Studio"
+              }
               loading="eager"
               fetchPriority="high"
               decoding="async"
@@ -336,14 +369,33 @@ export function ScrollFilmHero({ title, lead, heroImage }: { title?: string; lea
             </p>
             <HeroHeadline title={title} />
             <p className="scroll-film-service">
-              {lead ?? "Fahrzeugaufbereitung, Lackkorrektur und Keramikschutz in Horb – persönlich geprüft, stressfrei abgeholt und digital übergeben."}
+              {lead ??
+                "Fahrzeugaufbereitung, Lackkorrektur und Keramikschutz in Horb – persönlich geprüft, stressfrei abgeholt und digital übergeben."}
             </p>
-            <Link ref={ctaRef} to="/" hash="buchung" hashScrollIntoView={{ block: "start", behavior: "instant" }} className="scroll-film-cta" onClick={focusBookingHeading}>
+            <Link
+              ref={ctaRef}
+              to="/"
+              hash="buchung"
+              hashScrollIntoView={{ block: "start", behavior: "instant" }}
+              className="scroll-film-cta"
+              onClick={focusBookingHeading}
+            >
               Jetzt Termin anfragen <IconArrowRight className="size-4" aria-hidden />
             </Link>
             <Link to="/preise" className="scroll-film-prices">
               Pakete & Preise
             </Link>
+            <div className="scroll-film-rundum">
+              <p>Abholung, Aufbereitung und Reparaturen mit unseren Partnerbetrieben.</p>
+              <Link
+                to="/"
+                hash="rundum-anfrage"
+                hashScrollIntoView={{ block: "start", behavior: "instant" }}
+                className="scroll-film-rundum-link"
+              >
+                Rundum-Service anfragen <IconArrowRight className="size-4" aria-hidden />
+              </Link>
+            </div>
           </div>
         </div>
         <div className="scroll-film-signature" aria-hidden="true">
@@ -353,9 +405,15 @@ export function ScrollFilmHero({ title, lead, heroImage }: { title?: string; lea
         <div className="scroll-film-bottom">
           <a href="#nach-dem-film" className="scroll-film-skip">
             <span>
-              <span className="scroll-film-skip-label">{motion ? "Scrollen & entdecken" : "Mehr entdecken"}</span>
-              <span className="scroll-film-label-reserve" aria-hidden="true">Scrollen & entdecken</span>
-              <span className="scroll-film-label-reserve" aria-hidden="true">Mehr entdecken</span>
+              <span className="scroll-film-skip-label">
+                {motion ? "Scrollen & entdecken" : "Mehr entdecken"}
+              </span>
+              <span className="scroll-film-label-reserve" aria-hidden="true">
+                Scrollen & entdecken
+              </span>
+              <span className="scroll-film-label-reserve" aria-hidden="true">
+                Mehr entdecken
+              </span>
             </span>
             <span aria-hidden="true">↓</span>
           </a>
@@ -377,12 +435,15 @@ export function ScrollFilmHero({ title, lead, heroImage }: { title?: string; lea
             }}
           >
             <span>{paused ? "Bewegung fortsetzen" : "Bewegung pausieren"}</span>
-            <span className="scroll-film-label-reserve" aria-hidden="true">Bewegung fortsetzen</span>
-            <span className="scroll-film-label-reserve" aria-hidden="true">Bewegung pausieren</span>
+            <span className="scroll-film-label-reserve" aria-hidden="true">
+              Bewegung fortsetzen
+            </span>
+            <span className="scroll-film-label-reserve" aria-hidden="true">
+              Bewegung pausieren
+            </span>
           </button>
         </div>
       </div>
     </section>
   );
 }
-

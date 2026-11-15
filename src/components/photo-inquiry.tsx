@@ -1,17 +1,14 @@
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { Link } from "@tanstack/react-router";
 import { createPublicPhotoInquiry } from "@/lib/bookings.functions";
 import { photoInquiryErrors } from "@/lib/public-form-validation";
 import { usePublicFormErrors } from "./public-form-feedback";
-import { SubmissionResult } from "./submission-result";
+import { InquiryConfirmation, type InquiryReceipt } from "./inquiry-confirmation";
+import { createBookingRequestIdStore } from "@/lib/booking-request-id";
 import { Button, Field, inputLine } from "./ui";
 import { useBookingDraft, clearBookingDraft } from "./booking-draft";
-import { readFileAsBase64 } from "./booking-photo-upload";
-import { UPLOAD_MIME_TYPES, uploadSelectionError } from "@/lib/upload-policy";
-import { isEmailAddress } from "@/lib/utils";
 
 export function PhotoInquiry({ title, hint }: { title: string; hint: string }) {
-  const [files, setFiles] = useBookingDraft<File[]>("photo.files", []);
   const [text, setText] = useBookingDraft("photo.text", "");
   const [name, setName] = useBookingDraft("photo.name", "");
   const [phone, setPhone] = useBookingDraft("photo.phone", "");
@@ -22,72 +19,58 @@ export function PhotoInquiry({ title, hint }: { title: string; hint: string }) {
   );
   const [privacy, setPrivacy] = useBookingDraft("photo.privacy", false);
   const [website, setWebsite] = useState("");
-  const [requestId] = useState(() => crypto.randomUUID());
+  const [requestIds] = useState(() =>
+    createBookingRequestIdStore(
+      () => (typeof window === "undefined" ? null : window.sessionStorage),
+      () => crypto.randomUUID(),
+      `white-gloss.description-request.${title}`,
+    ),
+  );
+  const submitting = useRef(false);
   const [error, setError] = useState("");
-  const [sent, setSent] = useState(false);
+  const [sent, setSent] = useState<InquiryReceipt | null>(null);
   const [pending, setPending] = useState(false);
   const { fieldProps, fieldError, showErrors } = usePublicFormErrors();
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (pending) return;
-    const errors = photoInquiryErrors({ name, phone, privacy, text, files });
-    if (email && !isEmailAddress(email.trim()))
-      errors.email = "Bitte eine gültige E-Mail-Adresse eingeben.";
+    if (submitting.current) return;
+    const errors = photoInquiryErrors({ name, phone, email, privacy, text });
     showErrors(errors, e.currentTarget);
     if (Object.keys(errors).length) {
       setError("Bitte prüfen Sie die markierten Felder.");
       return;
     }
-    if (files.length) {
-      const problem = uploadSelectionError(files);
-      if (problem) {
-        setError(problem);
-        return;
-      }
-    }
+    submitting.current = true;
     setPending(true);
     setError("");
     try {
-      await createPublicPhotoInquiry({
+      const result = await createPublicPhotoInquiry({
         data: {
           title,
-          requestId,
+          requestId: requestIds.get(),
           name: name.trim(),
           phone: phone.trim(),
           email: email.trim(),
           reviewEmailConsent,
           text,
-          files: await Promise.all(
-            files.map(async (f) => ({
-              name: f.name.slice(0, 180),
-              mime: f.type,
-              base64: await readFileAsBase64(f),
-            })),
-          ),
           privacy: true as const,
           website,
         },
       });
-      setSent(true);
+      setSent(result);
       clearBookingDraft("photo.");
+      requestIds.clear();
     } catch {
       setError(
-        "Ihre Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es erneut oder kontaktieren Sie uns telefonisch oder per WhatsApp.",
+        "Wir konnten den Eingang Ihrer Anfrage nicht bestätigen. Sie können dieselbe Anfrage erneut senden oder uns telefonisch bzw. per WhatsApp kontaktieren.",
       );
+      submitting.current = false;
       setPending(false);
     }
   }
 
-  if (sent) {
-    return (
-      <SubmissionResult className="rounded-card border border-line bg-elevated p-5 text-sm text-muted">
-        Ihre Anfrage ist eingegangen. Wir prüfen Ihre Beschreibung und die ausgewählten Fotos und
-        melden uns über Ihre angegebenen Kontaktdaten. Den Fixpreis und einen Termin vereinbaren wir
-        nach der Begutachtung.
-      </SubmissionResult>
-    );
-  }
+  if (sent) return <InquiryConfirmation {...sent} />;
 
   return (
     <form
@@ -100,30 +83,12 @@ export function PhotoInquiry({ title, hint }: { title: string; hint: string }) {
       <h2 className="font-display text-2xl">{title}</h2>
       <p className="text-sm text-muted">{hint}</p>
       <p className="text-xs text-subtle">
-        Ihre Kontaktdaten, Beschreibung und ausgewählten Aufnahmen werden geschützt übermittelt und
-        Ihrer Anfrage zugeordnet. Den Fixpreis erhalten Sie erst nach unserer Begutachtung.
+        Die Anfrage ist unverbindlich. Den Preis und einen Termin stimmen wir nach der Begutachtung
+        mit Ihnen ab.
       </p>
-      <Field
-        tone="public"
-        id="media"
-        label="Aufnahmen auswählen (optional, max. 8 Dateien, je höchstens 12 MB)"
-      >
-        <input
-          id="media"
-          {...fieldProps("media")}
-          type="file"
-          accept={UPLOAD_MIME_TYPES.join(",")}
-          multiple
-          className="w-full min-w-0 max-w-full text-sm"
-          onChange={(e) => setFiles(Array.from(e.target.files ?? []).slice(0, 8))}
-        />
-        {fieldError("media")}
-        {files.length ? (
-          <p className="text-xs text-subtle">
-            {files.length} {files.length === 1 ? "Datei ausgewählt" : "Dateien ausgewählt"}
-          </p>
-        ) : null}
-      </Field>
+      <p className="text-sm text-muted">
+        Fotos kannst du nach deiner Anfrage in deinem Kundenbereich ergänzen.
+      </p>
       <Field tone="public" id="desc" label="Beschreibung">
         <textarea
           id="desc"
@@ -150,7 +115,7 @@ export function PhotoInquiry({ title, hint }: { title: string; hint: string }) {
         />
         {fieldError("name")}
       </Field>
-      <Field tone="public" id="iphone" label="Telefon">
+      <Field tone="public" id="iphone" label="Telefon (optional)">
         <input
           id="iphone"
           className={inputLine}
@@ -161,16 +126,16 @@ export function PhotoInquiry({ title, hint }: { title: string; hint: string }) {
           minLength={6}
           maxLength={40}
           {...fieldProps("phone")}
-          required
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
         />
         {fieldError("phone")}
       </Field>
-      <Field tone="public" id="iemail" label="E-Mail für das Angebot (optional)">
+      <Field tone="public" id="iemail" label="E-Mail für das Kundenkonto">
         <input
           id="iemail"
           type="email"
+          required
           autoComplete="email"
           className={inputLine}
           maxLength={160}
@@ -214,8 +179,8 @@ export function PhotoInquiry({ title, hint }: { title: string; hint: string }) {
           required
         />
         <span className="min-w-0">
-          Name, Kontaktdaten, Beschreibung und ausgewählte Aufnahmen werden zur Bearbeitung Ihrer
-          Anfrage geschützt übermittelt. Siehe{" "}
+          Name, Kontaktdaten und Beschreibung werden zur Bearbeitung Ihrer Anfrage geschützt
+          übermittelt. Siehe{" "}
           <Link to="/datenschutz" className="underline hover:text-fg">
             Datenschutzerklärung
           </Link>

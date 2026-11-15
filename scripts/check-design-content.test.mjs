@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
-import { compareSource, inspectDesignContent } from "./check-design-content.mjs";
+import { compareSource, compareApprovedRundumContent, compareApprovedProtectedReplacement, inspectDesignContent } from "./check-design-content.mjs";
 
 const fixture = `
 const goals = ["Sauber im Alltag.", "Dauerhafter Schutz."];
@@ -316,4 +317,30 @@ test("SEO blob pins cover only the exact reviewed TSX and protected data", () =>
       approvedSeoBlobs: { "src/unknown.ts": "1".repeat(40) },
     }), /Invalid approved SEO Git blob/);
   });
+});
+
+const blob = (source) => createHash("sha1").update(`blob ${Buffer.byteLength(source)}\0`).update(source).digest("hex");
+test("Rundum approval records exact semantic removals and requires their approved replacements", () => {
+  const before = 'const Page = () => <><h1>Aufbereitung</h1><p>Fotos hier hochladen.</p><Link to="/preise" hash="buchung">Pakete</Link></>;',
+    after = before.replace("Fotos hier hochladen.", "Fotos später im Kundenbereich ergänzen."),
+    approval = { beforeBlob: blob(before), removed: { text: [{ value: "Fotos hier hochladen.", count: 1 }] }, added: { text: [{ value: "Fotos später im Kundenbereich ergänzen.", count: 1 }] } };
+  const compare = (current, original = before) => compareApprovedRundumContent(original, current, "src/routes/index.tsx", approval);
+  assert.deepEqual(compare(after), []);
+  assert.ok(compare(after.replace("Fotos später im Kundenbereich ergänzen.", "Beliebiger Ersatz")).some((item) => item.kind === "text"));
+  assert.ok(compare(after.replace("<h1>Aufbereitung</h1>", "")).some((item) => item.kind === "headings"));
+  assert.ok(compare(after.replace('hash="buchung"', 'hash="anderes-formular"')).some((item) => item.kind === "links"));
+  assert.ok(compare(after, before + " ").some((item) => item.kind === "rundum-baseline"));
+  assert.ok(compareApprovedRundumContent(before, after, "src/routes/index.tsx", { ...approval, removed: { text: [{ value: "Fotos hier hochladen.", count: 2 }] } }).some((item) => item.kind === "rundum-approval"));
+});
+
+test("a protected contact-copy approval preserves every SEO expression and function signature", () => {
+  const before = 'export const title = "Fahrzeugpflege in Horb";\nexport function contact(city) { return `Fotos für ${city} senden`; }\n';
+  const after = before.replace('Fotos für ${city} senden', 'Beratung für ${city} anfragen');
+  const approval = { beforeBlob: blob(before), replacements: [{ before: 'Fotos für ${city} senden', after: 'Beratung für ${city} anfragen' }] };
+  const compare = (current) => compareApprovedProtectedReplacement(before, current, "src/lib/city-seo.ts", approval);
+  assert.deepEqual(compare(after), []);
+  for (const current of [after.replace("Horb", "Nagold"), after.replace("contact(city)", "contact(other)"), after + " ", before])
+    assert.ok(compare(current).some((item) => item.kind === "protected-source"));
+  assert.ok(compareApprovedProtectedReplacement(before + " ", after, "src/lib/city-seo.ts", approval).some((item) => item.kind === "rundum-baseline"));
+  assert.ok(compareApprovedProtectedReplacement(before, after, "src/lib/city-seo.ts", { ...approval, replacements: [] }).some((item) => item.kind === "rundum-approval"));
 });

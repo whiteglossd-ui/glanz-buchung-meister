@@ -10,16 +10,20 @@ type ScriptAsset = RouterManagedTag & { preventScriptHoist?: boolean };
 /**
  * Server-side counterpart of Start's `<Scripts />`: renders every body script
  * unchanged except the module entry, which moves into the deferred bootstrap
- * together with the module preloads the head would have rendered. The
- * server-rendered document is complete without JavaScript, so hydration no
- * longer competes with the hero image and fonts for the first bytes.
+ * together with the remaining module preloads. The homepage route and entry
+ * are already prepared by head hints; execution still starts only through
+ * the unchanged painted-hero bootstrap gate.
  */
 function ServerDeferredScripts() {
   const router = useRouter();
   const nonce = router.options.ssr?.nonce;
+  const earlyRoutePreload = router.state.location.pathname === "/"
+    ? router.ssr?.manifest?.routes["/"]?.preloads?.[0]
+    : undefined;
   const preloads = useTags()
     .filter(isModulePreload)
-    .map((tag) => String(tag.attrs?.href));
+    .map((tag) => String(tag.attrs?.href))
+    .filter((href) => href !== earlyRoutePreload);
 
   const matches = _getAssetMatches(router.stores.matches.get());
   const scripts: ScriptAsset[] = matches
@@ -49,7 +53,9 @@ function ServerDeferredScripts() {
     scripts.push({
       tag: "script",
       attrs: { nonce },
-      children: deferredBootstrapSource(entries, [...new Set(preloads)]),
+      children: deferredBootstrapSource(entries, [...new Set(preloads)].filter(
+        (href) => router.state.location.pathname !== "/" || !entries.includes(href),
+      )),
     });
   }
   // Same order as Start's composeSsrBodyScripts: hydration data first, the
