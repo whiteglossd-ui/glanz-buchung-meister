@@ -1,15 +1,71 @@
 import assert from "node:assert/strict";
 import { RUNDUM_SERVICES } from "../../src/lib/rundum-service.ts";
 import { site } from "../../src/data/site.ts";
+import { observePageReads } from "./read-completion.mjs";
 
 export const iconPreloadObservations = [];
+export const rundumArrivalObservations = [];
+
+async function assertStableRundumArrival(page, label, reads) {
+  await reads.complete(label, { timeoutMs: 5000 });
+  await page.evaluate(() => {
+    window.__qaRundumArrival = { y: scrollY, height: document.documentElement.scrollHeight, since: performance.now(), samples: [] };
+  });
+  await page.waitForFunction(() => {
+    const probe = window.__qaRundumArrival, now = performance.now(), height = document.documentElement.scrollHeight;
+    const marker = document.querySelector('[data-inquiry-start="booking"]')?.getBoundingClientRect();
+    const near = !!marker && marker.bottom >= -240 && marker.top <= innerHeight + 240;
+    const ready = !!document.querySelector("#buchung .booking-flow");
+    if (Math.abs(scrollY - probe.y) > 0.5 || probe.height !== height || (near && !ready)) {
+      probe.y = scrollY; probe.height = height; probe.since = now;
+      probe.samples.push({ at: Math.round(now), y: scrollY, documentHeight: height, bookingReady: ready, markerNear: near });
+      if (probe.samples.length > 16) probe.samples.shift();
+    }
+    return now - probe.since >= 150;
+  }, undefined, { timeout: 5000 });
+  const state = await page.locator("#rundum-anfrage-heading").evaluate((element) => {
+    const heading = element.getBoundingClientRect(), header = document.querySelector(".site-header")?.getBoundingClientRect();
+    const hit = document.elementFromPoint(heading.left + heading.width / 2, heading.top + heading.height / 2);
+    return { path: location.pathname + location.hash, scrollY, documentHeight: document.documentElement.scrollHeight,
+      activeElement: document.activeElement?.id || document.activeElement?.tagName,
+      heading: heading.toJSON(), headerBottom: Math.max(0, header?.bottom ?? 0), viewport: { width: innerWidth, height: innerHeight },
+      headingUnobscured: element.contains(hit), bookingReady: !!document.querySelector("#buchung .booking-flow"),
+      formChunks: performance.getEntriesByType("resource").filter((entry) => /^\/assets\/(?:rundum-service-form|configurator)-[^/]+\.js$/.test(new URL(entry.name).pathname))
+        .map((entry) => ({ path: new URL(entry.name).pathname, start: entry.startTime, end: entry.responseEnd })),
+      samples: window.__qaRundumArrival.samples };
+  });
+  assert.ok(state.path === "/#rundum-anfrage" && state.heading.width > 0 && state.heading.height > 0
+    && state.heading.top >= state.headerBottom - 1 && state.heading.bottom <= state.viewport.height
+    && state.heading.left >= 0 && state.heading.right <= state.viewport.width && state.headingUnobscured,
+  `${label}: real Rundum anchor must remain fully visible below the header after natural neighboring loads: ${JSON.stringify(state)}`);
+  rundumArrivalObservations.push({ label, ...state });
+}
+
+export function verifyOriginalIconHead(documentHtml, label) {
+  assert.equal(typeof documentHtml, "string", `${label}: the original navigation response is required`);
+  const head = /<head(?:\s[^>]*)?>([\s\S]*?)<\/head>/i.exec(documentHtml);
+  assert.ok(head, `${label}: original response contains an actual head`);
+  // Ignore commented/script strings: hydration data containing a link is not a
+  // parser-visible head hint. Preserve positions for the recorded evidence.
+  const markup = head[1].replace(/<script\b[\s\S]*?<\/script\s*>|<!--[\s\S]*?-->/gi, (value) => " ".repeat(value.length));
+  const hints = [...markup.matchAll(/<link\b[^>]*>/gi)].filter((match) => /\brel=["']preload["']/i.test(match[0])
+    && /\bhref=["']\/favicon-192\.png["']/i.test(match[0]));
+  assert.equal(hints.length, 1, `${label}: exactly one actual icon preload occurs in the original head`);
+  for (const attribute of [/\bas=["']image["']/i, /\btype=["']image\/png["']/i, /\bfetchpriority=["']low["']/i])
+    assert.match(hints[0][0], attribute, `${label}: original icon hint preserves type and low priority`);
+  const body = documentHtml.search(/<body(?:\s|>)/i), bootstrap = documentHtml.indexOf("(function(d,w,e,p)");
+  const headEnd = head.index + head[0].length;
+  assert.ok(body >= headEnd && bootstrap > body, `${label}: the actual head precedes the body and deferred module bootstrap`);
+  return { iconHeadOffset: head.index + head[0].indexOf(head[1]) + hints[0].index, headEnd, bodyOffset: body, bootstrapOffset: bootstrap };
+}
 
 // Read-only controls and layout checks. The CI runner supplies the browser;
 // these actions never submit a request, upload a file or open WhatsApp.
-export async function verifyInitialRundumHero(page, { label, screenshot }) {
+export async function verifyInitialRundumHero(page, { label, screenshot, documentHtml }) {
   const link = page.locator(".scroll-film-rundum").getByRole("link", { name: "Rundum-Service anfragen", exact: true });
   await link.waitFor({ state: "visible" });
   await page.evaluate(() => document.fonts.ready);
+  const originalHead = verifyOriginalIconHead(documentHtml, label);
   const icon = await page.evaluate(() => {
     const hint = document.querySelector('link[rel="preload"][href="/favicon-192.png"]');
     const resources = performance.getEntriesByType("resource");
@@ -19,13 +75,17 @@ export async function verifyInitialRundumHero(page, { label, screenshot }) {
     return { hint: hint && { as: hint.getAttribute("as"), type: hint.getAttribute("type"), priority: hint.getAttribute("fetchpriority") },
       icon: entry && { path: new URL(entry.name).pathname, initiatorType: entry.initiatorType, start: entry.startTime, end: entry.responseEnd, encodedBytes: entry.encodedBodySize, transfer: entry.transferSize },
       main: main && { start: main.startTime, end: main.responseEnd },
-      basis: main ? "main-module-response-end" : "navigation-dom-content-loaded",
-      earlyDeadline: main ? main.responseEnd : navigation?.domContentLoadedEventStart };
+      basis: main ? "main-module-response-end" : "original-ssr-head-before-body-bootstrap",
+      ...(main ? { earlyDeadline: main.responseEnd } : {}),
+      navigationDcl: navigation?.domContentLoadedEventStart };
   });
   assert.deepEqual(icon.hint, { as: "image", type: "image/png", priority: "low" }, `${label}: the existing icon is preloaded at low priority`);
-  assert.ok(icon.icon && icon.icon.encodedBytes === 14984 && Number.isFinite(icon.earlyDeadline) && icon.earlyDeadline > 0 && icon.icon.start <= icon.earlyDeadline,
-    `${label}: actual existing icon preload is discovered early using the recorded native timing basis: ${JSON.stringify(icon)}`);
-  iconPreloadObservations.push({ label, ...icon });
+  assert.ok(icon.icon && icon.icon.encodedBytes === 14984, `${label}: actual link preload fetches the unchanged icon size: ${JSON.stringify(icon)}`);
+  if (page.context().browser().browserType().name() === "chromium")
+    assert.ok(icon.main, `${label}: Chromium must expose its native main-module timing`);
+  if (icon.main) assert.ok(Number.isFinite(icon.earlyDeadline) && icon.earlyDeadline > 0 && icon.icon.start <= icon.earlyDeadline,
+    `${label}: actual icon preload starts before the native main-module response finishes: ${JSON.stringify(icon)}`);
+  iconPreloadObservations.push({ label, ...icon, originalHead });
   const initialFormRequests = await page.evaluate(() => performance.getEntriesByType("resource")
     .map((entry) => new URL(entry.name).pathname).filter((path) => /^\/assets\/rundum-service-form-[^/]+\.js$/.test(path)));
   assert.deepEqual(initialFormRequests, [], `${label}: initial view does not fetch the below-fold form chunk`);
@@ -64,6 +124,7 @@ export async function verifyInitialRundumHero(page, { label, screenshot }) {
 }
 
 export async function verifyRundumUi(page, { label, screenshot }) {
+  const reads = observePageReads(page, page.url());
   const intro = page.locator(".rundum-service-intro");
   await intro.waitFor({ state: "visible" });
   await page.evaluate(() => document.fonts.ready);
@@ -88,6 +149,7 @@ export async function verifyRundumUi(page, { label, screenshot }) {
   await page.waitForFunction(() => location.hash === "#rundum-anfrage");
   const section = page.locator("#rundum-anfrage"), form = page.getByRole("form", { name: "Rundum-Service anfragen", exact: true });
   await form.waitFor({ state: "visible", timeout: 5000 });
+  await assertStableRundumArrival(page, `${label}: intro anchor`, reads);
   assert.deepEqual(await form.locator('input[name="services"]').evaluateAll((inputs) => inputs.map((input) => input.value)), [...RUNDUM_SERVICES]);
   for (const [id, required] of [["name", true], ["email", true], ["phone", false], ["vehicleMake", true], ["vehicleModel", true], ["text", true], ["date", false]]) {
     const input = form.locator("#rundum-" + id);
@@ -157,10 +219,12 @@ export async function verifyRundumUi(page, { label, screenshot }) {
 
 // Exercise real same-origin anchors and client routing without submitting data.
 export async function verifyRundumIntentLoading(page, { label, base }) {
+  const reads = observePageReads(page, base);
   const form = page.getByRole("form", { name: "Rundum-Service anfragen", exact: true });
   await page.locator(".scroll-film-rundum").getByRole("link", { name: "Rundum-Service anfragen", exact: true }).click();
   await page.waitForFunction(() => location.hash === "#rundum-anfrage");
   await form.waitFor({ state: "visible", timeout: 5000 });
+  await assertStableRundumArrival(page, `${label}: hero anchor`, reads);
   assert.ok(await page.evaluate(() => performance.getEntriesByType("resource").some((entry) =>
     /^\/assets\/rundum-service-form-[^/]+\.js$/.test(new URL(entry.name).pathname))), `${label}: real anchor loads the actual form chunk`);
   const draft = "QA ungesendeter Formularentwurf";
@@ -177,6 +241,7 @@ export async function verifyRundumIntentLoading(page, { label, base }) {
   assert.equal(await form.locator("#rundum-name").inputValue(), draft, `${label}: client route and back keep unsent input`);
   await page.goto(`${base}/#rundum-anfrage`, { waitUntil: "networkidle" });
   await form.waitFor({ state: "visible", timeout: 5000 });
+  await assertStableRundumArrival(page, `${label}: direct hash`, reads);
   assert.equal(await page.locator('main input[type="file"]').count(), 0);
   return `${label}: deferred form loads within five seconds through hero/intro anchors and a direct URL; hash/client-route changes preserve an unsent draft`;
 }

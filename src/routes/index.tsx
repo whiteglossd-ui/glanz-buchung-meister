@@ -268,8 +268,6 @@ function Home() {
         </ol>
       </section>
 
-      <RundumServiceInquiry />
-
       <section
         id="buchung"
         className="section booking-section mx-auto max-w-7xl px-4 sm:px-6"
@@ -286,6 +284,8 @@ function Home() {
         </p>
         <LazyConfigurator eager={Boolean(paket || ort)} initialPackage={paket} initialCity={ort} />
       </section>
+
+      <RundumServiceInquiry />
 
       <nav
         className="home-specialties mx-auto max-w-7xl px-4 sm:px-6"

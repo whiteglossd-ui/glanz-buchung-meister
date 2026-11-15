@@ -27,7 +27,7 @@ export function LazyConfigurator({
   initialCity?: string;
 }) {
   const hash = useRouterState({ select: (s) => s.location.hash });
-  const ref = useRef<HTMLDivElement>(null);
+  const startRef = useRef<HTMLDivElement>(null);
   // URL fragments are absent on the server; keep the initial client render identical.
   const [ready, setReady] = useState(eager);
 
@@ -37,7 +37,7 @@ export function LazyConfigurator({
 
   useEffect(() => {
     if (ready) return;
-    const el = ref.current;
+    const el = startRef.current;
     if (!el) return;
     const io = new IntersectionObserver(
       (entries) => {
@@ -53,7 +53,9 @@ export function LazyConfigurator({
   }, [ready]);
 
   return (
-    <div ref={ref}>
+    <div>
+      {/* A jump to the following section must not load this form through a hidden placeholder tail. */}
+      <div ref={startRef} data-inquiry-start="booking" className="h-px" aria-hidden="true" />
       <noscript>
         <style>{".lazy-configurator-js { display: none; }"}</style>
         <p className="mb-6 text-muted">

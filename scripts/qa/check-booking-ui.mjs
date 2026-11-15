@@ -11,7 +11,7 @@ import { qaBase } from "./ports.mjs";
 import { qaClientHeaders } from "./client-identity.mjs";
 import { prepareBrowserFixture } from "./browser-fixture.mjs";
 import { assertBrowserDiagnostics, createBrowserDiagnostics } from "../browser-diagnostics.mjs";
-import { verifyInitialRundumHero, verifyRundumUi, verifyRundumIntentLoading, iconPreloadObservations } from "./rundum-ui.mjs";
+import { verifyInitialRundumHero, verifyRundumUi, verifyRundumIntentLoading, iconPreloadObservations, rundumArrivalObservations } from "./rundum-ui.mjs";
 
 const output = ".qa-output/booking-ui";
 await mkdir(output, { recursive: true });
@@ -186,9 +186,10 @@ try {
   for (const width of [390, 1440]) {
     const { context, page } = await openContext({ viewport: { width, height: width < 700 ? 844 : 1000 }, reducedMotion: "reduce" });
     try {
-      await page.goto(`${qaBase}/`, { waitUntil: "networkidle" });
+      const response = await page.goto(`${qaBase}/`, { waitUntil: "networkidle" });
       results.push(await verifyInitialRundumHero(page, {
         label: `chromium-${width}`,
+        documentHtml: await response.text(),
         screenshot: (name) => page.screenshot({ path: `${output}/${name}` }),
       }));
       results.push(await verifyRundumIntentLoading(page, { label: `chromium-${width}`, base: qaBase }));
@@ -476,6 +477,7 @@ try {
       passed: results.length,
       results,
       iconPreloadObservations,
+      rundumArrivalObservations,
       errors: evidence.flatMap((item) => item.errors),
       blocked: evidence.flatMap((item) => item.blocked),
       ignored: evidence.flatMap((item) => item.ignored),

@@ -45,7 +45,7 @@ const bookingCtaName = "Jetzt Termin anfragen";
 async function bookingGeometry(page) {
   return page.evaluate(() => {
     const booking = document.querySelector("#buchung")?.getBoundingClientRect();
-    const neighbor = document.querySelector("#rundum-anfrage .lazy-rundum-js")?.getBoundingClientRect();
+    const neighbor = document.querySelector('[data-inquiry-start="rundum"]')?.getBoundingClientRect();
     return { path: location.pathname + location.hash, scrollY, documentHeight: document.documentElement.scrollHeight,
       bookingDocumentTop: booking ? booking.top + scrollY : null,
       activeElement: document.activeElement?.id || document.activeElement?.tagName,
@@ -64,7 +64,7 @@ async function settleBookingGeometry(page, timeout, evidence) {
   try {
     await page.waitForFunction(() => {
       const probe = window.__qaBookingGeometry, now = performance.now(), height = document.documentElement.scrollHeight;
-      const neighbor = document.querySelector("#rundum-anfrage .lazy-rundum-js")?.getBoundingClientRect();
+      const neighbor = document.querySelector('[data-inquiry-start="rundum"]')?.getBoundingClientRect();
       const ready = !!document.querySelector("#rundum-anfrage form");
       const near = !!neighbor && neighbor.bottom >= -240 && neighbor.top <= innerHeight + 240;
       if (Math.abs(scrollY - probe.y) > 0.5 || height !== probe.height || (near && !ready)) {

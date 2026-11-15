@@ -152,6 +152,7 @@ try {
               assert.equal(response.status(), 200, `${name} ${path}`);
               if (path === "/") report.checks.push(await verifyInitialRundumHero(page, {
                 label: `${name}-${width}`,
+                documentHtml: await response.text(),
                 screenshot: (filename) => screenshot(page, filename),
               }));
               else await rejectConsent(page);

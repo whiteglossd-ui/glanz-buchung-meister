@@ -21,7 +21,7 @@ function Skeleton() {
 /** Keep below-fold form code out of initial hydration; its request anchor is always rendered. */
 export function LazyRundumInquiry() {
   const hash = useRouterState({ select: (state) => state.location.hash });
-  const ref = useRef<HTMLDivElement>(null);
+  const startRef = useRef<HTMLDivElement>(null);
   // Fragments are unavailable during SSR; the first client render must match it.
   const [ready, setReady] = useState(false);
 
@@ -31,7 +31,7 @@ export function LazyRundumInquiry() {
 
   useEffect(() => {
     if (ready) return;
-    const element = ref.current;
+    const element = startRef.current;
     if (!element) return;
     const observer = new IntersectionObserver(
       (entries) => {
@@ -47,7 +47,9 @@ export function LazyRundumInquiry() {
   }, [ready]);
 
   return (
-    <div ref={ref}>
+    <div>
+      {/* Observe the form's beginning: an anchor jump past it must not activate a hidden tail. */}
+      <div ref={startRef} data-inquiry-start="rundum" className="h-px" aria-hidden="true" />
       <noscript>
         <style>{".lazy-rundum-js { display: none; }"}</style>
         <p className="mb-6 text-sm text-muted">
