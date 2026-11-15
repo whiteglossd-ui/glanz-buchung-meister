@@ -2,7 +2,7 @@
 import { assertIsolatedGithubCi } from "../hosting-policy.mjs";
 assertIsolatedGithubCi();
 import assert from "node:assert/strict";
-import { access, mkdir, readFile, realpath, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, readdir, realpath, writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { createHash, X509Certificate } from "node:crypto";
 import { connect } from "node:http2";
@@ -59,6 +59,8 @@ const summary = {
   invalidAttempts: [],
   iconPreloadRuns: [],
   iconProofFailures: [],
+  routePreloadRuns: [],
+  routePreloadFailures: [],
 };
 
 function cancel(signal) {
@@ -162,6 +164,18 @@ try {
     database: "in-memory-pglite",
     externalFetch: "blocked",
   });
+  const manifests = (await readdir(resolve(".output/server")))
+    .filter((name) => name.startsWith("_tanstack-start-manifest_") && name.endsWith(".mjs"));
+  assert.equal(manifests.length, 1, "The current build must identify one SSR manifest");
+  const buildManifest = (await import(pathToFileURL(resolve(".output/server", manifests[0])).href)).tsrStartManifest();
+  const homeRoute = buildManifest.routes["/"];
+  assert.ok(homeRoute.filePath.endsWith("/src/routes/index.tsx"));
+  const expectedRoutePath = homeRoute.preloads[0];
+  assert.match(expectedRoutePath, /^\/assets\/[\w.-]+\.js$/);
+  assert.ok(!buildManifest.routes.__root__.scripts.some((script) => script.attrs?.src === expectedRoutePath),
+    "The early homepage hint must not select the bulk root entry");
+  const routeSource = await readFile(resolve(".output/public" + expectedRoutePath));
+  summary.routePreloadAsset = { path: expectedRoutePath, bytes: routeSource.length };
   const expectedIcon = await readFile(resolve("public/favicon-192.png"));
   const iconSha256 = createHash("sha256").update(expectedIcon).digest("hex");
   assert.equal(iconSha256, "73ec795e41e36843ecebba7edb10b69f303c139ddd27571fa2e3bd07ff69d42a",
@@ -353,6 +367,26 @@ try {
           // or cache overrides. Cached references may transfer zero bytes.
           const iconRequests = networkRequests.filter((request) => new URL(request.url).pathname === "/favicon-192.png");
           const mainRequest = networkRequests.find((request) => /^\/assets\/index-[^/]+\.js$/.test(new URL(request.url).pathname));
+          const routeRequests = networkRequests.filter((request) => new URL(request.url).pathname === expectedRoutePath);
+          const routeDiscovery = result.artifacts.DevtoolsLog.find((entry) => entry.method === "Network.requestWillBeSent"
+            && new URL(entry.params.request.url).pathname === expectedRoutePath);
+          const routeObservation = { profile, run, path: expectedRoutePath,
+            initiatorType: routeDiscovery?.params.initiator?.type ?? null,
+            requests: routeRequests,
+            mainModule: mainRequest ? { start: mainRequest.networkRequestTime, end: mainRequest.networkEndTime } : null };
+          summary.routePreloadRuns.push(routeObservation);
+          await writeFile(resolve(output, `${prefix}.route-preload-observation.json`), JSON.stringify(routeObservation, null, 2));
+          console.log(`LH-ROUTE-CAPTURE ${JSON.stringify(routeObservation)}`);
+          try {
+            assert.equal(routeRequests.length, 1, `${profile} ${run}: reuse the single homepage route request`);
+            assert.equal(routeRequests[0].resourceSize, routeSource.length);
+            assert.equal(routeRequests[0].isLinkPreload, true);
+            assert.equal(routeDiscovery?.params.initiator?.type, "parser");
+            assert.ok(mainRequest && routeRequests[0].networkRequestTime <= mainRequest.networkEndTime,
+              "The real route preload must begin before the bulk entry completes");
+          } catch (error) {
+            summary.routePreloadFailures.push({ profile, run, message: error.message, actual: error.actual, expected: error.expected });
+          }
           const wireRequests = iconRequests.filter((request) => request.transferSize > 0);
           const iconRequestIds = new Set(result.artifacts.DevtoolsLog
             .filter((entry) => entry.method === "Network.requestWillBeSent"
@@ -579,7 +613,8 @@ try {
     }
   }
 
-  const failures = summary.iconProofFailures.map(({ profile, run, message }) => `${profile} ${run}: ${message}`);
+  const failures = [...summary.iconProofFailures, ...summary.routePreloadFailures]
+    .map(({ profile, run, message }) => `${profile} ${run}: ${message}`);
   const shortfalls = [];
   for (const profile of ["mobile", "desktop"]) {
     const runs = summary.runs.filter((run) => run.profile === profile);

@@ -232,15 +232,20 @@ test("Node serves compressed build assets and revalidates mutable media", async 
       `${path} must preserve the desktop overrides after the complete inline cascade`);
     assert.ok(!inlineCss.includes(desktopStyles[0].source.trim()),
       `${path} must not duplicate the external desktop stylesheet inline`);
-    assert.doesNotMatch(
-      head,
-      /<link\b[^>]*rel="modulepreload"/,
-      `${path} leaves hydration preloads to the deferred bootstrap`,
-    );
+    const earlyModulePreloads = [...head.matchAll(/<link\b[^>]*rel="modulepreload"[^>]*>/g)]
+      .map(([tag]) => tag);
+    assert.equal(earlyModulePreloads.length, path === "/" ? 1 : 0,
+      `${path} prepares only the homepage route before the existing execution gate`);
+    const earlyRoutePreload = earlyModulePreloads[0]?.match(/href="([^"]+)"/)?.[1];
+    if (earlyRoutePreload) {
+      assert.match(earlyRoutePreload, /^\/assets\/[\w.-]+\.js$/);
+      assert.equal(earlyModulePreloads[0].match(/fetchpriority="([^"]+)"/i)?.[1], "low",
+        "The homepage preparation must not take high priority from the hero and fonts");
+    }
     assert.doesNotMatch(
       html,
       /<script\b[^>]*\bsrc="\/assets\//,
-      `${path} must not fetch the client entry before the first viewport has painted`,
+      `${path} must not execute the client entry before the first viewport has painted`,
     );
     const bootstraps = executableInlineScripts(html).filter(([, , source]) =>
       source.includes('t.type="module"'),
@@ -251,7 +256,11 @@ test("Node serves compressed build assets and revalidates mutable media", async 
     assert.ok(lists, `${path} bootstrap must end with its entry and preload lists`);
     const [entries, preloads] = [JSON.parse(lists[1]), JSON.parse(lists[2])];
     assert.ok(entries.length > 0 && preloads.length > 0, `${path} must retain Start's hydration assets`);
-    for (const asset of [...entries, ...preloads]) {
+    if (earlyRoutePreload) {
+      assert.ok(!entries.includes(earlyRoutePreload), "The early hint must not prepare the bulk client entry");
+      assert.ok(!preloads.includes(earlyRoutePreload), "The route hint must not be inserted twice");
+    }
+    for (const asset of [...entries, ...preloads, ...(earlyRoutePreload ? [earlyRoutePreload] : [])]) {
       assert.match(asset, /^\/assets\/[\w.-]+\.js$/, `${path} hydration asset ${asset}`);
       const response = await fetch(new URL(asset, base), { signal: AbortSignal.timeout(15000) });
       assert.equal(response.status, 200, `${path} hydration asset ${asset}`);

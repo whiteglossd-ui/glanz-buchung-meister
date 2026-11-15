@@ -11,21 +11,24 @@ export interface PrioritizedHeadContentProps {
 
 /**
  * Render all Start-managed head assets with their existing keys and CSP nonce.
- * The server leaves module preloads to the deferred bootstrap, which inserts
- * them together with the entry after the first viewport has painted. On the
- * client they stay low-priority hints for navigation.
+ * The server prepares only the active homepage module at low priority. Its
+ * execution and every other module preload stay behind the existing painted-
+ * hero bootstrap gate. The manifest supplies the real current hashed URL.
  */
 export function PrioritizedHeadContent(props: PrioritizedHeadContentProps) {
   const tags = prioritizeImagePreloads(useTags(props.assetCrossOrigin));
   const router = useRouter();
   const nonce = router.options.ssr?.nonce;
   const server = isServer ?? router.isServer;
+  const earlyRoutePreload = router.state.location.pathname === "/"
+    ? router.ssr?.manifest?.routes["/"]?.preloads?.[0]
+    : undefined;
 
   return (
     <>
       {tags.map((tag) => {
         const modulePreload = isModulePreload(tag);
-        if (modulePreload && server) return null;
+        if (modulePreload && server && tag.attrs?.href !== earlyRoutePreload) return null;
 
         return (
           <Asset
