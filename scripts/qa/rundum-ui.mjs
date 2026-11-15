@@ -8,6 +8,11 @@ export async function verifyInitialRundumHero(page, { label, screenshot }) {
   const link = page.locator(".scroll-film-rundum").getByRole("link", { name: "Rundum-Service anfragen", exact: true });
   await link.waitFor({ state: "visible" });
   await page.evaluate(() => document.fonts.ready);
+  const initialFormRequests = await page.evaluate(() => performance.getEntriesByType("resource")
+    .map((entry) => new URL(entry.name).pathname).filter((path) => /^\/assets\/rundum-service-form-[^/]+\.js$/.test(path)));
+  assert.deepEqual(initialFormRequests, [], `${label}: initial view does not fetch the below-fold form chunk`);
+  assert.equal(await page.getByRole("form", { name: "Rundum-Service anfragen", exact: true }).count(), 0,
+    `${label}: initial view keeps the interactive form deferred`);
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
   const target = new URL(await link.getAttribute("href"), page.url());
   assert.equal(target.pathname, "/");
@@ -64,7 +69,7 @@ export async function verifyRundumUi(page, { label, screenshot }) {
   await request.click();
   await page.waitForFunction(() => location.hash === "#rundum-anfrage");
   const section = page.locator("#rundum-anfrage"), form = page.getByRole("form", { name: "Rundum-Service anfragen", exact: true });
-  await form.waitFor({ state: "visible" });
+  await form.waitFor({ state: "visible", timeout: 5000 });
   assert.deepEqual(await form.locator('input[name="services"]').evaluateAll((inputs) => inputs.map((input) => input.value)), [...RUNDUM_SERVICES]);
   for (const [id, required] of [["name", true], ["email", true], ["phone", false], ["vehicleMake", true], ["vehicleModel", true], ["text", true], ["date", false]]) {
     const input = form.locator("#rundum-" + id);
@@ -92,4 +97,30 @@ export async function verifyRundumUi(page, { label, screenshot }) {
   assert.deepEqual(clipped, [], `${label}: no clipped controls`);
   await screenshot(`${label}-rundum-form.png`, section);
   return `${label}: compact prominent service, exact WhatsApp channel, request anchor, seven multiple choices, optional phone/date, no public upload, usable controls and layout`;
+}
+
+// Exercise real same-origin anchors and client routing without submitting data.
+export async function verifyRundumIntentLoading(page, { label, base }) {
+  const form = page.getByRole("form", { name: "Rundum-Service anfragen", exact: true });
+  await page.locator(".scroll-film-rundum").getByRole("link", { name: "Rundum-Service anfragen", exact: true }).click();
+  await page.waitForFunction(() => location.hash === "#rundum-anfrage");
+  await form.waitFor({ state: "visible", timeout: 5000 });
+  assert.ok(await page.evaluate(() => performance.getEntriesByType("resource").some((entry) =>
+    /^\/assets\/rundum-service-form-[^/]+\.js$/.test(new URL(entry.name).pathname))), `${label}: real anchor loads the actual form chunk`);
+  const draft = "QA ungesendeter Formularentwurf";
+  await form.locator("#rundum-name").fill(draft);
+  await page.locator('.home-jump-links a[href="#buchung"]').click();
+  await page.waitForFunction(() => location.hash === "#buchung");
+  assert.equal(await form.locator("#rundum-name").inputValue(), draft, `${label}: a hash change keeps unsent input`);
+  await page.locator(".scroll-film-rundum").getByRole("link", { name: "Rundum-Service anfragen", exact: true }).click();
+  await page.waitForFunction(() => location.hash === "#rundum-anfrage");
+  await page.locator(".scroll-film-prices").click();
+  await page.waitForURL((url) => url.pathname === "/preise");
+  await page.goBack({ waitUntil: "networkidle" });
+  await form.waitFor({ state: "visible", timeout: 5000 });
+  assert.equal(await form.locator("#rundum-name").inputValue(), draft, `${label}: client route and back keep unsent input`);
+  await page.goto(`${base}/#rundum-anfrage`, { waitUntil: "networkidle" });
+  await form.waitFor({ state: "visible", timeout: 5000 });
+  assert.equal(await page.locator('main input[type="file"]').count(), 0);
+  return `${label}: deferred form loads within five seconds through hero/intro anchors and a direct URL; hash/client-route changes preserve an unsent draft`;
 }

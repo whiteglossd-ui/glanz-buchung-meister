@@ -781,5 +781,16 @@
       }
     }
   },
-  "baselineNote": "Hauptbranch-Änderung PR #346 (Ab-Preise und entfernte Keramikschichten) integriert; Aufgabenfreigabe enthält ausschließlich den Rundum-/Fotoablauf-Delta gegenüber diesem bestehenden Stand."
+  "baselineNote": "Hauptbranch-Änderung PR #346 (Ab-Preise und entfernte Keramikschichten) integriert; Aufgabenfreigabe enthält ausschließlich den Rundum-/Fotoablauf-Delta gegenüber diesem bestehenden Stand.",
+  "protectedFiles": {
+    "src/lib/city-seo.ts": {
+      "beforeBlob": "0da2b77f0c39186840fdec75e4fe8213d3de9c09",
+      "replacements": [
+        {
+          "before": "und würde den Aufwand gern anhand von Fotos einschätzen lassen.",
+          "after": "und wünsche eine persönliche Beratung zu meinem Anliegen und dem voraussichtlichen Aufwand."
+        }
+      ]
+    }
+  }
 }

@@ -11,7 +11,7 @@ import { qaBase } from "./ports.mjs";
 import { qaClientHeaders } from "./client-identity.mjs";
 import { prepareBrowserFixture } from "./browser-fixture.mjs";
 import { assertBrowserDiagnostics, createBrowserDiagnostics } from "../browser-diagnostics.mjs";
-import { verifyInitialRundumHero, verifyRundumUi } from "./rundum-ui.mjs";
+import { verifyInitialRundumHero, verifyRundumUi, verifyRundumIntentLoading } from "./rundum-ui.mjs";
 
 const output = ".qa-output/booking-ui";
 await mkdir(output, { recursive: true });
@@ -191,6 +191,7 @@ try {
         label: `chromium-${width}`,
         screenshot: (name) => page.screenshot({ path: `${output}/${name}` }),
       }));
+      results.push(await verifyRundumIntentLoading(page, { label: `chromium-${width}`, base: qaBase }));
     } finally { await context.close(); }
   }
   // Test the real API limit, then give each unrelated browser scenario its own

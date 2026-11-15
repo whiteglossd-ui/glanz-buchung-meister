@@ -572,13 +572,22 @@ try {
         const fadeScroll = await phase.run("copy-fade-scroll", () => wheelToHeroPosition(page, fadeTarget, fadeEvidence));
         await phase.run("copy-fade-opacity", () => page.waitForFunction(() => Number(getComputedStyle(document.querySelector(".scroll-film-copy")).opacity) < 0.03, undefined, { timeout: remainingScrollBudget(fadeScroll) }));
         result.fadedGeometry = await geometry(page);
-        result.fadedSemantics = await page.locator(".scroll-film-copy").evaluate((copy) => ({
-          headingAvailable: Boolean(copy.querySelector("h1")) && !copy.querySelector("h1").closest('[inert], [aria-hidden="true"]'),
-          hiddenActionsInert: copy.querySelectorAll("a[href]").length === 2
-            && [...copy.querySelectorAll("a[href]")].every((link) => Boolean(link.closest("[inert]"))),
-        }));
+        result.fadedSemantics = await page.locator(".scroll-film-copy").evaluate((copy) => {
+          const actions = [...copy.querySelectorAll("a[href]")];
+          return {
+            headingAvailable: Boolean(copy.querySelector("h1")) && !copy.querySelector("h1").closest('[inert], [aria-hidden="true"]'),
+            actionTargets: actions.map((link) => { const url = new URL(link.href); return url.pathname + url.hash; }).sort(),
+            hiddenActionsInert: actions.every((link) => Boolean(link.closest("[inert]"))),
+            hiddenActionsRejectFocus: actions.every((link) => {
+              link.focus({ preventScroll: true });
+              return document.activeElement !== link;
+            }),
+          };
+        });
+        assert.deepEqual(result.fadedSemantics.actionTargets, ["/#buchung", "/#rundum-anfrage", "/preise"], "All three expected hero destinations remain present after fading.");
         assert.equal(result.fadedSemantics.headingAvailable, true, "Keep the H1 in the accessibility tree after fading.");
         assert.equal(result.fadedSemantics.hiddenActionsInert, true, "Invisible hero links must leave the keyboard sequence.");
+        assert.equal(result.fadedSemantics.hiddenActionsRejectFocus, true, "Each invisible hero destination must reject programmatic focus as well.");
         const restoreEvidence = { phase: "copy-restore-scroll", target: 0, attempts: [] };
         result.scrollActions.push(restoreEvidence);
         const restoreScroll = await phase.run("copy-restore-scroll", () => wheelToHeroPosition(page, 0, restoreEvidence));

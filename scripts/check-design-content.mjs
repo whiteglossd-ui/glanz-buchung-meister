@@ -297,6 +297,21 @@ export function compareApprovedRundumContent(before, after, filename, approval) 
   return failures;
 }
 
+/** Allow one approved literal replacement; every other protected byte stays pinned. */
+export function compareApprovedProtectedReplacement(before, after, filename, approval) {
+  const failure = (kind, value) => [{ file: filename, kind, value, count: 1 }];
+  if (!approval || sourceBlobId(before) !== approval.beforeBlob)
+    return failure("rundum-baseline", "Immutable protected source baseline differs");
+  if (!Array.isArray(approval.replacements) || approval.replacements.length !== 1)
+    return failure("rundum-approval", "Exactly one protected copy replacement is approved");
+  const { before: original, after: replacement } = approval.replacements[0];
+  if (typeof original !== "string" || !original || typeof replacement !== "string" || !replacement
+    || before.split(original).length !== 2)
+    return failure("rundum-approval", "Approved protected literal must occur exactly once");
+  const expected = before.replace(original, replacement);
+  return after === expected ? [] : failure("protected-source", "Protected source differs beyond the exact approved contact-copy replacement");
+}
+
 export function inspectDesignContent({
   base = DESIGN_BASE,
   cwd = process.cwd(),
@@ -346,6 +361,10 @@ export function inspectDesignContent({
     if (!sources.includes(name) || !/^[a-f0-9]{40}$/.test(rundum.commit ?? ""))
       throw new Error(`Invalid approved Rundum content source: ${name}`);
   }
+  for (const name of Object.keys(rundum.protectedFiles ?? {})) {
+    if (!protectedPresent.includes(name) || !/^[a-f0-9]{40}$/.test(rundum.commit ?? ""))
+      throw new Error(`Invalid approved protected Rundum source: ${name}`);
+  }
   const failures = [];
   const verifySeoBlob = (name, source) => {
     if (source && sourceBlobId(source) === seoBlobs[name]) return;
@@ -383,7 +402,11 @@ export function inspectDesignContent({
   for (const name of protectedPresent) {
     let current;
     try { current = readFileSync(resolve(cwd, name), "utf8"); } catch { current = null; }
-    if (Object.hasOwn(seoBlobs, name)) verifySeoBlob(name, current);
+    const approvedReplacement = rundum.protectedFiles?.[name];
+    if (approvedReplacement) {
+      const before = git(["show", `${rundum.commit}:${name}`]);
+      failures.push(...compareApprovedProtectedReplacement(before, current, name, approvedReplacement));
+    } else if (Object.hasOwn(seoBlobs, name)) verifySeoBlob(name, current);
     else if (current !== git(["show", `${commit}:${name}`])) {
       failures.push({ file: name, kind: "protected-source", value: "Content/SEO source differs from baseline", count: 1 });
     }

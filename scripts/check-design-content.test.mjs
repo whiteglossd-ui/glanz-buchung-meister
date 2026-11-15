@@ -5,7 +5,7 @@ import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
-import { compareSource, compareApprovedRundumContent, inspectDesignContent } from "./check-design-content.mjs";
+import { compareSource, compareApprovedRundumContent, compareApprovedProtectedReplacement, inspectDesignContent } from "./check-design-content.mjs";
 
 const fixture = `
 const goals = ["Sauber im Alltag.", "Dauerhafter Schutz."];
@@ -331,4 +331,16 @@ test("Rundum approval records exact semantic removals and requires their approve
   assert.ok(compare(after.replace('hash="buchung"', 'hash="anderes-formular"')).some((item) => item.kind === "links"));
   assert.ok(compare(after, before + " ").some((item) => item.kind === "rundum-baseline"));
   assert.ok(compareApprovedRundumContent(before, after, "src/routes/index.tsx", { ...approval, removed: { text: [{ value: "Fotos hier hochladen.", count: 2 }] } }).some((item) => item.kind === "rundum-approval"));
+});
+
+test("a protected contact-copy approval preserves every SEO expression and function signature", () => {
+  const before = 'export const title = "Fahrzeugpflege in Horb";\nexport function contact(city) { return `Fotos für ${city} senden`; }\n';
+  const after = before.replace('Fotos für ${city} senden', 'Beratung für ${city} anfragen');
+  const approval = { beforeBlob: blob(before), replacements: [{ before: 'Fotos für ${city} senden', after: 'Beratung für ${city} anfragen' }] };
+  const compare = (current) => compareApprovedProtectedReplacement(before, current, "src/lib/city-seo.ts", approval);
+  assert.deepEqual(compare(after), []);
+  for (const current of [after.replace("Horb", "Nagold"), after.replace("contact(city)", "contact(other)"), after + " ", before])
+    assert.ok(compare(current).some((item) => item.kind === "protected-source"));
+  assert.ok(compareApprovedProtectedReplacement(before + " ", after, "src/lib/city-seo.ts", approval).some((item) => item.kind === "rundum-baseline"));
+  assert.ok(compareApprovedProtectedReplacement(before, after, "src/lib/city-seo.ts", { ...approval, replacements: [] }).some((item) => item.kind === "rundum-approval"));
 });
