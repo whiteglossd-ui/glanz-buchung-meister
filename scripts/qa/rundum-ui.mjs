@@ -100,7 +100,7 @@ export async function verifyInitialRundumHero(page, { label, screenshot, documen
     const atCenter = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
     const signpost = element.closest(".scroll-film-rundum").getBoundingClientRect(), paragraph = element.closest(".scroll-film-rundum").querySelector("p").getBoundingClientRect(), copy = element.closest(".scroll-film-copy-inner").getBoundingClientRect();
     const center = (box) => (box.left + box.right) / 2;
-    return { copyCenter: center(copy), signpostCenter: center(signpost), paragraphCenter: center(paragraph), top: rect.top, bottom: rect.bottom, left: rect.left, right: rect.right, height: rect.height,
+    return { copyCenter: center(copy), signpostCenter: center(signpost), paragraphCenter: center(paragraph), top: rect.top, bottom: rect.bottom, left: rect.left, right: rect.right, height: rect.height, layoutHeight: element.offsetHeight,
       headerBottom: Math.max(0, header?.bottom ?? 0), availableBottom: consent && consent.height > 0 ? consent.top : innerHeight,
       width: innerWidth, heightOfViewport: innerHeight, unobscured: element.contains(atCenter), scrollY };
   });
@@ -108,8 +108,10 @@ export async function verifyInitialRundumHero(page, { label, screenshot, documen
     const geometry = await measure();
     assert.ok(Math.abs(geometry.signpostCenter - geometry.copyCenter) <= 2 && Math.abs(geometry.paragraphCenter - geometry.copyCenter) <= 2,
       `${label} ${state}: Rundum signpost and its paragraph align with the hero copy center within two pixels: ${JSON.stringify(geometry)}`);
+    // WebKit can return 43.999969px for a transformed 44px target. Keep the
+    // layout minimum exact and allow only this subpixel bounding-box rounding.
     assert.ok(geometry.scrollY <= 1 && geometry.top >= geometry.headerBottom && geometry.bottom <= geometry.availableBottom + 1
-      && geometry.left >= 0 && geometry.right <= geometry.width && geometry.height >= 44 && geometry.unobscured,
+      && geometry.left >= 0 && geometry.right <= geometry.width && geometry.layoutHeight >= 44 && geometry.height >= 44 - 0.01 && geometry.unobscured,
       `${label} ${state}: initial Rundum CTA visible, usable and clear of header/consent: ${JSON.stringify(geometry)}`);
     await screenshot(`${label}-rundum-initial-${state}.png`);
   };

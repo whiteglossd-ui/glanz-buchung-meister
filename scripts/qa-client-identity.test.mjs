@@ -18,7 +18,7 @@ test("missing scenario labels and non-QA suites fail instead of sharing an accid
 });
 
 test("public browser suites render the customer deployment without changing their loopback transport", () => {
-  for (const suite of ["booking-ui", "responsive", "cross-browser", "hero-stability", "lighthouse"]) {
+  for (const suite of ["booking-ui", "responsive", "cross-browser", "hero-stability", "lighthouse", "consent-startup"]) {
     const headers = qaClientHeaders(suite, "customer-document");
     assert.equal(headers["x-forwarded-host"], "white-gloss.de", suite);
     assert.equal(headers.host, undefined, "the actual Host and loopback URL are not replaced");
