@@ -223,22 +223,33 @@ body[data-consent-banner="open"] [data-shell="public"] .scroll-film-copy-inner {
     padding-top: 5rem;
   }
   :is(html[data-consent-initial-open="true"], body[data-consent-banner="open"]) [data-shell="public"] .scroll-film-eyebrow {
-    margin-bottom: .5rem;
+    margin-bottom: .25rem;
   }
   :is(html[data-consent-initial-open="true"], body[data-consent-banner="open"]) [data-shell="public"] .scroll-film .scroll-film-service {
     margin-top: .5rem;
   }
   :is(html[data-consent-initial-open="true"], body[data-consent-banner="open"]) [data-shell="public"] .scroll-film-service + .scroll-film-cta {
     margin-top: .5rem;
-    gap: .5rem;
-    padding-inline: .5rem;
+    width: 60%;
+    box-sizing: border-box;
+    vertical-align: middle;
+    justify-content: center;
+    gap: .25rem;
+    padding-inline: .25rem;
   }
   :is(html[data-consent-initial-open="true"], body[data-consent-banner="open"]) [data-shell="public"] .scroll-film-prices {
-    padding: .5rem;
+    display: inline-flex;
+    width: 40%;
+    box-sizing: border-box;
+    vertical-align: middle;
+    align-items: center;
+    justify-content: center;
+    margin: .5rem 0 0;
+    padding: .25rem;
   }
   :is(html[data-consent-initial-open="true"], body[data-consent-banner="open"]) [data-shell="public"] .scroll-film-rundum {
-    margin-top: .375rem;
-    padding-top: .375rem;
+    margin-top: .25rem;
+    padding-top: .25rem;
   }
 }
 /* Very narrow/short portrait windows use the same native reading fallback as

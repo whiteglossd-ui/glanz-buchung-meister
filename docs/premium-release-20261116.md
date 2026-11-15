@@ -18,8 +18,8 @@ Do not infer live publication from merge or build. Require successful full CI fo
 
 ## Old open proposals
 
-PR 287 photo behavior is superseded by the current implementation plus the restored all-signatures-failed correction. PR 289 Qonto release handling is already present in the release migration allowlist; do not reintroduce its old base. PRs 195 and 269 refer to retired Bitrix workflows and must not restore them. PR 267 is an older design prototype superseded by the retained November design. PR 284 environment notes are already in AGENTS.md. PR 297 requires semantic comparison against current hero/CSS behavior, not a blind merge.
+PR 287 photo behavior is superseded by the current implementation plus the restored all-signatures-failed correction. PR 289 Qonto release handling is already present in the release migration allowlist; do not reintroduce its old base. PRs 195 and 269 refer to retired Bitrix workflows and must not restore them. PR 267 is an older design prototype superseded by the retained November design. PR 284 environment notes are already in AGENTS.md. PR 297 is an October hero/CSS optimization proposal; the current build retains the route-aware desktop stylesheet preload, mobile-first poster selection and deferred film loading. Its old full-file state must not overwrite the November implementation.
 
 ## Evidence
 
-Local build and TypeScript check completed. Full tests and GitHub browser checks are pending at initial commit; results will be recorded after actual completion.
+Local production build, TypeScript and content inventory guard passed. Lint has zero errors and two pre-existing React Refresh warnings. Production dependency audit reports zero vulnerabilities. The complete local suite with test concurrency limited to two passed 934 tests, failed zero and skipped one environment-specific test; full unmodified GitHub CI remains mandatory. Browser checks exposed first-visit mobile action overlap and an H2 override; corrections preserve the shared font sizes and minimum touch targets. Final CI and production evidence is recorded in PR 350 after actual completion.
