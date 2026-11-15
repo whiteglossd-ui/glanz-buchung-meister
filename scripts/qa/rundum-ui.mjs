@@ -15,13 +15,16 @@ export async function verifyInitialRundumHero(page, { label, screenshot }) {
     const resources = performance.getEntriesByType("resource");
     const entry = resources.find((item) => new URL(item.name).pathname === "/favicon-192.png" && item.initiatorType === "link");
     const main = resources.find((item) => /^\/assets\/index-[^/]+\.js$/.test(new URL(item.name).pathname));
+    const navigation = performance.getEntriesByType("navigation")[0];
     return { hint: hint && { as: hint.getAttribute("as"), type: hint.getAttribute("type"), priority: hint.getAttribute("fetchpriority") },
       icon: entry && { path: new URL(entry.name).pathname, initiatorType: entry.initiatorType, start: entry.startTime, end: entry.responseEnd, encodedBytes: entry.encodedBodySize, transfer: entry.transferSize },
-      main: main && { start: main.startTime, end: main.responseEnd } };
+      main: main && { start: main.startTime, end: main.responseEnd },
+      basis: main ? "main-module-response-end" : "navigation-dom-content-loaded",
+      earlyDeadline: main ? main.responseEnd : navigation?.domContentLoadedEventStart };
   });
   assert.deepEqual(icon.hint, { as: "image", type: "image/png", priority: "low" }, `${label}: the existing icon is preloaded at low priority`);
-  assert.ok(icon.icon && icon.main && icon.icon.start <= icon.main.end,
-    `${label}: actual icon preload starts before the main module finishes, rather than after hydration: ${JSON.stringify(icon)}`);
+  assert.ok(icon.icon && icon.icon.encodedBytes === 14984 && Number.isFinite(icon.earlyDeadline) && icon.earlyDeadline > 0 && icon.icon.start <= icon.earlyDeadline,
+    `${label}: actual existing icon preload is discovered early using the recorded native timing basis: ${JSON.stringify(icon)}`);
   iconPreloadObservations.push({ label, ...icon });
   const initialFormRequests = await page.evaluate(() => performance.getEntriesByType("resource")
     .map((entry) => new URL(entry.name).pathname).filter((path) => /^\/assets\/rundum-service-form-[^/]+\.js$/.test(path)));
@@ -112,25 +115,43 @@ export async function verifyRundumUi(page, { label, screenshot }) {
   assert.deepEqual(clipped, [], `${label}: no clipped controls`);
   // The keyboard check scrolls to email. Reframe the complete section before
   // recording it, including its heading below the real sticky navigation.
-  await section.evaluate((element) => {
-    const headerBottom = Math.max(0, document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 0);
-    window.scrollTo({ top: scrollY + element.getBoundingClientRect().top - headerBottom - 16, behavior: "instant" });
-    window.__qaRundumFrame = { top: element.getBoundingClientRect().top, since: performance.now() };
-  });
-  await page.waitForFunction(() => {
-    const top = document.querySelector("#rundum-anfrage").getBoundingClientRect().top;
-    const probe = window.__qaRundumFrame;
-    if (Math.abs(top - probe.top) > 0.5) { probe.top = top; probe.since = performance.now(); }
-    return performance.now() - probe.since >= 200;
-  }, undefined, { timeout: 2000 });
-  const frame = await section.evaluate((element) => {
+  const measureFrame = () => section.evaluate((element) => {
+    const kicker = element.querySelector(".kicker").getBoundingClientRect();
     const heading = element.querySelector("#rundum-anfrage-heading").getBoundingClientRect();
-    return { headingTop: heading.top, headingBottom: heading.bottom, sectionTop: element.getBoundingClientRect().top,
+    const first = element.querySelector('input:not([type="hidden"])').getBoundingClientRect();
+    return { kickerTop: kicker.top, kickerBottom: kicker.bottom, headingTop: heading.top, headingBottom: heading.bottom,
+      firstControlTop: first.top, firstControlBottom: first.bottom,
       headerBottom: Math.max(0, document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 0), viewportHeight: innerHeight };
   });
-  assert.ok(frame.sectionTop >= frame.headerBottom && frame.headingTop >= frame.headerBottom && frame.headingBottom <= frame.viewportHeight,
-    `${label}: final form capture frames the complete heading below the sticky header: ${JSON.stringify(frame)}`);
-  await screenshot(`${label}-rundum-form.png`, section);
+  const contentClear = (frame) => frame.kickerTop >= frame.headerBottom && frame.kickerBottom <= frame.viewportHeight
+    && frame.headingTop >= frame.headerBottom && frame.headingBottom <= frame.viewportHeight
+    && frame.firstControlTop >= frame.headerBottom && frame.firstControlBottom <= frame.viewportHeight;
+  const framingDeadline = Date.now() + 2000;
+  let frame;
+  for (let attempt = 0; attempt < 3 && Date.now() < framingDeadline; attempt++) {
+    await section.evaluate((element) => {
+      const headerBottom = Math.max(0, document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 0);
+      window.scrollTo({ top: scrollY + element.querySelector(".kicker").getBoundingClientRect().top - headerBottom - 16, behavior: "instant" });
+      window.__qaRundumFrame = { top: element.querySelector(".kicker").getBoundingClientRect().top, since: performance.now() };
+    });
+    await page.waitForFunction(() => {
+      const top = document.querySelector("#rundum-anfrage .kicker").getBoundingClientRect().top;
+      const probe = window.__qaRundumFrame;
+      if (Math.abs(top - probe.top) > 0.5) { probe.top = top; probe.since = performance.now(); }
+      return performance.now() - probe.since >= 200;
+    }, undefined, { timeout: Math.max(1, framingDeadline - Date.now()) });
+    frame = await measureFrame();
+    if (contentClear(frame)) break;
+  }
+  assert.ok(frame && contentClear(frame),
+    `${label}: final form capture frames the complete kicker, heading and first controls below the sticky header: ${JSON.stringify(frame)}`);
+  const clip = await section.evaluate((element) => {
+    const box = element.getBoundingClientRect();
+    return { x: box.x + scrollX, y: box.y + scrollY, width: box.width, height: box.height };
+  });
+  // Locator screenshots perform another automatic scroll after our geometric
+  // check. Capture the measured document clip without moving the section again.
+  await screenshot(`${label}-rundum-form.png`, section, { fullPage: true, clip });
   return `${label}: compact prominent service, exact WhatsApp channel, request anchor, seven multiple choices, optional phone/date, no public upload, usable controls and layout`;
 }
 

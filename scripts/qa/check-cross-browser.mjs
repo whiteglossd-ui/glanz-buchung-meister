@@ -161,8 +161,9 @@ try {
               await verifyHomepageReviews(page, `${name}-${width}: before next navigation`, visit);
               report.checks.push(await verifyRundumUi(page, {
                 label: `${name}-${width}`,
-                screenshot: async (filename, target) => {
-                  await target.screenshot({ path: resolve(output, filename) });
+                screenshot: async (filename, target, options) => {
+                  if (options) await page.screenshot({ path: resolve(output, filename), ...options });
+                  else await target.screenshot({ path: resolve(output, filename) });
                   report.screenshots.push(filename);
                 },
               }));

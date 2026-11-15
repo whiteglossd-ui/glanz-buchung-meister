@@ -429,7 +429,9 @@ try {
       if (path === "/") {
         if ([320, 768, 1024, 1440].includes(width)) results.push(await verifyRundumUi(page, {
           label: `chromium-${width}`,
-          screenshot: async (name, target) => target.screenshot({ path: `${output}/${name}` }),
+          screenshot: async (name, target, options) => options
+            ? page.screenshot({ path: `${output}/${name}`, ...options })
+            : target.screenshot({ path: `${output}/${name}` }),
         }));
         const packages = page.locator("#pakete");
         assert.equal(await packages.getAttribute("data-package-motion"), null,
