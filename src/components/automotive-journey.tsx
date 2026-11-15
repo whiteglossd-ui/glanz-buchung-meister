@@ -1,8 +1,10 @@
 import { useEffect, useRef } from "react";
+import { useRouter } from "@tanstack/react-router";
 import "./automotive-journey.css";
 
 /** Decorative brand imagery; real customer results stay in ResultsTeaser. */
 export function AutomotiveJourney() {
+  const nonce = useRouter().options.ssr?.nonce;
   const sectionRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const section = sectionRef.current;
@@ -81,7 +83,7 @@ export function AutomotiveJourney() {
         ))}
         <span className="automotive-journey-line" />
       </div>
-      <noscript><style>{`.automotive-journey { height: auto !important; } .automotive-journey-stage { position: relative !important; height: auto !important; } .automotive-journey-frame { position: relative !important; transform: none !important; aspect-ratio: 16 / 9; }`}</style></noscript>
+      <noscript><style nonce={nonce}>{`.automotive-journey { height: auto !important; } .automotive-journey-stage { position: relative !important; height: auto !important; } .automotive-journey-frame { position: relative !important; transform: none !important; aspect-ratio: 16 / 9; }`}</style></noscript>
     </div>
   );
 }

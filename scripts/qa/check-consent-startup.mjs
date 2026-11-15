@@ -52,7 +52,12 @@ try {
       await page.goto(qaBase, { waitUntil: "domcontentloaded" });
       // The real inline startup script and CSS run; only the client JS waits.
       // This checks first paint independently of hydration speed.
-      const initial = page.locator('.consent-banner[data-consent-initial="true"]');
+      const imageChapter = page.locator(".automotive-journey");
+    assert.equal(await imageChapter.locator(".automotive-journey-stage").evaluate((element) => getComputedStyle(element).position), "relative",
+      "The no-JavaScript image fallback must be applied under the actual CSP");
+    assert.equal(await imageChapter.locator("noscript style").evaluate((element) => element.nonce), nonce,
+      "The decorative chapter fallback uses the existing response nonce");
+    const initial = page.locator('.consent-banner[data-consent-initial="true"]');
       assert.equal(await initial.count(), 1, scenario + ": consent is server-rendered");
       const returning = ["accepted", "rejected"].includes(scenario);
       assert.equal(await initial.isVisible(), !returning, scenario + ": returning choice suppresses the initial dialog");
@@ -140,6 +145,11 @@ try {
     const nonce = response.headers()["content-security-policy"]?.match(/'nonce-([A-Za-z0-9+/]{43}=)'/)?.[1];
     assert.ok(nonce);
     assert.equal(fallbackStyle.match(/nonce="([^"]+)"/)?.[1], nonce, "The fallback keeps the existing request nonce");
+    const imageChapter = page.locator(".automotive-journey");
+    assert.equal(await imageChapter.locator(".automotive-journey-stage").evaluate((element) => getComputedStyle(element).position), "relative",
+      "The no-JavaScript image fallback must be applied under the actual CSP");
+    assert.equal(await imageChapter.locator("noscript style").evaluate((element) => element.nonce), nonce,
+      "The decorative chapter fallback uses the existing response nonce");
     const initial = page.locator('.consent-banner[data-consent-initial="true"]');
     assert.equal(await initial.count(), 1, "The initial SSR banner remains in the source");
     assert.equal(await initial.isVisible(), false, "No JavaScript must not leave an uncloseable consent overlay");

@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { test } from "node:test";
+import { afterEach, test } from "node:test";
 import { readFile, readdir } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import { PGlite } from "@electric-sql/pglite";
@@ -47,8 +47,15 @@ function wrap(pg: Pick<PGlite, "query">, transaction?: Sql["transaction"]): Sql 
   return sql;
 }
 
+const databases = new Set<PGlite>();
+afterEach(async () => {
+  for (const pg of databases) await pg.close();
+  databases.clear();
+});
+
 async function database() {
   const pg = new PGlite({ parsers: { 1082: (v) => v, 20: Number } });
+  databases.add(pg);
   for (const f of (await readdir("migrations")).filter((f) => f.endsWith(".sql")).sort())
     await pg.exec(await readFile(`migrations/${f}`, "utf8"));
   return wrap(pg, (fn) => pg.transaction((tx) => fn(wrap(tx))));
