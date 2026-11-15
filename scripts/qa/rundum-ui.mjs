@@ -209,7 +209,12 @@ export async function verifyRundumUi(page, { label, screenshot }) {
     `${label}: final form capture frames the complete kicker, heading and first controls below the sticky header: ${JSON.stringify(frame)}`);
   const clip = await section.evaluate((element) => {
     const box = element.getBoundingClientRect();
-    return { x: box.x + scrollX, y: box.y + scrollY, width: box.width, height: box.height };
+    const headerBottom = Math.max(0, document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 0);
+    const top = Math.max(box.top + scrollY, scrollY + headerBottom), bottom = box.bottom + scrollY;
+    const content = [".kicker", "#rundum-anfrage-heading", "form"].map((selector) => element.querySelector(selector).getBoundingClientRect());
+    if (content.some((bounds) => bounds.top + scrollY < top || bounds.bottom + scrollY > bottom))
+      throw new Error("The header-free form clip must retain the complete kicker, heading and form");
+    return { x: box.x + scrollX, y: top, width: box.width, height: bottom - top };
   });
   // Locator screenshots perform another automatic scroll after our geometric
   // check. Capture the measured document clip without moving the section again.

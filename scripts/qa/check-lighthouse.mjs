@@ -58,6 +58,7 @@ const summary = {
   externalRequests: [],
   invalidAttempts: [],
   iconPreloadRuns: [],
+  iconProofFailures: [],
 };
 
 function cancel(signal) {
@@ -339,16 +340,44 @@ try {
           const iconRequests = networkRequests.filter((request) => new URL(request.url).pathname === "/favicon-192.png");
           const mainRequest = networkRequests.find((request) => /^\/assets\/index-[^/]+\.js$/.test(new URL(request.url).pathname));
           const wireRequests = iconRequests.filter((request) => request.transferSize > 0);
-          assert.equal(wireRequests.length, 1, `${profile} ${run}: exactly one icon wire transfer; cached references may have zero transfer`);
-          assert.equal(wireRequests[0].resourceSize, expectedIcon.length, "The actual browser icon response has the unchanged PNG size");
+          const iconRequestIds = new Set(result.artifacts.DevtoolsLog
+            .filter((entry) => entry.method === "Network.requestWillBeSent"
+              && new URL(entry.params.request.url).pathname === "/favicon-192.png")
+            .map((entry) => entry.params.requestId));
+          // Keep the observed CDP cache/transfer facts, never headers or cookies.
+          const iconDevtools = result.artifacts.DevtoolsLog
+            .filter((entry) => iconRequestIds.has(entry.params.requestId)
+              && ["Network.requestWillBeSent", "Network.responseReceived", "Network.requestServedFromCache", "Network.loadingFinished"].includes(entry.method))
+            .map(({ method, params }) => ({ method, requestId: params.requestId,
+              timestamp: params.timestamp, url: params.request?.url ?? params.response?.url,
+              initiatorType: params.initiator?.type, priority: params.request?.initialPriority,
+              status: params.response?.status, protocol: params.response?.protocol,
+              fromDiskCache: params.response?.fromDiskCache,
+              fromServiceWorker: params.response?.fromServiceWorker,
+              fromPrefetchCache: params.response?.fromPrefetchCache,
+              encodedDataLength: params.encodedDataLength ?? params.response?.encodedDataLength }));
           const iconDiscovery = result.artifacts.DevtoolsLog.find((entry) => entry.method === "Network.requestWillBeSent"
             && new URL(entry.params.request.url).pathname === "/favicon-192.png");
-          assert.equal(iconDiscovery?.params.initiator.type, "parser", `${profile} ${run}: the parser discovers the icon preload`);
-          assert.ok(mainRequest && wireRequests[0].networkRequestTime <= mainRequest.networkEndTime,
-            `${profile} ${run}: the icon is requested before the main module finishes, not by a late post-hydration chain`);
-          summary.iconPreloadRuns.push({ profile, run, initiatorType: iconDiscovery.params.initiator.type,
-            requests: iconRequests.map((request) => ({ start: request.networkRequestTime, end: request.networkEndTime, transfer: request.transferSize, bytes: request.resourceSize })),
-            mainModule: { start: mainRequest.networkRequestTime, end: mainRequest.networkEndTime } });
+          const iconObservation = { profile, run,
+            reportedScores: Object.fromEntries(categories.map((id) => [id, report.categories[id]?.score])),
+            wireCount: wireRequests.length, requestCount: iconRequests.length,
+            initiatorType: iconDiscovery?.params.initiator.type ?? null,
+            requests: iconRequests, devtools: iconDevtools,
+            mainModule: mainRequest ? { start: mainRequest.networkRequestTime, end: mainRequest.networkEndTime } : null };
+          summary.iconPreloadRuns.push(iconObservation);
+          await writeFile(resolve(output, `${prefix}.icon-observation.json`), JSON.stringify(iconObservation, null, 2));
+          console.log(`LH-ICON-CAPTURE ${JSON.stringify(iconObservation)}`);
+          // Preserve every native sample even when the additional icon proof fails.
+          // The same strict assertions remain fatal in the final combined gate.
+          try {
+            assert.equal(wireRequests.length, 1, `${profile} ${run}: exactly one icon wire transfer; cached references may have zero transfer`);
+            assert.equal(wireRequests[0].resourceSize, expectedIcon.length, "The actual browser icon response has the unchanged PNG size");
+            assert.equal(iconDiscovery?.params.initiator.type, "parser", `${profile} ${run}: the parser discovers the icon preload`);
+            assert.ok(mainRequest && wireRequests[0].networkRequestTime <= mainRequest.networkEndTime,
+              `${profile} ${run}: the icon is requested before the main module finishes, not by a late post-hydration chain`);
+          } catch (error) {
+            summary.iconProofFailures.push({ profile, run, message: error.message, actual: error.actual, expected: error.expected });
+          }
           assert.equal(report.lighthouseVersion, lighthouseVersion);
           assert.equal(report.configSettings.formFactor, profile);
           assert.equal(report.configSettings.throttlingMethod, "simulate");
@@ -496,7 +525,7 @@ try {
     }
   }
 
-  const failures = [];
+  const failures = summary.iconProofFailures.map(({ profile, run, message }) => `${profile} ${run}: ${message}`);
   const shortfalls = [];
   for (const profile of ["mobile", "desktop"]) {
     const runs = summary.runs.filter((run) => run.profile === profile);

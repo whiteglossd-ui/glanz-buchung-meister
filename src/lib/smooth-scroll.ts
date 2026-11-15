@@ -9,7 +9,7 @@ import type Lenis from "lenis";
 export const SMOOTH_SCROLL_QUERY =
   "(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)";
 
-type LenisLike = Pick<Lenis, "start" | "stop" | "destroy" | "on">;
+type LenisLike = Pick<Lenis, "start" | "stop" | "destroy" | "on" | "isStopped">;
 
 export type SmoothScrollEnv = {
   media: Pick<MediaQueryList, "matches" | "addEventListener" | "removeEventListener">;
@@ -23,6 +23,17 @@ export type SmoothScrollEnv = {
 let active: LenisLike | null = null;
 let scrollTriggerUpdate: (() => void) | null = null;
 let unbindScrollTrigger: (() => void) | undefined;
+
+/**
+ * Native instant anchor jumps can share Lenis's deliberately ignored final
+ * scroll event. Adopt their actual position and cancel obsolete inertia via
+ * public APIs; resize alone leaves the tween running. Keep dialog/menu locks.
+ */
+export function syncSmoothScrollPosition() {
+  if (!active || active.isStopped) return;
+  active.stop();
+  active.start();
+}
 
 function bindScrollTrigger() {
   unbindScrollTrigger?.();
