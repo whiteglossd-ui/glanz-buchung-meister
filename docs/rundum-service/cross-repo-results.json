@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-15T01:36:40.109Z",
+  "at": "2026-11-15T06:39:28.432Z",
   "passed": 16,
   "checks": [
     "Website: Rundum ohne Fotos; gleichzeitiger Doppelklick speichert genau eine Anfrage",
@@ -67,7 +67,7 @@
     },
     {
       "method": "POST",
-      "path": "/api/portal/o/7ebf4df9-1af1-496a-ac04-d0c3520c03de/chat",
+      "path": "/api/portal/o/3a19f211-4204-4043-b2c4-2bb03402bcc9/chat",
       "status": 200
     },
     {
@@ -82,12 +82,12 @@
     },
     {
       "method": "GET",
-      "path": "/api/kundenchat/[redacted]/file/12e0797a-a4e0-4307-8934-712b591f58f2",
+      "path": "/api/kundenchat/[redacted]/file/48000602-ef89-4b79-97c7-79c8acff5f7f",
       "status": 200
     },
     {
       "method": "GET",
-      "path": "/api/kundenchat/[redacted]/file/12e0797a-a4e0-4307-8934-712b591f58f2",
+      "path": "/api/kundenchat/[redacted]/file/48000602-ef89-4b79-97c7-79c8acff5f7f",
       "status": 401
     },
     {
@@ -107,7 +107,7 @@
     },
     {
       "method": "POST",
-      "path": "/api/portal/o/85bc1a09-acaa-43ba-a428-7cf73bec9183/chat",
+      "path": "/api/portal/o/1de04fb3-ad31-4c18-bf6e-e2874861222f/chat",
       "status": 403
     },
     {
@@ -182,7 +182,7 @@
     },
     {
       "method": "GET",
-      "path": "/api/kundenchat/[redacted]/file/12e0797a-a4e0-4307-8934-712b591f58f2",
+      "path": "/api/kundenchat/[redacted]/file/48000602-ef89-4b79-97c7-79c8acff5f7f",
       "status": 403
     },
     {
