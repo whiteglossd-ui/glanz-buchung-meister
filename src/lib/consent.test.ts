@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { afterEach, describe, it } from "node:test";
 import {
+  CONSENT_INITIAL_LAYOUT_SCRIPT,
+  CONSENT_INITIAL_STATE_SCRIPT,
   CONSENT_STORAGE_KEY,
   getStoredConsent,
   onConsentChange,
@@ -109,4 +111,52 @@ describe("getStoredConsent / setStoredConsent", () => {
     assert.deepEqual(choices, ["rejected", "rejected"]);
     unsubscribe();
   });
+});
+
+describe("first-paint consent hint", () => {
+  for (const choice of [null, "accepted", "rejected", "maybe"]) {
+    it(`only an existing valid choice suppresses the initial dialog: ${choice}`, () => {
+      const attributes = new Map<string, string>();
+      let reads = 0;
+      new Function("window", "document", CONSENT_INITIAL_STATE_SCRIPT)(
+        { localStorage: { getItem(key: string) {
+          assert.equal(key, CONSENT_STORAGE_KEY);
+          reads++;
+          return choice;
+        } } },
+        { documentElement: { setAttribute: (key: string, value: string) => attributes.set(key, value) } },
+      );
+      assert.equal(reads, 1);
+      assert.equal(attributes.get("data-consent-stored"), ["accepted", "rejected"].includes(choice ?? "") ? "true" : undefined);
+    });
+  }
+
+  it("keeps the initial dialog available when storage is blocked", () => {
+    const attributes = new Map<string, string>();
+    assert.doesNotThrow(() => new Function("window", "document", CONSENT_INITIAL_STATE_SCRIPT)(
+      { get localStorage() { throw new Error("blocked"); } },
+      { documentElement: { setAttribute: (key: string, value: string) => attributes.set(key, value) } },
+    ));
+    assert.equal(attributes.size, 0);
+  });
+});
+
+describe("first-paint consent clearance", () => {
+  for (const visible of [true, false]) {
+    it(`reserves measured space only for a visible initial dialog: ${visible}`, () => {
+      const attributes = new Map<string, string>(), properties = new Map<string, string>();
+      new Function("document", "getComputedStyle", CONSENT_INITIAL_LAYOUT_SCRIPT)(
+        {
+          querySelector: () => ({ getBoundingClientRect: () => ({ height: 214 }) }),
+          documentElement: {
+            setAttribute: (key: string, value: string) => attributes.set(key, value),
+            style: { setProperty: (key: string, value: string) => properties.set(key, value) },
+          },
+        },
+        () => ({ display: visible ? "block" : "none" }),
+      );
+      assert.equal(attributes.get("data-consent-initial-open"), visible ? "true" : undefined);
+      assert.equal(properties.get("--consent-banner-height"), visible ? "214px" : undefined);
+    });
+  }
 });

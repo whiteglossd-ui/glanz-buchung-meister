@@ -41,18 +41,22 @@
 .scroll-film-label-reserve {
   visibility: hidden;
 }
+html[data-consent-initial-open="true"] [data-shell="public"] .scroll-film-copy,
 body[data-consent-banner="open"] [data-shell="public"] .scroll-film-copy {
   --film-copy-offset: calc(-1 * var(--consent-banner-height, 0px));
 }
+html[data-consent-initial-open="true"] [data-shell="public"] .scroll-film-bottom,
 body[data-consent-banner="open"] [data-shell="public"] .scroll-film-bottom {
   transform: translateY(calc(-1 * var(--consent-banner-height, 0px)));
 }
 [data-wa-float] {
   transform: translateY(0) translateZ(0);
 }
+html[data-consent-initial-open="true"] [data-wa-float],
 body[data-consent-banner="open"] [data-wa-float] {
   transform: translateY(calc(max(1rem, env(safe-area-inset-bottom)) - 1rem - var(--consent-banner-height, 0px))) translateZ(0);
 }
+html[data-consent-initial-open="true"] .city-wa-bar,
 body[data-consent-banner="open"] .city-wa-bar {
   display: none;
 }
@@ -81,9 +85,11 @@ body[data-consent-banner="open"] .city-wa-bar {
   [data-shell="public"] .scroll-film-copy {
     padding-bottom: 6rem;
   }
+  html[data-consent-initial-open="true"] [data-shell="public"] .scroll-film-copy,
   body[data-consent-banner="open"] [data-shell="public"] .scroll-film-copy {
     --film-copy-offset: 0px;
   }
+  html[data-consent-initial-open="true"] [data-shell="public"] .scroll-film-bottom,
   body[data-consent-banner="open"] [data-shell="public"] .scroll-film-bottom {
     transform: translateY(0);
   }
@@ -95,3 +101,9 @@ body[data-consent-banner="open"] .city-wa-bar {
   }
 }
 
+
+/* Suppress a returning visitor's SSR dialog before hydration reads storage.
+   Reopened settings no longer carry the initial marker and remain visible. */
+html[data-consent-stored="true"] .consent-banner[data-consent-initial="true"] {
+  display: none;
+}

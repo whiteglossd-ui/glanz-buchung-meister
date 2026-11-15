@@ -280,6 +280,7 @@ try {
   }
   await runCheck(server, "booking-ui", ["scripts/qa/check-booking-ui.mjs"]);
   await runCheck(server, "booking-recovery", ["scripts/qa/check-booking-recovery.mjs"]);
+  await runCheck(server, "consent-startup", ["scripts/qa/check-consent-startup.mjs"]);
   for (const check of [
     {
       name: "lighthouse",

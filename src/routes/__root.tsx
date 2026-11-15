@@ -1,4 +1,5 @@
 import { createRootRoute, type AnyRouteMatch } from "@tanstack/react-router";
+import { ConsentInitialState } from "@/components/consent-banner";
 import { DeferredScripts } from "@/components/deferred-scripts";
 import { PrioritizedHeadContent } from "@/components/prioritized-head-content";
 import { AuthProvider } from "@/lib/auth/provider";
@@ -85,6 +86,7 @@ export const Route = createRootRoute({
           {googleSiteVerificationMeta(import.meta.env.VITE_GOOGLE_SITE_VERIFICATION).map((tag) => (
             <meta key={tag.content} name={tag.name} content={tag.content} />
           ))}
+          <ConsentInitialState />
           <PrioritizedHeadContent />
           <link rel="stylesheet" href={forgeDesktopCss} media="(min-width: 960px)" />
         </head>
