@@ -381,6 +381,7 @@ try {
             assert.equal(routeRequests.length, 1, `${profile} ${run}: reuse the single homepage route request`);
             assert.equal(routeRequests[0].resourceSize, routeSource.length);
             assert.equal(routeRequests[0].isLinkPreload, true);
+            assert.equal(routeRequests[0].priority, "High");
             assert.equal(routeDiscovery?.params.initiator?.type, "parser");
             assert.ok(mainRequest && routeRequests[0].networkRequestTime <= mainRequest.networkEndTime,
               "The real route preload must begin before the bulk entry completes");

@@ -11,7 +11,7 @@ type ScriptAsset = RouterManagedTag & { preventScriptHoist?: boolean };
  * Server-side counterpart of Start's `<Scripts />`: renders every body script
  * unchanged except the module entry, which moves into the deferred bootstrap
  * together with the remaining module preloads. The homepage route is already
- * prepared by one low-priority head hint; execution still starts only through
+ * prepared by one high-priority head hint; execution still starts only through
  * the unchanged painted-hero bootstrap gate.
  */
 function ServerDeferredScripts() {

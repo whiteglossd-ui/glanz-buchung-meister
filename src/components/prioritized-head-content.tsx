@@ -11,7 +11,7 @@ export interface PrioritizedHeadContentProps {
 
 /**
  * Render all Start-managed head assets with their existing keys and CSP nonce.
- * The server prepares only the active homepage module at low priority. Its
+ * The server prepares only the active homepage module at high priority. Its
  * execution and every other module preload stay behind the existing painted-
  * hero bootstrap gate. The manifest supplies the real current hashed URL.
  */
@@ -33,7 +33,10 @@ export function PrioritizedHeadContent(props: PrioritizedHeadContentProps) {
         return (
           <Asset
             {...tag}
-            attrs={modulePreload ? { ...tag.attrs, fetchPriority: "low" } : tag.attrs}
+            attrs={modulePreload ? {
+              ...tag.attrs,
+              fetchPriority: server && tag.attrs?.href === earlyRoutePreload ? "high" : "low",
+            } : tag.attrs}
             key={`tsr-meta-${JSON.stringify(tag)}`}
             nonce={nonce}
           />

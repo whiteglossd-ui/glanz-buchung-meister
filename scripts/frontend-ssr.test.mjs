@@ -239,8 +239,8 @@ test("Node serves compressed build assets and revalidates mutable media", async 
     const earlyRoutePreload = earlyModulePreloads[0]?.match(/href="([^"]+)"/)?.[1];
     if (earlyRoutePreload) {
       assert.match(earlyRoutePreload, /^\/assets\/[\w.-]+\.js$/);
-      assert.equal(earlyModulePreloads[0].match(/fetchpriority="([^"]+)"/i)?.[1], "low",
-        "The homepage preparation must not take high priority from the hero and fonts");
+      assert.equal(earlyModulePreloads[0].match(/fetchpriority="([^"]+)"/i)?.[1], "high",
+        "Only the small homepage route receives the early high-priority module hint");
     }
     assert.doesNotMatch(
       html,
