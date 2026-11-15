@@ -335,7 +335,7 @@ export function Configurator({
           {quote.pickupOnRequest ? " zzgl. Abholung nach Absprache" : ""}
           <small> inkl. MwSt.</small>
         </span>
-        <strong>{eur(quote.total)}</strong>
+        <strong>ab {eur(quote.total)}</strong>
       </div>
       <h3
         ref={stepHeading}
@@ -495,7 +495,7 @@ export function Configurator({
       >
         <p className="text-xs uppercase tracking-[0.16em] text-subtle">Unverbindliche Anfrage</p>
         <p className="font-display text-3xl text-fg" aria-live="polite">
-          {eur(quote.total)}
+          ab {eur(quote.total)}
         </p>
         <p className="text-sm text-muted">
           {quote.klass.label} · {quote.pack.name}
@@ -745,21 +745,21 @@ export function Configurator({
           <dl className="booking-summary mt-3 text-sm">
             <dt>Paket · {quote.klass.label}</dt>
             <dd>
-              {quote.pack.name} · {eur(quote.pack.price * quote.klass.factor)}
+              {quote.pack.name} · ab {eur(quote.pack.price * quote.klass.factor)}
             </dd>
             {extras
               .filter((ex) => extraIds.includes(ex.id) && !extraIncluded(packageId, ex.id))
               .map((ex) => (
                 <div key={ex.id}>
                   <dt>{ex.name}</dt>
-                  <dd>{eur(ex.price * quote.klass.factor)}</dd>
+                  <dd>ab {eur(ex.price * quote.klass.factor)}</dd>
                 </div>
               ))}
             <dt>Abholung · {quote.city?.name}</dt>
             <dd>{quote.pickupOnRequest ? "Preis nach Absprache" : eur(quote.pickup ?? 0)}</dd>
             <dt>Gesamtpreis (voraussichtlich)</dt>
             <dd>
-              {eur(quote.total)}
+              ab {eur(quote.total)}
               {quote.pickupOnRequest ? " zzgl. Abholung" : ""}
             </dd>
             <dt>Kontakt</dt>

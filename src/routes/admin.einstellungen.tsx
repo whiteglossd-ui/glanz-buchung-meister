@@ -118,7 +118,7 @@ function AdminSettings() {
               {p.name} · ab {eur(p.price)} · {p.duration}
             </li>
           ))}
-          {extras.map((e) => (
+          {extras.filter((e) => !e.retired).map((e) => (
             <li key={e.id}>
               {e.name} · ab {eur(e.price)}
             </li>

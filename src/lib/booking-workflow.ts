@@ -57,7 +57,7 @@ const hash = (value: string) => createHash("sha256").update(value).digest("hex")
 
 function assertPricing(data: Pick<PublicBookingInput, "extraIds" | "citySlug">) {
   if (
-    data.extraIds.some((id) => !extras.some((e) => e.id === id)) ||
+    data.extraIds.some((id) => !extras.some((e) => e.id === id && e.requestable !== false)) ||
     new Set(data.extraIds).size !== data.extraIds.length
   ) {
     throw new Error("Unbekanntes oder doppeltes Extra.");

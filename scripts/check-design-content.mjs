@@ -41,7 +41,11 @@ export const APPROVED_CTA_LABELS = Object.freeze({
 // the check also works with a shallow GitHub checkout and squash merges.
 export const APPROVED_SEO_BLOBS = Object.freeze({
   "src/components/city-landing.tsx": "7489070ee8d138d5880711bfd41e925905151209",
-  "src/data/site.ts": "3356ee2567830a37e3198d4b82bb12fba3c99ef8",
+  // November 15: operator explicitly requested retiring the ceramic-layers add-on.
+  // Pin the reviewed catalog, guide and from-price labels; all other checks remain.
+  "src/components/configurator.tsx": "a91c2f00750a18f0cd72b49e25a6dcf1318a3295",
+  "src/data/site.ts": "bbc682770d947e98f08d397803d0bb5976b6a876",
+  "src/data/ratgeber.ts": "fbaf52bdb5fbeb9ae15ba26854ef006d088e3486",
   "src/lib/city-copy.ts": "c330f37e051679cfdd34f160acb7f3d2fb4ac391",
   "src/lib/seo.ts": "3488b971e1941762b1a530c8861c26468a873067",
   "src/routes/abholservice.index.tsx": "e10fee117409229f91b76ee0862070d6664fb1de",

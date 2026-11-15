@@ -205,9 +205,10 @@ try {
           await page.locator(".booking-steps button").nth(1).click();
           const extras = page.locator("details.booking-extras");
           if (!(await extras.evaluate((element) => element.open))) await extras.locator("summary").click();
+          assert.equal(await page.locator("#extra-keramik-ultra").count(), 0);
           await page.locator("#extra-felgen").check();
-          await page.waitForFunction(displayedPriceEquals, { selector: ".booking-price strong", expected: "468 €" }).catch(async () => {
-            throw new Error(`Expected exact booking total 468 EUR; actual display: ${JSON.stringify(await page.locator(".booking-price strong").textContent())}`);
+          await page.waitForFunction(displayedPriceEquals, { selector: ".booking-price strong", expected: "ab 468 €" }).catch(async () => {
+            throw new Error(`Expected booking starting price ab 468 EUR; actual display: ${JSON.stringify(await page.locator(".booking-price strong").textContent())}`);
           });
           assert.ok((await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)) <= 2);
           await screenshot(page, `${name}-${width}-booking.png`);
