@@ -22,6 +22,8 @@ const report = {
   checks: [], diagnostics: [], failures: [], screenshots: [], reviews: [], reviewRequests: [], reviewActions: [], galleryImages: [],
 };
 const diagnostics = [];
+const engineNames = ["firefox", "webkit"], viewportWidths = [390, 1440];
+const expectedChecksPerScenario = 8; // four pages, initial Rundum CTA, Rundum form, gallery/navigation, booking
 
 async function rejectConsent(page) {
   const reject = page.getByRole("button", { name: "Ablehnen", exact: true });
@@ -120,11 +122,11 @@ try {
   assert.deepEqual(await identity.json(), { isolated: true, database: "in-memory-pglite", externalFetch: "blocked" });
   report.fixture = await prepareBrowserFixture({ scenario: "cross-browser" });
   const engines = await import("playwright");
-  for (const name of ["firefox", "webkit"]) {
+  for (const name of engineNames) {
     let browser;
     try {
       browser = await engines[name].launch({ headless: true });
-      for (const width of [390, 1440]) {
+      for (const width of viewportWidths) {
         const context = await browser.newContext({ viewport: { width, height: width < 700 ? 844 : 1000 }, hasTouch: width < 700, reducedMotion: "reduce", serviceWorkers: "block", extraHTTPHeaders: qaClientHeaders("cross-browser", `${name}-${width}`) });
         const diagnostic = createBrowserDiagnostics({ origin: qaBase, label: `${name}-${width}` });
         diagnostics.push(diagnostic);
@@ -142,6 +144,7 @@ try {
         page.setDefaultTimeout(15000);
         diagnostic.attach(page);
         try {
+          const checksBeforeScenario = report.checks.length;
           for (const path of ["/", "/abholservice/nagold", "/leistungen/keramikversiegelung", "/galerie"]) {
             phase = `navigate/layout:${path}`;
             const visit = async () => {
@@ -225,6 +228,8 @@ try {
           await screenshot(page, `${name}-${width}-booking.png`);
           report.checks.push(`${name} ${width}px: real booking selection totals 468 EUR without submission`);
           });
+          assert.equal(report.checks.length - checksBeforeScenario, expectedChecksPerScenario,
+            `${name} ${width}px must complete every page, Rundum, gallery/navigation and booking check`);
         } finally {
           phase = "context-close";
           await context.close();
@@ -238,7 +243,7 @@ try {
   }
   assertBrowserDiagnostics(diagnostics);
   assert.equal(report.failures.length, 0, JSON.stringify(report.failures, null, 2));
-  assert.equal(report.checks.length, 24, "Every engine and viewport must complete all checks");
+  assert.equal(report.checks.length, engineNames.length * viewportWidths.length * expectedChecksPerScenario, "Every engine and viewport must complete all checks");
   assert.equal(report.reviews.length, 8, "Both homepage visits must finish reviews before navigation/close for every engine and viewport");
   assert.equal(report.galleryImages.length, 8, "Both full-size gallery images must decode before switching/closing for every engine and viewport");
   report.status = "passed";

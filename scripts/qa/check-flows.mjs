@@ -158,7 +158,12 @@ const photo = await rpc("createPublicPhotoInquiry", {
 assert.equal(photo.body.result?.ok, true, JSON.stringify(photo.body));
 state = await evidence();
 assert.equal(state.objects.length, 0);
-assert.ok(state.tables.bookings.some((row) => row.package_id === "photo-inquiry"));
+const repairInquiry = state.tables.bookings.find((row) => row.email === "description@example.invalid");
+assert.ok(repairInquiry, "Existing repair form saves its customer's request");
+assert.equal(repairInquiry.package_id, "service-inquiry");
+assert.equal(repairInquiry.request_kind, "service-inquiry");
+assert.equal(repairInquiry.phone, "");
+assert.equal(repairInquiry.note, "Begutachtung Dellen\nDelle links");
 results.push("Existing repair inquiry persists without photos or a mandatory phone number");
 const rundumInput = {
   idempotencyKey: randomUUID(), name: "QA Rundum", email: "rundum@example.invalid", phone: "",
