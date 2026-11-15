@@ -201,6 +201,23 @@ test("Node serves compressed build assets and revalidates mutable media", async 
   assert.equal(globals.length, 1, "the build must contain one complete global stylesheet");
   const desktopStyles = stylesheets.filter(({ name }) => /^forge-desktop-[\w-]+\.css$/.test(name));
   assert.equal(desktopStyles.length, 1, "the desktop composition must have one fingerprinted stylesheet");
+  const manifestDirectory = new URL("../.output/server/", import.meta.url);
+  const manifestNames = (await readdir(manifestDirectory))
+    .filter((name) => name.startsWith("_tanstack-start-manifest_") && name.endsWith(".mjs"));
+  assert.equal(manifestNames.length, 1);
+  const manifestModule = await import(new URL(manifestNames[0], manifestDirectory).href);
+  // The server bundler may expose the virtual module through a minified
+  // namespace export; its original named factory remains the module contract.
+  const manifestFactories = [...new Set([manifestModule, ...Object.values(manifestModule)]
+    .filter((value) => value && typeof value.tsrStartManifest === "function")
+    .map((value) => value.tsrStartManifest))];
+  assert.equal(manifestFactories.length, 1);
+  const manifest = manifestFactories[0]();
+  assert.equal(manifest.routes["/"].css.length, 1);
+  const homeCss = manifest.routes["/"].css[0];
+  const homeCssHref = typeof homeCss === "string" ? homeCss : homeCss.href;
+  const homeCssSource = manifest.inlineCss.styles[homeCssHref];
+  assert.ok(homeCssSource && homeCssSource.includes(".scroll-film{"));
   for (const path of [
     "/",
     "/preise",
@@ -232,6 +249,22 @@ test("Node serves compressed build assets and revalidates mutable media", async 
       `${path} must preserve the desktop overrides after the complete inline cascade`);
     assert.ok(!inlineCss.includes(desktopStyles[0].source.trim()),
       `${path} must not duplicate the external desktop stylesheet inline`);
+    const earlyStylePreloads = [...head.matchAll(/<link\b(?=[^>]*rel="preload")(?=[^>]*as="style")[^>]*>/g)]
+      .map(([tag]) => tag);
+    assert.equal(earlyStylePreloads.length, path === "/" ? 1 : 0,
+      `${path} prepares only the existing homepage CSS without another applied stylesheet`);
+    if (path === "/") {
+      assert.ok(inlineCss.includes(homeCssSource), "The exact complete homepage CSS remains inline");
+      assert.ok(inlineCss.indexOf(globals[0].source.trim()) < inlineCss.indexOf(homeCssSource),
+        "The homepage CSS must keep its existing place after the global inline cascade");
+      assert.equal(earlyStylePreloads[0].match(/href="([^"]+)"/)?.[1], homeCssHref);
+      assert.equal(earlyStylePreloads[0].match(/fetchpriority="([^"]+)"/i)?.[1], "high");
+      assert.equal(earlyStylePreloads[0].match(/crossorigin="([^"]+)"/i)?.[1], "anonymous",
+        "The style hint matches Vite's existing anonymous client stylesheet fetch");
+      const nonce = response.headers.get("content-security-policy")?.match(/'nonce-([A-Za-z0-9+/]{43}=)'/)?.[1];
+      assert.ok(nonce);
+      assert.equal(earlyStylePreloads[0].match(/nonce="([^"]+)"/)?.[1], nonce);
+    }
     const earlyModulePreloads = [...head.matchAll(/<link\b[^>]*rel="modulepreload"[^>]*>/g)]
       .map(([tag]) => tag);
     assert.equal(earlyModulePreloads.length, path === "/" ? 2 : 0,

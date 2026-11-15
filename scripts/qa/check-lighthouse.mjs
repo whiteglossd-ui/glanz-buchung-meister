@@ -61,6 +61,8 @@ const summary = {
   iconProofFailures: [],
   routePreloadRuns: [],
   routePreloadFailures: [],
+  stylePreloadRuns: [],
+  stylePreloadFailures: [],
 };
 
 function cancel(signal) {
@@ -167,7 +169,12 @@ try {
   const manifests = (await readdir(resolve(".output/server")))
     .filter((name) => name.startsWith("_tanstack-start-manifest_") && name.endsWith(".mjs"));
   assert.equal(manifests.length, 1, "The current build must identify one SSR manifest");
-  const buildManifest = (await import(pathToFileURL(resolve(".output/server", manifests[0])).href)).tsrStartManifest();
+  const manifestModule = await import(pathToFileURL(resolve(".output/server", manifests[0])).href);
+  const manifestFactories = [...new Set([manifestModule, ...Object.values(manifestModule)]
+    .filter((value) => value && typeof value.tsrStartManifest === "function")
+    .map((value) => value.tsrStartManifest))];
+  assert.equal(manifestFactories.length, 1, "The actual build must expose the original virtual manifest factory");
+  const buildManifest = manifestFactories[0]();
   const homeRoute = buildManifest.routes["/"];
   assert.ok(homeRoute.filePath.endsWith("/src/routes/index.tsx"));
   const expectedRoutePath = homeRoute.preloads[0];
@@ -176,6 +183,14 @@ try {
     "The early homepage hint must not select the bulk root entry");
   const routeSource = await readFile(resolve(".output/public" + expectedRoutePath));
   summary.routePreloadAsset = { path: expectedRoutePath, bytes: routeSource.length };
+  assert.equal(homeRoute.css.length, 1, "The current homepage has one existing client stylesheet");
+  const homeStylesheet = homeRoute.css[0];
+  const expectedStylePath = typeof homeStylesheet === "string" ? homeStylesheet : homeStylesheet.href;
+  assert.match(expectedStylePath, /^\/assets\/[\w.-]+\.css$/);
+  const styleSource = await readFile(resolve(".output/public" + expectedStylePath));
+  assert.equal(buildManifest.inlineCss.styles[expectedStylePath], styleSource.toString("utf8").trimEnd(),
+    "The prepared stylesheet must match the existing inline rules (Start trims the final newline)");
+  summary.stylePreloadAsset = { path: expectedStylePath, bytes: styleSource.length };
   const expectedIcon = await readFile(resolve("public/favicon-192.png"));
   const iconSha256 = createHash("sha256").update(expectedIcon).digest("hex");
   assert.equal(iconSha256, "73ec795e41e36843ecebba7edb10b69f303c139ddd27571fa2e3bd07ff69d42a",
@@ -387,6 +402,28 @@ try {
               "The real route preload must begin before the bulk entry completes");
           } catch (error) {
             summary.routePreloadFailures.push({ profile, run, message: error.message, actual: error.actual, expected: error.expected });
+          }
+          const styleRequests = networkRequests.filter((request) => new URL(request.url).pathname === expectedStylePath);
+          const styleDiscovery = result.artifacts.DevtoolsLog.find((entry) => entry.method === "Network.requestWillBeSent"
+            && new URL(entry.params.request.url).pathname === expectedStylePath);
+          const styleObservation = { profile, run, path: expectedStylePath,
+            initiatorType: styleDiscovery?.params.initiator?.type ?? null,
+            requests: styleRequests,
+            mainModule: mainRequest ? { start: mainRequest.networkRequestTime, end: mainRequest.networkEndTime } : null };
+          summary.stylePreloadRuns.push(styleObservation);
+          await writeFile(resolve(output, `${prefix}.style-preload-observation.json`), JSON.stringify(styleObservation, null, 2));
+          console.log(`LH-STYLE-CAPTURE ${JSON.stringify(styleObservation)}`);
+          try {
+            assert.equal(styleRequests.length, 1, `${profile} ${run}: reuse the single homepage stylesheet request`);
+            assert.equal(styleRequests[0].resourceSize, styleSource.length);
+            assert.equal(styleRequests[0].isLinkPreload, true);
+            assert.ok(["High", "VeryHigh"].includes(styleRequests[0].priority),
+              "The stylesheet keeps high priority, including Chromium's stylesheet promotion");
+            assert.equal(styleDiscovery?.params.initiator?.type, "parser");
+            assert.ok(mainRequest && styleRequests[0].networkRequestTime <= mainRequest.networkEndTime,
+              "The real style preload must begin before the bulk entry completes");
+          } catch (error) {
+            summary.stylePreloadFailures.push({ profile, run, message: error.message, actual: error.actual, expected: error.expected });
           }
           const wireRequests = iconRequests.filter((request) => request.transferSize > 0);
           const iconRequestIds = new Set(result.artifacts.DevtoolsLog
@@ -614,7 +651,7 @@ try {
     }
   }
 
-  const failures = [...summary.iconProofFailures, ...summary.routePreloadFailures]
+  const failures = [...summary.iconProofFailures, ...summary.routePreloadFailures, ...summary.stylePreloadFailures]
     .map(({ profile, run, message }) => `${profile} ${run}: ${message}`);
   const shortfalls = [];
   for (const profile of ["mobile", "desktop"]) {
