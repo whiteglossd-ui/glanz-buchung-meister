@@ -103,10 +103,13 @@ export async function verifyInitialRundumHero(page, { label, screenshot, documen
     return { copyCenter: center(copy), signpostCenter: center(signpost), paragraphCenter: center(paragraph), top: rect.top, bottom: rect.bottom, left: rect.left, right: rect.right, height: rect.height,
       minHeight: Number.parseFloat(getComputedStyle(element).minHeight), layoutHeight: element.offsetHeight,
       headerBottom: Math.max(0, header?.bottom ?? 0), availableBottom: consent && consent.height > 0 ? consent.top : innerHeight,
-      width: innerWidth, heightOfViewport: innerHeight, unobscured: element.contains(atCenter), scrollY };
+      width: innerWidth, heightOfViewport: innerHeight, unobscured: element.contains(atCenter),
+      coveringElement: atCenter?.outerHTML.slice(0, 300), copy: copy.toJSON(),
+      filmControls: document.querySelector(".scroll-film-bottom")?.getBoundingClientRect().toJSON(), scrollY };
   });
   const verify = async (state) => {
     const geometry = await measure();
+    await screenshot(`${label}-rundum-initial-${state}.png`);
     assert.ok(Math.abs(geometry.signpostCenter - geometry.copyCenter) <= 2 && Math.abs(geometry.paragraphCenter - geometry.copyCenter) <= 2,
       `${label} ${state}: Rundum signpost and its paragraph align with the hero copy center within two pixels: ${JSON.stringify(geometry)}`);
     // WebKit can lose about 3e-5px in the translated rectangle. Keep both
@@ -115,7 +118,6 @@ export async function verifyInitialRundumHero(page, { label, screenshot, documen
       && geometry.left >= 0 && geometry.right <= geometry.width && geometry.minHeight >= 44 && geometry.layoutHeight >= 44
       && geometry.height + 1e-3 >= 44 && geometry.unobscured,
       `${label} ${state}: initial Rundum CTA visible, usable and clear of header/consent: ${JSON.stringify(geometry)}`);
-    await screenshot(`${label}-rundum-initial-${state}.png`);
   };
   await verify("first-visit");
   const reject = page.getByRole("button", { name: "Ablehnen", exact: true });

@@ -218,6 +218,10 @@ body[data-consent-banner="open"] [data-shell="public"] .scroll-film-copy-inner {
 /* Keep both request actions above consent on a first mobile visit. Compact
  * spacing only; preserve the shared type scale and 44px touch targets. */
 @media (min-width: 360px) and (max-width: 639px) and (min-height: 701px) {
+  :is(html[data-consent-initial-open="true"], body[data-consent-banner="open"]) [data-shell="public"] .scroll-film .scroll-film-copy {
+    --fidelity-copy-insets: 13.5rem;
+    padding-top: 5rem;
+  }
   :is(html[data-consent-initial-open="true"], body[data-consent-banner="open"]) [data-shell="public"] .scroll-film-eyebrow {
     margin-bottom: .5rem;
   }
@@ -226,9 +230,11 @@ body[data-consent-banner="open"] [data-shell="public"] .scroll-film-copy-inner {
   }
   :is(html[data-consent-initial-open="true"], body[data-consent-banner="open"]) [data-shell="public"] .scroll-film-service + .scroll-film-cta {
     margin-top: .5rem;
+    gap: .5rem;
+    padding-inline: .5rem;
   }
   :is(html[data-consent-initial-open="true"], body[data-consent-banner="open"]) [data-shell="public"] .scroll-film-prices {
-    padding-block: .5rem;
+    padding: .5rem;
   }
   :is(html[data-consent-initial-open="true"], body[data-consent-banner="open"]) [data-shell="public"] .scroll-film-rundum {
     margin-top: .375rem;
