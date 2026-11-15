@@ -49,3 +49,6 @@ Das aktuelle `scripts/deploy-hostinger.sh` gibt diese Zeile erst nach Prüfung d
 ## Veröffentlichungsvorgabe
 
 Der aktuelle Auftrag erlaubt Implementierung, Tests und Vorbereitung, aber keine produktive Veröffentlichung. Deshalb keine Main-Merges oder Release-Dispatches aus diesem Auftrag. Diese aktuelle Vorgabe hat Vorrang vor älteren Projektfreigaben.
+
+## Spätere Repository-Aktualisierung während dieses Auftrags
+Der Website-Hauptbranch wurde durch PR #346 auf `333487b4f12a01727ace6ec2f36d22c849551b00` fortgeführt. Dieser fremde Hauptbranch-Stand ist in den Entwurf integriert. Die oben genannten Produktionsbelege bleiben ihrem jeweiligen Zeitpunkt und Commit zugeordnet; aus dem neuen Hauptbranch allein wird kein neuer Live-Stand behauptet. Das Panel-main blieb `372864f4eeaae8dba3da34580a0b9f40e5e27888`.

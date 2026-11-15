@@ -47,7 +47,7 @@ Website main 38996d2ba9adfd54bde1dd22949b60c7afb9d0fd, Panel main 372864f4eeaae8
 - Server-to-server POST https://panel.white-gloss.de/api/website/intake using existing server-only HUB_SYNC_TOKEN / panel encrypted hubKey, TLS, timing-safe bearer check, bounded JSON. Request body { inquiry: HubInquiry }. Response { saved:true, reference:string, emailStatus:queued|accepted|unknown|failed|not_configured }; never auth tokens/customer session. Optional future provider delivery proof is separate.
 - Panel orders.website_id is the deduplication key. Content fingerprint detects conflicting replay; same replay returns same reference. Existing import remains recovery path and receives same source fields. Durable receipt queued only for new-version marked requests, preventing bulk emails to historical requests. Panel intake marks source for one combined receipt; fallback import must use same idempotent receipt path.
 - Website saves first, attempts panel handoff; uncertain/offline handoff remains stored and replayable. Tell user accurately when panel handoff remains pending; no new request needed. Existing pull remains recovery path; retain complete pending requests rather than hiding older rows behind a 40-row window.
-- Panel receipt owns password onboarding, using existing scrypt and credential table. Add single-use 24h setup links, hashed lookup, encrypted queued payload, limited setup grant, no GET-triggered account/session changes. Existing passwords are never reset by an intake. Self-service existing secure code path remains for renewed setup/reset. Password save grants access only after proof.
+- Panel receipt owns password onboarding, using existing scrypt and credential table. Add single-use 24h setup links, hashed lookup, encrypted queued payload, limited setup grant, no GET-triggered account/session changes. Existing passwords are never reset by an intake. Expired links can explicitly be renewed with a neutral, rate-limited setup-link request; code setup/reset remains compatible. Password save grants access only after proof.
 - Provider idempotency key fixed per durable mail job; persist queued/sending/accepted/unknown/failed states and safe retry within provider idempotency window; never blindly resend unknown sends beyond that window. Existing mail-status lookup used for actual provider status.
 - UI reuses existing tokens, typography and form controls. Adjust existing repeated concierge message to avoid duplicates; no whole-home redesign.
 
@@ -56,3 +56,6 @@ A: full unit/integration tests, types, lint/build in both repos; test direct app
 
 ## Out of scope
 Production deployment/merge, mass migration or mail, deletion of files/accounts, new hosting/provider, guaranteed repairs, fixed repair prices, automatic WhatsApp intake, invoices/PDFs on receipt, unrelated redesign.
+
+## Während der Umsetzung eingegangener Hauptbranch
+Website-Hauptbranch333487b4f12a01727ace6ec2f36d22c849551b00 (#346) wurde nach Beginn übernommen. Dessen Katalog-/Ab-Preisänderungen bleiben erhalten. Neuer Vergleichsstand für die taskbezogene Inhaltsprüfung ist333487b. Dies ist keine Veröffentlichung durch diesen Auftrag.

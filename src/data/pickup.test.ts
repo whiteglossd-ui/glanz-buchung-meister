@@ -216,3 +216,9 @@ describe("pickup pricing source of truth", () => {
     assert.deepEqual(hits, []);
   });
 });
+
+it("does not price retired ceramic layers in a new estimate", () => {
+  const selection = { packageId: "basis" as const, classId: "kompakt" as const, extraIds: ["keramik-ultra"] };
+  assert.equal(quoteTotal(selection).total, quoteTotal({ ...selection, extraIds: [] }).total);
+  assert.equal(extras.find((e) => e.id === "keramik-ultra")?.requestable, false);
+});

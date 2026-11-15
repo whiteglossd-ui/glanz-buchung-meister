@@ -201,6 +201,7 @@ export type Extra = {
   group: "pflege" | "reparatur";
   inspect?: boolean;
   requestable?: boolean;
+  retired?: boolean;
 };
 
 export const extras: Extra[] = [
@@ -269,6 +270,8 @@ export const extras: Extra[] = [
     price: 699,
     group: "pflege",
     inspect: true,
+    requestable: false,
+    retired: true,
   },
   {
     id: "cabrio",
@@ -562,7 +565,7 @@ export function quoteTotal(opts: {
   const pack = packages.find((p) => p.id === opts.packageId)!;
   const klass = vehicleClasses.find((c) => c.id === opts.classId)!;
   const extrasSum = extras
-    .filter((e) => opts.extraIds.includes(e.id) && !extraIncluded(opts.packageId, e.id))
+    .filter((e) => e.requestable !== false && opts.extraIds.includes(e.id) && !extraIncluded(opts.packageId, e.id))
     .reduce((s, e) => s + e.price, 0);
   const city = opts.citySlug ? cities.find((c) => c.slug === opts.citySlug) : undefined;
   const pickup = city ? cityPickupFee(city, opts.packageId) : opts.citySlug ? null : 0;

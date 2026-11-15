@@ -18,7 +18,7 @@ await mkdir(output, { recursive: true });
 const results = [];
 const diagnostics = [];
 const requestable = extras.filter((extra) => extra.requestable !== false);
-assert.equal(requestable.length, 12, "Twelve bookable extras are expected");
+assert.equal(requestable.length, 11, "Eleven bookable extras remain after retiring ceramic layers");
 
 const browser = await chromium.launch({ headless: true });
 
@@ -221,7 +221,8 @@ try {
       requestable.map((extra) => `extra-${extra.id}`).sort(),
       "Every bookable extra must be selectable with its production ID",
     );
-    results.push("All 12 bookable extras render with their production IDs");
+    assert.equal(await page.locator("#extra-keramik-ultra").count(), 0, "Retired ceramic layers must not be offered");
+    results.push("All 11 bookable extras render with their production IDs");
 
     const total = ".booking-price strong";
     const step = async (number) => {

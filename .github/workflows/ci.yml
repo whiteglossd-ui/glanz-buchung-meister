@@ -143,7 +143,7 @@ jobs:
         run: |
           git fetch --no-tags --depth=1 origin db305e3c190cf53a0213c90ea3e788625ece091d
           git fetch --no-tags --depth=1 origin 6daf3fc01834e94720ef4834f36e0534dfc93aaa
-          git fetch --no-tags --depth=1 origin 38996d2ba9adfd54bde1dd22949b60c7afb9d0fd
+          git fetch --no-tags --depth=1 origin 333487b4f12a01727ace6ec2f36d22c849551b00
           npm run check:design-content
 
       - name: Strukturierte Daten aller Abholorte prüfen

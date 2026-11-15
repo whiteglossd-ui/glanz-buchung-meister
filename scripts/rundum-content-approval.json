@@ -1,5 +1,5 @@
 {
-  "commit": "38996d2ba9adfd54bde1dd22949b60c7afb9d0fd",
+  "commit": "333487b4f12a01727ace6ec2f36d22c849551b00",
   "authorization": "Rundum-Service und Kundenzugang, Betreiberauftrag 15.11.2026; exakt beauftragte Rundum-Texte, Formularfelder und Entfernung öffentlicher Kunden-Uploads. Keine pauschale Dateiausnahme.",
   "files": {
     "src/components/booking-media-picker.tsx": {
@@ -183,7 +183,7 @@
       "added": {}
     },
     "src/components/configurator.tsx": {
-      "beforeBlob": "ef8579268e12f5db18f00c9e05519efd5f9db342",
+      "beforeBlob": "a91c2f00750a18f0cd72b49e25a6dcf1318a3295",
       "removed": {
         "text": [
           {
@@ -780,5 +780,6 @@
         ]
       }
     }
-  }
+  },
+  "baselineNote": "Hauptbranch-Änderung PR #346 (Ab-Preise und entfernte Keramikschichten) integriert; Aufgabenfreigabe enthält ausschließlich den Rundum-/Fotoablauf-Delta gegenüber diesem bestehenden Stand."
 }

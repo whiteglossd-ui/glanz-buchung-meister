@@ -9,6 +9,7 @@ cd glanz-buchung-meister
 npm ci --ignore-scripts
 cd ../white-gloss-panel
 npm ci --ignore-scripts
+npm run build
 node --experimental-strip-types scripts/test-website-panel-journey.mjs
 ```
 

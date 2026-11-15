@@ -35,7 +35,7 @@ export const articles: Article[] = [
         heading: "Wovon die Haltbarkeit abhängt",
         paragraphs: [
           "Die Haltbarkeit einer Keramikversiegelung hängt vom Produkt und der anschließenden Pflege ab. Das Paket White-Gloss Ceramic ab 899 € enthält die Lackvorbereitung und die Beschichtung.",
-          "Eine feste Haltbarkeit von 5 Jahren sagen wir nicht pauschal zu. Zusätzliche Keramikschichten sind nach Prüfung des Lacks auf Anfrage möglich.",
+          "Eine feste Haltbarkeit von 5 Jahren sagen wir nicht pauschal zu. Die passende Beschichtung stimmen wir nach Prüfung des Lacks mit Ihnen ab.",
         ],
       },
       {

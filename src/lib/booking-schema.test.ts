@@ -39,6 +39,9 @@ function bookingInput(date?: string) {
 }
 
 describe("createPublicBooking past-date validation", () => {
+  it("rejects retired ceramic layers for new requests", () => {
+    assert.equal(publicBookingSchema.safeParse({ ...bookingInput(), extraIds: ["keramik-ultra"] }).success, false);
+  });
   it("rejects suspended headlight work before any customer request can be written", () => {
     assert.equal(
       publicBookingSchema.safeParse({ ...bookingInput(), extraIds: ["scheinwerfer"] }).success,
