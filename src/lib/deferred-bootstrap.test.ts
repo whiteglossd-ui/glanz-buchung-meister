@@ -11,7 +11,7 @@ import {
 
 type Listener = () => void;
 
-function fakePage({ readyState = "loading", images = [] as FakeImage[] } = {}) {
+function fakePage({ readyState = "loading", images = [] as FakeImage[], fonts = undefined as { ready: Promise<unknown> } | undefined } = {}) {
   const inserted: Record<string, string>[] = [];
   const documentListeners: Record<string, Listener[]> = {};
   const frames: Listener[] = [];
@@ -19,6 +19,7 @@ function fakePage({ readyState = "loading", images = [] as FakeImage[] } = {}) {
   let selector = "";
   const document = {
     readyState,
+    fonts,
     head: { appendChild: (node: Record<string, string>) => inserted.push(node) },
     addEventListener: (type: string, listener: Listener) =>
       (documentListeners[type] ??= []).push(listener),
@@ -195,3 +196,29 @@ test("only Start's module entry and module preloads are deferred", () => {
   assert.ok(!isModulePreload({ tag: "link", attrs: { rel: "preload", href: "/a.woff2" } }));
 });
 
+
+for (const outcome of ["loaded", "failed", "interaction", "timeout"]) {
+  test(`initial fonts yield the first paint before hydration: ${outcome}`, async () => {
+    let resolve!: () => void;
+    let reject!: () => void;
+    const ready = new Promise<void>((yes, no) => { resolve = yes; reject = no; });
+    const page = fakePage({ readyState: "interactive", fonts: { ready } });
+    page.run(source);
+    await settle();
+    assert.equal(page.frames.length, 0, "font downloads must not compete with the client entry");
+    assert.equal(page.inserted.length, 0);
+    if (outcome === "interaction") page.fire("pointerdown");
+    else if (outcome === "timeout") page.timers[0].callback();
+    else if (outcome === "failed") reject();
+    else resolve();
+    await settle();
+    page.nextFrame();
+    page.nextFrame();
+    assert.equal(page.inserted.length, 2, "a slow or failed font cannot block interaction readiness");
+    resolve();
+    await settle();
+    page.nextFrame();
+    page.nextFrame();
+    assert.equal(page.inserted.length, 2);
+  });
+}
