@@ -275,7 +275,7 @@ test("Node serves compressed build assets and revalidates mutable media", async 
       `${path} must not duplicate the external desktop stylesheet inline`);
     const earlyStylePreloads = [...head.matchAll(/<link\b(?=[^>]*rel="preload")(?=[^>]*as="style")[^>]*>/g)]
       .map(([tag]) => tag);
-    assert.equal(earlyStylePreloads.length, path === "/" ? 1 : 0,
+    assert.equal(earlyStylePreloads.length, path === "/" ? 2 : 0,
       `${path} prepares only the two existing homepage CSS assets without another applied stylesheet`);
     if (path === "/") {
       assert.ok(inlineCss.includes(homeCssSource), "The exact complete homepage CSS remains inline");
