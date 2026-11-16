@@ -100,26 +100,36 @@ export async function verifyInitialRundumHero(page, { label, screenshot, documen
     const atCenter = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
     const signpost = element.closest(".scroll-film-rundum").getBoundingClientRect(), paragraph = element.closest(".scroll-film-rundum").querySelector("p").getBoundingClientRect(), copy = element.closest(".scroll-film-copy-inner").getBoundingClientRect();
     const center = (box) => (box.left + box.right) / 2;
-    return { copyCenter: center(copy), signpostCenter: center(signpost), paragraphCenter: center(paragraph), top: rect.top, bottom: rect.bottom, left: rect.left, right: rect.right, height: rect.height, layoutHeight: element.offsetHeight,
+    return { copyCenter: center(copy), signpostCenter: center(signpost), paragraphCenter: center(paragraph), top: rect.top, bottom: rect.bottom, left: rect.left, right: rect.right, height: rect.height,
+      minHeight: Number.parseFloat(getComputedStyle(element).minHeight), layoutHeight: element.offsetHeight,
       headerBottom: Math.max(0, header?.bottom ?? 0), availableBottom: consent && consent.height > 0 ? consent.top : innerHeight,
-      width: innerWidth, heightOfViewport: innerHeight, unobscured: element.contains(atCenter), scrollY };
+      width: innerWidth, heightOfViewport: innerHeight, unobscured: element.contains(atCenter),
+      coveringElement: atCenter?.outerHTML.slice(0, 300), copy: copy.toJSON(),
+      filmControls: document.querySelector(".scroll-film-bottom")?.getBoundingClientRect().toJSON(), scrollY };
   });
   const verify = async (state) => {
+    await screenshot(`${label}-rundum-initial-${state}.png`);
+    // Measure the rendered frame captured above, after layout/style invalidation
+    // has reached the compositor, rather than a mid-commit DOM snapshot.
     const geometry = await measure();
     assert.ok(Math.abs(geometry.signpostCenter - geometry.copyCenter) <= 2 && Math.abs(geometry.paragraphCenter - geometry.copyCenter) <= 2,
       `${label} ${state}: Rundum signpost and its paragraph align with the hero copy center within two pixels: ${JSON.stringify(geometry)}`);
-    // WebKit can return 43.999969px for a transformed 44px target. Keep the
-    // layout minimum exact and allow only this subpixel bounding-box rounding.
+    // WebKit can lose about 3e-5px in the translated rectangle. Keep both
+    // untransformed 44px guarantees and tolerate only that float rounding.
     assert.ok(geometry.scrollY <= 1 && geometry.top >= geometry.headerBottom && geometry.bottom <= geometry.availableBottom + 1
-      && geometry.left >= 0 && geometry.right <= geometry.width && geometry.layoutHeight >= 44 && geometry.height >= 44 - 0.01 && geometry.unobscured,
+      && geometry.left >= 0 && geometry.right <= geometry.width && geometry.minHeight >= 44 && geometry.layoutHeight >= 44
+      && geometry.height + 1e-3 >= 44 && geometry.unobscured,
       `${label} ${state}: initial Rundum CTA visible, usable and clear of header/consent: ${JSON.stringify(geometry)}`);
-    await screenshot(`${label}-rundum-initial-${state}.png`);
   };
   await verify("first-visit");
   const reject = page.getByRole("button", { name: "Ablehnen", exact: true });
   if (await reject.isVisible().catch(() => false)) {
     await reject.click();
     await page.locator(".consent-banner").waitFor({ state: "hidden" });
+    // React removes the banner before its effect cleans up the layout markers.
+    // Measure the completed dismissal, not that intermediate render.
+    await page.waitForFunction(() => !document.body.hasAttribute("data-consent-banner")
+      && !document.documentElement.hasAttribute("data-consent-initial-open"));
   }
   await verify("consent-dismissed");
   return `${label}: initial hero visibly offers Rundum-Service before scrolling, with exact request anchor and no header/cookie overlap`;
@@ -241,11 +251,18 @@ export async function verifyRundumIntentLoading(page, { label, base }) {
   assert.equal(await form.locator("#rundum-name").inputValue(), draft, `${label}: a hash change keeps unsent input`);
   await page.locator(".scroll-film-rundum").getByRole("link", { name: "Rundum-Service anfragen", exact: true }).click();
   await page.waitForFunction(() => location.hash === "#rundum-anfrage");
+  // The preceding #buchung visit starts the real calendar read. Leaving Home
+  // unmounts Configurator and deliberately aborts it; finish begun reads first
+  // so that this harness navigation cannot manufacture a requestfailed error.
+  const beforePrices = await reads.complete(`${label}: before client route to prices`, { timeoutMs: 5000 });
+  console.log(`RUNDUM-NAV-READS:${JSON.stringify(beforePrices)}`);
   await page.locator(".scroll-film-prices").click();
   await page.waitForURL((url) => url.pathname === "/preise");
   await page.goBack({ waitUntil: "networkidle" });
   await form.waitFor({ state: "visible", timeout: 5000 });
   assert.equal(await form.locator("#rundum-name").inputValue(), draft, `${label}: client route and back keep unsent input`);
+  const beforeReload = await reads.complete(`${label}: before direct hash navigation`, { timeoutMs: 5000 });
+  console.log(`RUNDUM-NAV-READS:${JSON.stringify(beforeReload)}`);
   await page.goto(`${base}/#rundum-anfrage`, { waitUntil: "networkidle" });
   await form.waitFor({ state: "visible", timeout: 5000 });
   await assertStableRundumArrival(page, `${label}: direct hash`, reads);

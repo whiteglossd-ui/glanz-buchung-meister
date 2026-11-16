@@ -1,0 +1,86 @@
+{
+  "repository": "White-Gloss/glanz-buchung-meister",
+  "head": "9ff2e377408f8de9554ada976eeb4ebd01ed1ea4",
+  "pull_request": 349,
+  "run_id": 43687237283,
+  "job_id": 132730156109,
+  "full_png_artifact": {
+    "id": 14151505256,
+    "url": "https://github.com/White-Gloss/glanz-buchung-meister/actions/runs/43687237283/artifacts/14151505256",
+    "bytes": 36287270
+  },
+  "images": [
+    {
+      "name": "hero-mobil.jpg",
+      "source": "booking-ui-chromium-390-rundum-initial-consent-dismissed.jpg",
+      "viewport": 390,
+      "previewWidth": 390,
+      "previewHeight": 844,
+      "bytes": 44801,
+      "sha256": "a54d9cee82e060668dade1370d6126e92159df2db18a13d125f350e551ae05ca"
+    },
+    {
+      "name": "hero-desktop.jpg",
+      "source": "booking-ui-chromium-1440-rundum-initial-consent-dismissed.jpg",
+      "viewport": 1440,
+      "previewWidth": 1200,
+      "previewHeight": 833,
+      "bytes": 84794,
+      "sha256": "387fb018062cbce36590ca4197188e744e29b6f00208e07ae1dee878135bcd3b"
+    },
+    {
+      "name": "hero-mobil-cookie.jpg",
+      "source": "booking-ui-chromium-390-rundum-initial-first-visit.jpg",
+      "viewport": 390,
+      "previewWidth": 390,
+      "previewHeight": 844,
+      "bytes": 59259,
+      "sha256": "86a7a71dd3caaaf2f34d90853f0def226c95db07beb2a3ecf5105868a60c1e70"
+    },
+    {
+      "name": "hero-desktop-cookie.jpg",
+      "source": "booking-ui-chromium-1440-rundum-initial-first-visit.jpg",
+      "viewport": 1440,
+      "previewWidth": 1200,
+      "previewHeight": 833,
+      "bytes": 100240,
+      "sha256": "19b2ab43b3bd351eaf4e61986800182f7db0a374b66452ceca13a911d08e7508"
+    },
+    {
+      "name": "rundum-mobil.jpg",
+      "source": "booking-ui-chromium-320-rundum-intro.jpg",
+      "viewport": 320,
+      "previewWidth": 320,
+      "previewHeight": 637,
+      "bytes": 33489,
+      "sha256": "ddfa893d0feff2076266920865faa6e948fc78db90cb942ff96e06e0315810c4"
+    },
+    {
+      "name": "rundum-desktop.jpg",
+      "source": "booking-ui-chromium-1440-rundum-intro.jpg",
+      "viewport": 1440,
+      "previewWidth": 1200,
+      "previewHeight": 331,
+      "bytes": 39394,
+      "sha256": "0f5a44fd9748a46909d93ca6911c51d56468c035d95d24a3a74b4889661641be"
+    },
+    {
+      "name": "anfrage-mobil.jpg",
+      "source": "booking-ui-chromium-320-rundum-form.jpg",
+      "viewport": 320,
+      "previewWidth": 234,
+      "previewHeight": 1500,
+      "bytes": 47372,
+      "sha256": "a35215fe465a447f712c2f25d306b32b78b3e14edb4d9b702c7202e3b3a57a01"
+    },
+    {
+      "name": "anfrage-desktop.jpg",
+      "source": "booking-ui-chromium-1440-rundum-form.jpg",
+      "viewport": 1440,
+      "previewWidth": 1200,
+      "previewHeight": 1332,
+      "bytes": 83552,
+      "sha256": "e428aca72f6483614a444899d5b56ff78a81c2feae31655a576ff374f7a2a85f"
+    }
+  ]
+}

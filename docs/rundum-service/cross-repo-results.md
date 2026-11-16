@@ -1,6 +1,6 @@
 # Repositoryübergreifender Funktionsnachweis
 
-Stand: 2026-11-15T01:36:40.109Z
+Stand: 2026-11-15T06:39:28.432Z
 
 16 Prüfgruppen bestanden. Ausgeführt mit Node v24.19.0 ohne Website-Server. Die echten Website-Speicher-/Übergabefunktionen laufen gegen sämtliche PGlite-Migrationen; tatsächliche Panel-Routen laufen über `createApplication.fetch` gegen SQLite im Speicher. Nur der Transport zur Panel-Anwendung und der Resend-Anbieter sind im Prozess abgefangen. Keine externe Anfrage und keine echte E-Mail.
 

@@ -1,6 +1,6 @@
 # Standards review — recheck
 
-Website reviewed at pinned commit `e9f49b7778f023763a15fe19c90b52a3dca89971` against `38996d2ba9adfd54bde1dd22949b60c7afb9d0fd`. Panel final commit `168bfd7d1c22704dd45bcbc0320d20480cdb9364` confirmed against base `372864f4eeaae8dba3da34580a0b9f40e5e27888` using the committed three-dot diff; clean worktree. Standards axis only.
+Website final runtime commit `78d9f5aef051c119b415580083e22cf51ae2b181` confirmed against latest upstream `333487b4f12a01727ace6ec2f36d22c849551b00` using the committed three-dot diff. Upstream ancestry and exact preservation of pricing/catalog/schema sources verified. Panel final runtime commit `10972fce488c960662e1d7fcd6e88bdbe57b8c96` confirmed against base `372864f4eeaae8dba3da34580a0b9f40e5e27888` using the committed three-dot diff; remaining worktree updates concern evidence documents. Standards axis only.
 
 **Resolved P1: stale receipt recipient.** `white-gloss-panel/server/website-receipts.mjs:71–81` now decrypts first, then synchronously rereads the latest order and checks its restrictions and current email before fetch, with no intervening await. This satisfies the provider-write invariant documented at `src/record-compat.mjs:16–23`. The new regression in `tests/website-intake-http.test.mjs:118` covers reassignment during preparation. An independent cached-payload retry reproduction `/workspace/review-recipient-fixed.mjs` also confirms reassignment blocks the retry, leaves the saved request intact and returns `emailStatus: failed`; no second provider request occurs. All provider calls were synthetic.
 
@@ -12,4 +12,8 @@ The normal booking's foreground/background claim race is also resolved: `booking
 
 Replacement-link self-service was also reviewed at the final panel commit: queue and synchronous send guards refuse existing passwords; both code-verification transitions exclude `setup-link`; redeemed links use setup-only insertion, preserving existing credentials. Neutral responses and rate limits remain intact.
 
-No remaining blocking standards/security finding identified in the confirmed panel snapshot. The later website merge preserving external pricing changes is outside this pinned recheck. This review does not assert browser/production verification.
+Final incremental recheck confirms the lazy below-fold form extraction preserves request state, payload and validation; two centering CSS lines and the city WhatsApp sentence introduce no security change. Native TLS browser adapter is reviewed separately in `/workspace/review-ci-tls.md`; panel runtime authentication/intake source remains identical to the earlier reviewed commit.
+
+No remaining blocking standards/security finding identified in either confirmed runtime snapshot. The external upstream pricing changes are preserved exactly and were excluded from attribution to this task; the merged handoff/authentication boundary remains unchanged from the reviewed implementation. This review does not assert browser/production verification.
+
+Layout addendum: reviewed only `928d0a0...9ec458d` (three runtime files); no blockers. Earlier reviews remain historical. [Scope and exact pins](review-layout.md).

@@ -123,6 +123,26 @@ test("missing page images remain HTTP failures and open media streams are not tr
     await assert.rejects(reads.complete("gallery"), /must succeed/);
   } finally { missing.finish(); }
   const media = pendingRead(page, "/media/film.mp4", "media");
-  try { assert.equal((await reads.complete("gallery", { timeoutMs: 5 })).pending, 0); }
+  try { assert.equal((await reads.complete("gallery", { timeoutMs: 5, quietMs: 0 })).pending, 0); }
   finally { media.finish(); }
+});
+
+test("a deferred lazy import after an empty checkpoint finishes before navigation", async () => {
+  const page = new EventEmitter();
+  const reads = observePageReads(page, origin);
+  let navigated = false;
+  const navigation = reads.complete("after scroll", { quietMs: 20 }).then((result) => {
+    navigated = true;
+    return result;
+  });
+  await new Promise((resolve) => setImmediate(resolve));
+  const script = pendingRead(page, "/assets/lazy-configurator.js", "script");
+  try {
+    await new Promise((resolve) => setTimeout(resolve, 30));
+    assert.equal(navigated, false, "A late observer-triggered import must not be aborted by navigation");
+    script.finish();
+    const result = await navigation;
+    assert.equal(result.pending, 0);
+    assert.ok(result.completed.some((entry) => entry.path === "/assets/lazy-configurator.js"));
+  } finally { script.finish(); await navigation; }
 });

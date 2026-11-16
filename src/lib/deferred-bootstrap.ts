@@ -25,7 +25,7 @@ function serialize(value: readonly string[]) {
  * Inline script that starts the client bundle after the first viewport has
  * painted. It waits for the document to be parsed and for every eager
  * `fetchpriority="high"` image to load and decode, lets two frames pass so
- * those images are on screen, then inserts the module preloads and entries
+ * those images and the initial text fonts are on screen, then inserts the module preloads and entries
  * exactly as Start would have rendered them. A timer guarantees hydration
  * when frames are paused, e.g. in a background tab. Pointer, keyboard or focus
  * intent starts loading immediately instead of waiting for image decoding.
@@ -38,7 +38,7 @@ export function deferredBootstrapSource(entries: readonly string[], preloads: re
     'p.forEach(function(h){var l=d.createElement("link");l.rel="modulepreload";l.href=h;d.head.appendChild(l)});' +
     'e.forEach(function(h){var t=d.createElement("script");t.type="module";t.setAttribute("async","");t.src=h;d.head.appendChild(t)})}' +
     "function f(){w.requestAnimationFrame(function(){w.requestAnimationFrame(g)})}" +
-    "function r(){var a=[];" +
+    "function r(){var a=[];if(d.fonts&&d.fonts.ready)a.push(Promise.resolve(d.fonts.ready).catch(function(){}));" +
     'd.querySelectorAll(\'img[fetchpriority="high"]:not([loading="lazy"])\').forEach(function(i){' +
     "a.push(new Promise(function(o){if(i.complete)o();else{" +
     'i.addEventListener("load",o,{once:true});i.addEventListener("error",o,{once:true})}})' +

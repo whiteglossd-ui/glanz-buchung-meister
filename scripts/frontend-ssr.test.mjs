@@ -21,6 +21,31 @@ function canonicalLinks(html) {
   );
 }
 
+function assertHeroHeading(html, expected, path) {
+  const heading = html.match(/<h1\b([^>]*)>([\s\S]*?)<\/h1>/);
+  assert.ok(heading, `${path} must render its own heading`);
+  // Only discretionary hyphens are presentational. The unchanged original
+  // title must independently remain the heading's accessible name.
+  assert.equal(heading[2].replace(/<[^>]*>/g, "").replaceAll("\u00ad", ""), expected,
+    `${path} must render its own heading`);
+  assert.equal(heading[1].match(/\baria-label="([^"]*)"/)?.[1], expected,
+    `${path} must expose its unchanged original heading`);
+}
+
+test("SSR hero heading comparison ignores only discretionary hyphens and keeps the original accessible name", () => {
+  const original = "Keramikversiegelung &amp; Langzeitschutz in Horb";
+  const visible = "Keramik\u00adver\u00adsiegelung &amp; Langzeit\u00adschutz in Horb";
+  const html = `<h1 aria-label="${original}"><span aria-hidden="true">${visible}</span></h1>`;
+  assert.doesNotThrow(() => assertHeroHeading(html, original, "fixture"));
+  for (const changed of [
+    html.replace(`aria-label="${original}"`, ""),
+    html.replace(`aria-label="${original}"`, 'aria-label="Anderer Titel"'),
+    html.replace(visible, visible.replace("Horb", "Nagold")),
+    html.replaceAll("\u00ad", "\u200b"),
+    html.replaceAll("\u00ad", "-"),
+  ]) assert.throws(() => assertHeroHeading(changed, original, "fixture"));
+});
+
 function executableInlineScripts(html) {
   return [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)]
     .filter(([, attributes, source]) => {
@@ -83,11 +108,11 @@ test("service index and city routes render distinct content with one canonical",
       "/leistungen/keramikversiegelung/horb-am-neckar",
       "Keramikversiegelung mit Abholung in Horb am Neckar",
     ],
+    ["/abholservice/nagold", "Fahrzeugaufbereitung für Nagold"],
   ]) {
     const { response, html } = await get(path);
     assert.equal(response.status, 200, path);
-    const h1 = html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/)?.[1].replace(/<[^>]*>/g, "");
-    assert.equal(h1, heading, `${path} must render its own heading`);
+    assertHeroHeading(html, heading, path);
     assert.deepEqual(canonicalLinks(html), [`https://white-gloss.de${path}`], path);
     assert.match(html, /<html[^>]*lang="de"/);
     assert.ok(html.includes(`property="og:url" content="https://white-gloss.de${path}"`));
@@ -107,12 +132,11 @@ test("all published service/city combinations render their own route", async () 
         continue;
       }
       assert.equal(response.status, 200, path);
-      const h1 = html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/)?.[1].replace(/<[^>]*>/g, "");
       const expectedHeading =
         city.slug === "horb-am-neckar"
           ? `${service.seoNav} mit Abholung in ${city.name}`
           : `${service.seoNav} für Fahrzeuge aus ${city.name}`;
-      assert.equal(h1, expectedHeading, path);
+      assertHeroHeading(html, expectedHeading, path);
       assert.deepEqual(canonicalLinks(html), [`https://white-gloss.de${path}`], path);
     }
   }
@@ -251,31 +275,38 @@ test("Node serves compressed build assets and revalidates mutable media", async 
       `${path} must not duplicate the external desktop stylesheet inline`);
     const earlyStylePreloads = [...head.matchAll(/<link\b(?=[^>]*rel="preload")(?=[^>]*as="style")[^>]*>/g)]
       .map(([tag]) => tag);
-    assert.equal(earlyStylePreloads.length, path === "/" ? 1 : 0,
-      `${path} prepares only the existing homepage CSS without another applied stylesheet`);
+    assert.equal(earlyStylePreloads.length, path === "/" ? 2 : 0,
+      `${path} prepares only the two existing homepage CSS assets without another applied stylesheet`);
     if (path === "/") {
       assert.ok(inlineCss.includes(homeCssSource), "The exact complete homepage CSS remains inline");
       assert.ok(inlineCss.indexOf(globals[0].source.trim()) < inlineCss.indexOf(homeCssSource),
         "The homepage CSS must keep its existing place after the global inline cascade");
-      assert.equal(earlyStylePreloads[0].match(/href="([^"]+)"/)?.[1], homeCssHref);
-      assert.equal(earlyStylePreloads[0].match(/fetchpriority="([^"]+)"/i)?.[1], "high");
-      assert.equal(earlyStylePreloads[0].match(/crossorigin="([^"]+)"/i)?.[1], "anonymous",
+      const homeStyleHint = earlyStylePreloads.find((tag) => tag.match(/href="([^"]+)"/)?.[1] === homeCssHref);
+      const desktopStyleHint = earlyStylePreloads.find((tag) => tag.match(/href="([^"]+)"/)?.[1] === `/assets/${desktopStyles[0].name}`);
+      assert.ok(homeStyleHint && desktopStyleHint);
+      assert.equal(homeStyleHint.match(/crossorigin="([^"]+)"/i)?.[1], "anonymous",
         "The style hint matches Vite's existing anonymous client stylesheet fetch");
+      assert.equal(desktopStyleHint.match(/crossorigin="([^"]+)"/i)?.[1], cssLinks[0].match(/crossorigin="([^"]+)"/i)?.[1],
+        "The desktop preparation keeps its existing stylesheet credential mode");
       const nonce = response.headers.get("content-security-policy")?.match(/'nonce-([A-Za-z0-9+/]{43}=)'/)?.[1];
       assert.ok(nonce);
-      assert.equal(earlyStylePreloads[0].match(/nonce="([^"]+)"/)?.[1], nonce);
+      for (const hint of earlyStylePreloads) {
+        assert.equal(hint.match(/fetchpriority="([^"]+)"/i)?.[1], "high");
+        assert.equal(hint.match(/nonce="([^"]+)"/)?.[1], nonce);
+      }
     }
+    const header = html.match(/<header\b(?=[^>]*class="[^"]*\bsite-header\b)[^>]*>[\s\S]*?<\/header>/)?.[0];
+    assert.ok(header);
+    assert.match(header, /<img\b(?=[^>]*loading="eager")(?=[^>]*fetchPriority="high")[^>]*>/i,
+      `${path} prioritizes the visible header logo`);
     const earlyModulePreloads = [...head.matchAll(/<link\b[^>]*rel="modulepreload"[^>]*>/g)]
       .map(([tag]) => tag);
-    assert.equal(earlyModulePreloads.length, path === "/" ? 2 : 0,
-      `${path} prepares only the homepage route and client entry before the existing execution gate`);
+    assert.equal(earlyModulePreloads.length, path === "/" ? 1 : 0,
+      `${path} prepares only the small homepage route before the painted-viewport gate`);
     const routeHint = earlyModulePreloads.find((tag) => /fetchpriority="high"/i.test(tag));
-    const entryHint = earlyModulePreloads.find((tag) => /fetchpriority="low"/i.test(tag));
     const earlyRoutePreload = routeHint?.match(/href="([^"]+)"/)?.[1];
-    const earlyEntryPreload = entryHint?.match(/href="([^"]+)"/)?.[1];
     if (path === "/") {
-      assert.ok(earlyRoutePreload && earlyEntryPreload, "Separate route and low-priority entry hints are required");
-      assert.notEqual(earlyRoutePreload, earlyEntryPreload);
+      assert.ok(earlyRoutePreload, "The small homepage route remains prepared");
       assert.match(earlyRoutePreload, /^\/assets\/[\w.-]+\.js$/);
     }
     assert.doesNotMatch(
@@ -295,8 +326,9 @@ test("Node serves compressed build assets and revalidates mutable media", async 
     if (earlyRoutePreload) {
       assert.ok(!entries.includes(earlyRoutePreload), "The route hint stays separate from the bulk entry hint");
       assert.ok(!preloads.includes(earlyRoutePreload), "The route hint must not be inserted twice");
-      assert.deepEqual(entries, [earlyEntryPreload], "The low-priority hint must prepare exactly the deferred entry");
-      assert.ok(!preloads.includes(earlyEntryPreload), "The entry hint must not be inserted twice");
+      assert.equal(entries.length, 1, "Exactly one client entry remains behind the paint gate");
+      assert.ok(!earlyModulePreloads.some((tag) => tag.includes(entries[0])), "The bulk client entry must not compete with the initial font downloads");
+      assert.ok(!preloads.includes(entries[0]), "The client script fetch must not be duplicated");
     }
     for (const asset of [...entries, ...preloads, ...(earlyRoutePreload ? [earlyRoutePreload] : [])]) {
       assert.match(asset, /^\/assets\/[\w.-]+\.js$/, `${path} hydration asset ${asset}`);
@@ -318,7 +350,7 @@ test("Node serves compressed build assets and revalidates mutable media", async 
   assert.match(desktopResponse.headers.get("content-type") || "", /text\/css/);
   assert.match(desktopResponse.headers.get("cache-control") || "", /immutable/);
   assert.equal(desktopCss, desktopStyles[0].source, "the desktop stylesheet must decode to the built source");
-  for (const path of ["/media/lack-1200.avif", "/fonts/barlow-300.woff2"]) {
+  for (const path of ["/media/lack-1200.avif", "/fonts/syne-latin-variable.woff2", "/fonts/plus-jakarta-sans-latin-variable.woff2"]) {
     const response = await fetch(new URL(path, base), { signal: AbortSignal.timeout(15000) });
     assert.equal(response.status, 200, path);
     assert.doesNotMatch(response.headers.get("cache-control") || "", /immutable/, path);
