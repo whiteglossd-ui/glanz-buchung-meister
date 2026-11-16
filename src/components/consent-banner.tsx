@@ -1,5 +1,5 @@
 import { Link, useRouter } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { CONSENT_INITIAL_LAYOUT_SCRIPT, CONSENT_INITIAL_STATE_SCRIPT, CONSENT_SETTINGS_EVENT, getStoredConsent, onConsentChange, setStoredConsent } from "@/lib/consent";
 import { loadGoogleTag, stopGoogleTag } from "@/lib/googleTag";
 import { ctaGhost, ctaPrimary } from "./ui";
@@ -54,7 +54,9 @@ export function ConsentBanner() {
     };
   }, []);
 
-  useEffect(() => {
+  // Keep the banner and its clearance markers in the same paint. A passive
+  // cleanup can briefly leave the film controls above an already removed bar.
+  useLayoutEffect(() => {
     if (!ready || !visible) return;
     document.body.dataset.consentBanner = "open";
     const banner = bannerRef.current;

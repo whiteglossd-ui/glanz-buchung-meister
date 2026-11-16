@@ -108,8 +108,10 @@ export async function verifyInitialRundumHero(page, { label, screenshot, documen
       filmControls: document.querySelector(".scroll-film-bottom")?.getBoundingClientRect().toJSON(), scrollY };
   });
   const verify = async (state) => {
-    const geometry = await measure();
     await screenshot(`${label}-rundum-initial-${state}.png`);
+    // Measure the rendered frame captured above, after layout/style invalidation
+    // has reached the compositor, rather than a mid-commit DOM snapshot.
+    const geometry = await measure();
     assert.ok(Math.abs(geometry.signpostCenter - geometry.copyCenter) <= 2 && Math.abs(geometry.paragraphCenter - geometry.copyCenter) <= 2,
       `${label} ${state}: Rundum signpost and its paragraph align with the hero copy center within two pixels: ${JSON.stringify(geometry)}`);
     // WebKit can lose about 3e-5px in the translated rectangle. Keep both

@@ -93,7 +93,7 @@ export function CustomerPhotoGallery({ photos }: { photos?: readonly GalleryPhot
               </div>
               <button type="button" onClick={() => setActive(null)} autoFocus aria-label="Bild schließen">Schließen ×</button>
             </div>
-            <img src={photo.src} width={photo.width} height={photo.height} alt={photo.alt} />
+            <img key={photo.src} src={photo.src} width={photo.width} height={photo.height} alt={photo.alt} />
             <div className="customer-photo-viewer-controls">
               <button type="button" onClick={() => move(-1)} aria-label="Vorheriges Kundenbild">← Zurück</button>
               <p>{photo.category}</p>
