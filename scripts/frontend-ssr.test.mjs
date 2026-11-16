@@ -275,7 +275,7 @@ test("Node serves compressed build assets and revalidates mutable media", async 
       `${path} must not duplicate the external desktop stylesheet inline`);
     const earlyStylePreloads = [...head.matchAll(/<link\b(?=[^>]*rel="preload")(?=[^>]*as="style")[^>]*>/g)]
       .map(([tag]) => tag);
-    assert.equal(earlyStylePreloads.length, path === "/" ? 2 : 0,
+    assert.equal(earlyStylePreloads.length, path === "/" ? 1 : 0,
       `${path} prepares only the two existing homepage CSS assets without another applied stylesheet`);
     if (path === "/") {
       assert.ok(inlineCss.includes(homeCssSource), "The exact complete homepage CSS remains inline");
@@ -301,15 +301,12 @@ test("Node serves compressed build assets and revalidates mutable media", async 
       `${path} prioritizes the visible header logo`);
     const earlyModulePreloads = [...head.matchAll(/<link\b[^>]*rel="modulepreload"[^>]*>/g)]
       .map(([tag]) => tag);
-    assert.equal(earlyModulePreloads.length, path === "/" ? 2 : 0,
-      `${path} prepares only the homepage route and client entry before the existing execution gate`);
+    assert.equal(earlyModulePreloads.length, path === "/" ? 1 : 0,
+      `${path} prepares only the small homepage route before the painted-viewport gate`);
     const routeHint = earlyModulePreloads.find((tag) => /fetchpriority="high"/i.test(tag));
-    const entryHint = earlyModulePreloads.find((tag) => /fetchpriority="low"/i.test(tag));
     const earlyRoutePreload = routeHint?.match(/href="([^"]+)"/)?.[1];
-    const earlyEntryPreload = entryHint?.match(/href="([^"]+)"/)?.[1];
     if (path === "/") {
-      assert.ok(earlyRoutePreload && earlyEntryPreload, "Separate route and low-priority entry hints are required");
-      assert.notEqual(earlyRoutePreload, earlyEntryPreload);
+      assert.ok(earlyRoutePreload, "The small homepage route remains prepared");
       assert.match(earlyRoutePreload, /^\/assets\/[\w.-]+\.js$/);
     }
     assert.doesNotMatch(
@@ -329,8 +326,9 @@ test("Node serves compressed build assets and revalidates mutable media", async 
     if (earlyRoutePreload) {
       assert.ok(!entries.includes(earlyRoutePreload), "The route hint stays separate from the bulk entry hint");
       assert.ok(!preloads.includes(earlyRoutePreload), "The route hint must not be inserted twice");
-      assert.deepEqual(entries, [earlyEntryPreload], "The low-priority hint must prepare exactly the deferred entry");
-      assert.ok(!preloads.includes(earlyEntryPreload), "The entry hint must not be inserted twice");
+      assert.equal(entries.length, 1, "Exactly one client entry remains behind the paint gate");
+      assert.ok(!earlyModulePreloads.some((tag) => tag.includes(entries[0])), "The bulk client entry must not compete with the initial font downloads");
+      assert.ok(!preloads.includes(entries[0]), "The client script fetch must not be duplicated");
     }
     for (const asset of [...entries, ...preloads, ...(earlyRoutePreload ? [earlyRoutePreload] : [])]) {
       assert.match(asset, /^\/assets\/[\w.-]+\.js$/, `${path} hydration asset ${asset}`);
