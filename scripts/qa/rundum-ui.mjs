@@ -124,6 +124,10 @@ export async function verifyInitialRundumHero(page, { label, screenshot, documen
   if (await reject.isVisible().catch(() => false)) {
     await reject.click();
     await page.locator(".consent-banner").waitFor({ state: "hidden" });
+    // React removes the banner before its effect cleans up the layout markers.
+    // Measure the completed dismissal, not that intermediate render.
+    await page.waitForFunction(() => !document.body.hasAttribute("data-consent-banner")
+      && !document.documentElement.hasAttribute("data-consent-initial-open"));
   }
   await verify("consent-dismissed");
   return `${label}: initial hero visibly offers Rundum-Service before scrolling, with exact request anchor and no header/cookie overlap`;
