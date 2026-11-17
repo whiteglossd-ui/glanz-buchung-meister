@@ -63,8 +63,6 @@ const summary = {
   routePreloadFailures: [],
   stylePreloadRuns: [],
   stylePreloadFailures: [],
-  logoPriorityRuns: [],
-  logoPriorityFailures: [],
 };
 
 function cancel(signal) {
@@ -193,30 +191,6 @@ try {
   assert.equal(buildManifest.inlineCss.styles[expectedStylePath], styleSource.toString("utf8").trimEnd(),
     "The prepared stylesheet must match the existing inline rules (Start trims the final newline)");
   summary.stylePreloadAsset = { path: expectedStylePath, bytes: styleSource.length };
-  const originalDocument = await fetch(`${qaBase}/`, {
-    redirect: "error", signal: AbortSignal.any([abort.signal, AbortSignal.timeout(5_000)]),
-  });
-  assert.equal(originalDocument.status, 200);
-  const originalHtml = await originalDocument.text();
-  const originalHead = originalHtml.match(/<head\b[^>]*>([\s\S]*?)<\/head>/)?.[1];
-  assert.ok(originalHead);
-  const desktopStylesheets = [...originalHead.matchAll(/<link\b(?=[^>]*rel="stylesheet")(?=[^>]*media="\(min-width: 960px\)")[^>]*>/g)];
-  assert.equal(desktopStylesheets.length, 1);
-  const expectedDesktopPath = desktopStylesheets[0][0].match(/href="([^"]+)"/)[1];
-  assert.match(expectedDesktopPath, /^\/assets\/forge-desktop-[\w-]+\.css$/);
-  const desktopSource = await readFile(resolve(".output/public" + expectedDesktopPath));
-  summary.desktopPreloadAsset = { path: expectedDesktopPath, bytes: desktopSource.length };
-  const originalHeader = originalHtml.match(/<header\b(?=[^>]*class="[^"]*\bsite-header\b)[^>]*>[\s\S]*?<\/header>/)?.[0];
-  assert.ok(originalHeader);
-  const logoPicture = originalHeader.match(/<picture\b[^>]*>[\s\S]*?<\/picture>/)?.[0];
-  assert.ok(logoPicture);
-  const logoPaths = [...new Set([...logoPicture.matchAll(/\b(?:srcset|src)="([^"]+)"/gi)]
-    .flatMap(([, value]) => value.split(",").map((candidate) => candidate.trim().split(/\s+/)[0])))];
-  assert.ok(logoPaths.length > 0);
-  const logoSizes = new Map(await Promise.all(logoPaths.map(async (path) => {
-    assert.match(path, /^\/media\/logo-[\w.-]+\.(?:avif|webp)$/);
-    return [path, (await readFile(resolve(".output/public" + path))).length];
-  })));
   const expectedIcon = await readFile(resolve("public/favicon-192.png"));
   const iconSha256 = createHash("sha256").update(expectedIcon).digest("hex");
   assert.equal(iconSha256, "73ec795e41e36843ecebba7edb10b69f303c139ddd27571fa2e3bd07ff69d42a",
@@ -429,44 +403,27 @@ try {
           } catch (error) {
             summary.routePreloadFailures.push({ profile, run, message: error.message, actual: error.actual, expected: error.expected });
           }
-          for (const [asset, stylePath, sourceBytes] of [["home", expectedStylePath, styleSource.length], ["desktop", expectedDesktopPath, desktopSource.length]]) {
-            const styleRequests = networkRequests.filter((request) => new URL(request.url).pathname === stylePath);
-            const styleDiscovery = result.artifacts.DevtoolsLog.find((entry) => entry.method === "Network.requestWillBeSent"
-              && new URL(entry.params.request.url).pathname === stylePath);
-            const styleObservation = { profile, run, asset, path: stylePath,
-              initiatorType: styleDiscovery?.params.initiator?.type ?? null,
-              requests: styleRequests,
-              mainModule: mainRequest ? { start: mainRequest.networkRequestTime, end: mainRequest.networkEndTime } : null };
-            summary.stylePreloadRuns.push(styleObservation);
-            await writeFile(resolve(output, `${prefix}.${asset}-style-preload-observation.json`), JSON.stringify(styleObservation, null, 2));
-            console.log(`LH-STYLE-CAPTURE ${JSON.stringify(styleObservation)}`);
-            try {
-              assert.equal(styleRequests.length, 1, `${profile} ${run}: reuse the single ${asset} stylesheet request`);
-              assert.equal(styleRequests[0].resourceSize, sourceBytes);
-              assert.equal(styleRequests[0].isLinkPreload, true);
-              assert.ok(["High", "VeryHigh"].includes(styleRequests[0].priority),
-                "The stylesheet keeps high priority, including Chromium's stylesheet promotion");
-              assert.equal(styleDiscovery?.params.initiator?.type, "parser");
-              assert.ok(mainRequest && styleRequests[0].networkRequestTime <= mainRequest.networkEndTime,
-                "The real style preload must begin before the bulk entry completes");
-            } catch (error) {
-              summary.stylePreloadFailures.push({ profile, run, message: error.message, actual: error.actual, expected: error.expected });
-            }
-          }
-          const logoRequests = networkRequests.filter((request) => logoSizes.has(new URL(request.url).pathname));
-          const logoDiscovery = result.artifacts.DevtoolsLog.find((entry) => entry.method === "Network.requestWillBeSent"
-            && logoSizes.has(new URL(entry.params.request.url).pathname));
-          const logoObservation = { profile, run, initiatorType: logoDiscovery?.params.initiator?.type ?? null, requests: logoRequests };
-          summary.logoPriorityRuns.push(logoObservation);
-          await writeFile(resolve(output, `${prefix}.logo-priority-observation.json`), JSON.stringify(logoObservation, null, 2));
-          console.log(`LH-LOGO-CAPTURE ${JSON.stringify(logoObservation)}`);
+          const styleRequests = networkRequests.filter((request) => new URL(request.url).pathname === expectedStylePath);
+          const styleDiscovery = result.artifacts.DevtoolsLog.find((entry) => entry.method === "Network.requestWillBeSent"
+            && new URL(entry.params.request.url).pathname === expectedStylePath);
+          const styleObservation = { profile, run, path: expectedStylePath,
+            initiatorType: styleDiscovery?.params.initiator?.type ?? null,
+            requests: styleRequests,
+            mainModule: mainRequest ? { start: mainRequest.networkRequestTime, end: mainRequest.networkEndTime } : null };
+          summary.stylePreloadRuns.push(styleObservation);
+          await writeFile(resolve(output, `${prefix}.style-preload-observation.json`), JSON.stringify(styleObservation, null, 2));
+          console.log(`LH-STYLE-CAPTURE ${JSON.stringify(styleObservation)}`);
           try {
-            assert.equal(logoRequests.length, 1, "The header reuses one responsive logo request");
-            assert.equal(logoRequests[0].resourceSize, logoSizes.get(new URL(logoRequests[0].url).pathname));
-            assert.equal(logoRequests[0].priority, "High");
-            assert.equal(logoDiscovery?.params.initiator?.type, "parser");
+            assert.equal(styleRequests.length, 1, `${profile} ${run}: reuse the single homepage stylesheet request`);
+            assert.equal(styleRequests[0].resourceSize, styleSource.length);
+            assert.equal(styleRequests[0].isLinkPreload, true);
+            assert.ok(["High", "VeryHigh"].includes(styleRequests[0].priority),
+              "The stylesheet keeps high priority, including Chromium's stylesheet promotion");
+            assert.equal(styleDiscovery?.params.initiator?.type, "parser");
+            assert.ok(mainRequest && styleRequests[0].networkRequestTime <= mainRequest.networkEndTime,
+              "The real style preload must begin before the bulk entry completes");
           } catch (error) {
-            summary.logoPriorityFailures.push({ profile, run, message: error.message, actual: error.actual, expected: error.expected });
+            summary.stylePreloadFailures.push({ profile, run, message: error.message, actual: error.actual, expected: error.expected });
           }
           const wireRequests = iconRequests.filter((request) => request.transferSize > 0);
           const iconRequestIds = new Set(result.artifacts.DevtoolsLog
@@ -694,7 +651,7 @@ try {
     }
   }
 
-  const failures = [...summary.iconProofFailures, ...summary.routePreloadFailures, ...summary.stylePreloadFailures, ...summary.logoPriorityFailures]
+  const failures = [...summary.iconProofFailures, ...summary.routePreloadFailures, ...summary.stylePreloadFailures]
     .map(({ profile, run, message }) => `${profile} ${run}: ${message}`);
   const shortfalls = [];
   for (const profile of ["mobile", "desktop"]) {

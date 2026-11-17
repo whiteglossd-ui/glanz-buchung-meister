@@ -13,6 +13,9 @@
 
 .rundum-service-intro h2 {
   margin-top: 1rem;
+  font-size: clamp(1.75rem, 3vw, 3rem);
+  line-height: 1.15;
+  letter-spacing: -0.025em;
   text-wrap: balance;
 }
 

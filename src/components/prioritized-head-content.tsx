@@ -2,10 +2,10 @@
 
 import { Asset, useRouter, useTags } from "@tanstack/react-router";
 import { createIsomorphicFn } from "@tanstack/react-start";
-import { getAssetCrossOrigin, resolveManifestCssLink, type AssetCrossOriginConfig } from "@tanstack/router-core";
+import { _getAssetMatches, getAssetCrossOrigin, resolveManifestCssLink, type AssetCrossOriginConfig } from "@tanstack/router-core";
 import { isServer } from "@tanstack/router-core/isServer";
 import { tsrStartManifest } from "tanstack-start-manifest:v";
-import { isModulePreload, prioritizeImagePreloads } from "@/lib/deferred-bootstrap";
+import { isModuleEntry, isModulePreload, prioritizeImagePreloads } from "@/lib/deferred-bootstrap";
 
 // Start strips inlined stylesheets from its rendered manifest. Read the build
 // manifest only on the server to prepare the same client asset without applying it.
@@ -26,9 +26,7 @@ export interface PrioritizedHeadContentProps {
 /**
  * Render all Start-managed head assets with their existing keys and CSP nonce.
  * The server prepares the homepage module and its existing client stylesheet
- * at high priority, using their manifest URLs. The bulk entry is fetched only
- * by the painted-viewport bootstrap; even a low-priority modulepreload competes
- * with fonts and schedules parsing during the first paint.
+ * at high priority and its entry at low priority, using their manifest URLs.
  * Styles remain inline; execution and the remaining module preloads stay
  * behind the existing painted-hero bootstrap gate.
  */
@@ -40,6 +38,12 @@ export function PrioritizedHeadContent(props: PrioritizedHeadContentProps) {
   const earlyRoutePreload = router.state.location.pathname === "/"
     ? router.ssr?.manifest?.routes["/"]?.preloads?.[0]
     : undefined;
+  const earlyEntries = server && router.state.location.pathname === "/"
+    ? [...new Set(_getAssetMatches(router.stores.matches.get())
+        .flatMap((match) => router.ssr?.manifest?.routes[match.routeId]?.scripts ?? [])
+        .filter((asset) => isModuleEntry({ tag: "script", attrs: asset.attrs, children: asset.children }))
+        .map((tag) => String(tag.attrs?.src)))]
+    : [];
   const earlyCssPreload = router.state.location.pathname === "/" ? homepageCssPreload() : undefined;
 
   return (
@@ -60,6 +64,16 @@ export function PrioritizedHeadContent(props: PrioritizedHeadContentProps) {
           />
         );
       })}
+      {earlyEntries.map((href) => (
+        <link
+          key={`client-entry-preload-${href}`}
+          rel="modulepreload"
+          href={href}
+          fetchPriority="low"
+          crossOrigin={getAssetCrossOrigin(props.assetCrossOrigin, "script")}
+          nonce={nonce}
+        />
+      ))}
       {earlyCssPreload ? (
         <Asset
           tag="link"

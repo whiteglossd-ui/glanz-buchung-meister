@@ -3,7 +3,7 @@
 Stand: 15.11.2026. Auftrag autorisiert Umsetzung, isolierte Tests und Entwurfs-PRs; keine Veröffentlichung, kein Merge auf main.
 
 ## Bestätigte Ausgangslage
-Zu Auftragsbeginn geprüft: Website main `38996d2ba9adfd54bde1dd22949b60c7afb9d0fd`, Panel main `372864f4eeaae8dba3da34580a0b9f40e5e27888`. Die damals frisch gelesenen erfolgreichen Hostinger-Deployments belegen die Zuordnung für die dort genannten Zeitpunkte; kein Buchungsnachweis daraus. Panel-App erfolgreich verbunden, scope panel:read. Website speichert PostgreSQL-Anfragen, Panel liest /api/hub und speichert SQLite orders.website_id eindeutig. Kunden-Passwortkonten, scrypt, sichere serverseitige Sitzungen, Passwort-Code-Wiederherstellung und zugeordnete private Chat-Uploads existieren. Keine automatische Übernahme bestehender Kunden erforderlich; additive technische Schemas stehen im Betriebsplan.
+Website main 38996d2ba9adfd54bde1dd22949b60c7afb9d0fd, Panel main 372864f4eeaae8dba3da34580a0b9f40e5e27888. Aktuelle erfolgreiche Hostinger-Deployments belegen Zuordnung; kein Buchungsnachweis daraus. Panel-App erfolgreich verbunden, scope panel:read. Website speichert PostgreSQL-Anfragen, Panel liest /api/hub und speichert SQLite orders.website_id eindeutig. Kunden-Passwortkonten, scrypt, sichere serverseitige Sitzungen, Passwort-Code-Wiederherstellung und zugeordnete private Chat-Uploads existieren. Keine Bestandsmigration erforderlich.
 
 ## Anforderungen und Abnahme
 | ID | Anforderung | Nachweis vor Abschluss |
@@ -58,15 +58,4 @@ A: full unit/integration tests, types, lint/build in both repos; test direct app
 Production deployment/merge, mass migration or mail, deletion of files/accounts, new hosting/provider, guaranteed repairs, fixed repair prices, automatic WhatsApp intake, invoices/PDFs on receipt, unrelated redesign.
 
 ## Während der Umsetzung eingegangener Hauptbranch
-
-Nach Auftragsbeginn wurden die fremden Hauptbranch-Änderungen aus PR #346 (`333487b4f12a01727ace6ec2f36d22c849551b00`) und anschließend [PR #348](https://github.com/White-Gloss/glanz-buchung-meister/pull/348) (`3123a86562c2a4b8a4842075bca5d865b1a7091f`) in den Website-Entwurf integriert. Die Katalog-/Ab-Preisänderungen aus #346 sowie die Entfernung des Scheinwerferhinweises samt Link auf der Preisseite aus #348 bleiben erhalten. Aktueller Vergleichsstand für die taskbezogene Inhaltsprüfung ist `3123a86562c2a4b8a4842075bca5d865b1a7091f`.
-
-Die rein lesende GitHub-Abfrage am 15.11.2026 um 03:26 UTC bestätigt diesen Website-main und den unveränderten Panel-main `372864f4eeaae8dba3da34580a0b9f40e5e27888`. Ein übernommener Hauptbranch ist kein erneuter Live-Nachweis. Die Produktionsbelege bleiben ihren ursprünglichen Commits und Zeitpunkten zugeordnet; dieser Auftrag hat nichts veröffentlicht. Einzelheiten stehen in [Live-Zuordnung](live-zuordnung.md).
-
-## Späterer Panelzustand
-
-Am 15.11.2026 wurde Panel-PR #100 in GitHub zusammengeführt; der Releasejob bestätigt um 04:15:51 UTC `14262776e669132a465dd90ec8d74ecd046fc713` als aktiv. Sein Tree ist exakt der bereits geprüfte `10972fc`-Tree. Der frühere Basisstand bleibt oben zeitgebunden dokumentiert. Zum Zeitpunkt dieser ersten Panel-Aktualisierung war Website-PR #347 noch ungemergt. Die konkrete Ready-/Merge-Verursachung ist aus den Ereignissen nicht sicher zuzuordnen; in dieser Sitzung wurden keine entsprechenden Status-/Veröffentlichungswerkzeuge aufgerufen. [Details](externe-veroeffentlichung.md).
-
-## Abschließende externe Zustandsänderung
-
-Website-PR #347 wurde am 15.11.2026 um 06:24 UTC als `ca4fbc77` zusammengeführt und anschließend außerhalb der hier ausgeführten Veröffentlichungsaktionen über Run `43686103851` produktiv veröffentlicht. Das vorherige `3123a865` ist daher ein historischer Live-Nachweis. Der ergänzende Website-PR #349 bleibt Entwurf; die zusätzliche Panel-Dokumentation liegt im [Entwurfs-PR #102](https://github.com/White-Gloss/white-gloss-panel/pull/102). Die präzisen, zeitgebundenen Belege stehen in [Live-Zuordnung](live-zuordnung.md) und [externen Ereignissen](externe-veroeffentlichung.md). Diese Änderungen erweitern die ursprüngliche Veröffentlichungserlaubnis nicht.
+Website-Hauptbranch333487b4f12a01727ace6ec2f36d22c849551b00 (#346) wurde nach Beginn übernommen. Dessen Katalog-/Ab-Preisänderungen bleiben erhalten. Neuer Vergleichsstand für die taskbezogene Inhaltsprüfung ist333487b. Dies ist keine Veröffentlichung durch diesen Auftrag.

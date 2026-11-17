@@ -13,8 +13,6 @@ npm run build
 node --experimental-strip-types scripts/test-website-panel-journey.mjs
 ```
 
-Der Panelbuild ist eine Voraussetzung für den anschließenden direkten Test: `server/mailbox.mjs` lädt das dabei erzeugte Modul `dist/runtime/mailbox.mjs`. Nach Änderungen an Panelcode oder Abhängigkeiten vor dem nächsten Lauf erneut `npm run build` im Panel-Repository ausführen. Der Build startet keinen Website-Server.
-
 Die Standardausgabe nennt das neue temporäre Nachweisverzeichnis. Ein abweichender Website-Pfad kann über `WHITE_GLOSS_WEBSITE_DIR` gesetzt werden. Diese Variable enthält ausschließlich einen lokalen Repositorypfad, keine Zugangsdaten.
 
 Um die reviewbaren Nachweise im Panel-Repository gezielt neu zu erzeugen:

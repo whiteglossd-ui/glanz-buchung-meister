@@ -8,18 +8,9 @@ assertIsolatedGithubCi();
 // Only screenshots of this run's synthetic fixtures/public website are exported.
 // Original PNGs remain in the normal artifact; compact copies also travel in the
 // decoded job log when an audit client cannot download binary ZIP artifacts.
-const ratgeberImages = [320, 390, 768, 1440].flatMap((width) => [
-  `review-ratgeber-index-${width}.png`,
-  `review-ratgeber-article-${width}.png`,
-]);
 const files = [
   ...[390, 1440].flatMap((width) => [`booking-ui/chromium-${width}-rundum-initial-first-visit.png`, `booking-ui/chromium-${width}-rundum-initial-consent-dismissed.png`]),
   ...[320, 768, 1024, 1440].flatMap((width) => [`booking-ui/chromium-${width}-rundum-intro.png`, `booking-ui/chromium-${width}-rundum-form.png`]),
-  ...ratgeberImages,
-  "hero-stability/desktop-failure.png",
-  "hero-stability/desktop-automotive-first.png",
-  "hero-stability/desktop-automotive-second.png",
-  "hero-stability/mobile-automotive.png",
   ...[320, 390, 768, 900, 959, 960, 1024, 1440].map((width) => `review-header-${width}.png`),
   ...[390, 1440].map((width) => `review-booking-target-${width}.png`),
   "hero-stability/desktop-film-forward-25.png",
@@ -55,7 +46,7 @@ const output = resolve(".qa-output/review-images");
 await mkdir(output, { recursive: true });
 let exported = 0;
 for (const file of files) {
-  if (exported >= 43 + ratgeberImages.length + 4) break;
+  if (exported >= 43) break;
   let source;
   try { source = await readFile(resolve(".qa-output", file)); }
   catch (error) {

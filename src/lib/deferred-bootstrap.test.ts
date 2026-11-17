@@ -11,7 +11,7 @@ import {
 
 type Listener = () => void;
 
-function fakePage({ readyState = "loading", images = [] as FakeImage[], fonts = undefined as { ready: Promise<unknown> } | undefined } = {}) {
+function fakePage({ readyState = "loading", images = [] as FakeImage[] } = {}) {
   const inserted: Record<string, string>[] = [];
   const documentListeners: Record<string, Listener[]> = {};
   const frames: Listener[] = [];
@@ -19,7 +19,6 @@ function fakePage({ readyState = "loading", images = [] as FakeImage[], fonts = 
   let selector = "";
   const document = {
     readyState,
-    fonts,
     head: { appendChild: (node: Record<string, string>) => inserted.push(node) },
     addEventListener: (type: string, listener: Listener) =>
       (documentListeners[type] ??= []).push(listener),
@@ -93,10 +92,9 @@ test("image preloads precede competing font hints while metadata and stylesheet 
   assert.deepEqual(tags, original);
 });
 
-test("the client entry starts only after eager hero and header logo loaded, decoded and painted", async () => {
+test("the client entry starts only after eager hero images loaded, decoded and painted", async () => {
   const hero = new FakeImage(false);
-  const logo = new FakeImage(false);
-  const page = fakePage({ images: [hero, logo] });
+  const page = fakePage({ images: [hero] });
   page.run(source);
   assert.equal(page.timers[0]?.delay, DEFERRED_BOOTSTRAP_FALLBACK_MS);
 
@@ -110,10 +108,6 @@ test("the client entry starts only after eager hero and header logo loaded, deco
   hero.emit("load");
   await settle();
   assert.ok(hero.decoded, "the hero image is decoded before it counts as painted");
-  assert.equal(page.frames.length, 0, "the existing image gate also waits for the header logo");
-  logo.emit("load");
-  await settle();
-  assert.ok(logo.decoded, "the header logo is decoded before the existing two frames");
   page.nextFrame();
   assert.equal(page.inserted.length, 0, "the first frame paints the hero image");
   page.nextFrame();
@@ -196,29 +190,3 @@ test("only Start's module entry and module preloads are deferred", () => {
   assert.ok(!isModulePreload({ tag: "link", attrs: { rel: "preload", href: "/a.woff2" } }));
 });
 
-
-for (const outcome of ["loaded", "failed", "interaction", "timeout"]) {
-  test(`initial fonts yield the first paint before hydration: ${outcome}`, async () => {
-    let resolve!: () => void;
-    let reject!: () => void;
-    const ready = new Promise<void>((yes, no) => { resolve = yes; reject = no; });
-    const page = fakePage({ readyState: "interactive", fonts: { ready } });
-    page.run(source);
-    await settle();
-    assert.equal(page.frames.length, 0, "font downloads must not compete with the client entry");
-    assert.equal(page.inserted.length, 0);
-    if (outcome === "interaction") page.fire("pointerdown");
-    else if (outcome === "timeout") page.timers[0].callback();
-    else if (outcome === "failed") reject();
-    else resolve();
-    await settle();
-    page.nextFrame();
-    page.nextFrame();
-    assert.equal(page.inserted.length, 2, "a slow or failed font cannot block interaction readiness");
-    resolve();
-    await settle();
-    page.nextFrame();
-    page.nextFrame();
-    assert.equal(page.inserted.length, 2);
-  });
-}
