@@ -12,6 +12,14 @@ Die vorhandenen isolierten Flowtests bleiben ausschließlich im Linux-GitHub-
 CI-Job zugelassen; sie dürfen nicht auf den lokalen Rechner verlagert werden.
 Eine Aufhebung erfordert eine ausdrückliche neue Betreiberanweisung.
 
+**Betreiberanweisung vom 17.11.2026 (Ausnahme):** Weil die GitHub-Runner wegen
+einer Kontosperre nicht starten, dürfen dieselben isolierten CI-Abläufe auch
+per `act` in Docker auf dem Hostinger-VPS laufen, ausschließlich über
+`scripts/ci-vps/run-ci.sh` (eigenes Docker-Netz, kein Docker-Socket in den
+Jobs, Benutzer `wg-ci`). `scripts/hosting-policy.mjs` erkennt nur diesen Weg
+(`ACT=true` plus `WG_CI_RUNNER=white-gloss-vps-act`). Entwicklerrechner und
+alle anderen Server bleiben gesperrt. Einrichtung: `docs/ci-vps-act.md`.
+
 ## Operativer Weg: ausschließlich Panel (05.10.2026)
 
 Betreiberanweisung: RO App und Bitrix ausschalten, nur das bestehende

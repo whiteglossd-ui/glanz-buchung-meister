@@ -31,6 +31,18 @@ test("only the existing Linux GitHub CI context and exact workspace permit isola
   assert.equal(isIsolatedGithubCi({ ...context, cwd: "/some/local/checkout" }), false);
 });
 
+test("operator-approved act runner on the VPS needs both act and the explicit marker", () => {
+  const { RUNNER_ENVIRONMENT, ...actEnv } = env;
+  const base = { platform: "linux", cwd: env.GITHUB_WORKSPACE, realpath: (p) => p };
+  assert.equal(RUNNER_ENVIRONMENT, "self-hosted");
+  const approved = { ...actEnv, ACT: "true", WG_CI_RUNNER: "white-gloss-vps-act" };
+  assert.equal(isIsolatedGithubCi({ ...base, env: approved }), true);
+  assert.equal(isIsolatedGithubCi({ ...base, env: { ...approved, WG_CI_RUNNER: "" } }), false);
+  assert.equal(isIsolatedGithubCi({ ...base, env: { ...approved, ACT: "" } }), false);
+  assert.equal(isIsolatedGithubCi({ ...base, env: { ...approved, GITHUB_REPOSITORY: "other/repo" } }), false);
+  assert.equal(isIsolatedGithubCi({ ...base, platform: "win32", env: approved }), false);
+});
+
 test("production requires Linux, the active IONOS release and its working directory", () => {
   const release = `/srv/white-gloss-releases/${"a".repeat(40)}`;
   const entry = pathToFileURL(release + "/.output/server/hosting-policy-entry.mjs").href;

@@ -13,6 +13,12 @@ export function blockLocalHosting() {
 
 // No local override switch. CI=true and a production NODE_ENV do not authorize hosting.
 // Only the existing Linux GitHub CI job may run its isolated, synthetic flow tests.
+// Operator decision of 17.11.2026: the same CI workflow may also run through
+// `act` in Docker on the Hostinger VPS (GitHub-hosted runners blocked by an
+// account billing lock). act sets ACT=true but no RUNNER_ENVIRONMENT; the
+// runner script (scripts/ci-vps/run-ci.sh) adds the explicit marker below.
+// All other conditions (Linux, repository, workflow, run id, workspace) stay.
+export const APPROVED_ACT_RUNNER = "white-gloss-vps-act";
 export function isIsolatedGithubCi({
   platform = process.platform,
   env = process.env,
@@ -23,7 +29,8 @@ export function isIsolatedGithubCi({
   if (platform !== "linux" || env.GITHUB_ACTIONS !== "true" ||
       env.GITHUB_REPOSITORY !== "White-Gloss/glanz-buchung-meister" ||
       env.GITHUB_WORKFLOW !== "CI" || !/^\d+$/.test(env.GITHUB_RUN_ID || "") ||
-      !["github-hosted", "self-hosted"].includes(env.RUNNER_ENVIRONMENT || "") ||
+      !(["github-hosted", "self-hosted"].includes(env.RUNNER_ENVIRONMENT || "") ||
+        (env.ACT === "true" && env.WG_CI_RUNNER === APPROVED_ACT_RUNNER)) ||
       !workspace) return false;
   try {
     return realpath(cwd) === realpath(workspace);
