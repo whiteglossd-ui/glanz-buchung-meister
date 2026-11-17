@@ -16,15 +16,21 @@ import "../styles/luxury.css";
 import "../styles/hero-clearance.css";
 import "../styles/studio.css";
 import "../styles/forge-fidelity.css";
-import "../styles/typography.css";
 import forgeDesktopCss from "../styles/forge-desktop.css?url";
 
 export const Route = createRootRoute({
   notFoundComponent: NotFoundComponent,
   head: ({ matches }) => {
-    // Public pages, dialogs and CMS share the same local Google Fonts.
-    // Extended glyphs load on demand; the German first viewport needs only Latin.
-    const fontPreloads = ["syne-latin-variable", "plus-jakarta-sans-latin-variable"].map((name) => ({
+    const app = matches.some((match: AnyRouteMatch) =>
+      /^\/(admin|login)(\/|$)/.test(match.routeId),
+    );
+    // The public first viewport uses Cormorant 400 and Geist's UI weights.
+    // Cormorant has one regular face; Geist supplies all UI weights.
+    // Operational screens retain their existing Barlow family.
+    const fontPreloads = (app
+      ? ["barlow-400", "barlow-300"]
+      : ["cormorant-garamond-latin-400", "geist-latin-variable"]
+    ).map((name) => ({
       rel: "preload",
       href: `/fonts/${name}.woff2`,
       as: "font",
@@ -50,12 +56,6 @@ export const Route = createRootRoute({
         // Discover the existing install icon before the manifest requests it after hydration.
         { rel: "preload", as: "image", type: "image/png", href: "/favicon-192.png", fetchPriority: "high" as const },
         ...fontPreloads,
-        ...(matches.some((match: AnyRouteMatch) => match.routeId === "/") ? [{
-          rel: "preload",
-          as: "style",
-          href: forgeDesktopCss,
-          fetchPriority: "high" as const,
-        }] : []),
         { rel: "manifest", href: "/__grok/manifest.webmanifest" },
         { rel: "apple-touch-icon", href: "/__grok/icon-180.png" },
       ],

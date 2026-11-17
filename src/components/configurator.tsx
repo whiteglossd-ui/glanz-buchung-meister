@@ -475,7 +475,7 @@ export function Configurator({
 
       <div hidden={step !== 3} className="booking-step-panel booking-contact space-y-5">
         <p className="text-xs uppercase tracking-[0.16em] text-subtle">Unverbindliche Anfrage</p>
-        <p className="type-number font-display text-3xl text-fg" aria-live="polite">
+        <p className="font-display text-3xl text-fg" aria-live="polite">
           ab {eur(quote.total)}
         </p>
         <p className="text-sm text-muted">

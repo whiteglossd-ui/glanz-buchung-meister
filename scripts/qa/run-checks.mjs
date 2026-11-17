@@ -278,16 +278,9 @@ try {
     diagnosticFailures.push(error.message);
     log(`QA: ${error.message}`);
   }
-  // Keep independent diagnostics available after a browser assertion fails.
-  // Each failed suite still fails the final release gate below.
-  for (const name of ["booking-ui", "booking-recovery", "consent-startup"]) {
-    try {
-      await runCheck(server, name, [`scripts/qa/check-${name}.mjs`]);
-    } catch (error) {
-      diagnosticFailures.push(error.message);
-      log(`QA: ${error.message}`);
-    }
-  }
+  await runCheck(server, "booking-ui", ["scripts/qa/check-booking-ui.mjs"]);
+  await runCheck(server, "booking-recovery", ["scripts/qa/check-booking-recovery.mjs"]);
+  await runCheck(server, "consent-startup", ["scripts/qa/check-consent-startup.mjs"]);
   for (const check of [
     {
       name: "lighthouse",
