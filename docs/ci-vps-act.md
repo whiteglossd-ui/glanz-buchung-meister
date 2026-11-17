@@ -8,7 +8,9 @@ Kontosperre (Abrechnung) keine Jobs. Die CI-Workflows laufen deshalb per
 - Der Benutzer `wg-ci` ist in der Gruppe `docker` und hat damit faktisch
   root-Rechte. Nur eigene, geprüfte Commits laufen lassen, keine fremden PRs.
 - Die Jobs laufen im eigenen Bridge-Netz `wg-ci-net` (keine Ports von Website
-  oder Panel belegt) und ohne Docker-Socket.
+  oder Panel belegt) und ohne Docker-Socket. In der Wegwerf-Kopie ersetzt das
+  Skript `--ipc=host` durch `--shm-size=2g` (kein geteilter IPC-Bereich mit dem
+  Server) und den Container-Ausdruck von `verify` durch die direkte Angabe.
 - Läuft auf demselben Server wie Website und Panel: möglichst außerhalb der
   Geschäftszeiten starten.
 

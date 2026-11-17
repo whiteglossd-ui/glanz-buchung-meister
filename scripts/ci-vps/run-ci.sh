@@ -30,6 +30,13 @@ sed -E -i 's#^(    )container: \$\{\{ fromJSON\(.*"image":"([^"]+)","options":"(
 if grep -q 'container: \${{ fromJSON' .github/workflows/ci.yml; then
   echo "Container-Ausdruck konnte nicht umgeschrieben werden." >&2; exit 1
 fi
+# Ohne Docker-Socket verbietet act `--ipc=host` (würde den IPC-Bereich des
+# Produktionsservers teilen). Chromium braucht nur genug /dev/shm: gleichwertig
+# und isoliert über --shm-size, ebenfalls nur in dieser Kopie.
+sed -i 's#^\( *\)options: --ipc=host$#\1options: --shm-size=2g#' .github/workflows/ci.yml
+if grep -q -- '--ipc=host' .github/workflows/ci.yml; then
+  echo "--ipc=host konnte nicht ersetzt werden." >&2; exit 1
+fi
 
 status=0
 for job in "${JOBS[@]}"; do
