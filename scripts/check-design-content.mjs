@@ -47,8 +47,8 @@ export const APPROVED_SEO_BLOBS = Object.freeze({
   // November 15: operator explicitly requested retiring the ceramic-layers add-on.
   // Pin the reviewed catalog, guide and from-price labels; all other checks remain.
   "src/components/configurator.tsx": "a91c2f00750a18f0cd72b49e25a6dcf1318a3295",
-  "src/data/site.ts": "bbc682770d947e98f08d397803d0bb5976b6a876",
-  "src/data/ratgeber.ts": "fbaf52bdb5fbeb9ae15ba26854ef006d088e3486",
+  "src/data/site.ts": "da77b333b068f20906de0ccf85ca342c8ce34f8f",
+  "src/data/ratgeber.ts": "9f852a51c1f4679cfdd435ffe6a1c7dfda4197db",
   "src/lib/city-copy.ts": "c330f37e051679cfdd34f160acb7f3d2fb4ac391",
   "src/lib/seo.ts": "3488b971e1941762b1a530c8861c26468a873067",
   "src/routes/abholservice.index.tsx": "e10fee117409229f91b76ee0862070d6664fb1de",
@@ -56,8 +56,13 @@ export const APPROVED_SEO_BLOBS = Object.freeze({
   "src/routes/galerie.tsx": "9e18230731dd64b42506c203fb634e6088ca5c5a",
   "src/routes/index.tsx": "bab5cb42ba1e34d60af4ead159a0211d9a55b243",
   "src/routes/leistungen.index.tsx": "d51449039284566fa988c338e393b4d87cf065ad",
-  "src/routes/ratgeber.$slug.tsx": "d8058cb30f3231d7dc56b3f232b2f885fa3983c4",
+  "src/routes/ratgeber.$slug.tsx": "f53075725bc15b99f9285532e177761cff976dc5",
   "src/routes/ratgeber.index.tsx": "db60f5fd460078577fc2adfa633eea922ab16742",
+  // November 17: operator requested spelling, grammar and duplicate-sentence
+  // fixes after a full proofreading pass (site.ts, ratgeber.ts and
+  // ratgeber.$slug.tsx above were re-pinned for the same request). Prices,
+  // links, SEO titles' meaning and legal texts are unchanged.
+  "src/routes/barrierefreiheit.tsx": "62fd783799418f6f28115bcb7c2d56ab20c0c365",
 });
 
 function sourceBlobId(source) {

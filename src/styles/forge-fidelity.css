@@ -2,10 +2,15 @@
  * Visual layer only: existing copy, links, media and form behavior stay owned
  * by their components. Native scrolling and reduced-motion fallbacks remain.
  */
-[data-shell="public"]:has([data-home="polish"]) .site-header,
-[data-shell="public"]:has([data-home="polish"]) .site-header[data-scrolled="true"] {
+[data-shell="public"]:has([data-home="polish"]) .site-header {
   background: linear-gradient(180deg, rgb(0 0 0 / .65), rgb(0 0 0 / .18) 65%, transparent);
   border-bottom-color: transparent;
+}
+/* Beim Scrollen deckend: sonst scheinen Texte und Linien der Abschnitte
+   durch den transparenten Verlauf neben Logo und Termin-Button durch. */
+[data-shell="public"]:has([data-home="polish"]) .site-header[data-scrolled="true"] {
+  background: rgb(8 8 8 / .96);
+  border-bottom-color: rgb(255 255 255 / .08);
 }
 body[data-nav="open"] [data-shell="public"] .site-header {
   background: #080808;

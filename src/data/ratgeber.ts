@@ -41,7 +41,7 @@ export const articles: Article[] = [
       {
         heading: "Was die Schicht leistet",
         paragraphs: [
-          "Eine gut vorbereitete Keramik lässt Wasser abperlen, hält den Glanz länger und erleichtert die Wäsche. Sie ist kein Kratzschutz. Steinschläge, Waschstraßenbürsten und grobe Verschmutzung gehen trotzdem ins Material.",
+          "Eine gut vorbereitete Keramik lässt Wasser abperlen, hält den Glanz länger und erleichtert die Wäsche. Sie ist kein Kratzschutz. Steinschläge, Waschstraßenbürsten und grobe Verschmutzung können den Lack trotzdem beschädigen.",
           "Im Paket White-Gloss Ceramic gehört die mehrstufige Lackkorrektur zur Vorbereitung. Welche Korrektur am Fahrzeug sinnvoll und möglich ist, prüfen wir am Lack. Rechnen Sie mit rund zwei Tagen in der Werkstatt in Horb am Neckar.",
         ],
       },
@@ -99,7 +99,7 @@ export const articles: Article[] = [
     slug: "lackkorrektur-swirls",
     seoExcerpt:
       "Waschkratzer, Hologramme und Grenzen der Politur. Wann eine Stufe reicht und wann mehrstufig gearbeitet werden muss.",
-    title: "Lackkorrektur: Was Swirls wirklich sind – und was Politur leistet",
+    title: "Lackkorrektur: was Swirls wirklich sind – und was Politur leistet",
     excerpt:
       "Waschkratzer, Hologramme und Grenzen der Politur. Wann eine Stufe reicht und wann mehrstufig gearbeitet werden muss.",
     date: "2026-07-28",
@@ -270,7 +270,7 @@ export const articles: Article[] = [
         heading: "Der Ablauf der Innenraumreinigung",
         paragraphs: [
           "Das Paket White-Gloss Classic umfasst Aussaugen und Entstauben. Eine textile Tiefenreinigung gehört zum Paket White-Gloss Signature; dafür werden die textilen Flächen nach der Entfernung des groben Schmutzes behandelt. Lederpflege und Geruchsbehandlung sind getrennt zu betrachten.",
-          `Das Paket White-Gloss Classic enthält Aussaugen und Entstauben. Das Paket White-Gloss Signature ergänzt die Tiefenreinigung von Textilien. Lederpflege ist ab ${extraEuro("leder")} zusätzlich erhältlich, Geruchsbehandlung mit Ozon ab ${extraEuro("ozon")}. Die Einstiegspreise gelten für die Kompaktklasse und enthalten die Mehrwertsteuer.`,
+          `Lederpflege ist ab ${extraEuro("leder")} zusätzlich erhältlich, Geruchsbehandlung mit Ozon ab ${extraEuro("ozon")}. Die Einstiegspreise gelten für die Kompaktklasse und enthalten die Mehrwertsteuer.`,
         ],
       },
       {
@@ -358,7 +358,7 @@ export const articles: Article[] = [
         heading: "Drei Pakete, ein Inhaber",
         paragraphs: [
           "White-Gloss Classic ab 149 €, White-Gloss Signature ab 349 €, White-Gloss Ceramic ab 899 €. Inhaber Lars Hägele, Arnistal 27, 72160 Horb am Neckar.",
-          "Anfragen über den Konfigurator, telefonisch unter 0152 33540284 oder per WhatsApp. Unverbindlich, Endpreis nach Begutachtung, wenn der Zustand mehr verlangt.",
+          "Anfragen über den Konfigurator, telefonisch unter 0152 33540284 oder per WhatsApp. Die Anfrage ist unverbindlich. Verlangt der Zustand mehr Aufwand, nennen wir den Endpreis nach der Begutachtung.",
         ],
       },
     ],

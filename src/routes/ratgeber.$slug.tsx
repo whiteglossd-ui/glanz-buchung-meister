@@ -130,7 +130,7 @@ function ArticlePage() {
         ))}
         {service ? <p className="mt-8 leading-relaxed text-muted">
           Leistungsumfang und Grenzen finden Sie unter <Link to="/leistungen/$slug" params={{ slug: service.slug }} className="underline underline-offset-4">{service.nav}</Link>.
-          {" "}{request.paket || request.leistung ? "Die Anfrage übernimmt das zugehörige Paket oder Ihr Interesse an dieser individuellen Leistung." : "Wählen Sie in der Anfrage das passende Paket und Ihren Abholort aus."}
+          {" "}{request.paket || request.leistung ? "In der Anfrage ist das passende Paket bzw. diese Leistung bereits ausgewählt." : "Wählen Sie in der Anfrage das passende Paket und Ihren Abholort aus."}
           {pickupGuideSlugs.has(a.slug) ? (
             <>
               {" "}Abholorte und Preise stehen in der{" "}

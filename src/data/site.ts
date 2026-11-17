@@ -291,7 +291,7 @@ export const extras: Extra[] = [
   {
     id: "leder-repair",
     name: "Lederreparatur",
-    hint: "Reparatur von Brandlöchern, Rissen und kleinen Löchern nach Materialprüfung",
+    hint: "Reparatur von Brandlöchern, Rissen und kleinen Löchern",
     price: 139,
     group: "reparatur",
     inspect: true,
@@ -725,7 +725,7 @@ export const services: ServicePage[] = [
     beforeBooking: [
       `Tierhaarentfernung (ab ${extraPrice("tierhaar")}) und Ozonbehandlung (ab ${extraPrice("ozon")}) sind Zusatzleistungen; den Umfang stimmen wir vor Beginn mit Ihnen ab.`,
       "Bei starker Verschmutzung, Tierhaaren oder Gerüchen kann mehr Zeit nötig sein.",
-      "Eine Ozonbehandlung ersetzt keine Reinigung. Der Innenraum muss dafür sauber und trocken sein.",
+      "Eine Ozonbehandlung ersetzt keine Reinigung.",
       "Bitte nehmen Sie Wertsachen und persönliche Gegenstände vor der Abgabe aus dem Fahrzeug.",
     ],
     requestDetails: [
@@ -859,7 +859,7 @@ export const services: ServicePage[] = [
     suitedFor: [
       "Neuwagen und gepflegte Gebrauchtwagen, die Sie noch länger fahren möchten",
       "Lack mit ausreichender Schichtstärke für die vorbereitende Politur",
-      "Halter, die sich eine leichtere Fahrzeugwäsche und Abperleffekt wünschen",
+      "Halter, die sich eine leichtere Fahrzeugwäsche und einen Abperleffekt wünschen",
     ],
     outcome:
       "Eine Keramikversiegelung macht den Lack nicht kratzfest und ersetzt keine regelmäßige Wäsche. Sie lässt Wasser abperlen, erleichtert die Pflege und ergänzt den Schutz vor Umwelteinflüssen. Wie lange die Wirkung anhält, hängt von Beschichtung, Fahrleistung, Witterung und Pflege ab; eine pauschale Laufzeit sagen wir nicht zu.",
@@ -1006,7 +1006,7 @@ export const services: ServicePage[] = [
       "Fotos zuerst, Preis erst nach Prüfung am Auto",
     ],
     honestNote:
-      "Wir reparieren nur, wenn das Material eine dauerhafte Reparatur zulässt. Ist das Leder zu dünn, großflächig rissig oder das Loch zu groß, erklären wir Ihnen das vorab. Für einen ungeeigneten Reparaturversuch entstehen Ihnen keine Kosten.",
+      "Wir reparieren nur, wenn das Material eine dauerhafte Reparatur zulässt. Ist das Leder zu dünn, großflächig rissig oder das Loch zu groß, erklären wir Ihnen das vorab. Lehnen wir eine Reparatur ab, entstehen Ihnen dafür keine Kosten.",
     priceRows: [
       { name: "Brandloch / kleines Loch", price: 139, note: "eine Stelle, nach Prüfung" },
       { name: "Riss oder offene Naht", price: 159, note: "eine Stelle, nach Prüfung" },
@@ -1138,7 +1138,7 @@ export const faqs = [
   {
     group: "Lederreparatur",
     q: "Reparieren Sie Brandlöcher und Risse im Leder?",
-    a: "Ja, sofern der Materialzustand eine dauerhafte Reparatur zulässt. Die Preise beginnen bei 139 € pro Stelle. Ist das Leder zu dünn, großflächig rissig oder das Loch zu groß, führen wir die Reparatur nicht aus. Für einen ungeeigneten Reparaturversuch entstehen Ihnen keine Kosten.",
+    a: "Ja, sofern der Materialzustand eine dauerhafte Reparatur zulässt. Die Preise beginnen bei 139 € pro Stelle. Ist das Leder zu dünn, großflächig rissig oder das Loch zu groß, führen wir die Reparatur nicht aus. Lehnen wir eine Reparatur ab, entstehen Ihnen dafür keine Kosten.",
   },
   {
     group: "Lederreparatur",

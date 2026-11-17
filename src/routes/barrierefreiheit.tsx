@@ -46,7 +46,7 @@ function AccessibilityPage() {
             <li>Sprungmarke zum Inhalt</li>
             <li>Überschriften und Tastaturbedienung der wesentlichen Seiten</li>
             <li>Alternativtexte für Bilder mit inhaltlicher Bedeutung</li>
-            <li>Formulare mit Beschriftung, die Anfrage ist unverbindlich</li>
+            <li>Beschriftete Formularfelder</li>
           </ul>
         </section>
         <section>

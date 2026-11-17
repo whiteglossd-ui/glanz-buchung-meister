@@ -81,8 +81,9 @@ export function HomePolish() {
       };
     },
     undefined,
-    // Defer desktop motion until the package story approaches the viewport.
-    "#pakete",
+    // Defer desktop motion until the first parallax frame (workshop image)
+    // approaches the viewport, so it already glides while it is visible.
+    ".workshop-personal",
   );
 
   useEffect(() => {

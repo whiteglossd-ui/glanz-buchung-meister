@@ -148,7 +148,7 @@ export function ScrollFilmHero({
       if (!enabled || !inView || document.hidden) return;
       target = Math.min(1, Math.max(0, (window.scrollY - top) / distance));
       const difference = target - position;
-      position = Math.abs(difference) < 0.0008 ? target : position + difference * 0.24;
+      position = Math.abs(difference) < 0.0008 ? target : position + difference * 0.16;
       const opacity = Math.max(0, 1 - position / 0.65);
       copy.style.opacity = String(opacity);
       setCopyTransform(-position * 24);
