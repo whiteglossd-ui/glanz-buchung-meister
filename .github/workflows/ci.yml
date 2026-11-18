@@ -116,7 +116,7 @@ jobs:
         run: npm ci --ignore-scripts
 
       - name: Produktionsabhängigkeiten prüfen
-        run: npm audit --omit=dev --audit-level=moderate
+        run: node scripts/audit-production.mjs
 
       - name: Codequalität prüfen
         run: npm run lint
