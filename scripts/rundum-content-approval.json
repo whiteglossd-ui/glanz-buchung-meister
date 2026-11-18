@@ -151,7 +151,7 @@
         ],
         "expressions": [
           {
-            "value": "count === 1 ? \"Eine Aufnahme ist eingegangen. Wir prüfen sie im Zusammenhang mit Ihrer Anfrage.\" : \`${count} Aufnahmen sind eingegangen. Wir prüfen sie im Zusammenhang mit Ihrer Anfrage.\`",
+            "value": "count === 1 ? \"Eine Aufnahme ist eingegangen. Wir prüfen sie im Zusammenhang mit Ihrer Anfrage.\" : `${count} Aufnahmen sind eingegangen. Wir prüfen sie im Zusammenhang mit Ihrer Anfrage.`",
             "count": 1
           },
           {
@@ -604,7 +604,7 @@
         ],
         "seo": [
           {
-            "value": "pageHead({ title: \`Anfrage erhalten | ${site.name}\`, description: \"Ihre Terminanfrage ist eingegangen.\", path: \"/danke\", robots: \"noindex,nofollow\", })",
+            "value": "pageHead({ title: `Anfrage erhalten | ${site.name}`, description: \"Ihre Terminanfrage ist eingegangen.\", path: \"/danke\", robots: \"noindex,nofollow\", })",
             "count": 1
           }
         ]
@@ -664,7 +664,7 @@
         ],
         "seo": [
           {
-            "value": "pageHead({ title: \`Anfrage erhalten | ${site.name}\`, description: \"Deine Terminanfrage ist eingegangen.\", path: \"/danke\", robots: \"noindex,nofollow\", })",
+            "value": "pageHead({ title: `Anfrage erhalten | ${site.name}`, description: \"Deine Terminanfrage ist eingegangen.\", path: \"/danke\", robots: \"noindex,nofollow\", })",
             "count": 1
           }
         ]
@@ -779,7 +779,7 @@
         ],
         "seo": [
           {
-            "value": "pageHead({ title: \`Fahrzeugzustand prüfen lassen | ${site.name}\`, description: \"Fotos senden und ehrlich erfahren, welche Aufbereitung sinnvoll ist. Kostenlos und unverbindlich. Horb am Neckar.\", path: \"/fahrzeug-zustand\", preloadShot: \"atelier\", })",
+            "value": "pageHead({ title: `Fahrzeugzustand prüfen lassen | ${site.name}`, description: \"Fotos senden und ehrlich erfahren, welche Aufbereitung sinnvoll ist. Kostenlos und unverbindlich. Horb am Neckar.\", path: \"/fahrzeug-zustand\", preloadShot: \"atelier\", })",
             "count": 1
           }
         ]
@@ -801,7 +801,7 @@
         ],
         "seo": [
           {
-            "value": "pageHead({ title: \`Fahrzeugzustand prüfen lassen | ${site.name}\`, description: \"Fahrzeugzustand beschreiben und ehrlich erfahren, welche Aufbereitung sinnvoll ist. Kostenlos und unverbindlich. Horb am Neckar.\", path: \"/fahrzeug-zustand\", preloadShot: \"atelier\", })",
+            "value": "pageHead({ title: `Fahrzeugzustand prüfen lassen | ${site.name}`, description: \"Fahrzeugzustand beschreiben und ehrlich erfahren, welche Aufbereitung sinnvoll ist. Kostenlos und unverbindlich. Horb am Neckar.\", path: \"/fahrzeug-zustand\", preloadShot: \"atelier\", })",
             "count": 1
           }
         ]
@@ -900,7 +900,7 @@
             "count": 1
           },
           {
-            "value": "aria-label=\`${c.name}, ${cityJourneyText(c)}, Abholung ${cityPickupPriceText(c)}\`",
+            "value": "aria-label=`${c.name}, ${cityJourneyText(c)}, Abholung ${cityPickupPriceText(c)}`",
             "count": 1
           }
         ]
@@ -1020,7 +1020,7 @@
             "count": 1
           },
           {
-            "value": "aria-label=c.km === 0 ? \`${c.name}, Werkstattstandort, direkte Fahrzeugabgabe möglich, Abholung ${cityPickupPriceText(c)}\` : \`${c.name}, ${cityDistanceLine(c)}, Abholung ${cityPickupPriceText(c)}\`",
+            "value": "aria-label=c.km === 0 ? `${c.name}, Werkstattstandort, direkte Fahrzeugabgabe möglich, Abholung ${cityPickupPriceText(c)}` : `${c.name}, ${cityDistanceLine(c)}, Abholung ${cityPickupPriceText(c)}`",
             "count": 1
           }
         ]
@@ -1160,7 +1160,7 @@
             "count": 1
           },
           {
-            "value": "city.slug === \"horb-am-neckar\" ? \" Sie können Ihr Fahrzeug nach Terminvereinbarung auch selbst bringen.\" : \` In ${city.name} bieten wir die Abholung und Rückgabe an, keine mobile Aufbereitung oder weitere Werkstatt.\`",
+            "value": "city.slug === \"horb-am-neckar\" ? \" Sie können Ihr Fahrzeug nach Terminvereinbarung auch selbst bringen.\" : ` In ${city.name} bieten wir die Abholung und Rückgabe an, keine mobile Aufbereitung oder weitere Werkstatt.`",
             "count": 1
           }
         ]
@@ -1264,11 +1264,11 @@
             "count": 1
           },
           {
-            "value": "city.km === 0 ? \"Am Standort entfällt die Anfahrt.\" : \`${cityJourneyText(city).replace(/Min\\.$/, \"Minuten\")}.\`",
+            "value": "city.km === 0 ? \"Am Standort entfällt die Anfahrt.\" : `${cityJourneyText(city).replace(/Min\\.$/, \"Minuten\")}.`",
             "count": 1
           },
           {
-            "value": "city.slug === \"horb-am-neckar\" ? \" Du kannst dein Fahrzeug nach Terminvereinbarung auch selbst bringen.\" : \` In ${city.name} bieten wir die Abholung und Rückgabe an, keine mobile Aufbereitung oder weitere Werkstatt.\`",
+            "value": "city.slug === \"horb-am-neckar\" ? \" Du kannst dein Fahrzeug nach Terminvereinbarung auch selbst bringen.\" : ` In ${city.name} bieten wir die Abholung und Rückgabe an, keine mobile Aufbereitung oder weitere Werkstatt.`",
             "count": 1
           }
         ]
