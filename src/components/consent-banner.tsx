@@ -130,7 +130,7 @@ export function ConsentBanner() {
             Cookie-Einstellungen
           </p>
           <p id="consent-text" className="text-sm text-fg/80">
-            Mit Ihrer Zustimmung nutzen wir Google Ads und Analytics zur Werbe- und Besucherauswertung. Die Dienste werden erst nach einem Klick auf „Akzeptieren“ geladen. Details finden Sie in der{" "}
+            Mit deiner Zustimmung nutzen wir Google Ads und Analytics zur Werbe- und Besucherauswertung. Die Dienste werden erst nach einem Klick auf „Akzeptieren“ geladen. Details findest du in der{" "}
             <Link to="/datenschutz" className="underline underline-offset-2">
               Datenschutzerklärung
             </Link>

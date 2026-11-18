@@ -45,7 +45,7 @@ function DellenPage() {
       />
       <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
         <p className="text-sm text-muted leading-relaxed">
-          Einen Preis gibt es erst, wenn wir den Schaden gesehen haben. Wir beginnen erst mit Ihrer
+          Einen Preis gibt es erst, wenn wir den Schaden gesehen haben. Wir beginnen erst mit deiner
           Zustimmung. Bei kleinen Stellen reicht oft ein Foto zur ersten Einschätzung.
         </p>
         <ul className="mt-10 grid gap-3 sm:grid-cols-2">
@@ -67,7 +67,7 @@ function DellenPage() {
         <div id="buchung" className="mt-12">
           <PhotoInquiry
             title="Begutachtung anfragen"
-            hint="Beschreiben Sie kurz den Schaden. Fotos ergänzen Sie nach der Anfrage in Ihrem Kundenbereich."
+            hint="Beschreib kurz den Schaden. Fotos ergänzt du nach der Anfrage in deinem Kundenbereich."
           />
         </div>
       </div>

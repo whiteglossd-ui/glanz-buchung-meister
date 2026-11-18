@@ -1,6 +1,6 @@
 {
   "commit": "333487b4f12a01727ace6ec2f36d22c849551b00",
-  "authorization": "Rundum-Service und Kundenzugang, Betreiberauftrag 15.11.2026; exakt beauftragte Rundum-Texte, Formularfelder und Entfernung öffentlicher Kunden-Uploads. Keine pauschale Dateiausnahme.",
+  "authorization": "Rundum-Service und Kundenzugang, Betreiberauftrag 15.11.2026; anschließend öffentliche Du-Ansprache, Hero, Paketdarstellung und Markenname White-Gloss Detailing. Keine pauschale Dateiausnahme.",
   "files": {
     "src/components/booking-media-picker.tsx": {
       "beforeBlob": "c1e5f0f4705a5b7bfaef48f34725dda6f21859fa",
@@ -151,7 +151,7 @@
         ],
         "expressions": [
           {
-            "value": "count === 1 ? \"Eine Aufnahme ist eingegangen. Wir prüfen sie im Zusammenhang mit Ihrer Anfrage.\" : `${count} Aufnahmen sind eingegangen. Wir prüfen sie im Zusammenhang mit Ihrer Anfrage.`",
+            "value": "count === 1 ? \"Eine Aufnahme ist eingegangen. Wir prüfen sie im Zusammenhang mit Ihrer Anfrage.\" : \`${count} Aufnahmen sind eingegangen. Wir prüfen sie im Zusammenhang mit Ihrer Anfrage.\`",
             "count": 1
           },
           {
@@ -188,7 +188,7 @@
         "text": [
           {
             "value": "Ihre Anfrage",
-            "count": 1
+            "count": 3
           },
           {
             "value": "ist angekommen. Nur die übrigen Fotos konnten wir noch nicht übernehmen. Sie können diese erneut senden oder später nachreichen. Eine neue Anfrage ist nicht nötig.",
@@ -212,6 +212,50 @@
           },
           {
             "value": "Übrige Fotos erneut senden",
+            "count": 1
+          },
+          {
+            "value": "ist bereits gespeichert. Die Bestätigungsseite konnte nicht geöffnet werden. Bitte versuchen Sie es erneut.",
+            "count": 2
+          },
+          {
+            "value": "Bitte prüfen Sie die markierten Felder.",
+            "count": 1
+          },
+          {
+            "value": "Wir konnten den Eingang Ihrer Anfrage nicht bestätigen. Sie können dieselbe Anfrage erneut senden oder uns telefonisch bzw. per WhatsApp kontaktieren.",
+            "count": 1
+          },
+          {
+            "value": "· Lederpflege ist im Paket enthalten. Einen darüber hinausgehenden Aufwand stimmen wir nach der Begutachtung mit Ihnen ab.",
+            "count": 1
+          },
+          {
+            "value": "Dies ist der voraussichtliche Preis inkl. MwSt. Falls der Fahrzeugzustand zusätzlichen Aufwand erfordert, stimmen wir den Endpreis nach der Begutachtung mit Ihnen ab.",
+            "count": 1
+          },
+          {
+            "value": "Einige Zeiträume sind bereits belegt. Bitte wählen Sie eine verfügbare Abgabezeit oder fragen Sie ohne feste Uhrzeit an.",
+            "count": 1
+          },
+          {
+            "value": "Datum und Uhrzeit sind Wünsche. Ihren verbindlichen Termin wählen und unterschreiben Sie später im persönlichen Angebot.",
+            "count": 1
+          },
+          {
+            "value": "Ihre Nachricht (optional)",
+            "count": 1
+          },
+          {
+            "value": "Zusammenfassung Ihrer Anfrage",
+            "count": 1
+          },
+          {
+            "value": "Ihre Anfrage im Überblick",
+            "count": 1
+          },
+          {
+            "value": "Ich willige freiwillig ein, dass White Gloss diese erfolgreiche Anfrage zur Anzeigenmessung an OpenAI meldet: Zeitpunkt, zufällige Ereigniskennung und eine vorhandene Anzeigen-Klickkennung. Keine Kontakt- oder Fahrzeugdaten. Dies gilt nur für diese Anfrage; vor dem Absenden kann ich das Häkchen entfernen.",
             "count": 1
           }
         ],
@@ -237,6 +281,20 @@
           {
             "value": "pending ? \"Wird gesendet …\" : savedReference ? media.length ? \"Übrige Fotos erneut senden\" : \"Zur Eingangsbestätigung\" : \"Unverbindliche Anfrage prüfen\"",
             "count": 1
+          },
+          {
+            "value": "packageId === \"keramik\" && ex.id === \"leder\" ? \" · Lederpflege ist im Paket enthalten. Einen darüber hinausgehenden Aufwand stimmen wir nach der Begutachtung mit Ihnen ab.\" : \"\"",
+            "count": 1
+          },
+          {
+            "value": "requestOnly && availabilityState === \"ready\" ? \"Datum und Uhrzeit sind Wünsche. Ihren verbindlichen Termin wählen und unterschreiben Sie später im persönlichen Angebot.\" : availabilityState === \"loading\" ? \"Freie Zeiträume werden geprüft …\" : \"Die Auswahl berücksichtigt die vorläufige Paketdauer. Die endgültige Arbeitszeit und Terminbestätigung folgen nach unserer Prüfung.\"",
+            "count": 1
+          }
+        ],
+        "headings": [
+          {
+            "value": "h4: Ihre Anfrage im Überblick",
+            "count": 1
           }
         ]
       },
@@ -247,13 +305,75 @@
             "count": 1
           },
           {
-            "value": "So geht es weiter: Wir prüfen Ihre Angaben, Leistungen und den Wunschtermin. Erst nach unserer Prüfung stimmen wir den verbindlichen Preis und Termin mit Ihnen ab. Die Rechnung folgt nach erbrachter Leistung.",
+            "value": "deine Anfrage",
+            "count": 2
+          },
+          {
+            "value": "ist bereits gespeichert. Die Bestätigungsseite konnte nicht geöffnet werden. Bitte versuch es erneut.",
+            "count": 2
+          },
+          {
+            "value": "Bitte prüfe die markierten Felder.",
+            "count": 1
+          },
+          {
+            "value": "Wir konnten den Eingang deiner Anfrage nicht bestätigen. Du kannst dieselbe Anfrage erneut senden oder uns telefonisch bzw. per WhatsApp kontaktieren.",
+            "count": 1
+          },
+          {
+            "value": "· Lederpflege ist im Paket enthalten. Einen darüber hinausgehenden Aufwand stimmen wir nach der Begutachtung mit dir ab.",
+            "count": 1
+          },
+          {
+            "value": "Dies ist der voraussichtliche Preis inkl. MwSt. Falls der Fahrzeugzustand zusätzlichen Aufwand erfordert, stimmen wir den Endpreis nach der Begutachtung mit dir ab.",
+            "count": 1
+          },
+          {
+            "value": "Einige Zeiträume sind bereits belegt. Bitte wähle eine verfügbare Abgabezeit oder frage ohne feste Uhrzeit an.",
+            "count": 1
+          },
+          {
+            "value": "Datum und Uhrzeit sind Wünsche. Deinen verbindlichen Termin wählst und unterschreibst du später im persönlichen Angebot.",
+            "count": 1
+          },
+          {
+            "value": "Deine Nachricht (optional)",
+            "count": 1
+          },
+          {
+            "value": "Zusammenfassung deiner Anfrage",
+            "count": 1
+          },
+          {
+            "value": "deine Anfrage im Überblick",
+            "count": 1
+          },
+          {
+            "value": "So geht es weiter: Wir prüfen deine Angaben, Leistungen und den Wunschtermin. Erst nach unserer Prüfung stimmen wir den verbindlichen Preis und Termin mit dir ab. Die Rechnung folgt nach erbrachter Leistung.",
+            "count": 1
+          },
+          {
+            "value": "Ich willige freiwillig ein, dass White-Gloss Detailing diese erfolgreiche Anfrage zur Anzeigenmessung an OpenAI meldet: Zeitpunkt, zufällige Ereigniskennung und eine vorhandene Anzeigen-Klickkennung. Keine Kontakt- oder Fahrzeugdaten. Dies gilt nur für diese Anfrage; vor dem Absenden kann ich das Häkchen entfernen.",
             "count": 1
           }
         ],
         "expressions": [
           {
             "value": "pending ? \"Wird gesendet …\" : savedReference ? \"Zur Eingangsbestätigung\" : \"Unverbindliche Anfrage prüfen\"",
+            "count": 1
+          },
+          {
+            "value": "packageId === \"keramik\" && ex.id === \"leder\" ? \" · Lederpflege ist im Paket enthalten. Einen darüber hinausgehenden Aufwand stimmen wir nach der Begutachtung mit dir ab.\" : \"\"",
+            "count": 1
+          },
+          {
+            "value": "requestOnly && availabilityState === \"ready\" ? \"Datum und Uhrzeit sind Wünsche. Deinen verbindlichen Termin wählst und unterschreibst du später im persönlichen Angebot.\" : availabilityState === \"loading\" ? \"Freie Zeiträume werden geprüft …\" : \"Die Auswahl berücksichtigt die vorläufige Paketdauer. Die endgültige Arbeitszeit und Terminbestätigung folgen nach unserer Prüfung.\"",
+            "count": 1
+          }
+        ],
+        "headings": [
+          {
+            "value": "h4: deine Anfrage im Überblick",
             "count": 1
           }
         ]
@@ -302,6 +422,10 @@
           {
             "value": "Name, Kontaktdaten, Beschreibung und ausgewählte Aufnahmen werden zur Bearbeitung Ihrer Anfrage geschützt übermittelt. Siehe",
             "count": 1
+          },
+          {
+            "value": "Bitte prüfen Sie die markierten Felder.",
+            "count": 1
           }
         ],
         "links": [
@@ -338,14 +462,6 @@
       "added": {
         "text": [
           {
-            "value": "Wir konnten den Eingang Ihrer Anfrage nicht bestätigen. Sie können dieselbe Anfrage erneut senden oder uns telefonisch bzw. per WhatsApp kontaktieren.",
-            "count": 1
-          },
-          {
-            "value": "Die Anfrage ist unverbindlich. Den Preis und einen Termin stimmen wir nach der Begutachtung mit Ihnen ab.",
-            "count": 1
-          },
-          {
             "value": "Fotos kannst du nach deiner Anfrage in deinem Kundenbereich ergänzen.",
             "count": 1
           },
@@ -358,7 +474,19 @@
             "count": 1
           },
           {
-            "value": "Name, Kontaktdaten und Beschreibung werden zur Bearbeitung Ihrer Anfrage geschützt übermittelt. Siehe",
+            "value": "Bitte prüfe die markierten Felder.",
+            "count": 1
+          },
+          {
+            "value": "Wir konnten den Eingang deiner Anfrage nicht bestätigen. Du kannst dieselbe Anfrage erneut senden oder uns telefonisch bzw. per WhatsApp kontaktieren.",
+            "count": 1
+          },
+          {
+            "value": "Die Anfrage ist unverbindlich. Den Preis und einen Termin stimmen wir nach der Begutachtung mit dir ab.",
+            "count": 1
+          },
+          {
+            "value": "Name, Kontaktdaten und Beschreibung werden zur Bearbeitung deiner Anfrage geschützt übermittelt. Siehe",
             "count": 1
           }
         ],
@@ -385,6 +513,10 @@
           {
             "value": "Fotos per WhatsApp senden",
             "count": 1
+          },
+          {
+            "value": "Unsicher, welches Paket Ihr Fahrzeug benötigt?",
+            "count": 1
           }
         ]
       },
@@ -395,11 +527,15 @@
             "count": 1
           },
           {
-            "value": "Beschreiben Sie uns Ihr Anliegen per WhatsApp. Lars Hägele berät Sie zu den passenden Arbeiten. Fotos können Sie nach einer Website-Anfrage im geschützten Kundenbereich ergänzen. Den verbindlichen Preis stimmen wir nach der Fahrzeugprüfung mit Ihnen ab.",
+            "value": "Beratung per WhatsApp",
             "count": 1
           },
           {
-            "value": "Beratung per WhatsApp",
+            "value": "Unsicher, welches Paket dein Fahrzeug benötigt?",
+            "count": 1
+          },
+          {
+            "value": "Beschreib uns dein Anliegen per WhatsApp. Lars Hägele berät dich zu den passenden Arbeiten. Fotos kannst du nach einer Website-Anfrage im geschützten Kundenbereich ergänzen. Den verbindlichen Preis stimmen wir nach der Fahrzeugprüfung mit dir ab.",
             "count": 1
           }
         ]
@@ -415,6 +551,10 @@
           },
           {
             "value": "Vorgang",
+            "count": 1
+          },
+          {
+            "value": "Hinweise zu Ihrem Widerrufsrecht finden Sie in der",
             "count": 1
           }
         ],
@@ -446,6 +586,14 @@
           {
             "value": "Wir begutachten Ihre Fotos und klären die Leistungen, den vollständigen Endpreis und den Termin. Bei Rückfragen melden wir uns bei Ihnen.",
             "count": 1
+          },
+          {
+            "value": "Sie erhalten Ihr persönliches Angebot mit Leistungen, Preis und Termin. Mit Ihrer Unterschrift bestätigen Sie das Angebot und den darin genannten Termin gemeinsam.",
+            "count": 1
+          },
+          {
+            "value": "Wir führen die vereinbarten Arbeiten aus. Die Rechnung erhalten Sie nach erbrachter Leistung; dann wird die Zahlung fällig.",
+            "count": 1
           }
         ],
         "expressions": [
@@ -453,20 +601,30 @@
             "value": "vorgang",
             "count": 1
           }
+        ],
+        "seo": [
+          {
+            "value": "pageHead({ title: \`Anfrage erhalten | ${site.name}\`, description: \"Ihre Terminanfrage ist eingegangen.\", path: \"/danke\", robots: \"noindex,nofollow\", })",
+            "count": 1
+          }
         ]
       },
       "added": {
         "text": [
-          {
-            "value": "Vielen Dank für Ihre Anfrage. Wir prüfen Ihre Angaben und stimmen Angebot, Preis und Termin persönlich mit Ihnen ab. Die Anfrage ist unverbindlich.",
-            "count": 1
-          },
           {
             "value": "Fotos kannst du nach deiner Anfrage in deinem Kundenbereich ergänzen.",
             "count": 1
           },
           {
             "value": "Zum Kundenbereich",
+            "count": 1
+          },
+          {
+            "value": "Vielen Dank für deine Anfrage. Wir prüfen deine Angaben und stimmen Angebot, Preis und Termin persönlich mit dir ab. Die Anfrage ist unverbindlich.",
+            "count": 1
+          },
+          {
+            "value": "Hinweise zu deinem Widerrufsrecht findest du in der",
             "count": 1
           }
         ],
@@ -484,15 +642,29 @@
         ],
         "copy": [
           {
-            "value": "Nach dem Eingang prüfen wir Ihre Angaben. Preis und Wunschtermin sind noch nicht verbindlich bestätigt.",
-            "count": 1
-          },
-          {
             "value": "Angaben, Preis und Termin prüfen",
             "count": 1
           },
           {
-            "value": "Wir klären die Leistungen, den vollständigen Endpreis und den Termin. Fotos können Sie im geschützten Kundenbereich ergänzen. Bei Rückfragen melden wir uns bei Ihnen.",
+            "value": "Nach dem Eingang prüfen wir deine Angaben. Preis und Wunschtermin sind noch nicht verbindlich bestätigt.",
+            "count": 1
+          },
+          {
+            "value": "Wir klären die Leistungen, den vollständigen Endpreis und den Termin. Fotos kannst du im geschützten Kundenbereich ergänzen. Bei Rückfragen melden wir uns bei dir.",
+            "count": 1
+          },
+          {
+            "value": "Du erhältst dein persönliches Angebot mit Leistungen, Preis und Termin. Mit deiner Unterschrift bestätigst du das Angebot und den darin genannten Termin gemeinsam.",
+            "count": 1
+          },
+          {
+            "value": "Wir führen die vereinbarten Arbeiten aus. Die Rechnung erhältst du nach erbrachter Leistung; dann wird die Zahlung fällig.",
+            "count": 1
+          }
+        ],
+        "seo": [
+          {
+            "value": "pageHead({ title: \`Anfrage erhalten | ${site.name}\`, description: \"Deine Terminanfrage ist eingegangen.\", path: \"/danke\", robots: \"noindex,nofollow\", })",
             "count": 1
           }
         ]
@@ -521,6 +693,10 @@
           {
             "value": "Für das Nachreichen speichert Ihr Browser nach der Anfrage eine zufällige, vorgangsgebundene Upload-Berechtigung in einem HttpOnly-Cookie. Diese Berechtigung läuft nach sieben Tagen ab. Der Upload setzt voraus, dass das Cookie im Browser der ursprünglichen Anfrage noch vorhanden ist. Die siebentägige Frist betrifft die Upload-Berechtigung; bereits gespeicherte Aufnahmen werden dadurch nicht automatisch gelöscht. Für ihre Speicherdauer gilt Abschnitt 10.",
             "count": 1
+          },
+          {
+            "value": "Hosting: IONOS SE, Deutschland. Anfragen und Termine werden von White Gloss bearbeitet. Die optional nachgereichten Fahrzeugaufnahmen werden bei Supabase in einem privaten Speicherbereich abgelegt. Wenn der E-Mail-Versand eingerichtet ist, werden Benachrichtigungen über Resend versendet; dabei werden Empfängeradresse, Betreff und Nachrichteninhalt an den Versanddienst übermittelt. Wenn die WhatsApp-Anbindung im Betrieb aktiviert ist, erhält Meta zusätzlich die in Abschnitt 5 beschriebenen Buchungshinweise zur Zustellung an den Inhaber.",
+            "count": 1
           }
         ]
       },
@@ -545,6 +721,10 @@
           {
             "value": "Bereits gespeicherte Kundenfotos und Dokumente werden durch diese Umstellung nicht gelöscht. Sie bleiben geschützt. Für ihre Speicherdauer gilt Abschnitt 10.",
             "count": 1
+          },
+          {
+            "value": "Hosting: IONOS SE, Deutschland. Anfragen und Termine werden von White-Gloss Detailing bearbeitet. Die optional nachgereichten Fahrzeugaufnahmen werden bei Supabase in einem privaten Speicherbereich abgelegt. Wenn der E-Mail-Versand eingerichtet ist, werden Benachrichtigungen über Resend versendet; dabei werden Empfängeradresse, Betreff und Nachrichteninhalt an den Versanddienst übermittelt. Wenn die WhatsApp-Anbindung im Betrieb aktiviert ist, erhält Meta zusätzlich die in Abschnitt 5 beschriebenen Buchungshinweise zur Zustellung an den Inhaber.",
+            "count": 1
           }
         ]
       }
@@ -560,6 +740,10 @@
           {
             "value": "Hilfreich sind eine Gesamtansicht, eine Nahaufnahme und ein Foto bei schrägem Lichteinfall. Beschreiben Sie den Schaden und fügen Sie passende Aufnahmen bei.",
             "count": 1
+          },
+          {
+            "value": "Einen Preis gibt es erst, wenn wir den Schaden gesehen haben. Wir beginnen erst mit Ihrer Zustimmung. Bei kleinen Stellen reicht oft ein Foto zur ersten Einschätzung.",
+            "count": 1
           }
         ]
       },
@@ -570,7 +754,11 @@
             "count": 1
           },
           {
-            "value": "Beschreiben Sie kurz den Schaden. Fotos ergänzen Sie nach der Anfrage in Ihrem Kundenbereich.",
+            "value": "Einen Preis gibt es erst, wenn wir den Schaden gesehen haben. Wir beginnen erst mit deiner Zustimmung. Bei kleinen Stellen reicht oft ein Foto zur ersten Einschätzung.",
+            "count": 1
+          },
+          {
+            "value": "Beschreib kurz den Schaden. Fotos ergänzt du nach der Anfrage in deinem Kundenbereich.",
             "count": 1
           }
         ]
@@ -591,7 +779,7 @@
         ],
         "seo": [
           {
-            "value": "pageHead({ title: `Fahrzeugzustand prüfen lassen | ${site.name}`, description: \"Fotos senden und ehrlich erfahren, welche Aufbereitung sinnvoll ist. Kostenlos und unverbindlich. Horb am Neckar.\", path: \"/fahrzeug-zustand\", preloadShot: \"atelier\", })",
+            "value": "pageHead({ title: \`Fahrzeugzustand prüfen lassen | ${site.name}\`, description: \"Fotos senden und ehrlich erfahren, welche Aufbereitung sinnvoll ist. Kostenlos und unverbindlich. Horb am Neckar.\", path: \"/fahrzeug-zustand\", preloadShot: \"atelier\", })",
             "count": 1
           }
         ]
@@ -599,21 +787,21 @@
       "added": {
         "text": [
           {
-            "value": "Wir geben Ihnen eine kostenlose, unverbindliche Ersteinschätzung. Beschreiben Sie uns Ihr Fahrzeug. Fotos können Sie anschließend im geschützten Kundenbereich ergänzen.",
-            "count": 1
-          },
-          {
             "value": "Für spätere Fotos im Kundenbereich sind diese Ansichten hilfreich:",
             "count": 1
           },
           {
-            "value": "Beschreiben Sie kurz den Zustand Ihres Fahrzeugs. Fotos ergänzen Sie später im Kundenbereich.",
+            "value": "Wir geben dir eine kostenlose, unverbindliche Ersteinschätzung. Beschreib uns dein Fahrzeug. Fotos kannst du anschließend im geschützten Kundenbereich ergänzen.",
+            "count": 1
+          },
+          {
+            "value": "Beschreib kurz den Zustand deines Fahrzeugs. Fotos ergänzt du später im Kundenbereich.",
             "count": 1
           }
         ],
         "seo": [
           {
-            "value": "pageHead({ title: `Fahrzeugzustand prüfen lassen | ${site.name}`, description: \"Fahrzeugzustand beschreiben und ehrlich erfahren, welche Aufbereitung sinnvoll ist. Kostenlos und unverbindlich. Horb am Neckar.\", path: \"/fahrzeug-zustand\", preloadShot: \"atelier\", })",
+            "value": "pageHead({ title: \`Fahrzeugzustand prüfen lassen | ${site.name}\`, description: \"Fahrzeugzustand beschreiben und ehrlich erfahren, welche Aufbereitung sinnvoll ist. Kostenlos und unverbindlich. Horb am Neckar.\", path: \"/fahrzeug-zustand\", preloadShot: \"atelier\", })",
             "count": 1
           }
         ]
@@ -634,17 +822,85 @@
           {
             "value": "Wir kümmern uns um den Rest.",
             "count": 1
+          },
+          {
+            "value": "Für den täglichen Weg zur Arbeit, Ihren Liebhaberwagen oder die Leasingrückgabe: Wir prüfen Ihr Fahrzeug persönlich und stimmen Pflege, Preis und Termin mit Ihnen ab.",
+            "count": 1
+          },
+          {
+            "value": "Ihr Fahrzeug.",
+            "count": 1
+          },
+          {
+            "value": "„Ich behandle jedes Fahrzeug so, als müsste ich es Ihnen unter perfektem Licht zurückgeben – weil ich genau das tue.“",
+            "count": 1
+          },
+          {
+            "value": "Sie müssen dafür nicht vor Ort sein. Auf Wunsch stimmen wir eine sichere Schlüsselhinterlegung mit Ihnen ab.",
+            "count": 1
+          },
+          {
+            "value": "Ihr Fahrzeug ist in unserer Werkstatt in guten Händen. Umfang und Preis werden vorher mit Ihnen abgestimmt.",
+            "count": 1
+          },
+          {
+            "value": "Stressfrei und ohne Wartezeit. Die digitale Übergabe dokumentiert das Ergebnis für Sie.",
+            "count": 1
+          },
+          {
+            "value": "Ihre Aufbereitung.",
+            "count": 1
+          },
+          {
+            "value": "Wählen Sie Fahrzeug, Paket und Zusatzleistungen. Preis und Zeitaufwand bleiben transparent. Danach stimmen wir Termin, Abholung und digitale Übergabe mit Ihnen ab – unverbindlich.",
+            "count": 1
+          },
+          {
+            "value": "Innenraumreinigung, Lackkorrektur und Keramikversiegelung: Wir beraten Sie zur passenden Autoaufbereitung in unserer Werkstatt in",
+            "count": 1
+          },
+          {
+            "value": "Wir holen Ihr Fahrzeug ab und bringen es zurück.",
+            "count": 1
           }
         ],
         "headings": [
           {
             "value": "h2: {[\"Sie geben uns den Schlüssel.\", \"Wir kümmern uns um den Rest.\"]}",
             "count": 1
+          },
+          {
+            "value": "h2: {[\"Ihr Fahrzeug.\", \"In guten Händen.\"]}",
+            "count": 1
+          },
+          {
+            "value": "h2: {[\"Ihre Aufbereitung.\"]}",
+            "count": 1
+          },
+          {
+            "value": "h3: Wir holen Ihr Fahrzeug ab und bringen es zurück.",
+            "count": 1
           }
         ],
         "expressions": [
           {
             "value": "lines=[\"Sie geben uns den Schlüssel.\", \"Wir kümmern uns um den Rest.\"]",
+            "count": 1
+          },
+          {
+            "value": "document?.content.body.trim() || \"Für den täglichen Weg zur Arbeit, Ihren Liebhaberwagen oder die Leasingrückgabe: Wir prüfen Ihr Fahrzeug persönlich und stimmen Pflege, Preis und Termin mit Ihnen ab.\"",
+            "count": 1
+          },
+          {
+            "value": "lines=[\"Ihr Fahrzeug.\", \"In guten Händen.\"]",
+            "count": 1
+          },
+          {
+            "value": "lines=[\"Ihre Aufbereitung.\"]",
+            "count": 1
+          },
+          {
+            "value": "aria-label=\`${c.name}, ${cityJourneyText(c)}, Abholung ${cityPickupPriceText(c)}\`",
             "count": 1
           }
         ]
@@ -656,21 +912,77 @@
             "count": 1
           },
           {
-            "value": "Wir stimmen die Pflege von Lack, Leder und Felgen auf den Zustand Ihres Fahrzeugs ab. Die Fahrzeugaufbereitung führen wir in unserer Werkstatt in Horb am Neckar aus.",
-            "count": 1
-          },
-          {
             "value": "Abholen. Aufbereiten.",
             "count": 1
           },
           {
             "value": "Zurückbringen.",
             "count": 1
+          },
+          {
+            "value": "Für den täglichen Weg zur Arbeit, deinen Liebhaberwagen oder die Leasingrückgabe: Wir prüfen dein Fahrzeug persönlich und stimmen Pflege, Preis und Termin mit dir ab.",
+            "count": 1
+          },
+          {
+            "value": "dein Fahrzeug.",
+            "count": 1
+          },
+          {
+            "value": "Wir stimmen die Pflege von Lack, Leder und Felgen auf den Zustand deines Fahrzeugs ab. Die Fahrzeugaufbereitung führen wir in unserer Werkstatt in Horb am Neckar aus.",
+            "count": 1
+          },
+          {
+            "value": "„Ich behandle jedes Fahrzeug so, als müsste ich es dir unter perfektem Licht zurückgeben – weil ich genau das tue.“",
+            "count": 1
+          },
+          {
+            "value": "Du musst dafür nicht vor Ort sein. Auf Wunsch stimmen wir eine sichere Schlüsselhinterlegung mit dir ab.",
+            "count": 1
+          },
+          {
+            "value": "Dein Fahrzeug ist in unserer Werkstatt in guten Händen. Umfang und Preis werden vorher mit dir abgestimmt.",
+            "count": 1
+          },
+          {
+            "value": "Stressfrei und ohne Wartezeit. Die digitale Übergabe dokumentiert das Ergebnis für dich.",
+            "count": 1
+          },
+          {
+            "value": "Deine Aufbereitung.",
+            "count": 1
+          },
+          {
+            "value": "Wähle Fahrzeug, Paket und Zusatzleistungen. Preis und Zeitaufwand bleiben transparent. Danach stimmen wir Termin, Abholung und digitale Übergabe mit dir ab – unverbindlich.",
+            "count": 1
+          },
+          {
+            "value": "Innenraumreinigung, Lackkorrektur und Keramikversiegelung: Wir beraten dich zur passenden Autoaufbereitung in unserer Werkstatt in",
+            "count": 1
+          },
+          {
+            "value": "Wir holen dein Fahrzeug ab und bringen es zurück.",
+            "count": 1
+          },
+          {
+            "value": ", Werkstattstandort, direkte Fahrzeugabgabe möglich, Abholung",
+            "count": 1
           }
         ],
         "headings": [
           {
             "value": "h2: {[\"Abholen. Aufbereiten.\", \"Zurückbringen.\"]}",
+            "count": 1
+          },
+          {
+            "value": "h2: {[\"dein Fahrzeug.\", \"In guten Händen.\"]}",
+            "count": 1
+          },
+          {
+            "value": "h2: {[\"Deine Aufbereitung.\"]}",
+            "count": 1
+          },
+          {
+            "value": "h3: Wir holen dein Fahrzeug ab und bringen es zurück.",
             "count": 1
           }
         ],
@@ -694,6 +1006,22 @@
           {
             "value": "lines=[\"Abholen. Aufbereiten.\", \"Zurückbringen.\"]",
             "count": 1
+          },
+          {
+            "value": "document?.content.body.trim() || \"Für den täglichen Weg zur Arbeit, deinen Liebhaberwagen oder die Leasingrückgabe: Wir prüfen dein Fahrzeug persönlich und stimmen Pflege, Preis und Termin mit dir ab.\"",
+            "count": 1
+          },
+          {
+            "value": "lines=[\"dein Fahrzeug.\", \"In guten Händen.\"]",
+            "count": 1
+          },
+          {
+            "value": "lines=[\"Deine Aufbereitung.\"]",
+            "count": 1
+          },
+          {
+            "value": "aria-label=c.km === 0 ? \`${c.name}, Werkstattstandort, direkte Fahrzeugabgabe möglich, Abholung ${cityPickupPriceText(c)}\` : \`${c.name}, ${cityDistanceLine(c)}, Abholung ${cityPickupPriceText(c)}\`",
+            "count": 1
           }
         ]
       }
@@ -705,13 +1033,33 @@
           {
             "value": "Für eine erste Einschätzung helfen uns diese Angaben. Fotos können Sie auch direkt per WhatsApp senden.",
             "count": 1
+          },
+          {
+            "value": "So fragen Sie an",
+            "count": 1
+          }
+        ],
+        "headings": [
+          {
+            "value": "h2: So fragen Sie an",
+            "count": 1
           }
         ]
       },
       "added": {
         "text": [
           {
-            "value": "Für eine erste Einschätzung helfen uns diese Angaben. Fotos können Sie nach der Anfrage im geschützten Kundenbereich ergänzen.",
+            "value": "So fragst du an",
+            "count": 1
+          },
+          {
+            "value": "Für eine erste Einschätzung helfen uns diese Angaben. Fotos kannst du nach der Anfrage im geschützten Kundenbereich ergänzen.",
+            "count": 1
+          }
+        ],
+        "headings": [
+          {
+            "value": "h2: So fragst du an",
             "count": 1
           }
         ]
@@ -728,11 +1076,91 @@
           {
             "value": "Fotos zur Ersteinschätzung senden",
             "count": 1
+          },
+          {
+            "value": ".",
+            "count": 1
+          },
+          {
+            "value": "Ihre Auswahl:",
+            "count": 1
+          },
+          {
+            "value": ". Die Leistung ist für Ihre Anfrage vorgemerkt.",
+            "count": 1
+          },
+          {
+            "value": "Vor dem Verkauf: Reinigung und Lackpflege für ein gepflegtes Erscheinungsbild. Ob eine Versiegelung sinnvoll ist, besprechen wir mit Ihnen.",
+            "count": 1
+          },
+          {
+            "value": "Dieselben drei Pakete wie in Horb. Abholung",
+            "count": 1
+          },
+          {
+            "value": "Paket",
+            "count": 1
+          },
+          {
+            "value": ". Entfernungen und Fahrzeiten sind Richtwerte. Für Politur und Keramik nutzen wir gleichmäßiges Licht und sauberes Wasser in der Werkstatt.",
+            "count": 1
+          },
+          {
+            "value": "Sie können Ihr Fahrzeug nach Terminvereinbarung auch selbst bringen.",
+            "count": 1
+          },
+          {
+            "value": "Wählen Sie bei der Terminanfrage",
+            "count": 1
+          },
+          {
+            "value": "als Abholort aus. Übergabeadresse, Leistungsumfang, Preis und Rückgabezeit stimmen wir persönlich mit Ihnen ab. Fotos helfen bei der ersten Einschätzung des Fahrzeugzustands.",
+            "count": 1
           }
         ],
         "copy": [
           {
             "value": "Beschreiben Sie Ihr Anliegen im Formular oder senden Sie uns eine Nachricht mit Fotos per WhatsApp. Wir geben Ihnen eine erste Einschätzung.",
+            "count": 1
+          },
+          {
+            "value": "Zustand zeigen",
+            "count": 1
+          },
+          {
+            "value": "Abholen oder bringen",
+            "count": 1
+          },
+          {
+            "value": "Nutzen Sie den Hol- und Bringservice zu den angegebenen Preisen oder bringen Sie Ihr Fahrzeug selbst in unsere Werkstatt in Horb.",
+            "count": 1
+          },
+          {
+            "value": "Kontrolle und Übergabe",
+            "count": 1
+          },
+          {
+            "value": "Nach den vereinbarten Arbeiten kontrollieren wir das Ergebnis unter Werkstattlicht und übergeben Ihnen das Fahrzeug.",
+            "count": 1
+          }
+        ],
+        "headings": [
+          {
+            "value": "h2: Warum die Fahrt nach Horb",
+            "count": 1
+          }
+        ],
+        "expressions": [
+          {
+            "value": "i + 1",
+            "count": 1
+          },
+          {
+            "value": "cityJourneyText(city).replace(/\\.$/, \"\")",
+            "count": 1
+          },
+          {
+            "value": "city.slug === \"horb-am-neckar\" ? \" Sie können Ihr Fahrzeug nach Terminvereinbarung auch selbst bringen.\" : \` In ${city.name} bieten wir die Abholung und Rückgabe an, keine mobile Aufbereitung oder weitere Werkstatt.\`",
             "count": 1
           }
         ]
@@ -746,11 +1174,101 @@
           {
             "value": "Anliegen kurz beschreiben",
             "count": 1
+          },
+          {
+            "value": "Deine Auswahl:",
+            "count": 1
+          },
+          {
+            "value": ". Die Leistung ist für deine Anfrage vorgemerkt.",
+            "count": 1
+          },
+          {
+            "value": "Vor dem Verkauf: Reinigung und Lackpflege für ein gepflegtes Erscheinungsbild. Ob eine Versiegelung sinnvoll ist, besprechen wir mit dir.",
+            "count": 1
+          },
+          {
+            "value": "horb-am-neckar",
+            "count": 1
+          },
+          {
+            "value": "Unsere drei Aufbereitungspakete am Standort Horb.",
+            "count": 1
+          },
+          {
+            "value": "Dieselben drei Pakete wie in Horb.",
+            "count": 1
+          },
+          {
+            "value": "Abholung",
+            "count": 1
+          },
+          {
+            "value": "Direkt am Standort",
+            "count": 1
+          },
+          {
+            "value": "Am Standort entfällt die Anfahrt.",
+            "count": 1
+          },
+          {
+            "value": "Minuten",
+            "count": 1
+          },
+          {
+            "value": "Entfernungen und Fahrzeiten sind Richtwerte. Für Politur und Keramik nutzen wir gleichmäßiges Licht und sauberes Wasser in der Werkstatt.",
+            "count": 1
+          },
+          {
+            "value": "Standort",
+            "count": 1
+          },
+          {
+            "value": "Horb am Neckar",
+            "count": 1
+          },
+          {
+            "value": "Abgabe",
+            "count": 1
+          },
+          {
+            "value": "Direkt vor Ort",
+            "count": 1
+          },
+          {
+            "value": "Du kannst dein Fahrzeug nach Terminvereinbarung auch selbst bringen.",
+            "count": 1
+          },
+          {
+            "value": "Wähle bei der Terminanfrage",
+            "count": 1
+          },
+          {
+            "value": "als Abholort aus. Übergabeadresse, Leistungsumfang, Preis und Rückgabezeit stimmen wir persönlich mit dir ab. Fotos helfen bei der ersten Einschätzung des Fahrzeugzustands.",
+            "count": 1
           }
         ],
-        "copy": [
+        "headings": [
           {
-            "value": "Beschreiben Sie Ihr Anliegen im Formular oder per WhatsApp. Fotos ergänzen Sie nach Ihrer Website-Anfrage im geschützten Kundenbereich. Wir geben Ihnen eine erste Einschätzung.",
+            "value": "h2: city.km === 0 ? \"Direkt am Standort\" : \"Warum die Fahrt nach Horb\"",
+            "count": 1
+          }
+        ],
+        "expressions": [
+          {
+            "value": "city.slug === \"horb-am-neckar\" ? \"Unsere drei Aufbereitungspakete am Standort Horb.\" : \"Dieselben drei Pakete wie in Horb.\"",
+            "count": 1
+          },
+          {
+            "value": "city.km === 0 ? \"Direkt am Standort\" : \"Warum die Fahrt nach Horb\"",
+            "count": 1
+          },
+          {
+            "value": "city.km === 0 ? \"Am Standort entfällt die Anfahrt.\" : \`${cityJourneyText(city).replace(/Min\\.$/, \"Minuten\")}.\`",
+            "count": 1
+          },
+          {
+            "value": "city.slug === \"horb-am-neckar\" ? \" Du kannst dein Fahrzeug nach Terminvereinbarung auch selbst bringen.\" : \` In ${city.name} bieten wir die Abholung und Rückgabe an, keine mobile Aufbereitung oder weitere Werkstatt.\`",
             "count": 1
           }
         ]
@@ -758,31 +1276,54 @@
     },
     "src/components/scroll-film-hero.tsx": {
       "beforeBlob": "a1792ea8042918a5b4779699bd05c446b929443c",
-      "removed": {},
+      "removed": {
+        "text": [
+          {
+            "value": "White Gloss – bis ins Detail",
+            "count": 1
+          },
+          {
+            "value": "Sorgfalt für Ihr Fahrzeug.",
+            "count": 1
+          },
+          {
+            "value": "Scrollen & entdecken",
+            "count": 1
+          },
+          {
+            "value": "Mehr entdecken",
+            "count": 1
+          },
+          {
+            "value": "Bewegung fortsetzen",
+            "count": 1
+          },
+          {
+            "value": "Bewegung pausieren",
+            "count": 1
+          }
+        ],
+        "copy": [
+          {
+            "value": "Ihr Auto.",
+            "count": 1
+          }
+        ]
+      },
       "added": {
         "text": [
           {
-            "value": "Abholung, Aufbereitung und Reparaturen mit unseren Partnerbetrieben.",
+            "value": "White-Gloss Detailing – bis ins Detail",
             "count": 1
           },
           {
-            "value": "Rundum-Service anfragen",
+            "value": "Sorgfalt für dein Fahrzeug.",
             "count": 1
           }
         ],
-        "links": [
+        "copy": [
           {
-            "value": "to=\"/\"",
-            "count": 1
-          },
-          {
-            "value": "hash=\"rundum-anfrage\"",
-            "count": 1
-          }
-        ],
-        "components": [
-          {
-            "value": "Link",
+            "value": "Dein Auto.",
             "count": 1
           }
         ]
@@ -795,8 +1336,8 @@
       "beforeBlob": "0da2b77f0c39186840fdec75e4fe8213d3de9c09",
       "replacements": [
         {
-          "before": "und würde den Aufwand gern anhand von Fotos einschätzen lassen.",
-          "after": "und wünsche eine persönliche Beratung zu meinem Anliegen und dem voraussichtlichen Aufwand."
+          "before": "Hallo White Gloss, ich interessiere mich für eine Fahrzeugaufbereitung in ${cityName} und würde den Aufwand gern anhand von Fotos einschätzen lassen.",
+          "after": "Hallo White-Gloss Detailing, ich interessiere mich für eine Fahrzeugaufbereitung in ${cityName} und wünsche eine persönliche Beratung zu meinem Anliegen und dem voraussichtlichen Aufwand."
         }
       ]
     }

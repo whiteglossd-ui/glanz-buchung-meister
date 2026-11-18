@@ -59,7 +59,7 @@ export function LazyConfigurator({
       <noscript>
         <style>{".lazy-configurator-js { display: none; }"}</style>
         <p className="mb-6 text-muted">
-          Für Ihre Terminanfrage erreichen Sie uns telefonisch unter{" "}
+          Für deine Terminanfrage erreichst du uns telefonisch unter{" "}
           <a href={site.phoneHref} className="underline underline-offset-4">
             {site.phoneDisplay}
           </a>.

@@ -56,7 +56,7 @@ function FaqPage() {
       />
       <PageHero
         shot="atelier"
-        alt="Werkstatt von White Gloss in Horb am Neckar"
+        alt="Werkstatt von White-Gloss Detailing in Horb am Neckar"
         kicker="Antworten vorab"
         title="Häufige Fragen zur Fahrzeugaufbereitung"
         lead="Kosten, Dauer, Keramik, Innenraum – kurz beantwortet."
@@ -102,7 +102,7 @@ function FaqPage() {
           </section>
         ))}
         <p className="mt-12 text-sm text-muted">
-          Ihre Frage war nicht dabei? Persönlich:{" "}
+          Deine Frage war nicht dabei? Persönlich:{" "}
           <a href={site.phoneHref} className="underline hover:text-fg">
             {site.phoneDisplay}
           </a>

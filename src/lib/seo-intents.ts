@@ -20,7 +20,7 @@ export function resolveSeoIntent(
   if (cmsSeoIntents[path]) return cmsSeoIntents[path];
   // The editor's published title provides a provisional informational intent.
   // This is not a demand/ranking assertion; editorial semantic review remains required.
-  const subject = publishedPage?.title.replace(/\s*\|\s*White Gloss\s*$/i, "").trim();
+  const subject = publishedPage?.title.replace(/\s*\|\s*White(?:-|\s)?Gloss(?: Detailing)?\s*$/i, "").trim();
   if (!subject || !publishedPage?.description.trim()) return undefined;
   return {
     cluster: subject.toLowerCase(),

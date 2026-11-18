@@ -19,7 +19,7 @@ function TermsPage() {
     <main id="main-content" tabIndex={-1}>
       <PageHero
         shot="atelier"
-        alt={`Werkstatt von White Gloss in ${site.city}`}
+        alt={`Werkstatt von White-Gloss Detailing in ${site.city}`}
         kicker="Rechtliches"
         title="Allgemeine Geschäftsbedingungen."
         lead="Anfrage, Ausführung, Zahlung – in klarer Sprache."

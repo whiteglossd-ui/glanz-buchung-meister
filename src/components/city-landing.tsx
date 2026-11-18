@@ -25,23 +25,28 @@ import { CityLocalProofSection } from "@/components/city-local-proof";
 import { WebsiteStudioContent } from "@/components/website-studio-content";
 import { studioHero, type PublishedStudioDocument } from "@/lib/studio-public";
 
-const steps = [
-  {
-    n: "01.",
-    title: "Zustand zeigen",
-    text: "Beschreiben Sie Ihr Anliegen im Formular oder per WhatsApp. Fotos ergänzen Sie nach Ihrer Website-Anfrage im geschützten Kundenbereich. Wir geben Ihnen eine erste Einschätzung.",
-  },
-  {
-    n: "02.",
-    title: "Abholen oder bringen",
-    text: "Nutzen Sie den Hol- und Bringservice zu den angegebenen Preisen oder bringen Sie Ihr Fahrzeug selbst in unsere Werkstatt in Horb.",
-  },
-  {
-    n: "03.",
-    title: "Kontrolle und Übergabe",
-    text: "Nach den vereinbarten Arbeiten kontrollieren wir das Ergebnis unter Werkstattlicht und übergeben Ihnen das Fahrzeug.",
-  },
-];
+function citySteps(city: City) {
+  return [
+    {
+      n: "01",
+      title: "Zustand zeigen",
+      text: "Beschreib dein Anliegen im Formular oder per WhatsApp. Fotos ergänzt du nach deiner Website-Anfrage im geschützten Kundenbereich. Wir geben dir eine erste Einschätzung.",
+    },
+    {
+      n: "02",
+      title: "Abholen oder bringen",
+      text:
+        city.slug === "horb-am-neckar"
+          ? "Bring dein Fahrzeug nach Termin selbst vorbei oder nutze die kostenlose Abholung in Horb."
+          : "Nutze den Hol- und Bringservice zu den angegebenen Preisen oder bring dein Fahrzeug selbst in unsere Werkstatt in Horb.",
+    },
+    {
+      n: "03",
+      title: "Kontrolle und Übergabe",
+      text: "Nach den vereinbarten Arbeiten kontrollieren wir das Ergebnis unter Werkstattlicht und übergeben dir das Fahrzeug.",
+    },
+  ];
+}
 
 export function CityLanding({ city, serviceSlug, editorial }: { city: City; serviceSlug?: string; editorial?: PublishedStudioDocument | null }) {
   const jsonLd = cityJsonLd(city);
@@ -72,7 +77,7 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
         <div className="film-chapter-media" data-parallax>
           {hero ? <img src={hero.src} alt={hero.alt} width={hero.width} height={hero.height} loading="eager" fetchPriority="high" decoding="async" className="absolute inset-0 h-full w-full object-cover" /> : <HeroMedia
             priority
-            alt={`Werkstattfahrzeug von White Gloss – Fahrzeugaufbereitung für Kunden aus ${city.name}`}
+            alt={`Werkstattfahrzeug von White-Gloss Detailing – Fahrzeugaufbereitung für Kunden aus ${city.name}`}
             className="absolute inset-0 h-full w-full object-cover"
           />}
         </div>
@@ -107,7 +112,7 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
           </div>
           {selectedService ? (
             <p className="mt-4 text-sm text-muted">
-              Ihre Auswahl: {selectedService.nav}. Die Leistung ist für Ihre Anfrage vorgemerkt.
+              Deine Auswahl: {selectedService.nav}. Die Leistung ist für deine Anfrage vorgemerkt.
             </p>
           ) : null}
           <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-xs uppercase tracking-[0.14em] text-subtle">
@@ -161,7 +166,7 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
           <ul className="mt-8 max-w-2xl space-y-3 text-sm text-muted">
             <li className="border-l border-line pl-4">
               Vor dem Verkauf: Reinigung und Lackpflege für ein gepflegtes Erscheinungsbild. Ob eine
-              Versiegelung sinnvoll ist, besprechen wir mit Ihnen.
+              Versiegelung sinnvoll ist, besprechen wir mit dir.
             </li>
             <li className="border-l border-line pl-4">
               Langfristige Pflege: Eine Keramikversiegelung ist vor allem bei weiterer Nutzung des
@@ -181,24 +186,26 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
         <div className="section mx-auto max-w-7xl px-4 sm:px-6">
           <h2 className="heading-2">Pakete für {city.name}</h2>
           <p className="mt-4 max-w-xl text-muted">
-            Dieselben drei Pakete wie in Horb. Abholung {pickup}. {pickupKeramikNote()}.
+            {city.slug === "horb-am-neckar"
+              ? "Unsere drei Aufbereitungspakete am Standort Horb."
+              : "Dieselben drei Pakete wie in Horb."}{" "}
+            Abholung {pickup}. {pickupKeramikNote()}
           </p>
           <ol className="mt-12 divide-y divide-line border-y border-line">
             {packages.map((p, i) => (
               <li key={p.id} className="gd-pack py-8">
-                <p className="ga-num font-display text-sm text-subtle tabular-nums">
-                  {String(i + 1).padStart(2, "0")}.
+                <p className="ga-num font-display text-3xl text-subtle tabular-nums">
+                  {String(i + 1).padStart(2, "0")}
                 </p>
                 <div className="ga-pack-copy">
-                  <p className="kicker">Paket {i + 1}</p>
                   <h3 className="heading-3 mt-2">{p.name}</h3>
                   <p className="mt-2 max-w-lg text-sm text-muted">{p.kicker}</p>
                 </div>
-                <p className="ga-price">
+                <p className="ga-price flex flex-col items-end gap-2">
                   <span className="font-display text-3xl tabular-nums">
                     ab {money(p.price)}&nbsp;€
                   </span>
-                  <span className="mt-1 block text-xs text-subtle">{site.vatNote}</span>
+                  <span className="block text-xs text-subtle">{site.vatNote}</span>
                   <Link
                     {...serviceAreaLink(packageServiceSlug[p.id], city.slug)}
                     className="mt-3 inline-flex min-h-11 items-center text-sm text-fg hover:underline"
@@ -214,7 +221,9 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
 
       <section className="cv-auto border-t border-line">
         <div className="section mx-auto max-w-7xl px-4 sm:px-6">
-          <h2 className="heading-2">Warum die Fahrt nach Horb</h2>
+          <h2 className="heading-2">
+            {city.km === 0 ? "Direkt am Standort" : "Warum die Fahrt nach Horb"}
+          </h2>
           <p className="mt-5 max-w-2xl text-muted leading-relaxed">
             {editorial?.content.body.trim() || cityPlanningText(city)}
           </p>
@@ -225,7 +234,10 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
               : `${city.name} ist ein Abholgebiet, keine weitere Niederlassung.`}
           </p>
           <p className="mt-5 max-w-2xl text-muted leading-relaxed">
-            {cityJourneyText(city).replace(/\.$/, "")}. Entfernungen und Fahrzeiten sind Richtwerte.
+            {city.km === 0
+              ? "Am Standort entfällt die Anfahrt."
+              : `${cityJourneyText(city).replace(/Min\.$/, "Minuten")}.`}{" "}
+            Entfernungen und Fahrzeiten sind Richtwerte.
             Für Politur und Keramik nutzen wir gleichmäßiges Licht und sauberes Wasser in der Werkstatt.
             {city.pickupFlat !== undefined
               ? ` Mit White-Gloss Classic oder White-Gloss Signature gilt in ${city.name} ein Festpreis von ${pickup}.`
@@ -235,15 +247,30 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
             </Link>
             .
           </p>
-          <dl className="gd-tiles gd-tiles-3 mt-10">
-            <div className="border border-line p-5">
-              <dt className="text-xs uppercase tracking-[0.16em] text-subtle">Entfernung</dt>
-              <dd className="mt-2 font-display text-3xl">{city.km === null ? "Nach Adresse" : `ca. ${city.km} km`}</dd>
-            </div>
-            <div className="border border-line p-5">
-              <dt className="text-xs uppercase tracking-[0.16em] text-subtle">Fahrzeit</dt>
-              <dd className="mt-2 font-display text-3xl">{city.minutes === null ? "Nach Absprache" : `ca. ${city.minutes} Min.`}</dd>
-            </div>
+          <dl className={`gd-tiles mt-10 ${city.km === 0 ? "gd-tiles-3" : "gd-tiles-3"}`}>
+            {city.km === 0 ? (
+              <div className="border border-line p-5">
+                <dt className="text-xs uppercase tracking-[0.16em] text-subtle">Standort</dt>
+                <dd className="mt-2 font-display text-3xl">Horb am Neckar</dd>
+              </div>
+            ) : (
+              <>
+                <div className="border border-line p-5">
+                  <dt className="text-xs uppercase tracking-[0.16em] text-subtle">Entfernung</dt>
+                  <dd className="mt-2 font-display text-3xl">{city.km === null ? "Nach Adresse" : `ca. ${city.km} km`}</dd>
+                </div>
+                <div className="border border-line p-5">
+                  <dt className="text-xs uppercase tracking-[0.16em] text-subtle">Fahrzeit</dt>
+                  <dd className="mt-2 font-display text-3xl">{city.minutes === null ? "Nach Absprache" : `ca. ${city.minutes} Min.`}</dd>
+                </div>
+              </>
+            )}
+            {city.km === 0 ? (
+              <div className="border border-line p-5">
+                <dt className="text-xs uppercase tracking-[0.16em] text-subtle">Abgabe</dt>
+                <dd className="mt-2 font-display text-3xl">Direkt vor Ort</dd>
+              </div>
+            ) : null}
             <div className="border border-line p-5">
               <dt className="text-xs uppercase tracking-[0.16em] text-subtle">Abholung</dt>
               <dd className="mt-2 font-display text-3xl">{pickup}</dd>
@@ -256,7 +283,7 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
         <div className="section mx-auto max-w-7xl px-4 sm:px-6">
           <h2 className="heading-2">In drei Schritten</h2>
           <ol className="gd-tiles gd-tiles-3 mt-12">
-            {steps.map((s) => (
+            {citySteps(city).map((s) => (
               <li key={s.n} className="border-t border-line pt-5">
                 <p className="font-display text-3xl text-subtle/80">{s.n}</p>
                 <h3 className="heading-3 mt-3">{s.title}</h3>
@@ -309,7 +336,7 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
               <dd className="mt-3 text-muted">
                 In unserer Werkstatt am {site.street}, {site.postalCode} {site.city}.
                 {city.slug === "horb-am-neckar"
-                  ? " Sie können Ihr Fahrzeug nach Terminvereinbarung auch selbst bringen."
+                  ? " Du kannst dein Fahrzeug nach Terminvereinbarung auch selbst bringen."
                   : ` In ${city.name} bieten wir die Abholung und Rückgabe an, keine mobile Aufbereitung oder weitere Werkstatt.`}
               </dd>
             </div>
@@ -324,8 +351,8 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
             <div>
               <dt className="heading-3">Wie vereinbare ich Abholung und Rückgabe?</dt>
               <dd className="mt-3 text-muted">
-                Wählen Sie bei der Terminanfrage {city.name} als Abholort aus. Übergabeadresse,
-                Leistungsumfang, Preis und Rückgabezeit stimmen wir persönlich mit Ihnen ab. Fotos
+                Wähle bei der Terminanfrage {city.name} als Abholort aus. Übergabeadresse,
+                Leistungsumfang, Preis und Rückgabezeit stimmen wir persönlich mit dir ab. Fotos
                 helfen bei der ersten Einschätzung des Fahrzeugzustands.
               </dd>
             </div>

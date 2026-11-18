@@ -27,17 +27,17 @@ function contactErrors(
   const errors: PublicFormErrors = {};
   // Match the existing public booking/photo-inquiry server validators.
   if (name.trim().length < 2 || name.trim().length > 120) {
-    errors.name = "Bitte geben Sie Ihren Namen mit 2 bis 120 Zeichen an.";
+    errors.name = "Bitte gib deinen Namen mit 2 bis 120 Zeichen an.";
   }
   if (
     (phoneRequired || phone.trim()) &&
     (phone.trim().length < 6 || phone.trim().length > 40 || !/^\+?[\d ()/.-]+$/.test(phone.trim()))
   ) {
-    errors.phone = "Bitte geben Sie Ihre Telefonnummer mit 6 bis 40 Zeichen an.";
+    errors.phone = "Bitte gib deine Telefonnummer mit 6 bis 40 Zeichen an.";
   }
   if (!privacy)
     errors.privacy =
-      "Bitte bestätigen Sie, dass Sie die Datenschutzerklärung zur Kenntnis genommen haben.";
+      "Bitte bestätige, dass du die Datenschutzerklärung zur Kenntnis genommen hast.";
   return errors;
 }
 
@@ -55,22 +55,22 @@ export function bookingFormErrors(
   const errors = contactErrors(values);
   // Required for the confirmation, documents and invoices; mirrors publicBookingSchema.
   if (values.email.trim().length > 160 || !isEmailAddress(values.email)) {
-    errors.email = "Bitte geben Sie eine gültige E-Mail-Adresse an.";
+    errors.email = "Bitte gib eine gültige E-Mail-Adresse an.";
   }
   if (values.street.trim().length < 3 || values.street.trim().length > 120) {
-    errors.street = "Bitte geben Sie Straße und Hausnummer an.";
+    errors.street = "Bitte gib Straße und Hausnummer an.";
   }
   if (!/^\d{5}$/.test(values.postalCode.trim())) {
-    errors.postalCode = "Bitte geben Sie eine fünfstellige Postleitzahl an.";
+    errors.postalCode = "Bitte gib eine fünfstellige Postleitzahl an.";
   }
   if (values.town.trim().length < 2 || values.town.trim().length > 80) {
-    errors.town = "Bitte geben Sie den Ort an.";
+    errors.town = "Bitte gib den Ort an.";
   }
   if (values.date && (!isCalendarDate(values.date) || values.date < today)) {
-    errors.date = "Bitte wählen Sie heute oder ein späteres Datum.";
+    errors.date = "Bitte wähle heute oder ein späteres Datum.";
   }
   if (values.note.length > 2000)
-    errors.note = "Bitte kürzen Sie Ihre Nachricht auf höchstens 2.000 Zeichen.";
+    errors.note = "Bitte kürze deine Nachricht auf höchstens 2.000 Zeichen.";
   return errors;
 }
 
@@ -79,10 +79,10 @@ export function photoInquiryErrors(
 ): PublicFormErrors {
   const errors = contactErrors(values, false);
   if (!isEmailAddress(values.email) || values.email.trim().length > 160)
-    errors.email = "Bitte geben Sie eine gültige E-Mail-Adresse an.";
-  if (!values.text.trim()) errors.text = "Bitte beschreiben Sie Ihr Anliegen.";
+    errors.email = "Bitte gib eine gültige E-Mail-Adresse an.";
+  if (!values.text.trim()) errors.text = "Bitte beschreib dein Anliegen.";
   if (values.text.length > 2000)
-    errors.text = "Bitte kürzen Sie die Beschreibung auf höchstens 2.000 Zeichen.";
+    errors.text = "Bitte kürze die Beschreibung auf höchstens 2.000 Zeichen.";
   return errors;
 }
 

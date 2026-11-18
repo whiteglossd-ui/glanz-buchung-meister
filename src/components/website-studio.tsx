@@ -76,9 +76,9 @@ function seed(key: CmsDocumentKey): CmsDocumentContent {
   if (key === "home")
     return {
       ...content,
-      title: "Ihr Auto.\nNicht nur sauber.\nWieder besonders.",
+      title: "Dein Auto.\nNicht nur sauber.\nWieder besonders.",
       lead: "Fahrzeugaufbereitung, Lackkorrektur und Keramikschutz in Horb – persönlich geprüft, stressfrei abgeholt und digital übergeben.",
-      body: "Für den täglichen Weg zur Arbeit, Ihren Liebhaberwagen oder die Leasingrückgabe: Wir prüfen Ihr Fahrzeug persönlich und stimmen Pflege, Preis und Termin mit Ihnen ab.",
+      body: "Für den täglichen Weg zur Arbeit, deinen Liebhaberwagen oder die Leasingrückgabe: Wir prüfen dein Fahrzeug persönlich und stimmen Pflege, Preis und Termin mit dir ab.",
     };
   if (key === "gallery") {
     const ordered = [
@@ -88,7 +88,7 @@ function seed(key: CmsDocumentKey): CmsDocumentContent {
     return {
       ...content,
       title: "Echte Ergebnisse aus unserer Werkstatt.",
-      lead: "Lack, Leder, Felgen. Entdecken Sie unsere Arbeit an einem echten Kundenfahrzeug - in Bildern und kurzen Filmen.",
+      lead: "Lack, Leder, Felgen. Entdecke unsere Arbeit an einem echten Kundenfahrzeug - in Bildern und kurzen Filmen.",
       images: ordered.map((photo) => ({
         assetId: `static:${photo.id}`,
         alt: photo.alt,

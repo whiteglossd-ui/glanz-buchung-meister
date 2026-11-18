@@ -7,7 +7,7 @@ interface WhatsAppPhotoCtaProps {
 
 export function WhatsAppPhotoCta({ className = "", headingLevel = 2 }: WhatsAppPhotoCtaProps) {
   const Heading = headingLevel === 3 ? "h3" : "h2";
-  const whatsappPhotoUrl = `${site.whatsappHref}&text=${encodeURIComponent("Hallo White Gloss, ich wünsche eine Beratung für mein Fahrzeug.")}`;
+  const whatsappPhotoUrl = `${site.whatsappHref}&text=${encodeURIComponent("Hallo White-Gloss Detailing, ich wünsche eine Beratung für mein Fahrzeug.")}`;
 
   return (
     <div
@@ -19,12 +19,12 @@ export function WhatsAppPhotoCta({ className = "", headingLevel = 2 }: WhatsAppP
             Persönliche Beratung
           </div>
           <Heading className="heading-3 mt-3 text-xl sm:text-2xl">
-            Unsicher, welches Paket Ihr Fahrzeug benötigt?
+            Unsicher, welches Paket dein Fahrzeug benötigt?
           </Heading>
           <p className="mt-3 text-sm sm:text-base text-muted leading-relaxed">
-            Beschreiben Sie uns Ihr Anliegen per WhatsApp. Lars Hägele berät Sie zu den passenden
-            Arbeiten. Fotos können Sie nach einer Website-Anfrage im geschützten Kundenbereich
-            ergänzen. Den verbindlichen Preis stimmen wir nach der Fahrzeugprüfung mit Ihnen ab.
+            Beschreib uns dein Anliegen per WhatsApp. Lars Hägele berät dich zu den passenden
+            Arbeiten. Fotos kannst du nach einer Website-Anfrage im geschützten Kundenbereich
+            ergänzen. Den verbindlichen Preis stimmen wir nach der Fahrzeugprüfung mit dir ab.
           </p>
           <div className="mt-4 flex flex-wrap gap-y-2 gap-x-6 text-xs text-subtle">
             <span>✓ Persönlicher Ansprechpartner</span>

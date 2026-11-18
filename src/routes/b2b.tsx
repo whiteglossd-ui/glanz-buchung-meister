@@ -10,7 +10,7 @@ export const Route = createFileRoute("/b2b")({
     pageHead({
       title: `B2B Fahrzeugaufbereitung Flotten | ${site.name}`,
       description:
-        "Leasingrückläufer, Fuhrpark, Autohäuser: individuelle Kalkulation statt Pauschalpreis. White Gloss in Horb am Neckar.",
+        "Leasingrückläufer, Fuhrpark, Autohäuser: individuelle Kalkulation statt Pauschalpreis. White-Gloss Detailing in Horb am Neckar.",
       path: "/b2b",
       preloadShot: "atelier",
     }),
@@ -24,7 +24,7 @@ function B2bPage() {
         alt="Werkstatt mit LED-Licht"
         kicker="Geschäftskunden"
         title="Firmenkunden, Flotten, Autohäuser."
-        lead="Aufbereitung für Flotten und Leasingrückläufer mit einem Angebot passend zu Ihrem Bedarf."
+        lead="Aufbereitung für Flotten und Leasingrückläufer mit einem Angebot passend zu deinem Bedarf."
         crumbs={[
           { label: "Startseite", to: "/" },
           { label: "Geschäftskunden" },
@@ -49,7 +49,7 @@ function B2bPage() {
       <div className="mt-10 grid gap-4">
         {[
           ["Leasingrückläufer", "Vor der Leasingrückgabe behandeln wir relevante Gebrauchsspuren im vereinbarten Umfang."],
-          ["Flotten- & Fuhrparkreinigung", "Einmal oder in einem Rhythmus, der zu Ihrem Betrieb passt."],
+          ["Flotten- & Fuhrparkreinigung", "Einmal oder in einem Rhythmus, der zu deinem Betrieb passt."],
           ["Autohäuser & Fahrzeughandel", "Aufbereitung für Verkauf, Standfläche und Auslieferung."],
           ["Firmen- & Poolfahrzeuge", "Reinigung und Pflege von Innenraum und Außenflächen für den täglichen Einsatz."],
         ].map(([t, d]) => (
@@ -63,7 +63,7 @@ function B2bPage() {
         <p className="text-xs uppercase tracking-[0.16em] text-muted font-medium">Anfrage für Geschäftskunden</p>
         <h2 className="heading-3 mt-2 text-xl sm:text-2xl">Fuhrparkliste oder Ausschreibung senden</h2>
         <p className="mt-3 text-sm text-muted leading-relaxed">
-          Senden Sie uns Ihre Fahrzeugliste, den gewünschten Leistungsumfang und Ihre Terminvorgaben per E-Mail. Wir kalkulieren nach Anzahl und Zustand der Fahrzeuge und stimmen Abholung und Rückgabe mit Ihnen ab.
+          Sende uns deine Fahrzeugliste, den gewünschten Leistungsumfang und deine Terminvorgaben per E-Mail. Wir kalkulieren nach Anzahl und Zustand der Fahrzeuge und stimmen Abholung und Rückgabe mit dir ab.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <a href={`mailto:${site.email}?subject=B2B-Anfrage%20Fahrzeugaufbereitung`} className={ctaPrimary}>

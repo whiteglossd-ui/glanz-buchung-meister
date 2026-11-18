@@ -274,10 +274,10 @@ function ServicePage() {
             aria-labelledby="service-request-heading"
           >
             <h2 id="service-request-heading" className="font-display text-2xl tracking-tight">
-              So fragen Sie an
+              So fragst du an
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-muted">
-              Für eine erste Einschätzung helfen uns diese Angaben. Fotos können Sie nach der
+              Für eine erste Einschätzung helfen uns diese Angaben. Fotos kannst du nach der
               Anfrage im geschützten Kundenbereich ergänzen.
             </p>
             <ul className="mt-4 space-y-2">

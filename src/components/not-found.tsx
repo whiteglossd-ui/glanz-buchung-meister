@@ -10,8 +10,8 @@ export function NotFoundComponent() {
       <p className="kicker">404</p>
       <h1 className="heading-2 mt-4">Seite nicht gefunden</h1>
       <p className="mt-5 max-w-xl text-muted leading-relaxed">
-        Unter dieser Adresse wurde keine Seite gefunden. Prüfen Sie die Adresse
-        oder nutzen Sie die Links zur Startseite, zu den Preisen und zum Kontakt.
+        Unter dieser Adresse wurde keine Seite gefunden. Prüfe die Adresse
+        oder nutze die Links zur Startseite, zu den Preisen und zum Kontakt.
       </p>
       <div className="mt-10 flex flex-wrap gap-3">
         <Link to="/" className={ctaPrimary}>

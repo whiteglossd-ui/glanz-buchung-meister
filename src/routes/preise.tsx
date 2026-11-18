@@ -35,7 +35,7 @@ function PreisePage() {
         alt="Spiegelnde Motorhaube eines Kundenfahrzeugs nach der Aufbereitung"
         kicker="Pakete & Preise"
         title="Preise für die Aufbereitung."
-        lead="Vergleichen Sie unsere drei Pakete. Der Preisrechner berücksichtigt Fahrzeugklasse und Zusatzleistungen."
+        lead="Vergleiche unsere drei Pakete. Der Preisrechner berücksichtigt Fahrzeugklasse und Zusatzleistungen."
         crumbs={[
           { label: "Startseite", to: "/" },
           { label: "Preise & Pakete" },
@@ -50,11 +50,10 @@ function PreisePage() {
       <ol className="mt-14 divide-y divide-line border-y border-line">
         {packages.map((p, i) => (
           <li key={p.id} id={packageAnchor(p.id)} className="lift gd-pack py-10">
-            <p className="ga-num font-display text-sm text-subtle tabular-nums">
-              {String(i + 1).padStart(2, "0")}.
+            <p className="ga-num font-display text-3xl text-subtle tabular-nums">
+              {String(i + 1).padStart(2, "0")}
             </p>
             <div className="ga-pack-copy">
-              <p className="kicker">Paket {i + 1}</p>
               <h2 className="heading-2 mt-2">{p.name}</h2>
               <p className="mt-2 text-sm text-muted">{p.kicker}</p>
               <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted">{p.body}</p>
@@ -75,7 +74,7 @@ function PreisePage() {
                 Paket anfragen
               </Link>
             </div>
-            <p className="ga-price min-w-[8.5rem]">
+            <p className="ga-price flex min-w-[8.5rem] flex-col items-end gap-2">
               <span className="flex items-baseline gap-2 lg:justify-end">
                 <span className="text-xs uppercase tracking-[0.2em] text-subtle">ab </span>
                 <span className="font-display text-4xl leading-none tracking-wide tabular-nums">
@@ -83,7 +82,7 @@ function PreisePage() {
                 </span>
                 <span className="text-sm text-muted"> €</span>
               </span>
-              <span className="mt-2 block text-xs text-subtle">
+              <span className="block text-xs text-subtle">
                 {site.vatNote} · {p.duration}
               </span>
             </p>
@@ -94,7 +93,7 @@ function PreisePage() {
         Die angegebenen Einstiegspreise gelten für die Kompaktklasse und enthalten
         die Mehrwertsteuer. Fahrzeugklasse und Zusatzleistungen bestimmen den
         berechneten Preis. Entsteht durch Verschmutzung oder Lackzustand
-        zusätzlicher Aufwand, stimmen wir diesen vor Beginn mit Ihnen ab.
+        zusätzlicher Aufwand, stimmen wir diesen vor Beginn mit dir ab.
       </p>
       <h2 className="heading-2 mt-20">Fahrzeuggröße</h2>
       <div className="gd-tiles gd-tiles-3 mt-8">
@@ -137,7 +136,7 @@ function PreisePage() {
       <p className="mt-6 text-sm text-subtle">
         Hol- und Bringservice: {pickupTierSummary()}. {pickupKeramikNote()}.
         Wenn Verschmutzung oder Lackzustand
-        mehr Aufwand bedeuten, stimmen wir das mit Ihnen ab, bevor wir anfangen.
+        mehr Aufwand bedeuten, stimmen wir das mit dir ab, bevor wir anfangen.
       </p>
       <div id="buchung" className="mt-16">
         <h2 id="buchung-heading" className="mb-8 font-display text-3xl">

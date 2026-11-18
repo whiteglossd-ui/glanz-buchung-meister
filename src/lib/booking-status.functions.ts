@@ -41,7 +41,7 @@ export const getBookingStatus = createServerFn({ method: "GET" })
       return {
         id: booking.id,
         status:
-          "Anfrage eingegangen. Angebot und Terminbestätigung erhalten Sie über Ihren persönlichen Link per E-Mail.",
+          "Anfrage eingegangen. Angebot und Terminbestätigung erhältst du über deinen persönlichen Link per E-Mail.",
         amount: booking.total_cents,
         fixed: false,
         scheduledFor: null,

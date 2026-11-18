@@ -20,7 +20,7 @@ function AccessibilityPage() {
     <main id="main-content" tabIndex={-1}>
       <PageHero
         shot="atelier"
-        alt={`Werkstatt von White Gloss in ${site.city}`}
+        alt={`Werkstatt von White-Gloss Detailing in ${site.city}`}
         kicker="Rechtliches"
         title="Barrierefreiheit."
         lead="Informationen zur Bedienbarkeit der Website, zu bekannten Einschränkungen und zu Ihren Kontaktmöglichkeiten."
@@ -76,7 +76,7 @@ function AccessibilityPage() {
             Ob die Dienstleistungspflichten des BFSG auf einen privaten Betrieb anwendbar sind,
             hängt unter anderem von Art und Umfang des Angebots ab. Für Kleinstunternehmen,
             die Dienstleistungen anbieten, sieht <a href="https://www.gesetze-im-internet.de/bfsg/__3.html">§ 3 Absatz 3 BFSG</a>
-            eine Ausnahme vor. Eine bestimmte rechtliche Einordnung von White Gloss oder eine
+            eine Ausnahme vor. Eine bestimmte rechtliche Einordnung von White-Gloss Detailing oder eine
             vollständige Konformität wird mit diesen Bedienungshinweisen nicht zugesagt.
           </p>
         </section>

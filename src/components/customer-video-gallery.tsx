@@ -82,7 +82,7 @@ export function CustomerVideoGallery({ videos, compact = false, mobileSwipe = fa
             <video className="wg-video-player" controls autoPlay playsInline preload="metadata" poster={active.poster}>
               <source src={`${active.src}.webm`} type="video/webm" />
               <source src={`${active.src}.mp4`} type="video/mp4" />
-              Ihr Browser unterstützt die Videowiedergabe nicht.
+              Dein Browser unterstützt die Videowiedergabe nicht.
             </video>
             <p className="wg-video-description">{active.description}</p>
           </div>

@@ -35,14 +35,14 @@ export const articles: Article[] = [
         heading: "Wovon die Haltbarkeit abhängt",
         paragraphs: [
           "Die Haltbarkeit einer Keramikversiegelung hängt vom Produkt und der anschließenden Pflege ab. Das Paket White-Gloss Ceramic ab 899 € enthält die Lackvorbereitung und die Beschichtung.",
-          "Eine feste Haltbarkeit von 5 Jahren sagen wir nicht pauschal zu. Die passende Beschichtung stimmen wir nach Prüfung des Lacks mit Ihnen ab.",
+          "Eine feste Haltbarkeit von 5 Jahren sagen wir nicht pauschal zu. Die passende Beschichtung stimmen wir nach Prüfung des Lacks mit dir ab.",
         ],
       },
       {
         heading: "Was die Schicht leistet",
         paragraphs: [
           "Eine gut vorbereitete Keramik lässt Wasser abperlen, hält den Glanz länger und erleichtert die Wäsche. Sie ist kein Kratzschutz. Steinschläge, Waschstraßenbürsten und grobe Verschmutzung gehen trotzdem ins Material.",
-          "Im Paket White-Gloss Ceramic gehört die mehrstufige Lackkorrektur zur Vorbereitung. Welche Korrektur am Fahrzeug sinnvoll und möglich ist, prüfen wir am Lack. Rechnen Sie mit rund zwei Tagen in der Werkstatt in Horb am Neckar.",
+          "Im Paket White-Gloss Ceramic gehört die mehrstufige Lackkorrektur zur Vorbereitung. Welche Korrektur am Fahrzeug sinnvoll und möglich ist, prüfen wir am Lack. Rechne mit rund zwei Tagen in der Werkstatt in Horb am Neckar.",
         ],
       },
       {
@@ -55,8 +55,8 @@ export const articles: Article[] = [
       {
         heading: "Pflege danach",
         paragraphs: [
-          "Die erste Wäsche und der Kontakt mit Wasser richten sich nach den Produktvorgaben. Beachten Sie die Pflegehinweise, die Sie bei der Übergabe erhalten. Danach empfiehlt sich eine schonende Handwäsche mit geeignetem Shampoo. Bürstenanlagen erzeugen neue feine Waschkratzer in der Keramik genauso wie im Klarlack.",
-          "Der Hol- und Bringservice bis 60 km ist im Paket White-Gloss Ceramic enthalten. Wir holen Ihr Fahrzeug in Horb, Nagold, Tübingen und den weiteren Abholorten ab. Die Aufbereitung erfolgt in unserer Werkstatt.",
+          "Die erste Wäsche und der Kontakt mit Wasser richten sich nach den Produktvorgaben. Beachte die Pflegehinweise, die du bei der Übergabe erhältst. Danach empfiehlt sich eine schonende Handwäsche mit geeignetem Shampoo. Bürstenanlagen erzeugen neue feine Waschkratzer in der Keramik genauso wie im Klarlack.",
+          "Der Hol- und Bringservice bis 60 km ist im Paket White-Gloss Ceramic enthalten. Wir holen dein Fahrzeug in Horb, Nagold, Tübingen und den weiteren Abholorten ab. Die Aufbereitung erfolgt in unserer Werkstatt.",
         ],
       },
     ],
@@ -75,15 +75,15 @@ export const articles: Article[] = [
       {
         heading: "Der Startpreis ist kein Endpreis",
         paragraphs: [
-          "Bei White Gloss beginnt die Keramikversiegelung im Paket White-Gloss Ceramic ab 899 €. Dieser Betrag gilt für die Kompaktklasse bei einem Lackzustand, der die notwendige Vorbereitung zulässt.",
+          "Bei White-Gloss Detailing beginnt die Keramikversiegelung im Paket White-Gloss Ceramic ab 899 €. Dieser Betrag gilt für die Kompaktklasse bei einem Lackzustand, der die notwendige Vorbereitung zulässt.",
           "SUV, Limousine und Transporter werden mit einem festen Faktor kalkuliert. Entscheidend bleibt der Zustand: ausgeprägte feine Waschkratzer, alte Wachsschichten oder Steinschläge verlängern die Korrektur – und damit die Arbeitszeit.",
         ],
       },
       {
-        heading: "Wofür Sie bezahlen",
+        heading: "Wofür dich bezahlen",
         paragraphs: [
           "Der größte Teil der Zeit entfällt nicht auf das Auftragen der Keramik, sondern auf Reinigung, Entfernung von Ablagerungen und Lackkorrektur. Ohne diese Schritte haftet die Beschichtung ungleichmäßig.",
-          "Im Paket enthalten sind außerdem Glas- und Felgenversiegelung, Lederpflege und der Hol- und Bringservice bis 60 km. Rechnen Sie mit rund zwei Tagen.",
+          "Im Paket enthalten sind außerdem Glas- und Felgenversiegelung, Lederpflege und der Hol- und Bringservice bis 60 km. Rechne mit rund zwei Tagen.",
         ],
       },
       {
@@ -162,7 +162,7 @@ export const articles: Article[] = [
         heading: "Warum wir nicht vor Ort arbeiten",
         paragraphs: [
           "Lackkorrektur, Keramik und Innenraumreinigung brauchen geeignete Beleuchtung, eine geregelte Wasserversorgung und geschützte Bedingungen zum Ablüften. Deshalb holen wir das Fahrzeug ab und arbeiten in Horb am Neckar.",
-          "Das spart Ihnen Wartezeit vor Ort und hält die Qualität unabhängig vom Wetter.",
+          "Das spart dir Wartezeit vor Ort und hält die Qualität unabhängig vom Wetter.",
         ],
       },
       {
@@ -188,8 +188,8 @@ export const articles: Article[] = [
       {
         heading: "Unterlagen und Zustand prüfen",
         paragraphs: [
-          "Prüfen Sie zuerst die Rückgabebedingungen Ihres Leasinggebers. Halten Sie den Rückgabetermin und die geforderten Unterlagen bereit. Die Bewertung von Gebrauchsspuren richtet sich nach Ihrem Vertrag und dem jeweiligen Rückgabekatalog.",
-          "Sehen Sie sich Innenraum, Lack und Felgen bei gutem Licht an und dokumentieren Sie auffällige Stellen. Prüfen Sie außerdem, welche Schlüssel und welches mitgelieferte Zubehör bei der Rückgabe vollständig vorliegen müssen. Eine Aufbereitung ersetzt keine technische Fahrzeugprüfung.",
+          "Prüfe zuerst die Rückgabebedingungen deines Leasinggebers. Halt den Rückgabetermin und die geforderten Unterlagen bereit. Die Bewertung von Gebrauchsspuren richtet sich nach deinem Vertrag und dem jeweiligen Rückgabekatalog.",
+          "Sieh dir Innenraum, Lack und Felgen bei gutem Licht an und dokumentiere auffällige Stellen. Prüfe außerdem, welche Schlüssel und welches mitgelieferte Zubehör bei der Rückgabe vollständig vorliegen müssen. Eine Aufbereitung ersetzt keine technische Fahrzeugprüfung.",
         ],
       },
       {
@@ -215,7 +215,7 @@ export const articles: Article[] = [
       {
         heading: "Die Aushärtung",
         paragraphs: [
-          "Die Aushärtezeit unterscheidet sich je nach Beschichtung. Halten Sie die produktbezogenen Vorgaben zu Wasser, erster Wäsche und Reinigungsmitteln ein. Die passenden Hinweise erhalten Sie bei der Übergabe.",
+          "Die Aushärtezeit unterscheidet sich je nach Beschichtung. Halt die produktbezogenen Vorgaben zu Wasser, erster Wäsche und Reinigungsmitteln ein. Die passenden Hinweise erhältst du bei der Übergabe.",
           "Kein Politurmittel, kein entfettender Felgenreiniger auf lackierten Flächen, kein Trocknen mit verschmutzten Tüchern.",
         ],
       },
@@ -243,13 +243,13 @@ export const articles: Article[] = [
         heading: "Was Politur kann – und wo sie endet",
         paragraphs: [
           "Feine Waschkratzer, auch Swirls genannt, liegen im Klarlack. Eine kontrollierte Politur trägt so wenig Material ab, dass das Licht wieder gleichmäßig reflektiert. Tiefe Kratzer bis zur Grundierung oder ins Blech schließt sie nicht.",
-          "Bei White Gloss gehört die einstufige Lackpolitur zum Paket White-Gloss Signature ab 349 €. Mehrstufige Korrektur ist Teil des Pakets White-Gloss Ceramic ab 899 €. Der Faktor SUV/Limousine beträgt 1,25, Transporter 1,55.",
+          "Bei White-Gloss Detailing gehört die einstufige Lackpolitur zum Paket White-Gloss Signature ab 349 €. Mehrstufige Korrektur ist Teil des Pakets White-Gloss Ceramic ab 899 €. Der Faktor SUV/Limousine beträgt 1,25, Transporter 1,55.",
         ],
       },
       {
         heading: "Vor der Arbeit",
         paragraphs: [
-          "Wir prüfen das Lackbild unter Werkstattlicht. Ist die Lackschicht für eine Korrektur zu dünn, erklären wir Ihnen dies vor der Behandlung.",
+          "Wir prüfen das Lackbild unter Werkstattlicht. Ist die Lackschicht für eine Korrektur zu dünn, erklären wir dir dies vor der Behandlung.",
           "Eine Parkdelle verändert die Form des Blechs; hier kann eine lackschadenfreie Dellenentfernung nach Begutachtung infrage kommen. Steinschläge mit fehlendem Lack lassen sich durch Politur nicht schließen. Eine Lackreparatur ist im beschriebenen Aufbereitungspaket nicht enthalten.",
         ],
       },
@@ -296,7 +296,7 @@ export const articles: Article[] = [
       {
         heading: "Zwei unterschiedliche Verfahren",
         paragraphs: [
-          "Bei White Gloss bezeichnet die hier beschriebene Smart-Repair-Leistung die lackschadenfreie Entfernung geeigneter Park-, Karosserie- und Hageldellen. Lackkorrektur behandelt dagegen oberflächliche Spuren im Klarlack. Eine Reparaturlackierung ist damit nicht zugesagt.",
+          "Bei White-Gloss Detailing bezeichnet die hier beschriebene Smart-Repair-Leistung die lackschadenfreie Entfernung geeigneter Park-, Karosserie- und Hageldellen. Lackkorrektur behandelt dagegen oberflächliche Spuren im Klarlack. Eine Reparaturlackierung ist damit nicht zugesagt.",
           "Eine Politur kann tiefe Kratzer bis ins Blech nicht reparieren. Punktuelle Reparaturen ersetzen wiederum keine flächige Politur bei vielen feinen Waschkratzern.",
         ],
       },
@@ -350,7 +350,7 @@ export const articles: Article[] = [
       {
         heading: "Eine Werkstatt, mehrere Abholgebiete",
         paragraphs: [
-          "White-Gloss Detailing arbeitet in Horb am Neckar. Der Hol- und Bringservice umfasst auch Sulz am Neckar, Empfingen, Vöhringen, Dornhan, Dornstetten und Schopfloch. Alle Abholorte finden Sie in der Abholübersicht; die genaue Übergabeadresse und den Preis stimmen wir persönlich ab.",
+          "White-Gloss Detailing arbeitet in Horb am Neckar. Der Hol- und Bringservice umfasst auch Sulz am Neckar, Empfingen, Vöhringen, Dornhan, Dornstetten und Schopfloch. Alle Abholorte findest du in der Abholübersicht; die genaue Übergabeadresse und den Preis stimmen wir persönlich ab.",
           `${pickupTierSummary()}. ${pickupKeramikNote()}. Die Politur erfolgt in unserer Werkstatt mit geeigneter Beleuchtung und geschützten Arbeitsbedingungen.`,
         ],
       },
@@ -378,7 +378,7 @@ export const articles: Article[] = [
         heading: "Warum die Lackvorbereitung wichtig ist",
         paragraphs: [
           "Keramik verbindet sich mit sauberem, gleichmäßigem Klarlack. Deshalb gehört mehrstufige Korrektur ins Paket White-Gloss Ceramic ab 899 €, nicht nur das Auftragen der Schicht.",
-          `Rechnen Sie mit rund zwei Tagen. Glas- und Felgenversiegelung sowie Lederpflege sind enthalten. ${pickupKeramikNote()}.`,
+          `Rechne mit rund zwei Tagen. Glas- und Felgenversiegelung sowie Lederpflege sind enthalten. ${pickupKeramikNote()}.`,
         ],
       },
       {

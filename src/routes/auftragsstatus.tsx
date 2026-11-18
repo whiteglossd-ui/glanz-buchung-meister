@@ -10,7 +10,7 @@ export const Route = createFileRoute("/auftragsstatus")({
   }),
   head: () => ({
     meta: [
-      { title: "Ihr Auftragsstatus | White Gloss" },
+      { title: "dein Auftragsstatus | White-Gloss Detailing" },
       { name: "robots", content: "noindex,nofollow" },
       { name: "referrer", content: "no-referrer" },
     ],
@@ -21,12 +21,12 @@ function StatusPage() {
   const { vorgang, token } = Route.useSearch();
   return (
     <main id="main-content" className="section mx-auto max-w-3xl px-4" tabIndex={-1}>
-      <h1 className="font-display text-3xl">Ihr Auftrag {vorgang}</h1>
+      <h1 className="font-display text-3xl">dein Auftrag {vorgang}</h1>
       {vorgang && token ? (
         <BookingStatus id={Number(vorgang.slice(3))} token={token} />
       ) : (
         <p className="mt-6">
-          Bitte öffnen Sie den persönlichen Link aus Ihrer Eingangsbestätigung.
+          Bitte öffne den persönlichen Link aus deiner Eingangsbestätigung.
         </p>
       )}
     </main>

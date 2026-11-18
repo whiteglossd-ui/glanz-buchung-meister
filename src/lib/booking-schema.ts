@@ -48,7 +48,7 @@ const bookingFields = z.object({
     .refine(
       (ids) =>
         ids.every((id) => !extras.some((extra) => extra.id === id && extra.requestable === false)),
-      "Eine gewählte Zusatzleistung ist derzeit nicht buchbar. Bitte aktualisieren Sie Ihre Auswahl.",
+      "Eine gewählte Zusatzleistung ist derzeit nicht buchbar. Bitte aktualisiere deine Auswahl.",
     ),
   citySlug: z.string().max(80),
   kind: z.enum(["booking", "dent", "condition"]).default("booking"),

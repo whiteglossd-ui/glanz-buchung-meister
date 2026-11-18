@@ -23,10 +23,10 @@ function KontaktPage() {
     <main id="main-content" tabIndex={-1}>
       <PageHero
         shot="atelier"
-        alt={`Werkstatt von White Gloss in ${site.city}`}
+        alt={`Werkstatt von White-Gloss Detailing in ${site.city}`}
         kicker={`Werkstatt ${site.city}`}
         title="Kontakt & Anfahrt nach Horb am Neckar"
-        lead="Sie erreichen uns telefonisch, per E-Mail oder WhatsApp und in unserer Werkstatt in Horb am Neckar."
+        lead="Du erreichst uns telefonisch, per E-Mail oder WhatsApp und in unserer Werkstatt in Horb am Neckar."
         crumbs={[
           { label: "Startseite", to: "/" },
           { label: "Kontakt" },

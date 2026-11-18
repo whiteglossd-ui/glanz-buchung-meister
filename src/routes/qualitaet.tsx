@@ -82,7 +82,7 @@ function QualityPage() {
           Die Bilder zeigen ein freigegebenes Kundenfahrzeug während und nach der Aufbereitung.{" "}
           {atelierPhotos.invite}
         </p>
-        <h2 className="mt-20 font-display text-4xl tracking-tight">Was Sie erwarten dürfen</h2>
+        <h2 className="mt-20 font-display text-4xl tracking-tight">Was du erwarten darfst</h2>
         <ul className="mt-6 space-y-4 text-sm leading-relaxed text-muted">
           <li>
             <strong className="text-fg">Sorgfältige Begutachtung.</strong> Material, Schmutz und

@@ -1,7 +1,8 @@
 import { eur } from "../lib/utils.ts";
 
 export const site = {
-  name: "White Gloss",
+  name: "White-Gloss Detailing",
+  shortName: "White Gloss",
   /** Spelled exactly like the Google Business Profile; keep NAP data identical everywhere. */
   legalName: "White-Gloss Detailing",
   tagline: "Fahrzeugaufbereitung in Horb am Neckar.",
@@ -51,7 +52,7 @@ export const openingHours = {
   dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"] as const,
 };
 
-export const paymentNote = "Ihre Terminanfrage ist unverbindlich. Es ist keine Anzahlung erforderlich. Zahlung fällig nach erbrachter Dienstleistung. Es erfolgt kein automatischer Einzug.";
+export const paymentNote = "Deine Terminanfrage ist unverbindlich. Es ist keine Anzahlung erforderlich. Zahlung fällig nach erbrachter Dienstleistung. Es erfolgt kein automatischer Einzug.";
 
 export const timeSlots = ["09:00", "11:00", "13:00", "15:00"];
 
@@ -106,7 +107,7 @@ export const packages: Package[] = [
     name: "White-Gloss Classic",
     searchLabel: "Reinigung innen und außen",
     seoName: "White-Gloss Classic – Innenraum- und Außenreinigung in Horb am Neckar",
-    body: "Für ein gepflegtes Auto im Alltag: Wir waschen Ihr Fahrzeug von Hand und reinigen Innenraum, Felgen, Reifen und Scheiben. Eine Sprühversiegelung rundet die Pflege ab. Ohne Lackpolitur; ab 149 € inkl. MwSt. für die Kompaktklasse, Dauer ca. 3 Std.",
+    body: "Für ein gepflegtes Auto im Alltag: Wir waschen dein Fahrzeug von Hand und reinigen Innenraum, Felgen, Reifen und Scheiben. Eine Sprühversiegelung rundet die Pflege ab. Ohne Lackpolitur; ab 149 € inkl. MwSt. für die Kompaktklasse, Dauer ca. 3 Std.",
     price: 149,
     duration: "ca. 3 Std.",
     items: [
@@ -333,8 +334,8 @@ export const cities: City[] = [
     km: 12,
     minutes: 13,
     pickupFlat: 30,
-    blurb: "Aus Sulz am Neckar zur Aufbereitung nach Horb: Abholung und Rückgabe stimmen wir anhand Ihrer Adresse ab.",
-    pickupNote: "Bitte nennen Sie bei der Anfrage auch den Teilort, zum Beispiel Fischingen, Glatt oder Holzhausen. Für die Kernstadt und die Teilorte von Sulz lässt sich die Abholung erst mit der vollständigen Adresse planen. Den Preis bestätigen wir vor dem Termin. Die Entfernung bezieht sich auf die Ortsmitte; bei Teilorten kann sie abweichen.",
+    blurb: "Aus Sulz am Neckar zur Aufbereitung nach Horb: Abholung und Rückgabe stimmen wir anhand deiner Adresse ab.",
+    pickupNote: "Bitte nenne bei der Anfrage auch den Teilort, zum Beispiel Fischingen, Glatt oder Holzhausen. Für die Kernstadt und die Teilorte von Sulz lässt sich die Abholung erst mit der vollständigen Adresse planen. Den Preis bestätigen wir vor dem Termin. Die Entfernung bezieht sich auf die Ortsmitte; bei Teilorten kann sie abweichen.",
   },
   {
     slug: "empfingen",
@@ -342,7 +343,7 @@ export const cities: City[] = [
     km: 10,
     minutes: 12,
     blurb: "Für Fahrzeuge aus Empfingen verbinden wir die Aufbereitung in Horb mit einer persönlich abgestimmten Abholung.",
-    pickupNote: "Wählen Sie Empfingen als Abholort und nennen Sie die vollständige Übergabeadresse. Liegt diese in Wiesenstetten oder Dommelsberg, geben Sie den Ortsteil bitte dazu an. Abholpreis und Rückgabezeit bestätigen wir passend zum vereinbarten Arbeitsumfang. Die Entfernung bezieht sich auf die Ortsmitte; bei Teilorten kann sie abweichen.",
+    pickupNote: "Wähle Empfingen als Abholort und nenne die vollständige Übergabeadresse. Liegt diese in Wiesenstetten oder Dommelsberg, gib den Ortsteil bitte dazu an. Abholpreis und Rückgabezeit bestätigen wir passend zum vereinbarten Arbeitsumfang. Die Entfernung bezieht sich auf die Ortsmitte; bei Teilorten kann sie abweichen.",
   },
   {
     slug: "voehringen",
@@ -351,23 +352,23 @@ export const cities: City[] = [
     minutes: 19,
     pickupFlat: 30,
     blurb: "Unser Abholgebiet Vöhringen liegt in Baden-Württemberg. Die Fahrzeugpflege führen wir in unserer Horber Werkstatt aus.",
-    pickupNote: "Gemeint ist Vöhringen im Landkreis Rottweil mit Wittershausen. Bitte geben Sie Ortsteil, Straße und Hausnummer für die Übergabe an. So können wir die Abholung eindeutig zuordnen und den Preis vorab bestätigen. Die Entfernung bezieht sich auf die Ortsmitte; bei Teilorten kann sie abweichen.",
+    pickupNote: "Gemeint ist Vöhringen im Landkreis Rottweil mit Wittershausen. Bitte gib Ortsteil, Straße und Hausnummer für die Übergabe an. So können wir die Abholung eindeutig zuordnen und den Preis vorab bestätigen. Die Entfernung bezieht sich auf die Ortsmitte; bei Teilorten kann sie abweichen.",
   },
   {
     slug: "dornhan",
     name: "Dornhan",
     km: 20,
     minutes: 23,
-    blurb: "Für die Aufbereitung Ihres Fahrzeugs aus Dornhan vereinbaren wir Übergabe und Rückgabe persönlich. Gearbeitet wird in Horb.",
-    pickupNote: "Bei einer Adresse etwa in Leinstetten, Bettenhausen oder Marschalkenzimmern nennen Sie bitte den Stadtteil mit. Die Angabe Dornhan allein ersetzt die genaue Abholadresse nicht. Strecke, Abholpreis und Übergabezeit klären wir vor der Zusage. Die Entfernung bezieht sich auf die Ortsmitte; bei Teilorten kann sie abweichen.",
+    blurb: "Für die Aufbereitung deines Fahrzeugs aus Dornhan vereinbaren wir Übergabe und Rückgabe persönlich. Gearbeitet wird in Horb.",
+    pickupNote: "Bei einer Adresse etwa in Leinstetten, Bettenhausen oder Marschalkenzimmern nenne bitte den Stadtteil mit. Die Angabe Dornhan allein ersetzt die genaue Abholadresse nicht. Strecke, Abholpreis und Übergabezeit klären wir vor der Zusage. Die Entfernung bezieht sich auf die Ortsmitte; bei Teilorten kann sie abweichen.",
   },
   {
     slug: "dornstetten",
     name: "Dornstetten",
     km: 19,
     minutes: 19,
-    blurb: "Fahrzeugaufbereitung für Dornstetten: Sie können das Auto nach Horb bringen oder eine Abholung an Ihrer Adresse anfragen.",
-    pickupNote: "Ob Dornstetten, Aach oder Hallwangen: Teilen Sie uns den Ortsteil und die genaue Übergabeadresse mit. Für die Planung zählen diese Adresse und die gewählte Aufbereitung. Abholung, Preis und Rückgabe werden persönlich bestätigt. Die Entfernung bezieht sich auf die Ortsmitte; bei Teilorten kann sie abweichen.",
+    blurb: "Fahrzeugaufbereitung für Dornstetten: Du kannst das Auto nach Horb bringen oder eine Abholung an deiner Adresse anfragen.",
+    pickupNote: "Ob Dornstetten, Aach oder Hallwangen: Teile uns den Ortsteil und die genaue Übergabeadresse mit. Für die Planung zählen diese Adresse und die gewählte Aufbereitung. Abholung, Preis und Rückgabe werden persönlich bestätigt. Die Entfernung bezieht sich auf die Ortsmitte; bei Teilorten kann sie abweichen.",
   },
   {
     slug: "schopfloch",
@@ -375,8 +376,8 @@ export const cities: City[] = [
     km: 11,
     minutes: 11,
     pickupFlat: 30,
-    blurb: "Aus Schopfloch im Landkreis Freudenstadt bereiten wir Fahrzeuge in Horb auf. Den Hol- und Bringservice planen wir nach Ihrer Adresse.",
-    pickupNote: "Nennen Sie bei Ihrer Anfrage Schopfloch, Oberiflingen oder Unteriflingen zusammen mit Straße und Hausnummer. Damit lässt sich die Übergabe konkret abstimmen. Einen festen Abholpreis sagen wir erst nach Prüfung dieser Adresse zu. Die Entfernung bezieht sich auf die Ortsmitte; bei Teilorten kann sie abweichen.",
+    blurb: "Aus Schopfloch im Landkreis Freudenstadt bereiten wir Fahrzeuge in Horb auf. Den Hol- und Bringservice planen wir nach deiner Adresse.",
+    pickupNote: "Nenne bei deiner Anfrage Schopfloch, Oberiflingen oder Unteriflingen zusammen mit Straße und Hausnummer. Damit lässt sich die Übergabe konkret abstimmen. Einen festen Abholpreis sagen wir erst nach Prüfung dieser Adresse zu. Die Entfernung bezieht sich auf die Ortsmitte; bei Teilorten kann sie abweichen.",
   },
   {
     slug: "nagold",
@@ -415,7 +416,7 @@ export const cities: City[] = [
     km: 35,
     minutes: 40,
     blurb:
-      "Herrenberg liegt an der A81. Die Fahrzeit für die Abholung beträgt ca. 40 Min. Abholung und Rückgabe stimmen wir passend zur Dauer der Aufbereitung mit Ihnen ab.",
+      "Herrenberg liegt an der A81. Die Fahrzeit für die Abholung beträgt ca. 40 Min. Abholung und Rückgabe stimmen wir passend zur Dauer der Aufbereitung mit dir ab.",
   },
   {
     slug: "tuebingen",
@@ -438,7 +439,7 @@ export const cities: City[] = [
     km: 45,
     minutes: 50,
     blurb:
-      "Die Fahrzeit für die Abholung aus Balingen auf der Zollernalb beträgt ca. 50 Min. Vor einem Verkauf oder einer Leasingrückgabe stimmen wir die nötigen Arbeiten mit Ihnen ab.",
+      "Die Fahrzeit für die Abholung aus Balingen auf der Zollernalb beträgt ca. 50 Min. Vor einem Verkauf oder einer Leasingrückgabe stimmen wir die nötigen Arbeiten mit dir ab.",
   },
   {
     slug: "rottweil",
@@ -617,7 +618,7 @@ export type ServicePage = {
 /** Asked on every bookable service page so a first estimate needs no follow-up questions. */
 export const defaultRequestDetails = [
   "Fahrzeugmarke und Modell",
-  "Gewünschte Leistung und was Ihnen am Fahrzeug auffällt",
+  "Gewünschte Leistung und was dir am Fahrzeug auffällt",
   "Wenn möglich 2–3 Fotos der betroffenen Stellen bei Tageslicht",
 ];
 
@@ -631,14 +632,14 @@ export const services: ServicePage[] = [
     seoNav: "Fahrzeugaufbereitung",
     title: "Fahrzeugaufbereitung in Horb am Neckar",
     nav: "Fahrzeugaufbereitung",
-    metaTitle: "Autoaufbereitung: Leistungen in Horb | White Gloss",
+    metaTitle: "Autoaufbereitung: Leistungen in Horb | White-Gloss Detailing",
     description:
       "Autoaufbereitung in Horb am Neckar: Handwäsche, Innenraum und Lackpflege. Individuell nach Fahrzeugzustand, kein Standardprogramm.",
-    teaser: "Handwäsche, Innenraumreinigung und Lackpflege passend zu Ihrem Fahrzeug.",
+    teaser: "Handwäsche, Innenraumreinigung und Lackpflege passend zu deinem Fahrzeug.",
     group: "atelier",
     fromPrice: 149,
     image: "/media/hero.webp",
-    imageAlt: "Weißes Fahrzeug von White Gloss in Horb am Neckar, Kennzeichen entfernt",
+    imageAlt: "Weißes Fahrzeug von White-Gloss Detailing in Horb am Neckar, Kennzeichen entfernt",
     bullets: [
       "Handwäsche und Innenraumreinigung aus einer Hand",
       "Prüfung von Lack, Materialien und Verschmutzung vor Beginn",
@@ -646,7 +647,7 @@ export const services: ServicePage[] = [
       "Abschließende Kontrolle vor der Fahrzeugübergabe",
     ],
     body: [
-      "Bei der Autoaufbereitung prüfen wir Lack und Innenraum und besprechen Ihre Wünsche. So legen wir gemeinsam fest, welche Reinigung und Pflege Ihr Fahrzeug benötigt.",
+      "Bei der Autoaufbereitung prüfen wir Lack und Innenraum und besprechen deine Wünsche. So legen wir gemeinsam fest, welche Reinigung und Pflege dein Fahrzeug benötigt.",
       "Fahrzeugaufbereitung, oft auch Detailing genannt, umfasst bei uns drei Bereiche: außen die Handwäsche mit Felgen, Reifen und Scheiben, innen die Reinigung von Fußräumen, Sitzen und Verkleidungen und am Lack die Politur mit anschließendem Schutz durch Sprühversiegelung, Wachs oder Keramik. Motorraumreinigung, Ozonbehandlung und Lederpflege sind als Zusatzleistungen möglich.",
       "Die Arbeit bleibt in Horb. In den aufgeführten Abholgebieten holen wir das Auto nach Vereinbarung ab und bringen es wieder.",
     ],
@@ -657,19 +658,19 @@ export const services: ServicePage[] = [
       "Kleinwagen bis Transporter; die Fahrzeugklasse bestimmt den Endpreis",
     ],
     outcome:
-      "Ziel ist ein sauberer Innenraum und ein gleichmäßig gepflegter Lack. Wie weit sich Flecken, Gebrauchsspuren oder Kratzer reduzieren lassen, hängt vom Zustand des Fahrzeugs ab. Was erreichbar ist, sagen wir Ihnen nach der Prüfung und vor Beginn der Arbeiten.",
+      "Ziel ist ein sauberer Innenraum und ein gleichmäßig gepflegter Lack. Wie weit sich Flecken, Gebrauchsspuren oder Kratzer reduzieren lassen, hängt vom Zustand des Fahrzeugs ab. Was erreichbar ist, sagen wir dir nach der Prüfung und vor Beginn der Arbeiten.",
     beforeBooking: [
-      `Planen Sie je nach Paket ${packageById("basis").duration} bis ${packageById("keramik").duration} ein; bei starker Verschmutzung kann mehr Zeit nötig sein.`,
+      `Plane je nach Paket ${packageById("basis").duration} bis ${packageById("keramik").duration} ein; bei starker Verschmutzung kann mehr Zeit nötig sein.`,
       "Die Terminanfrage ist unverbindlich. Den verbindlichen Preis nennen wir, nachdem wir das Fahrzeug gesehen haben.",
-      "Sie bringen das Fahrzeug nach Absprache selbst nach Horb oder nutzen den Hol- und Bringservice.",
-      "Bitte nehmen Sie Wertsachen und persönliche Gegenstände vor der Abgabe aus dem Fahrzeug.",
+      "Du bringst das Fahrzeug nach Absprache selbst nach Horb oder nutzt den Hol- und Bringservice.",
+      "Bitte nimm Wertsachen und persönliche Gegenstände vor der Abgabe aus dem Fahrzeug.",
     ],
     requestDetails: [
       "Fahrzeugmarke, Modell und Fahrzeugart, zum Beispiel Kombi, SUV oder Transporter",
       "Gewünschte Arbeiten: innen, außen, Politur oder Lackschutz",
       "Auffälligkeiten wie Flecken, Tierhaare, Gerüche oder Kratzer",
       "Wenn möglich 2–3 Fotos von Lack und Innenraum",
-      "Ob Sie den Hol- und Bringservice nutzen möchten",
+      "Ob du den Hol- und Bringservice nutzen möchtest",
     ],
     steps: [
       {
@@ -678,11 +679,11 @@ export const services: ServicePage[] = [
       },
       {
         title: "Umfang",
-        text: "Wir wählen mit Ihnen das passende Paket: White-Gloss Classic, White-Gloss Signature oder White-Gloss Ceramic.",
+        text: "Wir wählen mit dir das passende Paket: White-Gloss Classic, White-Gloss Signature oder White-Gloss Ceramic.",
       },
       {
         title: "Werkstatt",
-        text: "Wir bereiten Ihr Fahrzeug einzeln in unserer Werkstatt unter geeigneter Beleuchtung auf.",
+        text: "Wir bereiten dein Fahrzeug einzeln in unserer Werkstatt unter geeigneter Beleuchtung auf.",
       },
       {
         title: "Übergabe",
@@ -695,7 +696,7 @@ export const services: ServicePage[] = [
     seoNav: "Innenraumreinigung",
     title: "Innenraumreinigung & Fahrzeuginnenpflege in Horb",
     nav: "Innenraumreinigung",
-    metaTitle: "Innenraumreinigung Auto Horb | White Gloss",
+    metaTitle: "Innenraumreinigung Auto Horb | White-Gloss Detailing",
     description:
       "Innenraumreinigung in Horb: Sitze, Teppiche, Kunststoffe. Gegen Gerüche optional Ozon. Materialgerechte Reinigung und Pflege.",
     teaser: "Basisreinigung des Innenraums; textile Tiefenreinigung im Paket White-Gloss Signature.",
@@ -721,12 +722,12 @@ export const services: ServicePage[] = [
       "Fahrzeuge vor dem Verkauf oder vor der Leasingrückgabe",
     ],
     outcome:
-      "Ziel ist ein sauberer, gepflegter Innenraum. Ob sich ältere Flecken, Verfärbungen oder Gerüche vollständig entfernen lassen, hängt von Material, Alter und Ursache ab. Verträgt eine Stelle keine weitere Behandlung, ohne das Material zu gefährden, sagen wir Ihnen das.",
+      "Ziel ist ein sauberer, gepflegter Innenraum. Ob sich ältere Flecken, Verfärbungen oder Gerüche vollständig entfernen lassen, hängt von Material, Alter und Ursache ab. Verträgt eine Stelle keine weitere Behandlung, ohne das Material zu gefährden, sagen wir dir das.",
     beforeBooking: [
-      `Tierhaarentfernung (ab ${extraPrice("tierhaar")}) und Ozonbehandlung (ab ${extraPrice("ozon")}) sind Zusatzleistungen; den Umfang stimmen wir vor Beginn mit Ihnen ab.`,
+      `Tierhaarentfernung (ab ${extraPrice("tierhaar")}) und Ozonbehandlung (ab ${extraPrice("ozon")}) sind Zusatzleistungen; den Umfang stimmen wir vor Beginn mit dir ab.`,
       "Bei starker Verschmutzung, Tierhaaren oder Gerüchen kann mehr Zeit nötig sein.",
       "Eine Ozonbehandlung ersetzt keine Reinigung. Der Innenraum muss dafür sauber und trocken sein.",
-      "Bitte nehmen Sie Wertsachen und persönliche Gegenstände vor der Abgabe aus dem Fahrzeug.",
+      "Bitte nimm Wertsachen und persönliche Gegenstände vor der Abgabe aus dem Fahrzeug.",
     ],
     requestDetails: [
       "Fahrzeugmarke und Modell",
@@ -759,7 +760,7 @@ export const services: ServicePage[] = [
     seoNav: "Lackkorrektur",
     title: "Lackkorrektur & Politur in Horb am Neckar",
     nav: "Lackkorrektur",
-    metaTitle: "Lackkorrektur & Auto polieren in Horb | White Gloss",
+    metaTitle: "Lackkorrektur & Auto polieren in Horb | White-Gloss Detailing",
     description:
       "Lackaufbereitung in Horb: Auto polieren lassen mit Lackdickenmessung, materialschonender Politur und klarer Beratung zu Waschkratzern.",
     teaser: "Lackpolitur zur Reduzierung feiner Kratzer und für gleichmäßigen Glanz.",
@@ -774,7 +775,7 @@ export const services: ServicePage[] = [
       "Vorbereitung des Lacks für Wachs oder Keramikversiegelung",
     ],
     body: [
-      "Nicht jeder Kratzer lässt sich auspolieren. Wir prüfen den Lack vorab und erklären Ihnen die Möglichkeiten und Grenzen der Behandlung.",
+      "Nicht jeder Kratzer lässt sich auspolieren. Wir prüfen den Lack vorab und erklären dir die Möglichkeiten und Grenzen der Behandlung.",
       "Das Paket White-Gloss Signature enthält eine einstufige Lackpolitur. Im Paket White-Gloss Ceramic ist eine mehrstufige Lackkorrektur enthalten, sofern die Lackschicht dafür geeignet ist.",
     ],
     suitedFor: [
@@ -786,8 +787,8 @@ export const services: ServicePage[] = [
     outcome:
       "Polieren trägt eine dünne Klarlackschicht ab. Feine Kratzer lassen sich deshalb oft deutlich reduzieren, aber nicht immer vollständig entfernen. Bleibt der Fingernagel in einem Kratzer hängen, reicht er meist zu tief. Steinschläge, Lackabplatzer und Rost behebt eine Politur nicht; dafür ist eine Lackiererei zuständig. Wie viel Spielraum der Lack bietet, zeigt die Lackdickenmessung vor Beginn.",
     beforeBooking: [
-      `Planen Sie ${packageById("premium").duration} (${packageById("premium").name}) bis ${packageById("keramik").duration} (${packageById("keramik").name}) ein.`,
-      "Wurden Bauteile nachlackiert oder schon einmal poliert, sagen Sie es uns bitte vorab. Das beeinflusst, wie stark wir polieren können.",
+      `Plane ${packageById("premium").duration} (${packageById("premium").name}) bis ${packageById("keramik").duration} (${packageById("keramik").name}) ein.`,
+      "Wurden Bauteile nachlackiert oder schon einmal poliert, sag es uns bitte vorab. Das beeinflusst, wie stark wir polieren können.",
       "Den genauen Umfang legen wir erst nach Lackprüfung und Messung fest.",
     ],
     requestDetails: [
@@ -811,7 +812,7 @@ export const services: ServicePage[] = [
       },
       {
         title: "Schutz",
-        text: "Das Paket White-Gloss Signature enthält Wachs. Eine Keramikversiegelung ist besonders für Fahrzeuge sinnvoll, die Sie länger nutzen möchten.",
+        text: "Das Paket White-Gloss Signature enthält Wachs. Eine Keramikversiegelung ist besonders für Fahrzeuge sinnvoll, die du länger nutzen möchtest.",
       },
     ],
   },
@@ -820,7 +821,7 @@ export const services: ServicePage[] = [
     seoNav: "Keramikversiegelung",
     title: "Keramikversiegelung & Langzeitschutz in Horb",
     nav: "Keramikversiegelung",
-    metaTitle: "Keramikversiegelung Auto Horb | White Gloss",
+    metaTitle: "Keramikversiegelung Auto Horb | White-Gloss Detailing",
     description:
       "Keramikversiegelung in Horb am Neckar ab 899 €: inkl. MwSt. für die Kompaktklasse, mit Lackkorrektur und Pflegeberatung.",
     teaser: "Lackkorrektur und anschließende Keramikversiegelung.",
@@ -836,8 +837,8 @@ export const services: ServicePage[] = [
     ],
     body: [
       "Eine Keramikversiegelung braucht einen sorgfältig vorbereiteten Lack. Wir reinigen die Oberfläche, reduzieren behandelbare Waschkratzer durch mehrstufige Politur und entfetten den Lack vor dem Auftrag der Beschichtung.",
-      "Die Beschichtung ergänzt den Oberflächenschutz und erleichtert die Pflege. Aushärtezeit, erster Kontakt mit Wasser und erste Wäsche richten sich nach den Vorgaben des verwendeten Produkts. Bei der Übergabe erhalten Sie die passenden Pflegehinweise.",
-      "Planen Sie ca. 2 Tage ein. Glas- und Felgenversiegelung, Lederpflege sowie der Hol- und Bringservice bis 60 km sind im Paket enthalten.",
+      "Die Beschichtung ergänzt den Oberflächenschutz und erleichtert die Pflege. Aushärtezeit, erster Kontakt mit Wasser und erste Wäsche richten sich nach den Vorgaben des verwendeten Produkts. Bei der Übergabe erhältst du die passenden Pflegehinweise.",
+      "Plane ca. 2 Tage ein. Glas- und Felgenversiegelung, Lederpflege sowie der Hol- und Bringservice bis 60 km sind im Paket enthalten.",
     ],
     comparison: {
       heading: "Lackversiegelung im Vergleich",
@@ -857,7 +858,7 @@ export const services: ServicePage[] = [
       ],
     },
     suitedFor: [
-      "Neuwagen und gepflegte Gebrauchtwagen, die Sie noch länger fahren möchten",
+      "Neuwagen und gepflegte Gebrauchtwagen, die du noch länger fahren möchtest",
       "Lack mit ausreichender Schichtstärke für die vorbereitende Politur",
       "Halter, die sich eine leichtere Fahrzeugwäsche und Abperleffekt wünschen",
     ],
@@ -890,7 +891,7 @@ export const services: ServicePage[] = [
       },
       {
         title: "Aushärten",
-        text: "Die Beschichtung härtet geschützt aus. Anschließend kontrollieren wir das Ergebnis und übergeben Ihnen das Fahrzeug.",
+        text: "Die Beschichtung härtet geschützt aus. Anschließend kontrollieren wir das Ergebnis und übergeben dir das Fahrzeug.",
       },
     ],
   },
@@ -899,7 +900,7 @@ export const services: ServicePage[] = [
     seoNav: "Lederpflege",
     title: "Lederpflege & Lederreinigung im Auto in Horb",
     nav: "Lederpflege",
-    metaTitle: "Auto-Lederpflege Horb am Neckar | White Gloss",
+    metaTitle: "Auto-Lederpflege Horb am Neckar | White-Gloss Detailing",
     description:
       "Lederreinigung und Lederpflege fürs Auto in Horb: Verschmutzungen lösen, Glanzstellen reduzieren, Flächen schützen.",
     teaser: "Gründliche Reinigung und materialgerechte Pflege für Autoleder.",
@@ -923,7 +924,7 @@ export const services: ServicePage[] = [
     seoNav: "Dellenentfernung",
     title: "Dellenentfernung & Smart Repair",
     nav: "Dellenentfernung",
-    metaTitle: "Dellenentfernung & Hagelschaden Horb | White Gloss",
+    metaTitle: "Dellenentfernung & Hagelschaden Horb | White-Gloss Detailing",
     description:
       "Parkdellen, Karosseriedellen und Hagelschäden lackschadenfrei ausbeulen – sofern technisch möglich. Preis nach Begutachtung.",
     teaser: "Lackschadenfreie Dellenentfernung, sofern technisch möglich.",
@@ -938,7 +939,7 @@ export const services: ServicePage[] = [
     ],
     body: [
       "Wir entfernen Parkdellen, kleinere Karosseriedellen und Hagelschäden ohne Neulackierung, sofern der Schaden und der Lackzustand dies zulassen.",
-      "Einen Preis und eine Zusage gibt es erst, wenn wir den Schaden gesehen haben und Sie zustimmen. Bei kleinen Stellen reicht oft ein Foto zur ersten Einschätzung.",
+      "Einen Preis und eine Zusage gibt es erst, wenn wir den Schaden gesehen haben und du zustimmst. Bei kleinen Stellen reicht oft ein Foto zur ersten Einschätzung.",
     ],
   },
   {
@@ -946,14 +947,14 @@ export const services: ServicePage[] = [
     seoNav: "Leasingaufbereitung",
     title: "Aufbereitung vor der Leasingrückgabe in Horb",
     nav: "Leasingaufbereitung",
-    metaTitle: "Leasingrückgabe-Aufbereitung Horb | White Gloss",
+    metaTitle: "Leasingrückgabe-Aufbereitung Horb | White-Gloss Detailing",
     description:
       "Leasingrückläufer reinigen und aufbereiten in Horb: Innenreinigung, Lackpflege und punktuelle Nacharbeit vor der Rückgabe – ehrlich priorisiert.",
     teaser: "Gezielte Aufbereitung vor der Leasingrückgabe.",
     group: "finish",
     fromPrice: 349,
     image: "/media/hero.webp",
-    imageAlt: "Schwarzes Fahrzeug vor der Übergabe bei White Gloss in Horb",
+    imageAlt: "Schwarzes Fahrzeug vor der Übergabe bei White-Gloss Detailing in Horb",
     bullets: [
       "Gemeinsame Prüfung relevanter Gebrauchsspuren vor der Rückgabe",
       "Innenraum, Lackpflege und punktuelle Nacharbeit",
@@ -961,7 +962,7 @@ export const services: ServicePage[] = [
       "Terminabstimmung passend zur geplanten Leasingrückgabe",
     ],
     body: [
-      "Vor der Leasingrückgabe konzentrieren wir uns auf relevante Gebrauchsspuren. Wir besprechen mit Ihnen, welche Arbeiten sinnvoll sind und welche Spuren bleiben.",
+      "Vor der Leasingrückgabe konzentrieren wir uns auf relevante Gebrauchsspuren. Wir besprechen mit dir, welche Arbeiten sinnvoll sind und welche Spuren bleiben.",
       "Je nach Zustand reinigen wir den Innenraum gründlich, entfernen Tierhaare und Gerüche, waschen Fahrzeug und Felgen und polieren feine Kratzer. Parkdellen und kleine Lederschäden lassen sich nach Prüfung punktuell bearbeiten.",
       "Für Autohäuser und Flotten erstellen wir ein individuelles Angebot nach Fahrzeuganzahl und Zustand.",
     ],
@@ -972,16 +973,16 @@ export const services: ServicePage[] = [
       "Autohäuser und Flotten mit mehreren Rückläufern",
     ],
     outcome:
-      "Wir verbessern den Zustand dort, wo es sich lohnt, und sagen offen, welche Spuren bleiben. Wie Leasinggeber oder Gutachter Gebrauchsspuren bewerten, richtet sich nach Ihrem Vertrag und deren Prüfung. Dass keine Nachforderung entsteht, können wir nicht zusagen.",
+      "Wir verbessern den Zustand dort, wo es sich lohnt, und sagen offen, welche Spuren bleiben. Wie Leasinggeber oder Gutachter Gebrauchsspuren bewerten, richtet sich nach deinem Vertrag und deren Prüfung. Dass keine Nachforderung entsteht, können wir nicht zusagen.",
     beforeBooking: [
-      "Fragen Sie etwa zwei Wochen vor dem Rückgabetermin an. Dann bleibt Zeit für Prüfung und Nacharbeit.",
-      "Prüfen Sie vorab die Rückgabebedingungen Ihres Leasinggebers.",
+      "Frage etwa zwei Wochen vor dem Rückgabetermin an. Dann bleibt Zeit für Prüfung und Nacharbeit.",
+      "Prüfe vorab die Rückgabebedingungen deines Leasinggebers.",
       "Tiefe Kratzer, Steinschläge oder größere Lackschäden behebt eine Aufbereitung nicht; dafür ist eine Lackiererei zuständig.",
       "Eine Aufbereitung ersetzt keine technische Fahrzeugprüfung.",
     ],
     requestDetails: [
       "Fahrzeugmarke, Modell und geplanter Rückgabetermin",
-      "Fotos der Stellen, die Ihnen Sorgen machen: Flecken, Kratzer, Dellen, Felgen oder Lederschäden",
+      "Fotos der Stellen, die dir Sorgen machen: Flecken, Kratzer, Dellen, Felgen oder Lederschäden",
       "Hinweise des Leasinggebers oder ein Vorabgutachten, falls vorhanden",
       "Bei mehreren Fahrzeugen: Anzahl und gewünschter Zeitraum",
     ],
@@ -991,7 +992,7 @@ export const services: ServicePage[] = [
     seoNav: "Lederreparatur",
     title: "Lederreparatur im Auto",
     nav: "Lederreparatur",
-    metaTitle: "Lederreparatur Horb: Brandloch & Riss | White Gloss",
+    metaTitle: "Lederreparatur Horb: Brandloch & Riss | White-Gloss Detailing",
     description:
       "Lederreparatur in Horb am Neckar: Brandlöcher, Risse, kleine Löcher. Nach Materialprüfung, mit individueller Einschätzung und Angebot.",
     teaser: "Reparatur von Brandlöchern und Rissen nach Materialprüfung.",
@@ -1006,7 +1007,7 @@ export const services: ServicePage[] = [
       "Fotos zuerst, Preis erst nach Prüfung am Auto",
     ],
     honestNote:
-      "Wir reparieren nur, wenn das Material eine dauerhafte Reparatur zulässt. Ist das Leder zu dünn, großflächig rissig oder das Loch zu groß, erklären wir Ihnen das vorab. Für einen ungeeigneten Reparaturversuch entstehen Ihnen keine Kosten.",
+      "Wir reparieren nur, wenn das Material eine dauerhafte Reparatur zulässt. Ist das Leder zu dünn, großflächig rissig oder das Loch zu groß, erklären wir dir das vorab. Für einen ungeeigneten Reparaturversuch entstehen dir keine Kosten.",
     priceRows: [
       { name: "Brandloch / kleines Loch", price: 139, note: "eine Stelle, nach Prüfung" },
       { name: "Riss oder offene Naht", price: 159, note: "eine Stelle, nach Prüfung" },
@@ -1015,15 +1016,15 @@ export const services: ServicePage[] = [
       { name: "Brandloch Textil / Himmel", price: 119, note: "nur bei tragfähigem Gewebe" },
     ],
     body: [
-      "Bei Brandlöchern und Rissen im Ledersitz kann eine punktuelle Reparatur möglich sein. Ob sie für Ihr Fahrzeug geeignet ist, prüfen wir vor der Beauftragung.",
+      "Bei Brandlöchern und Rissen im Ledersitz kann eine punktuelle Reparatur möglich sein. Ob sie für dein Fahrzeug geeignet ist, prüfen wir vor der Beauftragung.",
       "Wir prüfen Material, Dicke, Schadensränder und die Belastung der Stelle. Sitzwangen und Einstiegsbereiche sind besonders beansprucht. Ist keine dauerhafte Reparatur zu erwarten, führen wir sie nicht aus.",
       "Wir passen die Farbe an das vorhandene Leder an. Bei älterem oder ausgebleichtem Leder kann ein Unterschied sichtbar bleiben. Für ein vollständig einheitliches Ergebnis ist unter Umständen ein Neubezug durch eine Sattlerei nötig.",
-      "Schicken Sie Fotos bei Tageslicht, ohne Blitz. Wenn es machbar wirkt, schauen wir das Auto in Horb an und nennen den Preis. Abholung in unseren Abholgebieten ist nach Vereinbarung möglich.",
+      "Schick Fotos bei Tageslicht, ohne Blitz. Wenn es machbar wirkt, schauen wir das Auto in Horb an und nennen den Preis. Abholung in unseren Abholgebieten ist nach Vereinbarung möglich.",
     ],
     steps: [
       {
         title: "Fotos",
-        text: "Senden Sie eine Nahaufnahme und ein Übersichtsbild der beschädigten Stelle. Damit können wir eine erste Einschätzung geben.",
+        text: "Sende eine Nahaufnahme und ein Übersichtsbild der beschädigten Stelle. Damit können wir eine erste Einschätzung geben.",
       },
       {
         title: "Prüfung am Auto",
@@ -1040,14 +1041,14 @@ export const services: ServicePage[] = [
     seoNav: "Geruchsbehandlung mit Ozon",
     title: "Geruchsneutralisation mit Ozon",
     nav: "Geruchsbehandlung mit Ozon",
-    metaTitle: "Geruchsneutralisation Auto Ozon Horb | White Gloss",
+    metaTitle: "Geruchsneutralisation Auto Ozon Horb | White-Gloss Detailing",
     description:
       "Ozonbehandlung gegen Nikotin, Tier- und Feuchtigkeitsgeruch in Horb am Neckar ab 99 €. Erst Ursache, dann Ozon – kein Duftspray.",
     teaser: "Geruchsursache behandeln und bei Bedarf mit Ozon nacharbeiten.",
     group: "finish",
     fromPrice: 99,
     image: "/media/atelier.webp",
-    imageAlt: "Werkstattinnenraum von White Gloss in Horb",
+    imageAlt: "Werkstattinnenraum von White-Gloss Detailing in Horb",
     bullets: [
       "Zuerst die Ursache: Schmutz, Nässe, Filter, Polster",
       "Ozon baut geruchsbildende Moleküle ab",
@@ -1056,7 +1057,7 @@ export const services: ServicePage[] = [
     ],
     body: [
       "Ozon baut geruchsbildende Moleküle ab. Die Behandlung setzt einen sauberen, trockenen Innenraum voraus. Bleibt die Ursache bestehen, kann der Geruch zurückkehren.",
-      "Bei starkem Nikotin- oder Schimmelgeruch können eine Innenraumreinigung und mehrere Ozonbehandlungen nötig sein. Den voraussichtlichen Aufwand besprechen wir vor Beginn mit Ihnen.",
+      "Bei starkem Nikotin- oder Schimmelgeruch können eine Innenraumreinigung und mehrere Ozonbehandlungen nötig sein. Den voraussichtlichen Aufwand besprechen wir vor Beginn mit dir.",
     ],
   },
   {
@@ -1064,7 +1065,7 @@ export const services: ServicePage[] = [
     seoNav: "Scheinwerferaufbereitung",
     title: "Scheinwerferaufbereitung: Hinweise zur Zulässigkeit",
     nav: "Scheinwerferaufbereitung",
-    metaTitle: "Scheinwerferaufbereitung: Zulässigkeit | White Gloss",
+    metaTitle: "Scheinwerferaufbereitung: Zulässigkeit | White-Gloss Detailing",
     description: "Hinweise zu matten Scheinwerfern: Schleifen, Polieren und Versiegeln können die Bauartgenehmigung betreffen. Derzeit keine Buchung dieser Leistung.",
     teaser: "Die Scheinwerferaufbereitung ist bis zur Klärung des Verfahrens und seiner Zulässigkeit nicht buchbar.",
     group: "finish",
@@ -1076,7 +1077,7 @@ export const services: ServicePage[] = [
       "Schleifen, Polieren und Versiegeln können die Genehmigung und Betriebserlaubnis betreffen",
       "Keine Zusage einer zulässigen Instandsetzung ohne fahrzeug- und verfahrensbezogenen Nachweis",
     ],
-    honestNote: "Wir bieten diese Bearbeitung derzeit nicht als Standardleistung an. Bei matten oder beschädigten Scheinwerfern lassen Sie die zulässigen Möglichkeiten durch eine Fachwerkstatt oder Prüforganisation klären.",
+    honestNote: "Wir bieten diese Bearbeitung derzeit nicht als Standardleistung an. Bei matten oder beschädigten Scheinwerfern lass die zulässigen Möglichkeiten durch eine Fachwerkstatt oder Prüforganisation klären.",
     body: [
       "Eine optische Verbesserung allein belegt weder eine zulässige Reparatur noch die vorgeschriebene Lichtverteilung. Auch eine Materialprüfung ersetzt keinen Genehmigungsnachweis.",
       "Bis Verfahren und gegebenenfalls erforderliche Genehmigung fachlich geklärt sind, ist die Scheinwerferaufbereitung aus der Preisauswahl und dem Anfragerechner ausgesetzt. Diese Informationsseite bleibt erreichbar.",
@@ -1088,12 +1089,12 @@ export const faqs = [
   {
     group: "Kosten",
     q: "Was kostet eine Keramikversiegelung?",
-    a: "Bei White Gloss beginnt die Keramikversiegelung im Paket White-Gloss Ceramic ab 899 €. Der endgültige Preis hängt von der Fahrzeugklasse und vom Zustand des Lacks ab. Den verbindlichen Preis nennen wir Ihnen, nachdem wir das Fahrzeug gesehen haben.",
+    a: "Bei White-Gloss Detailing beginnt die Keramikversiegelung im Paket White-Gloss Ceramic ab 899 €. Der endgültige Preis hängt von der Fahrzeugklasse und vom Zustand des Lacks ab. Den verbindlichen Preis nennen wir dir, nachdem wir das Fahrzeug gesehen haben.",
   },
   {
     group: "Dauer",
     q: "Wie lange dauert eine Keramikversiegelung?",
-    a: "Planen Sie ca. 2 Tage ein. Der größere Teil entfällt auf Reinigung, Entfernung von Ablagerungen und Lackkorrektur. Anschließend muss die Keramik geschützt aushärten.",
+    a: "Plane ca. 2 Tage ein. Der größere Teil entfällt auf Reinigung, Entfernung von Ablagerungen und Lackkorrektur. Anschließend muss die Keramik geschützt aushärten.",
   },
   {
     group: "Dauer",
@@ -1108,7 +1109,7 @@ export const faqs = [
   {
     group: "Keramikversiegelung",
     q: "Wie lange hält die Keramikversiegelung?",
-    a: "Die Standzeit hängt von der verwendeten Beschichtung, der Fahrleistung, den Umwelteinflüssen und der Pflege ab. Wir besprechen mit Ihnen, welche Beschichtung zu Ihrem Fahrzeug passt und welche Haltbarkeit dafür zu erwarten ist. Eine pauschale Laufzeit für jedes Fahrzeug versprechen wir nicht.",
+    a: "Die Standzeit hängt von der verwendeten Beschichtung, der Fahrleistung, den Umwelteinflüssen und der Pflege ab. Wir besprechen mit dir, welche Beschichtung zu deinem Fahrzeug passt und welche Haltbarkeit dafür zu erwarten ist. Eine pauschale Laufzeit für jedes Fahrzeug versprechen wir nicht.",
   },
   {
     group: "Keramikversiegelung",
@@ -1118,7 +1119,7 @@ export const faqs = [
   {
     group: "Keramikversiegelung",
     q: "Kann ich mein Auto nach der Versiegelung sofort waschen?",
-    a: "Warten Sie mit der ersten Wäsche, bis die verwendete Beschichtung dafür freigegeben ist. Wie lange Sie Wasser und Reinigungsmittel vermeiden sollten, erklären wir Ihnen bei der Übergabe anhand der Produktvorgaben.",
+    a: "Warte mit der ersten Wäsche, bis die verwendete Beschichtung dafür freigegeben ist. Wie lange du Wasser und Reinigungsmittel vermeiden solltest, erklären wir dir bei der Übergabe anhand der Produktvorgaben.",
   },
   {
     group: "Keramikversiegelung",
@@ -1132,13 +1133,13 @@ export const faqs = [
   },
   {
     group: "Innenraumreinigung",
-    q: "Bekommen Sie Gerüche aus dem Innenraum wieder heraus?",
-    a: "Wir prüfen zuerst die Geruchsursache und reinigen die betroffenen Materialien. Eine Ozonbehandlung kann ergänzend sinnvoll sein, ab 99 € inkl. MwSt. für die Kompaktklasse. Den Umfang stimmen wir vor Beginn mit Ihnen ab.",
+    q: "Bekommt ihr Gerüche aus dem Innenraum wieder heraus?",
+    a: "Wir prüfen zuerst die Geruchsursache und reinigen die betroffenen Materialien. Eine Ozonbehandlung kann ergänzend sinnvoll sein, ab 99 € inkl. MwSt. für die Kompaktklasse. Den Umfang stimmen wir vor Beginn mit dir ab.",
   },
   {
     group: "Lederreparatur",
-    q: "Reparieren Sie Brandlöcher und Risse im Leder?",
-    a: "Ja, sofern der Materialzustand eine dauerhafte Reparatur zulässt. Die Preise beginnen bei 139 € pro Stelle. Ist das Leder zu dünn, großflächig rissig oder das Loch zu groß, führen wir die Reparatur nicht aus. Für einen ungeeigneten Reparaturversuch entstehen Ihnen keine Kosten.",
+    q: "Repariert ihr Brandlöcher und Risse im Leder?",
+    a: "Ja, sofern der Materialzustand eine dauerhafte Reparatur zulässt. Die Preise beginnen bei 139 € pro Stelle. Ist das Leder zu dünn, großflächig rissig oder das Loch zu groß, führen wir die Reparatur nicht aus. Für einen ungeeigneten Reparaturversuch entstehen dir keine Kosten.",
   },
   {
     group: "Lederreparatur",
@@ -1147,13 +1148,13 @@ export const faqs = [
   },
   {
     group: "Abholservice",
-    q: "Holen Sie mein Fahrzeug ab?",
+    q: "Holt ihr mein Fahrzeug ab?",
     a: `Ja. Die Aufbereitung erfolgt in unserer Werkstatt in Horb am Neckar. ${pickupTierSummary()}. ${pickupKeramikNote()}.`,
   },
   {
     group: "Abholservice",
     q: "Wie ist mein Fahrzeug während des Hol- und Bringservices versichert?",
-    a: "Bitte klären Sie den konkreten Versicherungsschutz vor der Beauftragung mit uns. Entscheidend sind die geltenden Versicherungsbedingungen, mögliche Ausschlüsse und Selbstbeteiligungen. Eine pauschale Zusage vollständiger Absicherung machen wir nicht.",
+    a: "Bitte kläre den konkreten Versicherungsschutz vor der Beauftragung mit uns. Entscheidend sind die geltenden Versicherungsbedingungen, mögliche Ausschlüsse und Selbstbeteiligungen. Eine pauschale Zusage vollständiger Absicherung machen wir nicht.",
   },
   {
     group: "Allgemein",
@@ -1169,24 +1170,24 @@ export const faqs = [
 
 export const processSteps = [
   {
-    n: "01.",
+    n: "01",
     title: "Fahrzeug prüfen",
-    text: "Sie schildern uns Ihre Wünsche. Wir prüfen Lack und Innenraum und stimmen Leistungsumfang, Preis und Termin mit Ihnen ab. Vor einer Lackkorrektur messen wir die Lackdicke.",
+    text: "Du schilderst uns deine Wünsche. Wir prüfen Lack und Innenraum und stimmen Leistungsumfang, Preis und Termin mit dir ab. Vor einer Lackkorrektur messen wir die Lackdicke.",
   },
   {
-    n: "02.",
+    n: "02",
     title: "Vorbereiten",
     text: "Wir reinigen das Fahrzeug gründlich und schützen empfindliche Bereiche vor der weiteren Bearbeitung.",
   },
   {
-    n: "03.",
+    n: "03",
     title: "Aufbereiten",
     text: "Wir führen die vereinbarten Arbeiten mit den zum Material passenden Verfahren aus.",
   },
   {
-    n: "04.",
+    n: "04",
     title: "Kontrolle und Übergabe",
-    text: "Wir kontrollieren das Ergebnis unter Werkstattlicht und zeigen es Ihnen bei der Übergabe.",
+    text: "Wir kontrollieren das Ergebnis unter Werkstattlicht und zeigen es dir bei der Übergabe.",
   },
 ];
 

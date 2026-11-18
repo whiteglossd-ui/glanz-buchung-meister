@@ -129,7 +129,7 @@ function LeistungenIndex() {
             </article>
           ))}
           <article className="group relative block border-b border-line lg:odd:border-r">
-            <MediaTile shot="private" alt="Freigegebenes Kundenfahrzeug nach der Aufbereitung bei White Gloss">
+            <MediaTile shot="private" alt="Freigegebenes Kundenfahrzeug nach der Aufbereitung bei White-Gloss Detailing">
               <p className="kicker">Luxusfahrzeuge</p>
               <h2 className="heading-2 mt-3 max-w-md">
                 <Link
@@ -199,7 +199,7 @@ function LeistungenIndex() {
         <p className="kicker">{cities.length} Abholorte</p>
         <h2 className="heading-2 mt-4">Leistungen nach Stadt</h2>
         <p className="mt-4 max-w-2xl text-muted">
-          Wählen Sie Ihren Ort und informieren Sie sich über unsere Leistungen
+          Wähle deinen Ort und informiere sich über unsere Leistungen
           und die Abholung. Die Aufbereitung erfolgt in Horb am Neckar.{" "}
           <Link to="/abholservice" className="underline underline-offset-4 hover:text-fg">
             Alle Abholorte und Preise

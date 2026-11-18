@@ -20,7 +20,7 @@ function WithdrawalPage() {
     <main id="main-content" tabIndex={-1}>
       <PageHero
         shot="atelier"
-        alt={`Werkstatt von White Gloss in ${site.city}`}
+        alt={`Werkstatt von White-Gloss Detailing in ${site.city}`}
         kicker="Rechtliches"
         title="Widerrufsbelehrung."
         lead="Informationen zum Widerrufsrecht und ein Musterformular für Ihren Widerruf."

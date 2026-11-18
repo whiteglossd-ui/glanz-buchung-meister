@@ -20,7 +20,7 @@ function PrivacyPage() {
     <main id="main-content" tabIndex={-1}>
       <PageHero
         shot="atelier"
-        alt={`Werkstatt von White Gloss in ${site.city}`}
+        alt={`Werkstatt von White-Gloss Detailing in ${site.city}`}
         kicker="Rechtliches"
         title="Datenschutzerklärung."
         lead="Welche personenbezogenen Daten wir verarbeiten, zu welchem Zweck und wie lange wir sie speichern."
@@ -242,7 +242,7 @@ function PrivacyPage() {
             Rezensionstext und Veröffentlichungsdatum; Profilbilder werden nicht geladen.
           </p>
           <p>
-            Hosting: IONOS SE, Deutschland. Anfragen und Termine werden von White Gloss bearbeitet.
+            Hosting: IONOS SE, Deutschland. Anfragen und Termine werden von White-Gloss Detailing bearbeitet.
             Die optional nachgereichten Fahrzeugaufnahmen werden bei Supabase in einem privaten
             Speicherbereich abgelegt. Wenn der E-Mail-Versand eingerichtet ist, werden
             Benachrichtigungen über Resend versendet; dabei werden Empfängeradresse, Betreff und

@@ -6,6 +6,12 @@ export function cityJourneyText(city: City) {
     : "Entfernung und Fahrzeit nach Abholadresse";
 }
 
+/** Sichtbare Entfernungszeile. Der eigene Werkstattstandort ist keine Anfahrt. */
+export function cityDistanceLine(city: City) {
+  if (city.km === 0) return "Werkstattstandort Horb am Neckar";
+  return cityJourneyText(city);
+}
+
 /** City hubs own the local vehicle-detailing intent; Horb's main intent stays on /. */
 export function citySeoCopy(city: City) {
   const isHorb = city.slug === "horb-am-neckar";

@@ -28,7 +28,7 @@ export function BookingStatus({ id, token }: { id: number; token?: string }) {
   if (!data)
     return failed ? (
       <p className="my-6 text-sm text-muted">
-        Der Status ist hier nicht verfügbar. Öffnen Sie den persönlichen Link aus Ihrer
+        Der Status ist hier nicht verfügbar. Öffne den persönlichen Link aus deiner
         Eingangsbestätigung.
       </p>
     ) : (

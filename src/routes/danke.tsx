@@ -34,7 +34,7 @@ export const Route = createFileRoute("/danke")({
   head: () =>
     pageHead({
       title: `Anfrage erhalten | ${site.name}`,
-      description: "Ihre Terminanfrage ist eingegangen.",
+      description: "Deine Terminanfrage ist eingegangen.",
       path: "/danke",
       robots: "noindex,nofollow",
     }),
@@ -47,22 +47,22 @@ function ThanksPage() {
     [
       "01",
       "Anfrage eingegangen",
-      "Nach dem Eingang prüfen wir Ihre Angaben. Preis und Wunschtermin sind noch nicht verbindlich bestätigt.",
+      "Nach dem Eingang prüfen wir deine Angaben. Preis und Wunschtermin sind noch nicht verbindlich bestätigt.",
     ],
     [
       "02",
       "Angaben, Preis und Termin prüfen",
-      "Wir klären die Leistungen, den vollständigen Endpreis und den Termin. Fotos können Sie im geschützten Kundenbereich ergänzen. Bei Rückfragen melden wir uns bei Ihnen.",
+      "Wir klären die Leistungen, den vollständigen Endpreis und den Termin. Fotos kannst du im geschützten Kundenbereich ergänzen. Bei Rückfragen melden wir uns bei dir.",
     ],
     [
       "03",
       "Angebot und Termin bestätigen",
-      "Sie erhalten Ihr persönliches Angebot mit Leistungen, Preis und Termin. Mit Ihrer Unterschrift bestätigen Sie das Angebot und den darin genannten Termin gemeinsam.",
+      "Du erhältst dein persönliches Angebot mit Leistungen, Preis und Termin. Mit deiner Unterschrift bestätigst du das Angebot und den darin genannten Termin gemeinsam.",
     ],
     [
       "04",
       "Aufbereitung und Rechnung",
-      "Wir führen die vereinbarten Arbeiten aus. Die Rechnung erhalten Sie nach erbrachter Leistung; dann wird die Zahlung fällig.",
+      "Wir führen die vereinbarten Arbeiten aus. Die Rechnung erhältst du nach erbrachter Leistung; dann wird die Zahlung fällig.",
     ],
   ];
 
@@ -70,10 +70,10 @@ function ThanksPage() {
     <main id="main-content" tabIndex={-1}>
       <PageHero
         shot="atelier"
-        alt="Werkstatt von White Gloss in Horb am Neckar"
+        alt="Werkstatt von White-Gloss Detailing in Horb am Neckar"
         kicker="Anfrage eingegangen"
         title="Danke. Anfrage erhalten."
-        lead="Vielen Dank für Ihre Anfrage. Wir prüfen Ihre Angaben und stimmen Angebot, Preis und Termin persönlich mit Ihnen ab. Die Anfrage ist unverbindlich."
+        lead="Vielen Dank für deine Anfrage. Wir prüfen deine Angaben und stimmen Angebot, Preis und Termin persönlich mit dir ab. Die Anfrage ist unverbindlich."
         crumbs={[{ label: "Startseite", to: "/" }, { label: "Danke" }]}
         actions={
           <>
@@ -136,7 +136,7 @@ function ThanksPage() {
         </dl>
 
         <p className="mt-14 border-t border-line pt-8 text-sm text-muted">
-          Hinweise zu Ihrem Widerrufsrecht finden Sie in der{" "}
+          Hinweise zu deinem Widerrufsrecht findest du in der{" "}
           <Link to="/widerruf" className="underline hover:text-fg">
             Widerrufsbelehrung
           </Link>

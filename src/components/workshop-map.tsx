@@ -42,7 +42,7 @@ export function WorkshopMap({ className = "" }: { className?: string }) {
         <p className="text-sm text-muted">
           {site.street}, {site.postalCode} {site.city} · {site.region}
           <span className="mt-1 block text-xs text-subtle">
-            Die Karte lädt Google Maps erst nach einem Klick. Danach können Sie zoomen und eine
+            Die Karte lädt Google Maps erst nach einem Klick. Danach kannst du zoomen und eine
             Route legen – auch auf dem Handy.
           </span>
         </p>

@@ -15,13 +15,13 @@ export const Route = createFileRoute("/datenloeschung")({
 });
 
 function DataDeletionPage() {
-  const subject = "Anfrage zur Datenlöschung – White Gloss";
+  const subject = "Anfrage zur Datenlöschung – White-Gloss Detailing";
 
   return (
     <main id="main-content" tabIndex={-1}>
       <PageHero
         shot="atelier"
-        alt={`Werkstatt von White Gloss in ${site.city}`}
+        alt={`Werkstatt von White-Gloss Detailing in ${site.city}`}
         kicker="Datenschutz"
         title="Datenlöschung anfragen."
         lead="So richten Sie Ihre Anfrage zur Löschung personenbezogener Daten an uns."

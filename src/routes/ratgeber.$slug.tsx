@@ -117,7 +117,7 @@ function ArticlePage() {
       />
       <article className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
         {guide ? <p className="mb-6 text-lg text-fg">{guide.question}</p> : null}
-        <p className="text-sm text-muted">Alle genannten Einstiegspreise gelten für die Kompaktklasse und verstehen sich {site.vatNote} Fahrzeuggröße und Zustand bestimmen den Aufwand; den verbindlichen Preis stimmen wir vor Beginn mit Ihnen ab.</p>
+        <p className="text-sm text-muted">Alle genannten Einstiegspreise gelten für die Kompaktklasse und verstehen sich {site.vatNote} Fahrzeuggröße und Zustand bestimmen den Aufwand; den verbindlichen Preis stimmen wir vor Beginn mit dir ab.</p>
         {a.sections.map((s) => (
           <section key={s.heading} className="mt-10">
             <h2 className="font-display text-2xl">{s.heading}</h2>
@@ -129,8 +129,8 @@ function ArticlePage() {
           </section>
         ))}
         {service ? <p className="mt-8 leading-relaxed text-muted">
-          Leistungsumfang und Grenzen finden Sie unter <Link to="/leistungen/$slug" params={{ slug: service.slug }} className="underline underline-offset-4">{service.nav}</Link>.
-          {" "}{request.paket || request.leistung ? "Die Anfrage übernimmt das zugehörige Paket oder Ihr Interesse an dieser individuellen Leistung." : "Wählen Sie in der Anfrage das passende Paket und Ihren Abholort aus."}
+          Leistungsumfang und Grenzen findest du unter <Link to="/leistungen/$slug" params={{ slug: service.slug }} className="underline underline-offset-4">{service.nav}</Link>.
+          {" "}{request.paket || request.leistung ? "Die Anfrage übernimmt das zugehörige Paket oder dein Interesse an dieser individuellen Leistung." : "Wähle in der Anfrage das passende Paket und deinen Abholort aus."}
           {pickupGuideSlugs.has(a.slug) ? (
             <>
               {" "}Abholorte und Preise stehen in der{" "}

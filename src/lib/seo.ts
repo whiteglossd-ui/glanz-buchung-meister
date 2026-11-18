@@ -164,7 +164,7 @@ export function localBusinessJsonLd() {
         "@type": "AutomotiveBusiness",
         "@id": businessId,
         name: site.legalName,
-        alternateName: site.name,
+        alternateName: site.shortName,
         image: absUrl("/media/hero-1080.webp"),
         logo: {
           "@type": "ImageObject",

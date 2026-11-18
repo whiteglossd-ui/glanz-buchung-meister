@@ -62,7 +62,8 @@ export function verifyOriginalIconHead(documentHtml, label) {
 // Read-only controls and layout checks. The CI runner supplies the browser;
 // these actions never submit a request, upload a file or open WhatsApp.
 export async function verifyInitialRundumHero(page, { label, screenshot, documentHtml }) {
-  const link = page.locator(".scroll-film-rundum").getByRole("link", { name: "Rundum-Service anfragen", exact: true });
+  const link = page.locator(".scroll-film-cta");
+  assert.equal(await page.locator(".scroll-film-rundum").count(), 0, `${label}: the hero keeps one primary and one secondary action`);
   await link.waitFor({ state: "visible" });
   await page.evaluate(() => document.fonts.ready);
   const originalHead = verifyOriginalIconHead(documentHtml, label);
@@ -94,20 +95,16 @@ export async function verifyInitialRundumHero(page, { label, screenshot, documen
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
   const target = new URL(await link.getAttribute("href"), page.url());
   assert.equal(target.pathname, "/");
-  assert.equal(target.hash, "#rundum-anfrage");
+  assert.equal(target.hash, "#buchung");
   const measure = () => link.evaluate((element) => {
     const rect = element.getBoundingClientRect(), header = document.querySelector(".site-header")?.getBoundingClientRect(), consent = document.querySelector(".consent-banner")?.getBoundingClientRect();
     const atCenter = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
-    const signpost = element.closest(".scroll-film-rundum").getBoundingClientRect(), paragraph = element.closest(".scroll-film-rundum").querySelector("p").getBoundingClientRect(), copy = element.closest(".scroll-film-copy-inner").getBoundingClientRect();
-    const center = (box) => (box.left + box.right) / 2;
-    return { copyCenter: center(copy), signpostCenter: center(signpost), paragraphCenter: center(paragraph), top: rect.top, bottom: rect.bottom, left: rect.left, right: rect.right, height: rect.height, layoutHeight: element.offsetHeight,
+    return { top: rect.top, bottom: rect.bottom, left: rect.left, right: rect.right, height: rect.height, layoutHeight: element.offsetHeight,
       headerBottom: Math.max(0, header?.bottom ?? 0), availableBottom: consent && consent.height > 0 ? consent.top : innerHeight,
       width: innerWidth, heightOfViewport: innerHeight, unobscured: element.contains(atCenter), scrollY };
   });
   const verify = async (state) => {
     const geometry = await measure();
-    assert.ok(Math.abs(geometry.signpostCenter - geometry.copyCenter) <= 2 && Math.abs(geometry.paragraphCenter - geometry.copyCenter) <= 2,
-      `${label} ${state}: Rundum signpost and its paragraph align with the hero copy center within two pixels: ${JSON.stringify(geometry)}`);
     // WebKit can return 43.999969px for a transformed 44px target. Keep the
     // layout minimum exact and allow only this subpixel bounding-box rounding.
     assert.ok(geometry.scrollY <= 1 && geometry.top >= geometry.headerBottom && geometry.bottom <= geometry.availableBottom + 1
@@ -122,7 +119,7 @@ export async function verifyInitialRundumHero(page, { label, screenshot, documen
     await page.locator(".consent-banner").waitFor({ state: "hidden" });
   }
   await verify("consent-dismissed");
-  return `${label}: initial hero visibly offers Rundum-Service before scrolling, with exact request anchor and no header/cookie overlap`;
+  return `${label}: initial hero offers one primary booking action, clear of header and cookie bar`;
 }
 
 export async function verifyRundumUi(page, { label, screenshot }) {
@@ -228,7 +225,7 @@ export async function verifyRundumUi(page, { label, screenshot }) {
 export async function verifyRundumIntentLoading(page, { label, base }) {
   const reads = observePageReads(page, base);
   const form = page.getByRole("form", { name: "Rundum-Service anfragen", exact: true });
-  await page.locator(".scroll-film-rundum").getByRole("link", { name: "Rundum-Service anfragen", exact: true }).click();
+  await page.locator(".rundum-service-actions").getByRole("link", { name: "Rundum-Service anfragen", exact: true }).click();
   await page.waitForFunction(() => location.hash === "#rundum-anfrage");
   await form.waitFor({ state: "visible", timeout: 5000 });
   await assertStableRundumArrival(page, `${label}: hero anchor`, reads);
@@ -239,7 +236,7 @@ export async function verifyRundumIntentLoading(page, { label, base }) {
   await page.locator('.home-jump-links a[href="#buchung"]').click();
   await page.waitForFunction(() => location.hash === "#buchung");
   assert.equal(await form.locator("#rundum-name").inputValue(), draft, `${label}: a hash change keeps unsent input`);
-  await page.locator(".scroll-film-rundum").getByRole("link", { name: "Rundum-Service anfragen", exact: true }).click();
+  await page.locator(".rundum-service-actions").getByRole("link", { name: "Rundum-Service anfragen", exact: true }).click();
   await page.waitForFunction(() => location.hash === "#rundum-anfrage");
   await page.locator(".scroll-film-prices").click();
   await page.waitForURL((url) => url.pathname === "/preise");

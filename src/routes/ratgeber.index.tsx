@@ -34,7 +34,7 @@ function RatgeberIndex() {
     "@graph": [
       {
         "@type": "Blog",
-        name: "Ratgeber Fahrzeugpflege | White Gloss",
+        name: "Ratgeber Fahrzeugpflege | White-Gloss Detailing",
         url: `${site.origin}/ratgeber`,
         blogPost: [
           ...articles.map((article) => ({ "@id": `${site.origin}/ratgeber/${article.slug}#article` })),

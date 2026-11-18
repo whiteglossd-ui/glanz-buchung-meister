@@ -29,17 +29,16 @@
   flex-shrink: 0;
   pointer-events: auto;
 }
-.scroll-film-skip > span:first-child,
-.scroll-film-pause {
-  display: inline-grid;
-}
 .scroll-film-skip-label,
-.scroll-film-label-reserve,
 .scroll-film-pause > span {
-  grid-area: 1 / 1;
+  display: inline-block;
+  text-align: center;
 }
-.scroll-film-label-reserve {
-  visibility: hidden;
+.scroll-film-skip-label {
+  min-width: 20ch;
+}
+.scroll-film-pause > span {
+  min-width: 22ch;
 }
 html[data-consent-initial-open="true"] [data-shell="public"] .scroll-film-copy,
 body[data-consent-banner="open"] [data-shell="public"] .scroll-film-copy {

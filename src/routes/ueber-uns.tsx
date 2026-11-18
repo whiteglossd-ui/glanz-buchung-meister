@@ -55,7 +55,7 @@ function AboutPage() {
         shot={hero ? undefined : "atelier"}
         alt={
           hero?.alt ??
-          "Aufbereitetes Kundenfahrzeug vor der Werkstatt von White Gloss in Horb am Neckar"
+          "Aufbereitetes Kundenfahrzeug vor der Werkstatt von White-Gloss Detailing in Horb am Neckar"
         }
         media={
           hero ? (

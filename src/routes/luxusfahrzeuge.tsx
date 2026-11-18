@@ -46,10 +46,10 @@ function LuxuryPage() {
       />
       <PageHero
         shot="hero"
-        alt="Schwarzer Klassiker im White Gloss Atelier in Horb am Neckar"
+        alt="Schwarzer Klassiker im White-Gloss Detailing Atelier in Horb am Neckar"
         kicker="Luxusfahrzeuge"
         title="Aufbereitung für Luxus- und Sammlerfahrzeuge"
-        lead="Wir besprechen Ihre Wünsche am Telefon und erstellen nach der Begutachtung ein individuelles Angebot für Fahrzeuge ab etwa 80.000 €."
+        lead="Wir besprechen deine Wünsche am Telefon und erstellen nach der Begutachtung ein individuelles Angebot für Fahrzeuge ab etwa 80.000 €."
         crumbs={[
           { label: "Startseite", to: "/" },
           { label: "Luxusfahrzeuge" },
@@ -70,7 +70,7 @@ function LuxuryPage() {
           {[
             [
               "Anrufen oder schreiben",
-              "Am Telefon oder per WhatsApp besprechen wir Ihr Fahrzeug, seine Nutzung und Ihre Wünsche. Die Aufbereitung von Luxus- und Sammlerfahrzeugen erfolgt ausschließlich nach persönlicher Abstimmung.",
+              "Am Telefon oder per WhatsApp besprechen wir dein Fahrzeug, seine Nutzung und deine Wünsche. Die Aufbereitung von Luxus- und Sammlerfahrzeugen erfolgt ausschließlich nach persönlicher Abstimmung.",
             ],
             [
               "Fahrzeug begutachten",
@@ -78,7 +78,7 @@ function LuxuryPage() {
             ],
             [
               "Umfang festlegen",
-              "Nach der Begutachtung besprechen wir die geeigneten Verfahren, den Schutz und den Zeitrahmen. Sie erhalten ein individuelles Angebot mit dem vereinbarten Leistungsumfang.",
+              "Nach der Begutachtung besprechen wir die geeigneten Verfahren, den Schutz und den Zeitrahmen. Du erhältst ein individuelles Angebot mit dem vereinbarten Leistungsumfang.",
             ],
             [
               "Umsetzen",
@@ -123,7 +123,7 @@ function LuxuryPage() {
           <figure className="mt-12">
             <Shot
               name="private"
-              alt="Freigegebenes Kundenfahrzeug nach der Aufbereitung bei White Gloss"
+              alt="Freigegebenes Kundenfahrzeug nach der Aufbereitung bei White-Gloss Detailing"
               className="aspect-[2/1] w-full"
               sizes="100vw"
             />

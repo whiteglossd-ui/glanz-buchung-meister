@@ -208,7 +208,7 @@ export function Configurator({
       await finishSavedRequest(saved.current);
     } catch {
       setError(
-        `Ihre Anfrage ${saved.current.reference} ist bereits gespeichert. Die Bestätigungsseite konnte nicht geöffnet werden. Bitte versuchen Sie es erneut.`,
+        `deine Anfrage ${saved.current.reference} ist bereits gespeichert. Die Bestätigungsseite konnte nicht geöffnet werden. Bitte versuch es erneut.`,
       );
     } finally {
       submitting.current = false;
@@ -235,14 +235,14 @@ export function Configurator({
       !saved.current &&
       e.currentTarget.querySelector<HTMLInputElement>("#date")?.validity.badInput
     ) {
-      errors.date = "Bitte geben Sie ein vollständiges Datum an oder lassen Sie das Feld leer.";
+      errors.date = "Bitte gib ein vollständiges Datum an oder lass das Feld leer.";
     }
     if (!saved.current && slot && (blockedSlots.includes(slot) || availabilityState !== "ready"))
       errors.date =
-        "Bitte wählen Sie eine verfügbare Abgabezeit oder fragen Sie ohne feste Uhrzeit an.";
+        "Bitte wähle eine verfügbare Abgabezeit oder frage ohne feste Uhrzeit an.";
     showErrors(errors, e.currentTarget);
     if (Object.keys(errors).length) {
-      setError("Bitte prüfen Sie die markierten Felder.");
+      setError("Bitte prüfe die markierten Felder.");
       return;
     }
     submitting.current = true;
@@ -283,8 +283,8 @@ export function Configurator({
     } catch {
       setError(
         saved.current
-          ? `Ihre Anfrage ${saved.current.reference} ist bereits gespeichert. Die Bestätigungsseite konnte nicht geöffnet werden. Bitte versuchen Sie es erneut.`
-          : "Wir konnten den Eingang Ihrer Anfrage nicht bestätigen. Sie können dieselbe Anfrage erneut senden oder uns telefonisch bzw. per WhatsApp kontaktieren.",
+          ? `deine Anfrage ${saved.current.reference} ist bereits gespeichert. Die Bestätigungsseite konnte nicht geöffnet werden. Bitte versuch es erneut.`
+          : "Wir konnten den Eingang deiner Anfrage nicht bestätigen. Du kannst dieselbe Anfrage erneut senden oder uns telefonisch bzw. per WhatsApp kontaktieren.",
       );
       submitting.current = false;
       setPending(false);
@@ -437,7 +437,7 @@ export function Configurator({
                                 ? " · Felgenversiegelung ist im Paket enthalten; dieses Extra umfasst zusätzlich die Demontage und Tiefenreinigung."
                                 : ""}
                               {packageId === "keramik" && ex.id === "leder"
-                                ? " · Lederpflege ist im Paket enthalten. Einen darüber hinausgehenden Aufwand stimmen wir nach der Begutachtung mit Ihnen ab."
+                                ? " · Lederpflege ist im Paket enthalten. Einen darüber hinausgehenden Aufwand stimmen wir nach der Begutachtung mit dir ab."
                                 : ""}
                               {ex.inspect ? " · nach Prüfung" : ""}
                             </span>
@@ -490,7 +490,7 @@ export function Configurator({
         </p>
         <p className="text-xs text-subtle">
           Dies ist der voraussichtliche Preis inkl. MwSt. Falls der Fahrzeugzustand zusätzlichen
-          Aufwand erfordert, stimmen wir den Endpreis nach der Begutachtung mit Ihnen ab.{" "}
+          Aufwand erfordert, stimmen wir den Endpreis nach der Begutachtung mit dir ab.{" "}
           {paymentNote}
         </p>
         <Field tone="public" id="name" label="Name (Pflichtfeld)">
@@ -646,8 +646,8 @@ export function Configurator({
           {fieldError("date")}
           {date && blockedSlots.length > 0 ? (
             <p className="text-xs text-muted">
-              Einige Zeiträume sind bereits belegt. Bitte wählen Sie eine verfügbare Abgabezeit oder
-              fragen Sie ohne feste Uhrzeit an.
+              Einige Zeiträume sind bereits belegt. Bitte wähle eine verfügbare Abgabezeit oder
+              frage ohne feste Uhrzeit an.
             </p>
           ) : null}
         </Field>
@@ -680,13 +680,13 @@ export function Configurator({
           </select>
           <p className="text-xs text-muted">
             {requestOnly && availabilityState === "ready"
-              ? "Datum und Uhrzeit sind Wünsche. Ihren verbindlichen Termin wählen und unterschreiben Sie später im persönlichen Angebot."
+              ? "Datum und Uhrzeit sind Wünsche. Deinen verbindlichen Termin wählst und unterschreibst du später im persönlichen Angebot."
               : availabilityState === "loading"
                 ? "Freie Zeiträume werden geprüft …"
                 : "Die Auswahl berücksichtigt die vorläufige Paketdauer. Die endgültige Arbeitszeit und Terminbestätigung folgen nach unserer Prüfung."}
           </p>
         </Field>
-        <Field tone="public" id="note" label="Ihre Nachricht (optional)">
+        <Field tone="public" id="note" label="Deine Nachricht (optional)">
           <textarea
             disabled={pending || savedReference !== null}
             id="note"
@@ -718,8 +718,8 @@ export function Configurator({
             Anfrage {savedReference} gespeichert. Noch keine Terminzusage.
           </p>
         ) : null}
-        <section aria-label="Zusammenfassung Ihrer Anfrage" className="border-y border-line py-5">
-          <h4 className="text-lg font-medium">Ihre Anfrage im Überblick</h4>
+        <section aria-label="Zusammenfassung deiner Anfrage" className="border-y border-line py-5">
+          <h4 className="text-lg font-medium">deine Anfrage im Überblick</h4>
           <dl className="booking-summary mt-3 text-sm">
             <dt>Paket · {quote.klass.label}</dt>
             <dd>
@@ -759,8 +759,8 @@ export function Configurator({
           </dl>
         </section>
         <p className="text-sm text-muted">
-          So geht es weiter: Wir prüfen Ihre Angaben, Leistungen und den Wunschtermin. Erst nach
-          unserer Prüfung stimmen wir den verbindlichen Preis und Termin mit Ihnen ab. Die Rechnung
+          So geht es weiter: Wir prüfen deine Angaben, Leistungen und den Wunschtermin. Erst nach
+          unserer Prüfung stimmen wir den verbindlichen Preis und Termin mit dir ab. Die Rechnung
           folgt nach erbrachter Leistung.
         </p>
         <label htmlFor="privacy" className="flex items-start gap-2 text-sm text-muted">
@@ -800,7 +800,7 @@ export function Configurator({
             onChange={(e) => setOpenAiConsent(e.target.checked)}
           />
           <span>
-            Ich willige freiwillig ein, dass White Gloss diese erfolgreiche Anfrage zur
+            Ich willige freiwillig ein, dass White-Gloss Detailing diese erfolgreiche Anfrage zur
             Anzeigenmessung an OpenAI meldet: Zeitpunkt, zufällige Ereigniskennung und eine
             vorhandene Anzeigen-Klickkennung. Keine Kontakt- oder Fahrzeugdaten. Dies gilt nur für
             diese Anfrage; vor dem Absenden kann ich das Häkchen entfernen.{" "}

@@ -158,7 +158,7 @@ export async function createBookingRequestPdf(booking: BookingPdfData): Promise<
   const details = [
     { s: "UNVERBINDLICHE ANFRAGE - TERMIN NOCH NICHT BESTÄTIGT", strong: true },
     {
-      s: "Wir prüfen Ihre Anfrage und stimmen den Termin persönlich mit Ihnen ab. Diese Preisübersicht ist keine Rechnung und keine Zahlungsaufforderung.",
+      s: "Wir prüfen deine Anfrage und stimmen den Termin persönlich mit dir ab. Diese Preisübersicht ist keine Rechnung und keine Zahlungsaufforderung.",
       strong: false,
     },
     {
@@ -167,7 +167,7 @@ export async function createBookingRequestPdf(booking: BookingPdfData): Promise<
     },
     ...(booking.note
       ? [
-          { s: "Ihr Hinweis", strong: true },
+          { s: "Dein Hinweis", strong: true },
           { s: booking.note.slice(0, 2000), strong: false },
         ]
       : []),

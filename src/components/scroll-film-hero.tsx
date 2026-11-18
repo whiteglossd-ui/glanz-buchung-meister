@@ -12,13 +12,13 @@ type Connection = EventTarget & { saveData?: boolean; effectiveType?: string };
 type DeviceNavigator = Navigator & { connection?: Connection; deviceMemory?: number };
 
 /** Headline in Zeilen; die letzte trägt den Akzent. Wortlaut unverändert. */
-const HERO_LINES = ["Ihr Auto.", "Nicht nur sauber.", "Wieder besonders."];
+const HERO_LINES = ["Dein Auto.", "Nicht nur sauber.", "Wieder besonders."];
 
 /**
  * Maskierter Reveal: jede Zeile ist eine Maske (overflow: hidden), jedes Wort
  * steigt mit 70 ms Versatz von unten auf (CSS, studio.css Abschnitt 5).
  * Leerzeichen bleiben echte Textknoten – Screenreader und Suchmaschinen lesen
- * „Ihr Auto. Nicht nur sauber. Wieder besonders.“
+ * „Dein Auto. Nicht nur sauber. Wieder besonders.“
  */
 function HeroHeadline({ title }: { title?: string }) {
   const lines = title
@@ -320,7 +320,7 @@ export function ScrollFilmHero({
       ref={sectionRef}
       className="scroll-film"
       data-motion={hasCustomHero || motion === false ? "still" : "scroll"}
-      aria-label="White Gloss – bis ins Detail"
+      aria-label="White-Gloss Detailing – bis ins Detail"
     >
       <noscript>
         <style>{`.scroll-film[data-motion="scroll"] { height: auto; }`}</style>
@@ -385,35 +385,16 @@ export function ScrollFilmHero({
             <Link to="/preise" className="scroll-film-prices">
               Pakete & Preise
             </Link>
-            <div className="scroll-film-rundum">
-              <p>Abholung, Aufbereitung und Reparaturen mit unseren Partnerbetrieben.</p>
-              <Link
-                to="/"
-                hash="rundum-anfrage"
-                hashScrollIntoView={{ block: "start", behavior: "instant" }}
-                className="scroll-film-rundum-link"
-              >
-                Rundum-Service anfragen <IconArrowRight className="size-4" aria-hidden />
-              </Link>
-            </div>
           </div>
         </div>
         <div className="scroll-film-signature" aria-hidden="true">
-          <p>Sorgfalt für Ihr Fahrzeug.</p>
+          <p>Sorgfalt für dein Fahrzeug.</p>
           <span>In unserer Werkstatt in Horb.</span>
         </div>
         <div className="scroll-film-bottom">
           <a href="#nach-dem-film" className="scroll-film-skip">
-            <span>
-              <span className="scroll-film-skip-label">
-                {motion ? "Scrollen & entdecken" : "Mehr entdecken"}
-              </span>
-              <span className="scroll-film-label-reserve" aria-hidden="true">
-                Scrollen & entdecken
-              </span>
-              <span className="scroll-film-label-reserve" aria-hidden="true">
-                Mehr entdecken
-              </span>
+            <span className="scroll-film-skip-label">
+              {motion ? "Scrollen & entdecken" : "Mehr entdecken"}
             </span>
             <span aria-hidden="true">↓</span>
           </a>
@@ -435,12 +416,6 @@ export function ScrollFilmHero({
             }}
           >
             <span>{paused ? "Bewegung fortsetzen" : "Bewegung pausieren"}</span>
-            <span className="scroll-film-label-reserve" aria-hidden="true">
-              Bewegung fortsetzen
-            </span>
-            <span className="scroll-film-label-reserve" aria-hidden="true">
-              Bewegung pausieren
-            </span>
           </button>
         </div>
       </div>

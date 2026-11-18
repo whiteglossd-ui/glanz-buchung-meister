@@ -18,10 +18,10 @@ function ImpressumPage() {
     <main id="main-content" tabIndex={-1}>
       <PageHero
         shot="atelier"
-        alt={`Werkstatt von White Gloss in ${site.city}`}
+        alt={`Werkstatt von White-Gloss Detailing in ${site.city}`}
         kicker="Rechtliches"
         title="Impressum."
-        lead="Wer hinter White Gloss steht – Anschrift, Kontakt, Angaben gemäß § 5 DDG."
+        lead="Wer hinter White-Gloss Detailing steht – Anschrift, Kontakt, Angaben gemäß § 5 DDG."
         crumbs={[
           { label: "Startseite", to: "/" },
           { label: "Impressum" },

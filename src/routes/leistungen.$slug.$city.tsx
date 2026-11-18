@@ -120,7 +120,7 @@ function ServiceCityPage() {
       <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
         {service.pendingApproval ? (
           <p className="mb-8 rounded-card border border-line bg-surface p-4 text-sm">
-            Diese Leistung bieten wir derzeit nicht an, auch nicht mit Hol- und Bringservice aus {city.name}. Für Fragen nutzen Sie bitte das Kontaktformular.
+            Diese Leistung bieten wir derzeit nicht an, auch nicht mit Hol- und Bringservice aus {city.name}. Für Fragen nutze bitte das Kontaktformular.
           </p>
         ) : (
           <>
@@ -128,7 +128,7 @@ function ServiceCityPage() {
           <h2 className="font-display text-2xl">{city.slug === "horb-am-neckar" ? "Direkt zur Werkstatt in Horb" : `Abholung aus ${city.name} planen`}</h2>
           <p className="text-muted">{city.pickupNote ?? `${city.blurb} Entfernungen und Fahrzeiten sind Richtwerte; die genaue Übergabeadresse stimmen wir vorab ab.`}</p>
           <p className="text-sm text-muted">{city.slug === "horb-am-neckar"
-            ? `Sie können das Fahrzeug nach Terminvereinbarung direkt zu ${site.street} bringen. Die Uhrzeit der Anfrage bezeichnet die Fahrzeugabgabe.`
+            ? `Du kannst das Fahrzeug nach Terminvereinbarung direkt zu ${site.street} bringen. Die Uhrzeit der Anfrage bezeichnet die Fahrzeugabgabe.`
             : cityPickupFee(city, "basis") === null
               ? `Für ${city.name} ist die Abholung bei White-Gloss Classic und White-Gloss Signature nur nach individueller Preisabsprache möglich. Der Rechner zeigt diese Zusatzkosten ausdrücklich als offen an.`
               : `Bei White-Gloss Classic und White-Gloss Signature beträgt der Hol- und Bringservice aus ${city.name} ${cityPickupPriceText(city)}. Für White-Gloss Ceramic ist die Abholung bis 60 km enthalten.`}</p>
@@ -158,7 +158,7 @@ function ServiceCityPage() {
           ))}
           {service.pendingApproval ? null : (
             <p>
-              {city.minutes === null ? "Fahrzeit und Übergabetermin stimmen wir anhand Ihrer Adresse ab." : `Aus ${city.name} beträgt die Fahrt rund ${city.minutes} Minuten.`} Sie übergeben das
+              {city.minutes === null ? "Fahrzeit und Übergabetermin stimmen wir anhand deiner Adresse ab." : `Aus ${city.name} beträgt die Fahrt rund ${city.minutes} Minuten.`} du übergibst das
               Fahrzeug an der vereinbarten Adresse; die Rückgabe erfolgt nach der Kontrolle unter
               Werkstattlicht.
             </p>

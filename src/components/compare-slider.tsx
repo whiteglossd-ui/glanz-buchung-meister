@@ -56,7 +56,7 @@ export function CompareSlider({
       </div>
       <figcaption className="mt-3 text-xs leading-relaxed text-subtle">
         Beispielfotos aus der Werkstatt in Horb am Neckar, keine Kundenfahrzeuge,
-        Kennzeichen entfernt. Ziehen Sie den Regler – auch per Tastatur.
+        Kennzeichen entfernt. Zieh den Regler – auch per Tastatur.
       </figcaption>
     </figure>
   );

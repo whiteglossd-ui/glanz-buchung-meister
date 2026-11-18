@@ -58,7 +58,7 @@ try {
       assert.equal(await initial.locator("button:disabled").count(), 2, scenario + ": controls wait for their handlers");
       assert.equal(external.length, 0, scenario + ": startup hint never loads a third party");
       if (!returning) {
-        const geometry = await page.locator(".scroll-film-rundum a").evaluate((element) => ({
+        const geometry = await page.locator(".scroll-film-cta").evaluate((element) => ({
           link: element.getBoundingClientRect().toJSON(),
           banner: document.querySelector(".consent-banner").getBoundingClientRect().toJSON(),
         }));

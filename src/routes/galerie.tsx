@@ -52,12 +52,12 @@ function GaleriePage() {
       <section className="gallery-intro mx-auto max-w-7xl px-4 sm:px-6">
         <nav aria-label="Brotkrumen" className="gallery-crumbs"><Link to="/">Startseite</Link><span aria-hidden>/</span><span aria-current="page">Ergebnisse</span></nav>
         <div className="gallery-intro-heading">
-          <div><p className="kicker">White Gloss · Kundenauftrag</p><h1 className="heading-page">{document?.content.title.trim() || "Echte Ergebnisse aus unserer Werkstatt."}</h1></div>
-          <div><p>{document?.content.lead.trim() || "Lack, Leder, Felgen. Entdecken Sie unsere Arbeit an einem echten Kundenfahrzeug – in Bildern und kurzen Filmen."}</p><Link to="/" hash="buchung" className={ctaPrimary}>Termin anfragen</Link></div>
+          <div><p className="kicker">White-Gloss Detailing · Kundenauftrag</p><h1 className="heading-page">{document?.content.title.trim() || "Echte Ergebnisse aus unserer Werkstatt."}</h1></div>
+          <div><p>{document?.content.lead.trim() || "Lack, Leder, Felgen. Entdecke unsere Arbeit an einem echten Kundenfahrzeug – in Bildern und kurzen Filmen."}</p><Link to="/" hash="buchung" className={ctaPrimary}>Termin anfragen</Link></div>
         </div>
         <figure className="gallery-cover">
           {hero ? <img src={hero.src} alt={hero.alt} width={hero.width} height={hero.height} loading="eager" fetchPriority="high" decoding="async" className="size-full object-cover" /> : <Shot name="atelier" alt="Aufbereiteter schwarzer BMW im Seitenprofil vor der Werkstatt" priority framed={false} sizes="(min-width: 1280px) 1200px, 95vw" />}
-          <figcaption><span>{hero ? hero.caption : "BMW · Außenaufbereitung"}</span><span>White Gloss · Horb am Neckar</span></figcaption>
+          <figcaption><span>{hero ? hero.caption : "BMW · Außenaufbereitung"}</span><span>White-Gloss Detailing · Horb am Neckar</span></figcaption>
         </figure>
       </section>
       <CustomerProjectStory />

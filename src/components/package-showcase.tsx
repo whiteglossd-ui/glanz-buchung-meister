@@ -157,14 +157,12 @@ export function PackageShowcase() {
                   decoding="async"
                 />
                 <figcaption aria-hidden="true">
-                  <span>White Gloss · Horb am Neckar</span>
-                  <span>{String(index + 1).padStart(2, "0")} / 03</span>
+                  <span>White-Gloss Detailing · Horb am Neckar</span>
                 </figcaption>
               </figure>
               <div className="package-editorial-body">
                 <div className="package-eyebrow">
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  <span>{pack.searchLabel}</span>
+                  <span className="package-index">{String(index + 1).padStart(2, "0")}</span>
                   {pack.featured && <span className="package-recommendation">Empfohlen</span>}
                 </div>
                 <h3>{pack.name}</h3>

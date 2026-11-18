@@ -118,9 +118,9 @@ export function SiteHeader() {
         <Link
           to="/"
           className="ga-logo group inline-flex min-h-11 items-center"
-          aria-label={`${site.name} Startseite`}
+          aria-label={`${site.shortName} Startseite`}
         >
-          <BrandMark variant="header" alt={`${site.name} – Fahrzeugaufbereitung Horb am Neckar`} />
+          <BrandMark variant="header" alt={`${site.shortName} – Fahrzeugaufbereitung Horb am Neckar`} />
         </Link>
         <nav className="header-quick-nav" aria-label="Direktnavigation">
           <Link to="/leistungen" activeProps={{ "aria-current": "page" }}>Leistungen</Link>
@@ -235,9 +235,9 @@ function FilmMenu({
             to="/"
             onClick={onClose}
             className="ga-logo group inline-flex min-h-11 items-center"
-            aria-label={`${site.name} Startseite`}
+            aria-label={`${site.shortName} Startseite`}
           >
-            <BrandMark variant="header" alt={`${site.name} – Fahrzeugaufbereitung Horb am Neckar`} />
+            <BrandMark variant="header" alt={`${site.shortName} – Fahrzeugaufbereitung Horb am Neckar`} />
           </Link>
           <div className="ga-tools flex items-center">
             <button
@@ -261,7 +261,7 @@ function FilmMenu({
           <Shot
             key={visual}
             name={visual}
-            alt={`${site.name} Fahrzeugaufbereitung Horb`}
+            alt={`${site.shortName} Fahrzeugaufbereitung Horb`}
             framed={false}
             className="film-menu-shot is-on"
             sizes="50vw"
@@ -400,8 +400,8 @@ export function SiteFooter() {
       <div className="chrome-rule" aria-hidden />
       <div className="gd-footer mx-auto max-w-7xl px-4 py-16 sm:px-6">
         <div className="ga-brand">
-          <Link to="/" className="inline-block" aria-label={`${site.name} Startseite`}>
-            <BrandMark variant="footer" alt={`${site.name} – Professionelle Autopflege & Keramikversiegelung Horb`} />
+          <Link to="/" className="inline-block" aria-label={`${site.shortName} Startseite`}>
+            <BrandMark variant="footer" alt={`${site.shortName} – Professionelle Autopflege & Keramikversiegelung Horb`} />
           </Link>
           <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted">
             Fahrzeugaufbereitung in {site.city}: Innenraumreinigung, Lackkorrektur und

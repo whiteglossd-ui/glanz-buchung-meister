@@ -10,7 +10,7 @@ describe("city landing SEO", () => {
     assert.equal(url.origin, configured.origin);
     assert.equal(url.pathname, configured.pathname);
     assert.equal(url.searchParams.get("phone"), configured.searchParams.get("phone"));
-    assert.equal(url.searchParams.get("text"), "Hallo White Gloss, ich interessiere mich für eine Fahrzeugaufbereitung in Nagold und wünsche eine persönliche Beratung zu meinem Anliegen und dem voraussichtlichen Aufwand.");
+    assert.equal(url.searchParams.get("text"), "Hallo White-Gloss Detailing, ich interessiere mich für eine Fahrzeugaufbereitung in Nagold und wünsche eine persönliche Beratung zu meinem Anliegen und dem voraussichtlichen Aufwand.");
     assert.doesNotMatch(url.searchParams.get("text")!, /foto|hochlad|upload/i);
   });
   const horb = cities.find((city) => city.slug === "horb-am-neckar");
@@ -20,11 +20,11 @@ describe("city landing SEO", () => {
     assert.ok(horb);
     assert.equal(
       serviceCityTitle("Fahrzeugaufbereitung", horb),
-      "Fahrzeugaufbereitung mit Abholung in Horb | White Gloss",
+      "Fahrzeugaufbereitung mit Abholung in Horb | White-Gloss Detailing",
     );
     assert.equal(
       serviceCityTitle("Innenraumreinigung", nagold!),
-      "Innenraumreinigung Nagold | White Gloss",
+      "Innenraumreinigung Nagold | White-Gloss Detailing",
     );
     assert.equal(
       serviceCityHeading("Fahrzeugaufbereitung", horb),

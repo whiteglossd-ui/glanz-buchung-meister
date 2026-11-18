@@ -30,10 +30,10 @@ function ZustandPage() {
     <main id="main-content" tabIndex={-1}>
       <PageHero
         shot="atelier"
-        alt="Werkstatt von White Gloss in Horb am Neckar"
+        alt="Werkstatt von White-Gloss Detailing in Horb am Neckar"
         kicker="Ersteinschätzung"
         title="Fahrzeugzustand prüfen lassen"
-        lead="Wir geben Ihnen eine kostenlose, unverbindliche Ersteinschätzung. Beschreiben Sie uns Ihr Fahrzeug. Fotos können Sie anschließend im geschützten Kundenbereich ergänzen."
+        lead="Wir geben dir eine kostenlose, unverbindliche Ersteinschätzung. Beschreib uns dein Fahrzeug. Fotos kannst du anschließend im geschützten Kundenbereich ergänzen."
         crumbs={[{ label: "Startseite", to: "/" }, { label: "Zustand prüfen" }]}
         actions={
           <Link to="/" hash="buchung" className={ctaPrimary}>
@@ -54,7 +54,7 @@ function ZustandPage() {
         <div id="buchung" className="mt-12">
           <PhotoInquiry
             title={context ? `${context} anfragen` : "Ersteinschätzung anfragen"}
-            hint="Beschreiben Sie kurz den Zustand Ihres Fahrzeugs. Fotos ergänzen Sie später im Kundenbereich."
+            hint="Beschreib kurz den Zustand deines Fahrzeugs. Fotos ergänzt du später im Kundenbereich."
           />
         </div>
       </div>

@@ -38,7 +38,7 @@ export function PhotoInquiry({ title, hint }: { title: string; hint: string }) {
     const errors = photoInquiryErrors({ name, phone, email, privacy, text });
     showErrors(errors, e.currentTarget);
     if (Object.keys(errors).length) {
-      setError("Bitte prüfen Sie die markierten Felder.");
+      setError("Bitte prüfe die markierten Felder.");
       return;
     }
     submitting.current = true;
@@ -63,7 +63,7 @@ export function PhotoInquiry({ title, hint }: { title: string; hint: string }) {
       requestIds.clear();
     } catch {
       setError(
-        "Wir konnten den Eingang Ihrer Anfrage nicht bestätigen. Sie können dieselbe Anfrage erneut senden oder uns telefonisch bzw. per WhatsApp kontaktieren.",
+        "Wir konnten den Eingang deiner Anfrage nicht bestätigen. Du kannst dieselbe Anfrage erneut senden oder uns telefonisch bzw. per WhatsApp kontaktieren.",
       );
       submitting.current = false;
       setPending(false);
@@ -84,7 +84,7 @@ export function PhotoInquiry({ title, hint }: { title: string; hint: string }) {
       <p className="text-sm text-muted">{hint}</p>
       <p className="text-xs text-subtle">
         Die Anfrage ist unverbindlich. Den Preis und einen Termin stimmen wir nach der Begutachtung
-        mit Ihnen ab.
+        mit dir ab.
       </p>
       <p className="text-sm text-muted">
         Fotos kannst du nach deiner Anfrage in deinem Kundenbereich ergänzen.
@@ -179,7 +179,7 @@ export function PhotoInquiry({ title, hint }: { title: string; hint: string }) {
           required
         />
         <span className="min-w-0">
-          Name, Kontaktdaten und Beschreibung werden zur Bearbeitung Ihrer Anfrage geschützt
+          Name, Kontaktdaten und Beschreibung werden zur Bearbeitung deiner Anfrage geschützt
           übermittelt. Siehe{" "}
           <Link to="/datenschutz" className="underline hover:text-fg">
             Datenschutzerklärung

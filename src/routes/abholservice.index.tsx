@@ -3,14 +3,14 @@ import { PageHero } from "@/components/page-hero";
 import { ctaPrimary } from "@/components/ui";
 import { cities, cityPickupPriceText, pickupTierSummary, pickupKeramikNote, site } from "@/data/site";
 import { pageHead } from "@/lib/seo";
-import { cityJourneyText, citySeoCopy } from "@/lib/city-copy";
+import { cityDistanceLine, citySeoCopy } from "@/lib/city-copy";
 
 export const Route = createFileRoute("/abholservice/")({
   component: AbholIndex,
   head: () =>
     pageHead({
       title: `Autoaufbereitung mit Hol- und Bringservice | ${site.name}`,
-      description: `Wir holen Ihr Fahrzeug in ${cities.length} Orten ab und bringen es nach der Aufbereitung in Horb zurück. Abholorte, Kosten und Terminablauf im Überblick.`,
+      description: `Wir holen dein Fahrzeug in ${cities.length} Orten ab und bringen es nach der Aufbereitung in Horb zurück. Abholorte, Kosten und Terminablauf im Überblick.`,
       path: "/abholservice",
       preloadShot: "atelier",
     }),
@@ -21,10 +21,10 @@ function AbholIndex() {
     <main id="main-content" tabIndex={-1}>
       <PageHero
         shot="atelier"
-        alt={`Werkstatt von White Gloss in ${site.city}`}
+        alt={`Werkstatt von White-Gloss Detailing in ${site.city}`}
         kicker={`${cities.length} Abholorte`}
         title="Hol- und Bringservice."
-        lead="Sparen Sie sich die Fahrt zur Werkstatt: Wir stimmen Abholung und Rückgabe mit Ihnen ab und bereiten Ihr Fahrzeug in Horb am Neckar auf."
+        lead="Spar dir die Fahrt zur Werkstatt: Wir stimmen Abholung und Rückgabe mit dir ab und bereiten dein Fahrzeug in Horb am Neckar auf."
         crumbs={[{ label: "Startseite", to: "/" }, { label: "Hol- und Bringservice" }]}
         actions={
           <Link to="/" hash="buchung" className={ctaPrimary}>
@@ -45,7 +45,7 @@ function AbholIndex() {
               <Link
                 to="/abholservice/$city"
                 params={{ city: c.slug }}
-                aria-label={`${citySeoCopy(c).linkLabel}, ${cityJourneyText(c)}, Abholung ${cityPickupPriceText(c)}`}
+                aria-label={`${citySeoCopy(c).linkLabel}, ${cityDistanceLine(c)}, Abholung ${cityPickupPriceText(c)}`}
                 className="flex min-h-16 flex-col items-start gap-2 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
               >
                 <span>
@@ -53,7 +53,7 @@ function AbholIndex() {
                     {citySeoCopy(c).linkLabel}
                   </span>
                   <span className="mt-1 block text-sm text-muted">
-                    {cityJourneyText(c)}
+                    {cityDistanceLine(c)}
                   </span>
                 </span>
                 <span className="text-sm text-muted">{cityPickupPriceText(c)}</span>

@@ -12,7 +12,7 @@ import {
   services,
   site,
 } from "@/data/site";
-import { cityJourneyText, pickupDistanceLabel, pickupStatus } from "@/lib/city-copy";
+import { cityDistanceLine, pickupDistanceLabel, pickupStatus } from "@/lib/city-copy";
 import { localBusinessJsonLd, pageHead } from "@/lib/seo";
 import { parseBookingSelection } from "@/lib/booking-selection";
 import { scrollFilmPreloads } from "@/data/scroll-film";
@@ -127,7 +127,7 @@ function Home() {
       <div className="home-intro mx-auto max-w-7xl px-4 sm:px-6">
         <p className="mx-auto max-w-2xl whitespace-pre-line py-12 text-center text-sm leading-relaxed text-muted sm:text-base">
           {document?.content.body.trim() ||
-            "Für den täglichen Weg zur Arbeit, Ihren Liebhaberwagen oder die Leasingrückgabe: Wir prüfen Ihr Fahrzeug persönlich und stimmen Pflege, Preis und Termin mit Ihnen ab."}
+            "Für den täglichen Weg zur Arbeit, deinen Liebhaberwagen oder die Leasingrückgabe: Wir prüfen dein Fahrzeug persönlich und stimmen Pflege, Preis und Termin mit dir ab."}
         </p>
         <nav className="home-jump-links" aria-label="Auf der Startseite">
           <a href="#rundum-anfrage">Rundum-Service</a>
@@ -160,7 +160,7 @@ function Home() {
         <div className="film-chapter-media" data-parallax-frame>
           <Shot
             name="atelier"
-            alt="Aufbereitetes Kundenfahrzeug vor der Werkstatt von White Gloss in Horb am Neckar"
+            alt="Aufbereitetes Kundenfahrzeug vor der Werkstatt von White-Gloss Detailing in Horb am Neckar"
             className="size-full"
             sizes="100vw"
             framed={false}
@@ -170,14 +170,14 @@ function Home() {
         <div className="film-chapter-copy" data-reveal>
           <p className="kicker">Persönlich in Horb am Neckar</p>
           <h2 id="workshop-title" className="heading-2 mt-5" data-lines>
-            <RevealLines lines={["Ihr Fahrzeug.", "In guten Händen."]} />
+            <RevealLines lines={["dein Fahrzeug.", "In guten Händen."]} />
           </h2>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
-            Wir stimmen die Pflege von Lack, Leder und Felgen auf den Zustand Ihres Fahrzeugs ab.
+            Wir stimmen die Pflege von Lack, Leder und Felgen auf den Zustand deines Fahrzeugs ab.
             Die Fahrzeugaufbereitung führen wir in unserer Werkstatt in Horb am Neckar aus.
           </p>
           <blockquote className="workshop-quote">
-            „Ich behandle jedes Fahrzeug so, als müsste ich es Ihnen unter perfektem Licht
+            „Ich behandle jedes Fahrzeug so, als müsste ich es dir unter perfektem Licht
             zurückgeben – weil ich genau das tue.“
           </blockquote>
           <div className="workshop-owner">
@@ -211,8 +211,8 @@ function Home() {
             <RevealLines lines={["Abholen. Aufbereiten.", "Zurückbringen."]} />
           </h2>
           <p>
-            Sie müssen dafür nicht vor Ort sein. Auf Wunsch stimmen wir eine sichere
-            Schlüsselhinterlegung mit Ihnen ab.
+            Du musst dafür nicht vor Ort sein. Auf Wunsch stimmen wir eine sichere
+            Schlüsselhinterlegung mit dir ab.
           </p>
           <div className="concierge-media" aria-hidden="true">
             {conciergeAtmosphere.map((photo) => (
@@ -253,8 +253,8 @@ function Home() {
             <span>02</span>
             <h3>Wir bereiten auf</h3>
             <p>
-              Ihr Fahrzeug ist in unserer Werkstatt in guten Händen. Umfang und Preis werden vorher
-              mit Ihnen abgestimmt.
+              Dein Fahrzeug ist in unserer Werkstatt in guten Händen. Umfang und Preis werden vorher
+              mit dir abgestimmt.
             </p>
           </li>
           <li>
@@ -262,7 +262,7 @@ function Home() {
             <h3>Wir bringen zurück</h3>
             <p>
               Stressfrei und ohne Wartezeit. Die digitale Übergabe dokumentiert das Ergebnis für
-              Sie.
+              dich.
             </p>
           </li>
         </ol>
@@ -275,11 +275,11 @@ function Home() {
       >
         <p className="kicker">Fahrzeug → Wunschergebnis → Termin und Übergabe</p>
         <h2 id="buchung-heading" className="heading-2 mt-3" tabIndex={-1} data-lines>
-          <RevealLines lines={["Ihre Aufbereitung."]} />
+          <RevealLines lines={["Deine Aufbereitung."]} />
         </h2>
         <p className="booking-intro text-muted">
-          Wählen Sie Fahrzeug, Paket und Zusatzleistungen. Preis und Zeitaufwand bleiben
-          transparent. Danach stimmen wir Termin, Abholung und digitale Übergabe mit Ihnen ab –
+          Wähle Fahrzeug, Paket und Zusatzleistungen. Preis und Zeitaufwand bleiben
+          transparent. Danach stimmen wir Termin, Abholung und digitale Übergabe mit dir ab –
           unverbindlich.
         </p>
         <LazyConfigurator eager={Boolean(paket || ort)} initialPackage={paket} initialCity={ort} />
@@ -318,7 +318,7 @@ function Home() {
             Fahrzeugaufbereitung in {site.city}
           </h2>
           <p>
-            Innenraumreinigung, Lackkorrektur und Keramikversiegelung: Wir beraten Sie zur passenden
+            Innenraumreinigung, Lackkorrektur und Keramikversiegelung: Wir beraten dich zur passenden
             Autoaufbereitung in unserer Werkstatt in {site.city}. In der Region bieten wir einen
             Hol- und Bringservice an.
           </p>
@@ -360,7 +360,7 @@ function Home() {
           </div>
           <div>
             <p className="kicker">Hol- und Bringservice · {cities.length} Abholorte</p>
-            <h3>Wir holen Ihr Fahrzeug ab und bringen es zurück.</h3>
+            <h3>Wir holen dein Fahrzeug ab und bringen es zurück.</h3>
             <p>
               {pickupTierSummary()}. {pickupKeramikNote()}. Alle Beträge {site.vatNote}
             </p>
@@ -373,7 +373,11 @@ function Home() {
                     to="/abholservice/$city"
                     params={{ city: c.slug }}
                     className="city-chip"
-                    aria-label={`${c.name}, ${cityJourneyText(c)}, Abholung ${cityPickupPriceText(c)}`}
+                    aria-label={
+                      c.km === 0
+                        ? `${c.name}, Werkstattstandort, direkte Fahrzeugabgabe möglich, Abholung ${cityPickupPriceText(c)}`
+                        : `${c.name}, ${cityDistanceLine(c)}, Abholung ${cityPickupPriceText(c)}`
+                    }
                   >
                     <span className="city-chip-name">{c.name}</span>
                     <span className="city-chip-meta" aria-hidden="true">
