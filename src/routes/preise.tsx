@@ -11,6 +11,8 @@ import {
   vehicleClasses,
   site,
 } from "@/data/site";
+import { serializeJsonLd } from "@/lib/json-ld";
+import { pricesPageJsonLd } from "@/lib/prices-schema";
 import { pageHead } from "@/lib/seo";
 import { money } from "@/lib/utils";
 import { ctaPrimary, PriceLine } from "@/components/ui";
@@ -30,6 +32,10 @@ export const Route = createFileRoute("/preise")({
 function PreisePage() {
   return (
     <main id="main-content" tabIndex={-1}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(pricesPageJsonLd()) }}
+      />
       <PageHero
         shot="keramik"
         alt="Spiegelnde Motorhaube eines Kundenfahrzeugs nach der Aufbereitung"

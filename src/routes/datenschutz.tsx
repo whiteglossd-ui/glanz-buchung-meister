@@ -49,9 +49,11 @@ function PrivacyPage() {
         <section>
           <h2>2. Hosting und Server-Protokolle</h2>
           <p>
-            Die Website wird im Produktivbetrieb auf Servern der IONOS SE (Elgendorfer Straße 57,
-            56410 Montabaur, Deutschland) bereitgestellt. Beim Aufruf können technisch erforderliche
-            Angaben wie IP-Adresse, Datum und Uhrzeit, aufgerufene Adresse, übertragene Datenmenge,
+            Die Website wird im Produktivbetrieb auf einem virtuellen Server der Hostinger
+            International Ltd. (61 Lordou Vironos Street, 6023 Larnaka, Zypern) bereitgestellt. Das
+            Rechenzentrum befindet sich in Düsseldorf, Deutschland. Der Anbieter verarbeitet Daten
+            in unserem Auftrag auf Grundlage seines Data Processing Addendum (Art. 28 DSGVO). Beim
+            Aufruf können technisch erforderliche Angaben wie IP-Adresse, Datum und Uhrzeit, aufgerufene Adresse, übertragene Datenmenge,
             Referrer sowie Browser- und Betriebssystemangaben in Server-Protokollen verarbeitet
             werden. Die Verarbeitung dient der sicheren, stabilen und fehlerfreien Bereitstellung
             der Website.
@@ -242,7 +244,7 @@ function PrivacyPage() {
             Rezensionstext und Veröffentlichungsdatum; Profilbilder werden nicht geladen.
           </p>
           <p>
-            Hosting: IONOS SE, Deutschland. Anfragen und Termine werden von White-Gloss Detailing bearbeitet.
+            Hosting: Hostinger International Ltd., Rechenzentrum Düsseldorf, Deutschland. Anfragen und Termine werden von White-Gloss Detailing bearbeitet.
             Die optional nachgereichten Fahrzeugaufnahmen werden bei Supabase in einem privaten
             Speicherbereich abgelegt. Wenn der E-Mail-Versand eingerichtet ist, werden
             Benachrichtigungen über Resend versendet; dabei werden Empfängeradresse, Betreff und

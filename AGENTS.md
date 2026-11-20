@@ -6,8 +6,8 @@ niemals als Website starten, auch nicht kurzzeitig für Tests. Kein Dev-,
 Preview-, QA-, Docker-, Tunnel- oder statischer Ersatzserver; Sperren nicht
 umgehen, keine CI-Umgebung vortäuschen. Lokale Builds, Lint, Typprüfung und
 Tests ohne Website-Server sind erlaubt. Browserprüfungen erfolgen auf der
-veröffentlichten IONOS-Website ohne echte Kundenanfragen/Nachrichten/Uploads.
-Veröffentlichung nur über den bestehenden freigegebenen IONOS-Weg.
+veröffentlichten Hostinger-Website (VPS) ohne echte Kundenanfragen/Nachrichten/Uploads.
+Veröffentlichung nur über den bestehenden freigegebenen Hostinger-Weg (GitHub-Workflow „Deploy to Hostinger VPS“).
 Die vorhandenen isolierten Flowtests bleiben ausschließlich im Linux-GitHub-
 CI-Job zugelassen; sie dürfen nicht auf den lokalen Rechner verlagert werden.
 Eine Aufhebung erfordert eine ausdrückliche neue Betreiberanweisung.
@@ -16,7 +16,7 @@ Eine Aufhebung erfordert eine ausdrückliche neue Betreiberanweisung.
 
 Betreiberanweisung: RO App und Bitrix ausschalten, nur das bestehende
 White-Gloss-Panel verwenden. `docs/panel-only.md` beschreibt die geprüften
-Sperren und den erforderlichen IONOS-Konfigurationswechsel. Keine neuen
+Sperren und den erforderlichen Konfigurationswechsel auf dem Hostinger-VPS. Keine neuen
 CRM-Verbindungen, keine Datenlöschung oder automatische Bestandsmigration.
 
 ## Cursor Cloud specific instructions
