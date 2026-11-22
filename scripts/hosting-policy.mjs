@@ -33,7 +33,27 @@ export function isIsolatedGithubCi({
 }
 
 export function assertIsolatedGithubCi() {
-  if (!isIsolatedGithubCi()) blockLocalHosting();
+  if (!isIsolatedGithubCi() && !isIsolatedForgejoCi()) blockLocalHosting();
+}
+
+export function isIsolatedForgejoCi({
+  platform = process.platform,
+  env = process.env,
+  cwd = process.cwd(),
+  realpath = realpathSync,
+} = {}) {
+  const workspace = env.FORGEJO_WORKSPACE;
+  if (platform !== "linux" || env.FORGEJO_ACTIONS !== "true" ||
+      env.FORGEJO_SERVER_URL !== "https://forgejo-h9qr.srv2077393.hstgr.cloud" ||
+      env.FORGEJO_REPOSITORY !== "White-Gloss/glanz-buchung-meister-import" ||
+      env.WEBSITE_ISOLATED_FLOWTESTS_ENABLED !== "true" ||
+      !["flows", "studio", "cross-browser"].includes(env.FORGEJO_JOB || "") ||
+      !/^\d+$/.test(env.FORGEJO_RUN_NUMBER || "") || !workspace) return false;
+  try {
+    return realpath(cwd) === realpath(workspace);
+  } catch {
+    return false;
+  }
 }
 
 /** @param {string | URL} entryUrl */
@@ -55,6 +75,6 @@ export function isActiveIonosRelease(entryUrl, {
 
 /** @param {string | URL} entryUrl */
 export function assertProductionHosting(entryUrl) {
-  if (!isIsolatedGithubCi() && !isActiveIonosRelease(entryUrl)) blockLocalHosting();
+  if (!isIsolatedGithubCi() && !isIsolatedForgejoCi() && !isActiveIonosRelease(entryUrl)) blockLocalHosting();
 }
 

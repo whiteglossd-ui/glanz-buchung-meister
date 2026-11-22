@@ -6,7 +6,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { spawnSync } from "node:child_process";
-import { isIsolatedGithubCi, isActiveIonosRelease } from "./hosting-policy.mjs";
+import { isIsolatedForgejoCi, isIsolatedGithubCi, isActiveIonosRelease } from "./hosting-policy.mjs";
 import { guardProductionHosting } from "./guard-production-hosting.mjs";
 
 const root = resolve(import.meta.dirname, "..");
@@ -29,6 +29,26 @@ test("only the existing Linux GitHub CI context and exact workspace permit isola
   for (const name of Object.keys(env)) assert.equal(isIsolatedGithubCi({ ...context, env: { ...env, [name]: "" } }), false, name);
   assert.equal(isIsolatedGithubCi({ ...context, env: { ...env, GITHUB_REPOSITORY: "other/repo" } }), false);
   assert.equal(isIsolatedGithubCi({ ...context, cwd: "/some/local/checkout" }), false);
+});
+
+test("Forgejo requires operator opt-in and one of the isolated jobs in the website repository", () => {
+  const env = {
+    FORGEJO_ACTIONS: "true",
+    FORGEJO_SERVER_URL: "https://forgejo-h9qr.srv2077393.hstgr.cloud",
+    FORGEJO_REPOSITORY: "White-Gloss/glanz-buchung-meister-import",
+    FORGEJO_RUN_NUMBER: "42",
+    FORGEJO_WORKSPACE: "/ci/website",
+    FORGEJO_JOB: "flows",
+    WEBSITE_ISOLATED_FLOWTESTS_ENABLED: "true",
+  };
+  const options = { platform: "linux", env, cwd: env.FORGEJO_WORKSPACE, realpath: p => p };
+  assert.equal(isIsolatedForgejoCi(options), true);
+  for (const name of Object.keys(env)) {
+    assert.equal(isIsolatedForgejoCi({ ...options, env: { ...env, [name]: "" } }), false, name);
+  }
+  assert.equal(isIsolatedForgejoCi({ ...options, env: { ...env, FORGEJO_JOB: "verify" } }), false);
+  assert.equal(isIsolatedForgejoCi({ ...options, env: { ...env, FORGEJO_ACTIONS: "false" } }), false);
+  assert.equal(isIsolatedForgejoCi({ ...options, cwd: "/local" }), false);
 });
 
 test("production requires Linux, the active IONOS release and its working directory", () => {

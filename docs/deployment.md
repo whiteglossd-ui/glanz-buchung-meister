@@ -1,5 +1,28 @@
 # Deployment auf IONOS – technische Vorgaben
 
+## Build und Veröffentlichung über Forgejo
+
+- **Website-Checks:** `.forgejo/workflows/website-ci.yml` prüft PRs und
+  `main` mit einem Linux-Docker-Runner vom Typ `ubuntu-latest`. Der Build
+  erzeugt ein privates Archiv mit Prüfsumme. PostgreSQL läuft separat im
+  CI-Container. Die isolierten Website- und Browsertests verwenden wie bisher
+  synthetische Daten und benötigen die Freigabe
+  `WEBSITE_ISOLATED_FLOWTESTS_ENABLED=true` im privaten Website-Repository.
+- **Hostinger-Freigabe:** `.forgejo/workflows/deploy-hostinger.yml` wird
+  ausschließlich manuell auf `main` gestartet. Vor der Übertragung und erneut
+  vor der Aktivierung prüft der Workflow den genauen Commit und die erfolgreichen
+  Jobs des jüngsten Forgejo-CI-Laufs für diesen Commit. Als zweiter Pflichtwert ist
+  der aktive, kompatible Produktionscommit anzugeben. Die Aktivierung verwendet
+  den vorhandenen Hostinger-Helfer.
+- **Einrichtung:** Vor Freigabe des Deployments den geschützten `main`-Branch,
+  den Runner und die Repository-Secrets `HOSTINGER_SSH_HOST`,
+  `HOSTINGER_SSH_USER` (`white-gloss-ci`), `HOSTINGER_SSH_PRIVATE_KEY`,
+  `HOSTINGER_SSH_KNOWN_HOSTS` und gegebenenfalls `HOSTINGER_SSH_PORT` prüfen.
+  Falls der Produktionsbuild Google OAuth verwendet, die bestehenden
+  `GOOGLE_CLIENT_ID`- und `GOOGLE_CLIENT_SECRET`-Werte für den Workflow
+  bereitstellen. Erst nach Freigabe `HOSTINGER_DEPLOY_ENABLED=true` setzen.
+  Der alte GitHub-Releaseweg bleibt im Lesearchiv dokumentiert.
+
 Die Website wird auf `white-gloss.de` betrieben. Dieses Projekt ist **keine rein statische Website**, sondern eine Node-/SSR-Anwendung (TanStack Start + Nitro). Der versionierte IONOS-Workflow und die Grok-Anbindungen bestehen parallel. Vor Freigabe muss feststehen, welcher Betrieb und welche Datenbank tatsächlich verwendet werden; siehe [Releasevorbereitung vom 6. September 2026](release-readiness-2026-09-06.md).
 
 Die hier dokumentierten technischen Anforderungen gelten unabhängig davon, ob IONOS später eine native Git-Anbindung, einen VPS/Cloud-Server oder eine andere Node-fähige Laufzeit bereitstellt.
