@@ -64,12 +64,17 @@ fi
 [[ $id_before == 0 ]] || fail 'Unbekannte Registrierungsart.'
 as_runner mkdir -p -m 0700 "$work"
 as_runner chmod 0700 "$work"
-as_runner curl --silent --show-error --fail --max-time 5 --unix-socket "$socket" http://localhost/_ping >/dev/null ||
-  fail 'Der Rootless-Podman-Socket des Website-Runners antwortet nicht.'
 ensure_idle() {
-  as_runner curl --silent --show-error --fail --max-time 5 --unix-socket "$socket" http://localhost/containers/json |
-    python3 -c 'import json,sys; v=json.load(sys.stdin); sys.exit(0 if isinstance(v,list) and not v else 1)' ||
-    fail 'Im Website-Runner laufen Container, oder ihre Prüfung ist fehlgeschlagen. Später erneut starten.'
+  local ids id display=()
+  ids=$(as_runner env XDG_RUNTIME_DIR="/run/user/$uid" timeout 15 \
+    podman --remote --url "unix://$socket" ps --quiet --no-trunc) ||
+    fail 'Podman konnte die laufenden Container des Website-Runners nicht abfragen.'
+  [[ -n $ids ]] || return 0
+  while IFS= read -r id; do
+    [[ $id =~ ^[[:xdigit:]]{64}$ ]] || fail 'Podman lieferte eine unerwartete Container-ID.'
+    display+=("${id:0:12}")
+  done <<< "$ids"
+  fail "Podman meldet laufende Container beim Website-Runner: ${display[*]}."
 }
 ensure_idle
 if ! as_runner test -s "$candidate"; then
