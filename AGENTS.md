@@ -1,4 +1,22 @@
-# Betreiberregel: kein lokales Hosting (27.09.2026)
+# Forgejo und Freigaben (22.11.2026)
+
+- `White-Gloss/glanz-buchung-meister-import` auf Forgejo ist die führende
+  Codequelle für `https://white-gloss.de`. GitHub dient als Lesearchiv.
+- Vor Änderungen offene Branches und PRs prüfen. Pro Aufgabe einen
+  Arbeitsbranch und einen deutschsprachigen PR verwenden. Direktpushes auf
+  `main` sind untersagt.
+- Der Betreiber erlaubt Merge und Veröffentlichung beauftragter
+  Standardänderungen nach grüner Forgejo-CI. Den veröffentlichten Commit
+  und die öffentliche Website danach prüfen.
+- Änderungen an Berechtigungen, Deployment, Datenbankmigrationen und
+  Kundenversand erfordern eine Einzelfreigabe. Für Prüfungen ausschließlich
+  synthetische Daten verwenden.
+- Technische Voraussetzungen für Build und Release stehen in
+  [docs/deployment.md](docs/deployment.md#build-und-veröffentlichung-über-forgejo).
+  Zugangsdaten und Produktionsdaten gehören außerhalb des Arbeitsrepositoriums.
+  Die nachfolgenden Angaben zu GitHub und IONOS dokumentieren den früheren Betrieb.
+
+## Betreiberregel: kein lokales Hosting (27.09.2026)
 
 Diese ausdrückliche Nutzerregel geht allen nachfolgenden älteren Scaffold-
 Anweisungen zu lokalen Vorschauen vor: White-Gloss auf Entwicklerrechnern
@@ -8,8 +26,8 @@ umgehen, keine CI-Umgebung vortäuschen. Lokale Builds, Lint, Typprüfung und
 Tests ohne Website-Server sind erlaubt. Browserprüfungen erfolgen auf der
 veröffentlichten IONOS-Website ohne echte Kundenanfragen/Nachrichten/Uploads.
 Veröffentlichung nur über den bestehenden freigegebenen IONOS-Weg.
-Die vorhandenen isolierten Flowtests bleiben ausschließlich im Linux-GitHub-
-CI-Job zugelassen; sie dürfen nicht auf den lokalen Rechner verlagert werden.
+Die isolierten Flowtests bleiben ausschließlich im freigegebenen Linux-CI-Job
+zugelassen. Sie dürfen nicht auf den lokalen Rechner verlagert werden.
 Eine Aufhebung erfordert eine ausdrückliche neue Betreiberanweisung.
 
 ## Operativer Weg: ausschließlich Panel (05.10.2026)
