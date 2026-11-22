@@ -1,0 +1,304 @@
+name: Website-Checks
+
+on:
+  pull_request:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: website-ci-${{ forgejo.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Kann der versionierte Stand die Datenbank ueberhaupt herstellen?
+  #
+  # Migrationen werden von Hand eingespielt. Legt jemand eine Tabelle direkt
+  # in der Supabase-Oberflaeche an, laeuft die Anwendung weiter — nur der
+  # Wiederaufbau ginge schief, und zwar unbemerkt. Genau das war passiert:
+  # zwei Tabellen fehlten, eine spaetere Migration brach deshalb mittendrin
+  # ab, und alles nach der Abbruchstelle blieb stillschweigend aus.
+  #
+  # Laeuft neben `verify`, nicht darin: der Datenbankdienst soll nicht bei
+  # jedem Lint-Lauf mitstarten.
+  schema:
+    runs-on: ubuntu-latest
+    container: node:24-bookworm
+    timeout-minutes: 10
+
+    services:
+      postgres:
+        # Bewusst der Versions-Tag und keine feste Prüfsumme: das Abbild
+        # dient nur dem Test, und eine veraltete Prüfsumme wuerde die CI
+        # blockieren, ohne dass jemand etwas davon haette.
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - name: Checkout
+        uses: https://data.forgejo.org/actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: PostgreSQL-Client bereitstellen
+        run: |
+          if ! command -v psql >/dev/null 2>&1; then
+            apt-get update && apt-get install -y --no-install-recommends postgresql-client
+          fi
+
+      - name: Node.js einrichten
+        uses: https://data.forgejo.org/actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 24
+
+      - name: Datenbank aus den Migrationen aufbauen
+        env:
+          PGHOST: postgres
+          PGPORT: "5432"
+          PGUSER: postgres
+          PGPASSWORD: postgres
+        run: npm run check:migrations
+
+      # Greift die Zugriffsregeln an, statt sie nur zu lesen: als nicht
+      # angemeldeter Besucher und als angemeldeter Benutzer OHNE
+      # Administratorrolle. Faengt eine gelockerte Regel und eine neue
+      # Tabelle ohne Regel.
+      - name: Zugriffsregeln angreifen
+        env:
+          PGHOST: postgres
+          PGPORT: "5432"
+          PGUSER: postgres
+          PGPASSWORD: postgres
+        run: npm run check:rls
+
+      - name: Einmalfreigabe und konkurrierenden ERPNext-Claim prüfen
+        env:
+          PGHOST: postgres
+          PGPORT: "5432"
+          PGUSER: postgres
+          PGPASSWORD: postgres
+        run: npm run check:erpnext-approval
+
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        shell: bash
+    container: node:24-bookworm
+
+    steps:
+      - name: Checkout
+        uses: https://data.forgejo.org/actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - name: Ausgechecktes Verzeichnis bestätigen
+        run: git config --global --add safe.directory "$FORGEJO_WORKSPACE"
+
+      - name: Node.js einrichten
+        uses: https://data.forgejo.org/actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Abhängigkeiten installieren
+        id: dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Produktionsabhängigkeiten prüfen
+        run: npm audit --omit=dev --audit-level=moderate
+
+      - name: Codequalität prüfen
+        run: npm run lint
+
+      # Vor dem Build, damit ein veralteter eingecheckter Route-Tree hier
+      # auffällt und nicht erst auf einem fremden Rechner. Der Build würde die
+      # Datei neu schreiben und den Fehler damit verdecken.
+      - name: Typen der Anwendung prüfen
+        run: npm run typecheck
+
+      # Die Edge Functions laufen unter Deno und liegen ausserhalb von
+      # tsconfig.json — ohne diesen Schritt pruefte sie niemand.
+      - name: Typen der Edge Functions prüfen
+        run: npm run typecheck:functions
+
+      - name: Automatisierte Tests ausführen
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        run: npm test
+
+      - name: SEO-Qualitätsgate ohne Server prüfen
+        run: node --test src/lib/seo-policy.test.ts src/lib/seo-intents.test.ts
+
+      - name: Texte und SEO gegen die freigegebenen Inhaltsstände prüfen
+        run: |
+          git fetch --no-tags --depth=1 origin db305e3c190cf53a0213c90ea3e788625ece091d
+          git fetch --no-tags --depth=1 origin 6daf3fc01834e94720ef4834f36e0534dfc93aaa
+          git fetch --no-tags --depth=1 origin 333487b4f12a01727ace6ec2f36d22c849551b00
+          npm run check:design-content
+
+      - name: Strukturierte Daten aller Abholorte prüfen
+        run: npx vitest run src/lib/city-seo.test.ts
+
+      - name: Qualitätsskripte syntaktisch prüfen
+        run: |
+          bash -n scripts/deploy-ionos-release.sh
+          node --check scripts/smoke-production.mjs
+          node --check scripts/write-google-oauth.mjs
+          node --check scripts/audit-domain-migration.mjs
+          node --check scripts/qa/run-checks.mjs
+          node --check scripts/qa/check-lighthouse.mjs
+          node --check scripts/qa/lighthouse-digest.mjs
+          node --check scripts/qa/check-hero-stability.mjs
+          node --check scripts/qa/check-website-studio.mjs
+          node --check scripts/qa/check-cross-browser.mjs
+          node --check lighthouserc.mobile.cjs
+          node --check lighthouserc.desktop.cjs
+          bash -n scripts/check-migrations.sh
+          bash -n scripts/check-rls.sh
+          bash -n scripts/check-erpnext-operational-approval.sh
+
+      - name: Produktions-Build erstellen
+        run: npm run build
+
+      - name: Release-Paket und Vertrag prüfen
+        run: |
+          test -s .output/server/index.mjs
+          printf 'white-gloss-booking-workflow=1\n' | cmp - .output/booking-workflow.contract
+          tar -czf website-release.tgz .output
+          sha256sum website-release.tgz > website-release.tgz.sha256
+
+      - name: Build-Paket sichern
+        uses: https://data.forgejo.org/actions/upload-artifact@ff15f0306b3f739f7b6fd43fb5d26cd321bd4de5 # Forgejo v3
+        with:
+          name: website-release-${{ forgejo.sha }}
+          path: |
+            website-release.tgz
+            website-release.tgz.sha256
+          if-no-files-found: error
+          retention-days: 7
+
+  flows:
+    if: vars.WEBSITE_ISOLATED_FLOWTESTS_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.62.1-noble@sha256:dcc5531e97840b9b5e794f2814476b21571c5124a3fca2267d73041f56e7580e
+      options: --ipc=host
+    timeout-minutes: 25
+    env:
+      WEBSITE_ISOLATED_FLOWTESTS_ENABLED: ${{ vars.WEBSITE_ISOLATED_FLOWTESTS_ENABLED }}
+    steps:
+      - name: Checkout
+        uses: https://data.forgejo.org/actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - name: Node.js einrichten
+        uses: https://data.forgejo.org/actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 24
+      - name: Abhängigkeiten installieren
+        run: npm ci --ignore-scripts
+      - name: Produktions-Build erstellen
+        run: npm run build
+      - name: Chromium bereitstellen
+        run: node scripts/check-ci-browsers.mjs 1.62.1 chromium
+      - name: Isolierte SSR-, Buchungs-, SEO-, Mobil-, Lighthouse- und Heroabläufe prüfen
+        run: npm run test:release
+
+      - name: Kompakte visuelle Prüfnachweise ausgeben
+        if: always()
+        run: node scripts/qa/export-review-images.mjs
+
+      - name: Isolierte Prüfnachweise sichern
+        if: always()
+        uses: https://data.forgejo.org/actions/upload-artifact@ff15f0306b3f739f7b6fd43fb5d26cd321bd4de5 # Forgejo v3
+        with:
+          name: isolated-qa-results
+          path: .qa-output/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  studio:
+    if: vars.WEBSITE_ISOLATED_FLOWTESTS_ENABLED == 'true'
+    # Separate ephemeral database and media store: a Studio failure must not
+    # prevent the independent public-site Lighthouse and browser evidence.
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.62.1-noble@sha256:dcc5531e97840b9b5e794f2814476b21571c5124a3fca2267d73041f56e7580e
+      options: --ipc=host
+    timeout-minutes: 15
+    env:
+      WEBSITE_ISOLATED_FLOWTESTS_ENABLED: ${{ vars.WEBSITE_ISOLATED_FLOWTESTS_ENABLED }}
+    steps:
+      - name: Checkout
+        uses: https://data.forgejo.org/actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - name: Ausgechecktes Verzeichnis bestätigen
+        run: git config --global --add safe.directory "$FORGEJO_WORKSPACE"
+      - name: Node.js einrichten
+        uses: https://data.forgejo.org/actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 24
+          cache: npm
+      - name: Abhängigkeiten installieren
+        run: npm ci --ignore-scripts
+      - name: Produktions-Build erstellen
+        run: npm run build
+      - name: Chromium bereitstellen
+        run: node scripts/check-ci-browsers.mjs 1.62.1 chromium
+      - name: Studio mit geschützten Testdaten prüfen
+        timeout-minutes: 5
+        run: node scripts/qa/run-checks.mjs --studio-only
+      - name: Kompakte Studio-Prüfnachweise ausgeben
+        if: always()
+        run: node scripts/qa/export-review-images.mjs
+      - name: Studio-Prüfnachweise sichern
+        if: always()
+        uses: https://data.forgejo.org/actions/upload-artifact@ff15f0306b3f739f7b6fd43fb5d26cd321bd4de5 # Forgejo v3
+        with:
+          name: studio-qa-results
+          path: .qa-output/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  cross-browser:
+    if: vars.WEBSITE_ISOLATED_FLOWTESTS_ENABLED == 'true'
+    # Additional engines run on a disposable runner, never install OS packages
+    # on the self-hosted production VPS. Existing verify remains independent.
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.62.1-noble@sha256:dcc5531e97840b9b5e794f2814476b21571c5124a3fca2267d73041f56e7580e
+      options: --ipc=host
+    timeout-minutes: 20
+    env:
+      WEBSITE_ISOLATED_FLOWTESTS_ENABLED: ${{ vars.WEBSITE_ISOLATED_FLOWTESTS_ENABLED }}
+    steps:
+      - name: Checkout
+        uses: https://data.forgejo.org/actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - name: Ausgechecktes Verzeichnis bestätigen
+        run: git config --global --add safe.directory "$FORGEJO_WORKSPACE"
+      - name: Node.js einrichten
+        uses: https://data.forgejo.org/actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 24
+          cache: npm
+      - name: Abhängigkeiten installieren
+        run: npm ci --ignore-scripts
+      - name: Produktions-Build erstellen
+        run: npm run build
+      - name: Eingecheckten Route-Tree gegen den Build prüfen
+        run: git diff --exit-code -- src/routeTree.gen.ts
+      - name: Firefox und WebKit bereitstellen
+        run: node scripts/check-ci-browsers.mjs 1.62.1 firefox webkit
+      - name: Isolierte Browserprüfung
+        run: node scripts/qa/run-checks.mjs --cross-browser-only
+      - name: Browsernachweise sichern
+        if: always()
+        uses: https://data.forgejo.org/actions/upload-artifact@ff15f0306b3f739f7b6fd43fb5d26cd321bd4de5 # Forgejo v3
+        with:
+          name: cross-browser-qa-results
+          path: .qa-output/
+          if-no-files-found: ignore
+          retention-days: 7
