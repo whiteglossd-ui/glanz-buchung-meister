@@ -14,7 +14,9 @@ flock -n 9 || fail 'Die Einrichtung läuft bereits.'
 
 origin=https://forgejo-h9qr.srv2077393.hstgr.cloud
 config_dir=/etc/wg-forgejo-ci
-binary=/usr/local/libexec/wg-forgejo-runner-11.3.1
+program_dir=/opt/wg-forgejo-ci
+binary=$program_dir/forgejo-runner-11.3.1
+previous_binary=/usr/local/libexec/wg-forgejo-runner-11.3.1
 sha=362e8055c1353e6cbce77a22d6ee6d7a32852e2a4f54bc7cb3e742143d0b0c04
 label=ubuntu-latest:docker://node:24-bookworm
 
@@ -35,24 +37,41 @@ ini=$(docker exec --user git "$containers" sh -ec '
 forgejo=(docker exec -i --user git "$containers" forgejo --config "$ini")
 "${forgejo[@]}" forgejo-cli actions register --help >/dev/null
 
-printf '%s\n' 'Installiere Pakete für Rootless Podman.'
 packages=(podman uidmap slirp4netns fuse-overlayfs dbus-user-session curl openssl)
-export DEBIAN_FRONTEND=noninteractive NEEDRESTART_SUSPEND=1
-apt-get update -q
-package_plan=$(apt-get -s --no-install-recommends --no-upgrade --no-remove install "${packages[@]}")
-if grep -qE '^Inst [^ ]+ \[' <<<"$package_plan"; then
-  fail 'APT würde bestehende Pakete aktualisieren. Installation gestoppt.'
+missing=()
+for package in "${packages[@]}"; do
+  status=$(dpkg-query -W -f='${db:Status-Status}' "$package" 2>/dev/null) || status=missing
+  [[ "$status" == installed ]] || missing+=("$package")
+done
+if (( ${#missing[@]} )); then
+  printf '%s\n' 'Installiere fehlende Pakete für Rootless Podman.'
+  export DEBIAN_FRONTEND=noninteractive NEEDRESTART_SUSPEND=1
+  apt-get update -q
+  package_plan=$(LC_ALL=C apt-get -s --no-install-recommends --no-upgrade --no-remove install "${missing[@]}")
+  if grep -qE '^Inst [^ ]+ \[' <<<"$package_plan"; then
+    fail 'APT würde bestehende Pakete aktualisieren. Installation gestoppt.'
+  fi
+  apt-get install -y --no-install-recommends --no-upgrade --no-remove "${missing[@]}"
 fi
-apt-get install -y --no-install-recommends --no-upgrade --no-remove "${packages[@]}"
 
-if ! printf '%s  %s\n' "$sha" "$binary" | sha256sum --check --status 2>/dev/null; then
-  work=$(mktemp -d)
-  trap 'rm -rf -- "$work"' EXIT
-  curl -fsSL --retry 3 --connect-timeout 10 --max-time 180 -o "$work/runner" \
-    https://code.forgejo.org/forgejo/runner/releases/download/v11.3.1/forgejo-runner-11.3.1-linux-amd64
-  printf '%s  %s\n' "$sha" "$work/runner" | sha256sum -c -
-  install -D -o root -g root -m 0755 "$work/runner" "$binary"
+has_runner_checksum() {
+  [[ -f "$1" ]] && printf '%s  %s\n' "$sha" "$1" | sha256sum --check --status 2>/dev/null
+}
+
+install -d -o root -g root -m 0755 "$program_dir"
+if ! has_runner_checksum "$binary"; then
+  source_binary=$previous_binary
+  if ! has_runner_checksum "$source_binary"; then
+    work=$(mktemp -d)
+    trap 'rm -rf -- "$work"' EXIT
+    source_binary=$work/runner
+    curl -fsSL --retry 3 --connect-timeout 10 --max-time 180 -o "$source_binary" \
+      https://code.forgejo.org/forgejo/runner/releases/download/v11.3.1/forgejo-runner-11.3.1-linux-amd64
+  fi
+  printf '%s  %s\n' "$sha" "$source_binary" | sha256sum -c -
+  install -o root -g root -m 0755 -- "$source_binary" "$binary"
 fi
+chmod 0755 "$binary"
 install -d -o root -g root -m 0755 "$config_dir"
 install -d -o root -g root -m 0700 "$config_dir/registration"
 
@@ -69,6 +88,11 @@ setup_runner() {
     fail "Unerwartete Gruppen für $user."
   [[ "$(getent passwd "$user" | cut -d: -f6)" == "$runner_home" ]] ||
     fail "Unerwartetes Home-Verzeichnis für $user."
+  if ! (cd / && runuser -u "$user" -- "$binary" --version); then
+    namei -l "$binary" >&2 || true
+    findmnt -T "$binary" -no TARGET,OPTIONS >&2 || true
+    fail "Das Runner-Programm kann als $user nicht gestartet werden."
+  fi
   for file in /etc/subuid /etc/subgid; do
     awk -F: -v user="$user" '$1==user && $3>=65536 {ok=1} END {exit !ok}' "$file" ||
       fail "Für $user fehlen die nötigen IDs in $file."
