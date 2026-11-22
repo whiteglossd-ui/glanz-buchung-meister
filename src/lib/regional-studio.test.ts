@@ -1,12 +1,12 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { cities, cityPickupPriceText, services, site } from "../data/site.ts";
+import { cities, cityPickupPriceText, packages, quoteTotal, services, site } from "../data/site.ts";
 import { cityJourneyText, citySeoCopy } from "./city-copy.ts";
 import { cityPlanningText, cityLogisticsFaq } from "./city-logistics.ts";
 import { publicSeo, serviceCitySeo } from "./seo-policy.ts";
 import { studioMetadata } from "./studio-public.ts";
 
-const confirmed: Record<string, [number, number, string]> = {
+const confirmed: Record<string, [number | null, number | null, string]> = {
   "horb-am-neckar": [0, 10, "kostenlos"],
   "sulz-am-neckar": [12, 13, "30 €"],
   empfingen: [10, 12, "kostenlos"],
@@ -17,6 +17,7 @@ const confirmed: Record<string, [number, number, string]> = {
   nagold: [20, 25, "50 €"],
   "rottenburg-am-neckar": [25, 30, "70 €"],
   freudenstadt: [30, 35, "70 €"],
+  lossburg: [null, null, "auf Anfrage"],
   "oberndorf-am-neckar": [30, 35, "70 €"],
   herrenberg: [35, 40, "70 €"],
   tuebingen: [35, 40, "70 €"],
@@ -28,8 +29,7 @@ const confirmed: Record<string, [number, number, string]> = {
   sindelfingen: [52, 60, "auf Anfrage"],
 };
 
-test("all 19 pickup hubs retain distinct metadata, index policy and their confirmed logistics", () => {
-  assert.equal(cities.length, 19);
+test("all pickup hubs retain distinct metadata, index policy and their confirmed logistics", () => {
   assert.deepEqual(cities.map((city) => city.slug).sort(), Object.keys(confirmed).sort());
   const titles = new Set<string>();
   const descriptions = new Set<string>();
@@ -45,7 +45,8 @@ test("all 19 pickup hubs retain distinct metadata, index policy and their confir
       confirmed[city.slug],
       city.slug,
     );
-    assert.ok(cityJourneyText(city).includes(String(city.minutes)), city.slug);
+    if (city.minutes !== null) assert.ok(cityJourneyText(city).includes(String(city.minutes)), city.slug);
+    else assert.equal(cityJourneyText(city), "Entfernung und Fahrzeit nach Abholadresse");
     assert.equal(publicSeo(`/abholservice/${city.slug}`).status, "index", city.slug);
     for (const service of services) {
       assert.equal(
@@ -55,13 +56,13 @@ test("all 19 pickup hubs retain distinct metadata, index policy and their confir
       );
     }
   }
-  assert.equal(titles.size, 19);
-  assert.equal(descriptions.size, 19);
+  assert.equal(titles.size, cities.length);
+  assert.equal(descriptions.size, cities.length);
 });
 
-test("all 19 pickup plans add useful information without repeating the introduction or losing local handover notes", () => {
+test("all pickup plans add useful information without repeating the introduction or losing local handover notes", () => {
   const plans = cities.map((city) => cityPlanningText(city));
-  assert.equal(new Set(plans).size, 19);
+  assert.equal(new Set(plans).size, cities.length);
   for (const city of cities) {
     const plan = cityPlanningText(city);
     assert.ok(plan.length > 100, city.slug);
@@ -78,13 +79,13 @@ test("all 19 pickup plans add useful information without repeating the introduct
   assert.ok(changedPlan.includes(cityPickupPriceText(changedLogistics)));
 });
 
-test("planning paragraphs and logistics FAQs for all 19 cities have no doubled sentence punctuation", () => {
+test("planning paragraphs and logistics FAQs for every city have no doubled sentence punctuation", () => {
   for (const city of cities) {
     const faq = cityLogisticsFaq(city);
     for (const text of [cityPlanningText(city), faq?.question, faq?.answer]) {
       if (text) assert.doesNotMatch(text, /\.\s*\./, city.slug);
     }
-    assert.match(cityJourneyText(city), /Min\.$/, "Compact distance labels retain their abbreviation");
+    if (city.minutes !== null) assert.match(cityJourneyText(city), /Min\.$/, "Compact distance labels retain their abbreviation");
   }
 });
 
@@ -106,4 +107,14 @@ test("specific logistics FAQs explain free pickup and radius boundaries without 
   assert.ok(cityLogisticsFaq(horb)!.answer.includes(site.street));
   const empfingen = cities.find((city) => city.slug === "empfingen")!;
   assert.match(cityLogisticsFaq(empfingen)!.answer, /Wiesenstetten.*Dommelsberg/);
+});
+
+test("Loßburg remains a pickup request with no quoted fee before the workshop opens", () => {
+  const city = cities.find((entry) => entry.slug === "lossburg")!;
+  assert.match(city.blurb, /Bis zur Eröffnung.*Horb/);
+  for (const { id: packageId } of packages) {
+    const quote = quoteTotal({ packageId, classId: "kompakt", citySlug: city.slug, extraIds: [] });
+    assert.equal(quote.pickup, null);
+    assert.equal(quote.pickupOnRequest, true);
+  }
 });

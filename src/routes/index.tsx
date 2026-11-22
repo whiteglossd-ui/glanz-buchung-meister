@@ -2,7 +2,7 @@ import { serializeJsonLd } from "@/lib/json-ld";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { IconArrowRight } from "@/components/icons";
 import { LazyGoogleReviews } from "@/components/lazy-google-reviews";
-import { LazyConfigurator } from "@/components/lazy-configurator";
+import { HomeBooking } from "@/components/home-booking";
 import { Shot } from "@/components/media";
 import {
   cities,
@@ -16,10 +16,9 @@ import { cityDistanceLine, pickupDistanceLabel, pickupStatus } from "@/lib/city-
 import { localBusinessJsonLd, pageHead } from "@/lib/seo";
 import { parseBookingSelection } from "@/lib/booking-selection";
 import { scrollFilmPreloads } from "@/data/scroll-film";
-import { conciergeAtmosphere } from "@/data/atmosphere-media";
+import { homeText } from "@/data/home-copy";
 import { ScrollFilmHero } from "@/components/scroll-film-hero";
 import { HomePolish } from "@/components/home-polish";
-import { RundumServiceIntro, RundumServiceInquiry } from "@/components/rundum-service";
 import { PackageShowcase } from "@/components/package-showcase";
 import { ResultsTeaser } from "@/components/results-teaser";
 import { HomeProcess } from "@/components/home-process";
@@ -27,6 +26,7 @@ import { RevealLines } from "@/components/reveal-lines";
 import { WebsiteStudioContent } from "@/components/website-studio-content";
 import { loadPublicStudioDocument } from "@/lib/studio-public.functions";
 import { studioHero, studioMetadata } from "@/lib/studio-public";
+import "@/styles/home-intro.css";
 
 export const Route = createFileRoute("/")({
   validateSearch: parseBookingSelection,
@@ -65,77 +65,59 @@ function Home() {
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
       <ScrollFilmHero
-        title={document?.content.title.trim() || undefined}
-        lead={document?.content.lead.trim() || undefined}
+        title={homeText("title", document?.content.title.trim() || undefined)}
+        lead={homeText("lead", document?.content.lead.trim() || undefined)}
         heroImage={studioHero(document)}
       />
 
       <section
         id="nach-dem-film"
-        aria-label="Auf einen Blick"
-        className="hero-follow border-b border-line"
-        data-stagger
+        className="film-chapter workshop-personal"
+        aria-labelledby="workshop-title"
       >
-        <ul className="gd-stats mx-auto max-w-7xl">
-          <li
-            className="ga-s1 border-b border-r border-line px-4 py-7 sm:px-6 sm:py-8"
-            data-stagger-item
-          >
-            <p
-              className="font-display text-xl tracking-tight sm:text-2xl"
-              data-count={cities.length}
-              data-count-prefix=""
-              data-count-suffix=" Abholorte"
+        <div className="film-chapter-media" data-parallax-frame>
+          <Shot
+            name="atelier"
+            alt="Aufbereitetes Kundenfahrzeug vor der Werkstatt von White-Gloss Detailing in Horb am Neckar"
+            className="size-full"
+            sizes="100vw"
+            framed={false}
+          />
+        </div>
+        <div className="film-chapter-veil" />
+        <div className="film-chapter-copy" data-reveal>
+          <p className="kicker">{site.owner} · Inhaber</p>
+          <h2 id="workshop-title" className="heading-2 mt-5" data-lines>
+            <RevealLines lines={["Dein Fahrzeug", "in guten Händen."]} />
+          </h2>
+          <p className="mt-6 max-w-xl whitespace-pre-line text-base leading-relaxed text-muted sm:text-lg">
+            {homeText("body", document?.content.body.trim() || undefined)}
+          </p>
+          <p className="mt-4 max-w-xl leading-relaxed text-muted">
+            Dich stört eine Delle, eine zerkratzte Felge oder ein Brandloch im Sitz? Ich stimme die
+            Reparatur mit meinem Partnerbetrieb für dich ab.
+          </p>
+          <div className="workshop-links">
+            <a href="#rundum-anfrage" className="atelier-text-link">
+              Aufbereitung mit Reparatur <IconArrowRight aria-hidden />
+            </a>
+            <a
+              href={`${site.whatsappHref}&text=${encodeURIComponent("Hallo Lars, ich habe eine Frage zur Aufbereitung meines Autos.")}`}
+              className="atelier-text-link"
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              {cities.length} Abholorte
-            </p>
-            <p className="mt-1 text-xs text-subtle">Hol- und Bringservice</p>
-          </li>
-          <li
-            className="ga-s2 border-b border-r border-line px-4 py-7 sm:px-6 sm:py-8"
-            data-stagger-item
-          >
-            <p className="font-display text-xl tracking-tight sm:text-2xl">
-              {site.hoursLabel.replace(" Uhr", "")}
-            </p>
-            <p className="mt-1 text-xs text-subtle">Werkstatt geöffnet</p>
-          </li>
-          <li
-            className="ga-s3 border-b border-r border-line px-4 py-7 sm:px-6 sm:py-8"
-            data-stagger-item
-          >
-            <p
-              className="font-display text-xl tracking-tight sm:text-2xl"
-              data-count="149"
-              data-count-prefix="ab "
-              data-count-suffix={"\u00a0€"}
-            >
-              ab 149&nbsp;€
-            </p>
-            <p className="mt-1 text-xs text-subtle">Kompaktklasse inkl. MwSt.</p>
-          </li>
-          <li
-            className="ga-s4 border-b border-r border-line px-4 py-7 sm:px-6 sm:py-8"
-            data-stagger-item
-          >
-            <p className="font-display text-xl tracking-tight sm:text-2xl">Lackprüfung</p>
-            <p className="mt-1 text-xs text-subtle">Mit Lackdickenmessung</p>
-          </li>
-        </ul>
+              Lars auf WhatsApp schreiben <IconArrowRight aria-hidden />
+            </a>
+            {aboutPublished && (
+              <Link to="/ueber-uns" className="atelier-text-link">
+                Über White-Gloss
+              </Link>
+            )}
+          </div>
+        </div>
       </section>
-      <RundumServiceIntro />
-      <div className="home-intro mx-auto max-w-7xl px-4 sm:px-6">
-        <p className="mx-auto max-w-2xl whitespace-pre-line py-12 text-center text-sm leading-relaxed text-muted sm:text-base">
-          {document?.content.body.trim() ||
-            "Für den täglichen Weg zur Arbeit, deinen Liebhaberwagen oder die Leasingrückgabe: Wir prüfen dein Fahrzeug persönlich und stimmen Pflege, Preis und Termin mit dir ab."}
-        </p>
-        <nav className="home-jump-links" aria-label="Auf der Startseite">
-          <a href="#rundum-anfrage">Rundum-Service</a>
-          <a href="#pakete">Pakete & Preise</a>
-          <a href="#kundenergebnisse">Ergebnisse</a>
-          <a href="#buchung">Termin anfragen</a>
-        </nav>
-      </div>
+
       {document &&
         (document.content.sections.length > 0 ||
           document.content.faqs.length > 0 ||
@@ -156,45 +138,6 @@ function Home() {
             />
           </section>
         )}
-      <section className="film-chapter workshop-personal" aria-labelledby="workshop-title">
-        <div className="film-chapter-media" data-parallax-frame>
-          <Shot
-            name="atelier"
-            alt="Aufbereitetes Kundenfahrzeug vor der Werkstatt von White-Gloss Detailing in Horb am Neckar"
-            className="size-full"
-            sizes="100vw"
-            framed={false}
-          />
-        </div>
-        <div className="film-chapter-veil" />
-        <div className="film-chapter-copy" data-reveal>
-          <p className="kicker">Persönlich in Horb am Neckar</p>
-          <h2 id="workshop-title" className="heading-2 mt-5" data-lines>
-            <RevealLines lines={["dein Fahrzeug.", "In guten Händen."]} />
-          </h2>
-          <p className="mt-6 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
-            Wir stimmen die Pflege von Lack, Leder und Felgen auf den Zustand deines Fahrzeugs ab.
-            Die Fahrzeugaufbereitung führen wir in unserer Werkstatt in Horb am Neckar aus.
-          </p>
-          <blockquote className="workshop-quote">
-            „Ich behandle jedes Fahrzeug so, als müsste ich es dir unter perfektem Licht
-            zurückgeben – weil ich genau das tue.“
-          </blockquote>
-          <div className="workshop-owner">
-            <span>{site.owner}</span>
-            <p>Inhaber · White-Gloss Detailing</p>
-          </div>
-          <Link to="/qualitaet" className="atelier-text-link">
-            So arbeiten wir <IconArrowRight aria-hidden />
-          </Link>
-          {aboutPublished && (
-            <Link to="/ueber-uns" className="atelier-text-link mt-4">
-              Über White-Gloss <IconArrowRight aria-hidden />
-            </Link>
-          )}
-        </div>
-      </section>
-
       <PackageShowcase />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
@@ -204,123 +147,19 @@ function Home() {
 
       <HomeProcess />
 
-      <section className="concierge-service" aria-labelledby="concierge-heading">
-        <header>
-          <p className="kicker">Hol- und Bringservice · digitale Übergabe</p>
-          <h2 id="concierge-heading" className="heading-2" data-lines>
-            <RevealLines lines={["Abholen. Aufbereiten.", "Zurückbringen."]} />
-          </h2>
-          <p>
-            Du musst dafür nicht vor Ort sein. Auf Wunsch stimmen wir eine sichere
-            Schlüsselhinterlegung mit dir ab.
-          </p>
-          <div className="concierge-media" aria-hidden="true">
-            {conciergeAtmosphere.map((photo) => (
-              <div className="concierge-frame" key={photo.id}>
-                <img
-                  className="concierge-media-backdrop"
-                  src={photo.backdrop}
-                  width={384}
-                  height={216}
-                  alt=""
-                  loading="lazy"
-                  decoding="async"
-                />
-                <img
-                  className="concierge-media-sharp"
-                  src={photo.src}
-                  srcSet={photo.srcSet}
-                  sizes="(min-width: 960px) 33vh, 72vw"
-                  width={photo.width}
-                  height={photo.height}
-                  alt=""
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-            ))}
-          </div>
-        </header>
-        <ol>
-          <li>
-            <span>01</span>
-            <h3>Wir holen ab</h3>
-            <p>
-              Zum vereinbarten Zeitpunkt – persönlich oder mit abgestimmter Schlüsselhinterlegung.
-            </p>
-          </li>
-          <li>
-            <span>02</span>
-            <h3>Wir bereiten auf</h3>
-            <p>
-              Dein Fahrzeug ist in unserer Werkstatt in guten Händen. Umfang und Preis werden vorher
-              mit dir abgestimmt.
-            </p>
-          </li>
-          <li>
-            <span>03</span>
-            <h3>Wir bringen zurück</h3>
-            <p>
-              Stressfrei und ohne Wartezeit. Die digitale Übergabe dokumentiert das Ergebnis für
-              dich.
-            </p>
-          </li>
-        </ol>
-      </section>
-
-      <section
-        id="buchung"
-        className="section booking-section mx-auto max-w-7xl px-4 sm:px-6"
-        aria-labelledby="buchung-heading"
-      >
-        <p className="kicker">Fahrzeug → Wunschergebnis → Termin und Übergabe</p>
-        <h2 id="buchung-heading" className="heading-2 mt-3" tabIndex={-1} data-lines>
-          <RevealLines lines={["Deine Aufbereitung."]} />
-        </h2>
-        <p className="booking-intro text-muted">
-          Wähle Fahrzeug, Paket und Zusatzleistungen. Preis und Zeitaufwand bleiben
-          transparent. Danach stimmen wir Termin, Abholung und digitale Übergabe mit dir ab –
-          unverbindlich.
-        </p>
-        <LazyConfigurator eager={Boolean(paket || ort)} initialPackage={paket} initialCity={ort} />
-      </section>
-
-      <RundumServiceInquiry />
-
-      <nav
-        className="home-specialties mx-auto max-w-7xl px-4 sm:px-6"
-        aria-label="Weitere Leistungen"
-      >
-        <Link to="/dellen-hagelschaden">
-          <span className="kicker">01</span>
-          <span>Dellen- und Hagelschäden</span>
-          <IconArrowRight aria-hidden />
-        </Link>
-        <Link to="/luxusfahrzeuge">
-          <span className="kicker">02</span>
-          <span>Luxusfahrzeuge</span>
-          <IconArrowRight aria-hidden />
-        </Link>
-        <Link to="/b2b">
-          <span className="kicker">03</span>
-          <span>Firmen, Flotten, Autohäuser</span>
-          <IconArrowRight aria-hidden />
-        </Link>
-      </nav>
+      <HomeBooking initialPackage={paket} initialCity={ort} />
 
       <section
         className="home-directory mx-auto max-w-7xl px-4 sm:px-6"
         aria-labelledby="fahrzeugaufbereitung-heading"
       >
         <header>
-          <p className="kicker">White-Gloss Detailing</p>
-          <h2 id="fahrzeugaufbereitung-heading" className="heading-2 mt-4">
+          <h2 id="fahrzeugaufbereitung-heading" className="heading-2 mt-4" data-scroll-title>
             Fahrzeugaufbereitung in {site.city}
           </h2>
           <p>
-            Innenraumreinigung, Lackkorrektur und Keramikversiegelung: Wir beraten dich zur passenden
-            Autoaufbereitung in unserer Werkstatt in {site.city}. In der Region bieten wir einen
-            Hol- und Bringservice an.
+            Vor der Politur prüfe ich den Lack mit einer Lackdickenmessung. Hier findest du die
+            passende Pflege für Lack, Innenraum und Felgen.
           </p>
         </header>
         <nav aria-label="Leistungen">
@@ -334,6 +173,21 @@ function Home() {
               </li>
             ))}
             <li>
+              <Link to="/dellen-hagelschaden">
+                Dellen- und Hagelschäden <IconArrowRight aria-hidden />
+              </Link>
+            </li>
+            <li>
+              <Link to="/luxusfahrzeuge">
+                Luxusfahrzeuge <IconArrowRight aria-hidden />
+              </Link>
+            </li>
+            <li>
+              <Link to="/b2b">
+                Firmen, Flotten und Autohäuser <IconArrowRight aria-hidden />
+              </Link>
+            </li>
+            <li>
               <Link to="/ratgeber">
                 Ratgeber
                 <IconArrowRight aria-hidden />
@@ -345,7 +199,6 @@ function Home() {
       <section className="home-location" aria-labelledby="standort-heading">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div>
-            <p className="kicker">Persönlich vor Ort</p>
             <h2 id="standort-heading" className="heading-2 mt-4" data-lines>
               <RevealLines lines={[`Werkstatt in ${site.city}`]} />
             </h2>
@@ -355,12 +208,31 @@ function Home() {
               {site.hoursLabel}
             </p>
             <Link to="/kontakt" className="atelier-text-link">
-              Kontakt & Anfahrt <IconArrowRight aria-hidden />
+              Kontakt &amp; Anfahrt <IconArrowRight aria-hidden />
             </Link>
+            <h3>Demnächst in Loßburg</h3>
+            <p>
+              Bis zur Eröffnung meiner neuen Werkstatt in Loßburg bereite ich dein Auto in Horb auf.
+            </p>
+            <nav className="workshop-links" aria-label="Loßburg und Freudenstadt">
+              <Link
+                to="/abholservice/$city"
+                params={{ city: "lossburg" }}
+                className="atelier-text-link"
+              >
+                Loßburg <IconArrowRight aria-hidden />
+              </Link>
+              <Link
+                to="/abholservice/$city"
+                params={{ city: "freudenstadt" }}
+                className="atelier-text-link"
+              >
+                Freudenstadt <IconArrowRight aria-hidden />
+              </Link>
+            </nav>
           </div>
           <div>
-            <p className="kicker">Hol- und Bringservice · {cities.length} Abholorte</p>
-            <h3>Wir holen dein Fahrzeug ab und bringen es zurück.</h3>
+            <h3>Was kostet die Abholung bei dir?</h3>
             <p>
               {pickupTierSummary()}. {pickupKeramikNote()}. Alle Beträge {site.vatNote}
             </p>

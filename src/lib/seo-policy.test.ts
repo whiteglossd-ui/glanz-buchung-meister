@@ -125,7 +125,9 @@ test("index requires demand AND two distinct facts AND public proof AND availabi
 
 test("sitemap, robots and links agree and cannot override noindex", () => {
   const filtered = filterIndexableSitemap(inventory);
-  assert.equal([...filtered.matchAll(/<loc>/g)].length, 54);
+  const pickupHubs = [...filtered.matchAll(/<loc>https:\/\/white-gloss\.de\/abholservice\/([^<]+)<\/loc>/g)]
+    .map((match) => match[1]);
+  assert.deepEqual(pickupHubs.sort(), cities.map((city) => city.slug).sort());
   assert.doesNotMatch(
     filtered,
     /scheinwerferaufbereitung|\/impressum|\/datenschutz|\/agb|\/widerruf|\/barrierefreiheit|\/datenloeschung/,

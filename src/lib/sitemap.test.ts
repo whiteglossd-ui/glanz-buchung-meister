@@ -15,17 +15,18 @@ const row = (slug: string | null): SitemapBlogRow => ({
 });
 const locations = (xml: string) => [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
 
+const inventoryUrls = locations(staticXml);
+
 describe("CMS sitemap XML", () => {
-  it("retains all 251 inventory URLs and their original metadata", () => {
-    assert.equal(locations(staticXml).length, 251);
-    assert.equal(new Set(locations(staticXml)).size, 251);
+  it("retains every inventory URL and its original metadata", () => {
+    assert.ok(inventoryUrls.includes(origin + "/"));
+    assert.equal(new Set(inventoryUrls).size, inventoryUrls.length);
     assert.equal(appendBlogSitemap(staticXml, [], origin), staticXml);
     const output = appendBlogSitemap(staticXml, [row("neuer-beitrag")], origin);
     for (const entry of staticXml.matchAll(/<url>.*?<\/url>/g)) {
       assert.ok(output.includes(entry[0]), entry[0]);
     }
-    assert.equal(locations(output).length, 252);
-    assert.ok(output.includes(`<loc>${origin}/ratgeber/neuer-beitrag</loc>`));
+    assert.deepEqual(locations(output), [...inventoryUrls, `${origin}/ratgeber/neuer-beitrag`]);
   });
 
   it("keeps static collisions and the first duplicate selected by the article loader", () => {
@@ -34,7 +35,7 @@ describe("CMS sitemap XML", () => {
     const collision = row("keramikversiegelung-kosten");
     assert.equal(appendBlogSitemap(staticXml, [collision], origin), staticXml);
     const output = appendBlogSitemap(staticXml, [first, second, collision], origin);
-    assert.equal(locations(output).length, 252);
+    assert.deepEqual(locations(output), [...inventoryUrls, `${origin}/ratgeber/neuer-beitrag`]);
     assert.match(output, /neuer-beitrag<\/loc><lastmod>2026-09-02T10:00:00.000Z/);
     assert.doesNotMatch(output, /2026-09-03T10:00:00.000Z/);
   });
@@ -52,7 +53,7 @@ describe("CMS sitemap XML", () => {
     assert.equal(new URL(url).origin, origin);
     assert.equal(decodeURIComponent(new URL(url).pathname.slice("/ratgeber/".length)), slug);
     const output = appendBlogSitemap(staticXml, [row(slug)], origin);
-    assert.equal(locations(output).length, 252);
+    assert.equal(locations(output).length, inventoryUrls.length + 1);
     assert.ok(output.includes("&amp;"));
     assert.ok(output.includes("O&apos;Brien"));
     assert.doesNotMatch(output, /<Glanz>/);

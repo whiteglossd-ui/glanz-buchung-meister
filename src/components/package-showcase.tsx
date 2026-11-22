@@ -1,197 +1,107 @@
 import { Link } from "@tanstack/react-router";
-import { useEffect, useRef } from "react";
-import { packageServiceSlug, packages, site } from "@/data/site";
+import { useState } from "react";
+import { packageServiceSlug, packages, site, vehicleClasses } from "@/data/site";
 import { customerPhotos } from "@/data/customer-photos";
-import { money } from "@/lib/utils";
+import { eur } from "@/lib/utils";
 import { IconArrowRight } from "./icons";
-import { RevealLines } from "./reveal-lines";
-import "@/styles/package-editorial.css";
+import { MediaRail } from "./media-rail";
 
-const photos = ["customer-14", "customer-05", "customer-09"].map((id) =>
-  customerPhotos.find((photo) => photo.id === id)!,
-);
-const focalPoints = ["50% 58%", "50% 64%", "50% 66%"];
-const packageGoals = [
-  "Frisch im Alltag – für sichtbar gepflegten Innenraum und Lack.",
-  "Der spürbare Unterschied – für deutlich mehr Glanz und ein rundum gepflegtes Fahrzeug.",
-  "Langfristig besonders – für anspruchsvolle Lackkorrektur und dauerhaften Schutz.",
+const photos = [
+  customerPhotos.find((photo) => photo.id === "customer-14")!,
+  customerPhotos.find((photo) => photo.id === "customer-05")!,
+  {
+    src: "/media/customer-photos/ceramic-sclass-1400.webp",
+    srcSet:
+      "/media/customer-photos/ceramic-sclass-480.webp 480w, /media/customer-photos/ceramic-sclass-900.webp 900w, /media/customer-photos/ceramic-sclass-1400.webp 1064w",
+    width: 1064,
+    height: 1332,
+    alt: "Schwarze Mercedes-Benz S-Klasse mit spiegelndem Keramik-Finish und AMG-Felge in der Werkstatt",
+  },
 ];
-const photoSizes =
-  "(min-width: 960px) min(36vw, 640px), (min-width: 640px) 90vw, calc(100vw - 2.5rem)";
+const focalPoints = ["50% 58%", "50% 64%", "50% 58%"];
 
-/**
- * Each package keeps its own image and complete copy in DOM order. Desktop
- * progressively places those same images in one sticky stage; no duplicated
- * content, scroll hijacking or animation dependency is needed. Without JS,
- * on mobile and with reduced motion, all three chapters remain static.
- */
 export function PackageShowcase() {
-  const sectionRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-    const media = window.matchMedia(
-      "(min-width: 960px) and (min-height: 700px) and (prefers-reduced-motion: no-preference)",
-    );
-    const chapters = [...section.querySelectorAll<HTMLElement>(".package-editorial-body")];
-    const pictures = [...section.querySelectorAll<HTMLElement>(".package-editorial-media")];
-    const atmosphere = [...section.querySelectorAll<HTMLElement>(".package-editorial-atmosphere img")];
-    let frame = 0;
-    let nearby = true;
-    let current = -1;
-
-    const paint = () => {
-      frame = 0;
-      if (!media.matches || !nearby) return;
-      const readingLine = window.innerHeight * 0.55;
-      let next = 0;
-      chapters.forEach((chapter, index) => {
-        if (chapter.getBoundingClientRect().top <= readingLine) next = index;
-      });
-      if (current === next) return;
-      current = next;
-      pictures.forEach((picture, index) => {
-        picture.dataset.active = String(index === current);
-        if (atmosphere[index]) atmosphere[index].dataset.active = String(index === current);
-      });
-    };
-    const schedule = () => {
-      if (!frame && nearby && media.matches) frame = window.requestAnimationFrame(paint);
-    };
-    const syncMotion = () => {
-      current = -1;
-      if (media.matches) {
-        section.dataset.packageMotion = "scroll";
-        paint();
-      } else {
-        delete section.dataset.packageMotion;
-        pictures.forEach((picture) => delete picture.dataset.active);
-
-        atmosphere.forEach((picture) => delete picture.dataset.active);
-      }
-    };
-    const visibility = new IntersectionObserver(
-      ([entry]) => {
-        nearby = entry.isIntersecting;
-        if (nearby) schedule();
-      },
-      { rootMargin: "100% 0px" },
-    );
-    visibility.observe(section);
-    const resize = new ResizeObserver(schedule);
-    resize.observe(section);
-    syncMotion();
-    window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", schedule, { passive: true });
-    media.addEventListener("change", syncMotion);
-    return () => {
-      window.cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", schedule);
-      media.removeEventListener("change", syncMotion);
-      visibility.disconnect();
-      resize.disconnect();
-      delete section.dataset.packageMotion;
-      pictures.forEach((picture) => delete picture.dataset.active);
-
-      atmosphere.forEach((picture) => delete picture.dataset.active);
-    };
-  }, []);
-
+  const [vehicle, setVehicle] = useState(vehicleClasses[0]);
   return (
     <section
-      ref={sectionRef}
       id="pakete"
-      className="atelier-packages package-editorial"
+      className="wg-home-packages mx-auto max-w-7xl px-4 sm:px-6"
       aria-labelledby="packages-title"
     >
-      <header className="atelier-heading">
+      <header className="wg-collection-head">
         <div>
-          <p className="kicker">Pakete</p>
-          <h2 id="packages-title" data-lines>
-            <RevealLines
-              lines={[
-                <>
-                  Drei Pakete für die
-                  <br className="package-title-break" /> Fahrzeugaufbereitung.
-                </>,
-              ]}
-            />
+          <p className="kicker">Pakete & Preise</p>
+          <h2 id="packages-title" className="heading-2 mt-3" data-scroll-title>
+            Welche Pflege passt zu deinem Auto?
           </h2>
         </div>
         <Link to="/preise" className="atelier-text-link">
-          Preise und Zusatzleistungen <IconArrowRight aria-hidden />
+          Alle Preise und Zusatzleistungen <IconArrowRight aria-hidden />
         </Link>
       </header>
-      <div className="package-editorial-atmosphere" aria-hidden="true">
-        {photos.map((photo) => (
-          <img
-            key={photo.id}
-            src={photo.src}
-            srcSet={photo.srcSet}
-            sizes="480px"
-            alt=""
-            width={photo.width}
-            height={photo.height}
-            loading="lazy"
-            decoding="async"
-          />
+      <div
+        role="group"
+        aria-label="Fahrzeugklasse für die Paketpreise"
+        className="wg-vehicle-switch"
+      >
+        {vehicleClasses.map((option) => (
+          <button
+            type="button"
+            key={option.id}
+            aria-pressed={vehicle.id === option.id}
+            onClick={() => setVehicle(option)}
+          >
+            {option.label}
+          </button>
         ))}
       </div>
-      <div className="package-editorial-track">
-        {packages.map((pack, index) => {
+      <MediaRail
+        label="Aufbereitungspakete"
+        selectionLabel="Paket auswählen"
+        items={packages.map((pack, index) => {
           const photo = photos[index];
-          return (
-            <article className="package-editorial-chapter" key={pack.id}>
-              <figure className="package-editorial-media">
-                <img
-                  style={{ objectPosition: focalPoints[index] }}
-                  src={photo.src}
-                  srcSet={photo.srcSet}
-                  sizes={photoSizes}
-                  alt={photo.alt}
-                  width={photo.width}
-                  height={photo.height}
-                  loading="lazy"
-                  decoding="async"
-                />
-                <figcaption aria-hidden="true">
-                  <span>White-Gloss Detailing · Horb am Neckar</span>
-                </figcaption>
-              </figure>
-              <div className="package-editorial-body">
-                <div className="package-eyebrow">
-                  <span className="package-index">{String(index + 1).padStart(2, "0")}</span>
-                  {pack.featured && <span className="package-recommendation">Empfohlen</span>}
+          return {
+            label: pack.name.replace("White-Gloss ", ""),
+            content: (
+              <>
+                <div className="wg-rail-frame">
+                  <img
+                    src={photo.src}
+                    srcSet={photo.srcSet}
+                    sizes="(min-width: 1280px) 400px, (min-width: 960px) 32vw, 88vw"
+                    style={{ objectPosition: focalPoints[index] }}
+                    width={photo.width}
+                    height={photo.height}
+                    alt={photo.alt}
+                    loading="lazy"
+                    decoding="async"
+                  />
                 </div>
-                <h3>{pack.name}</h3>
-                <p className="package-goal">{packageGoals[index]}</p>
-                <p className="package-description">{pack.kicker}</p>
-                <div className="package-editorial-foot">
-                  <div className="package-price">
-                    <span>ab</span>
-                    <strong>{money(pack.price)} €</strong>
+                <div className="wg-rail-copy">
+                  <h3>{pack.name}</h3>
+                  <p>{pack.kicker}</p>
+                  <div className="wg-package-detail">
+                    <p className="wg-rail-price">
+                      ab <strong>{eur(pack.price * vehicle.factor)}</strong>
+                    </p>
+                    <p className="wg-rail-terms">
+                      {site.vatNote} · {pack.duration}
+                    </p>
+                    <Link
+                      to="/leistungen/$slug"
+                      params={{ slug: packageServiceSlug[pack.id] }}
+                      className="atelier-text-link"
+                      aria-label={`Paket ${pack.name} ansehen`}
+                    >
+                      Paket ansehen <IconArrowRight aria-hidden />
+                    </Link>
                   </div>
-                  <p className="package-terms">
-                    {site.vatNote} · {pack.duration}
-                  </p>
-                  <Link
-                    to="/leistungen/$slug"
-                    params={{ slug: packageServiceSlug[pack.id] }}
-                    className="atelier-text-link"
-                  >
-                    Paket {pack.name} ansehen{" "}
-                    <span className="atelier-arrow">
-                      <IconArrowRight aria-hidden />
-                    </span>
-                  </Link>
                 </div>
-              </div>
-            </article>
-          );
+              </>
+            ),
+          };
         })}
-      </div>
+      />
     </section>
   );
 }

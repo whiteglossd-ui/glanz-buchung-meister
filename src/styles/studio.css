@@ -1,7 +1,7 @@
 /* White Gloss · editorial public design.
  * One public design layer replaces the previous floating dock/Bento system.
  * Content, semantic headings and application-shell tokens are unchanged.
- * Component-owned layouts: package-editorial.css and booking-editorial.css.
+ * Component-owned layouts: media-rail.css and booking-editorial.css.
  */
 /* One regular serif face covers the editorial design. Do not register a
  * second variable face: inherited weights below the fold would download it

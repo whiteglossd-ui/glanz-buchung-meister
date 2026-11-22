@@ -6,6 +6,7 @@ import ts from "typescript";
 import * as React from "react";
 import * as jsxRuntime from "react/jsx-runtime";
 import { renderToStaticMarkup } from "react-dom/server";
+import { homeCopy, homeText } from "../src/data/home-copy.ts";
 import { scrollFilm } from "../src/data/scroll-film.ts";
 import { focusBookingHeading } from "../src/lib/booking-anchor-focus.ts";
 
@@ -42,6 +43,7 @@ runInNewContext(ts.transpileModule(source.getFullText(), {
     if (name === "react/jsx-runtime") return jsxRuntime;
     if (name === "@tanstack/react-router") return { Link: ({ to, hash, hashScrollIntoView: _hashScrollIntoView, children, ...props }) => React.createElement("a", { ...props, href: `${to}${hash ? `#${hash}` : ""}` }, children) };
     if (name === "@/components/icons") return { IconArrowRight: (props) => React.createElement("svg", props) };
+    if (name === "@/data/home-copy") return { homeCopy };
     if (name === "@/data/scroll-film") return { scrollFilm };
     if (name === "@/lib/seekable-video") return { loadSeekableVideo() { throw new Error("SSR must not load video."); } };
     if (name === "@/lib/studio-motion") return { useMagnetic() {} };
@@ -250,6 +252,17 @@ test("SSR reserves the scroll-film height before hydration without affecting no-
     /<noscript><style>\.scroll-film\[data-motion="scroll"\] \{ height: auto; \}<\/style><\/noscript>/,
   );
   assert.match(styles, /html:has\(#buchung:target\) \.scroll-film\[data-motion="scroll"\]\s*\{\s*height: auto;/);
+});
+
+test("home copy follows the new defaults and keeps each custom Studio field", () => {
+  assert.equal(homeText("title", "Ihr Auto.\r\nNicht nur sauber.\r\nWieder besonders."), homeCopy.title);
+  assert.equal(homeText("body", "Mein eigener Werkstatttext."), "Mein eigener Werkstatttext.");
+  assert.equal(homeText("body", ""), "", "The Studio keeps an intentionally empty draft field.");
+  const hero = renderHero();
+  assert.match(hero, /Hol- und Bringservice/);
+  assert.match(hero, /Liebhaberwagen oder Leasingrückgabe/);
+  assert.match(hero, /href="\/#buchung"/);
+  assert.match(hero, /href="\/preise"/);
 });
 
 test("a published hero image starts as a correctly sized still image in SSR", () => {

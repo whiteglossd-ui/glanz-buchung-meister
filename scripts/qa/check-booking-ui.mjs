@@ -153,32 +153,67 @@ async function bookingLayout(page, desktop) {
   results.push(`${desktop ? "Desktop" : "Mobile"} price summary does not overlap the active form`);
 }
 
-async function capturePackageChapters(page) {
-  const section = page.locator("#pakete");
-  await page.waitForFunction(() => document.querySelector("#pakete")?.dataset.packageMotion === "scroll");
-  assert.equal(await section.locator(".package-editorial-body").count(), 3);
-  // Capture forward progression and then exercise reverse scrolling. All text
-  // stays in the document; only the matching image should occupy the stage.
-  for (const [position, index] of [0, 1, 2, 1].entries()) {
-    await section.locator(".package-editorial-body").nth(index).evaluate((body) => {
-      const headerBottom = document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 0;
-      window.scrollTo({ top: window.scrollY + body.getBoundingClientRect().top - headerBottom - 16, behavior: "instant" });
-    });
-    await page.waitForFunction((activeIndex) => {
-      const pictures = [...document.querySelectorAll("#pakete .package-editorial-media")];
-      return pictures.length === 3 && pictures.every((picture, pictureIndex) => {
-        const opacity = Number(getComputedStyle(picture).opacity);
-        if (pictureIndex !== activeIndex) return picture.dataset.active === "false" && opacity < 0.01;
-        const image = picture.querySelector("img");
-        return picture.dataset.active === "true" && opacity > 0.99 && image?.complete && image.naturalWidth > 0;
+async function checkMediaCollections(page, width) {
+  const tracks = page.locator(".wg-media-rail");
+  assert.equal(await tracks.count(), 2, "Packages and videos share the same collection layout");
+  const frames = await page.locator(".wg-media-rail .wg-rail-frame").evaluateAll((elements) =>
+    elements.map((frame) => {
+      const { width, height } = frame.getBoundingClientRect();
+      return { width, height };
+    }),
+  );
+  assert.equal(frames.length, 6);
+  assert.ok(frames.every((frame) =>
+    frame.width > 0 && Math.abs(frame.width - frames[0].width) <= 2 &&
+    Math.abs(frame.height - frames[0].height) <= 2),
+    `Packages and videos @${width}: all six media windows have matching sizes`);
+
+  const packages = page.locator("#pakete");
+  await packages.getByRole("button", { name: "SUV / Limousine" }).click();
+  assert.match(await packages.locator(".wg-rail-price").first().innerText(), /186,25/);
+  await packages.getByRole("button", { name: "Kompaktklasse" }).click();
+  assert.match(await packages.locator(".wg-rail-price").first().innerText(), /149/);
+  for (const selector of ["#pakete", "#kundenergebnisse"]) {
+    const section = page.locator(selector);
+    const track = section.locator(".wg-media-rail");
+    const nav = section.locator(".wg-rail-nav");
+    for (const image of await track.locator(".wg-rail-frame img").all()) {
+      await image.scrollIntoViewIfNeeded();
+      await image.evaluate(async (element) => {
+        await element.decode();
+        if (!element.naturalWidth) throw new Error("Preview image must decode");
       });
-    }, index, { timeout: 10_000 });
-    const picture = section.locator(".package-editorial-media").nth(index);
-    assert.equal(await picture.evaluate((element) => getComputedStyle(element).position), "sticky");
-    assert.ok((await overflow(page)) <= 2, `Package chapter ${index + 1}: no horizontal overflow`);
-    await page.screenshot({ path: `${output}/desktop-package-${index + 1}${position === 3 ? "-reverse" : ""}.png` });
+    }
+    if (width < 960) {
+      for (const index of [2, 0, 1]) {
+        const button = nav.getByRole("button").nth(index);
+        await button.focus();
+        await page.keyboard.press("Enter");
+        await page.waitForFunction(([selector, index]) => {
+          const section = document.querySelector(selector);
+          return section.querySelectorAll(".wg-rail-nav button")[index]?.getAttribute("aria-current") === "true";
+        }, [selector, index]);
+        const visible = await track.locator(".wg-rail-card").nth(index).evaluate((card) => {
+          const viewport = card.parentElement.getBoundingClientRect();
+          const rect = card.getBoundingClientRect();
+          return rect.left >= viewport.left - 1 && rect.right <= viewport.right + 1;
+        });
+        assert.ok(visible, `${selector} @${width}: selecting a card brings it fully into view`);
+      }
+    } else {
+      assert.equal(await nav.count(), 0, "No scroll controls when all cards fit");
+      assert.equal(await track.evaluate((list) => list.scrollWidth <= list.clientWidth + 1), true);
+    }
   }
-  results.push("Package stages: three loaded images, correct forward/reverse selection, sticky desktop framing");
+  await page.locator("#kundenergebnisse .wg-video-trigger").first().click();
+  const dialog = page.locator("#kundenergebnisse dialog");
+  await dialog.waitFor({ state: "visible" });
+  assert.equal(await dialog.locator("video[controls] source").count(), 2);
+  await page.keyboard.press("Escape");
+  await dialog.waitFor({ state: "hidden" });
+  assert.equal(await page.locator("#kundenergebnisse .wg-video-trigger").first().evaluate((button) =>
+    button === document.activeElement), true, "Closing the video returns focus to its thumbnail");
+  results.push(`Packages and videos @${width}: matching frames, selection, package pricing and video dialog`);
 }
 
 try {
@@ -316,7 +351,7 @@ try {
       "Desktop motion loads GSAP on demand",
     );
     results.push("Desktop loads the scroll-motion chunk on demand");
-    await capturePackageChapters(page);
+    await checkMediaCollections(page, 1280);
     await context.close();
   }
 
@@ -434,25 +469,9 @@ try {
             ? page.screenshot({ path: `${output}/${name}`, ...options })
             : target.screenshot({ path: `${output}/${name}` }),
         }));
-        const packages = page.locator("#pakete");
-        assert.equal(await packages.getAttribute("data-package-motion"), null,
-          `Reduced motion @${width}: do not pin or crossfade the package chapters`);
-        const imageStates = await packages.locator(".package-editorial-media").evaluateAll((pictures) =>
-          pictures.map((picture) => ({ opacity: Number(getComputedStyle(picture).opacity), position: getComputedStyle(picture).position })),
-        );
-        assert.equal(imageStates.length, 3, `Reduced motion @${width}: retain all three package images`);
-        assert.ok(imageStates.every((image) => image.opacity === 1 && image.position !== "sticky"),
-          `Reduced motion @${width}: every package image remains visible in the normal document flow`);
-        for (const index of [0, 1, 2]) {
-          await packages.locator(".package-editorial-media").nth(index).scrollIntoViewIfNeeded();
-          await page.waitForFunction((imageIndex) => {
-            const image = document.querySelectorAll("#pakete .package-editorial-media img")[imageIndex];
-            return image?.complete && image.naturalWidth > 0 && image.naturalHeight > 0;
-          }, index, { timeout: 10_000 });
-        }
-        results.push(`Reduced motion @${width}: all three static package images loaded successfully`);
+        await checkMediaCollections(page, width);
         if (width === 1280) {
-          await placeBelowHeader(page, "#pakete .package-editorial-body");
+          await placeBelowHeader(page, "#pakete");
           await page.screenshot({ path: `${output}/desktop-packages-reduced-motion.png` });
         }
       }

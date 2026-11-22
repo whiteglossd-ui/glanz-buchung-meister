@@ -344,3 +344,33 @@ test("a protected contact-copy approval preserves every SEO expression and funct
   assert.ok(compareApprovedProtectedReplacement(before + " ", after, "src/lib/city-seo.ts", approval).some((item) => item.kind === "rundum-baseline"));
   assert.ok(compareApprovedProtectedReplacement(before, after, "src/lib/city-seo.ts", { ...approval, replacements: [] }).some((item) => item.kind === "rundum-approval"));
 });
+
+test("homepage approval pins reviewed route, local data and new components without releasing other paths", () => {
+  withApprovedSourceFixture(({ cwd, base, write }) => {
+    const page = "src/routes/index.tsx";
+    const data = "src/data/site.ts";
+    const entry = "src/components/home-booking.tsx";
+    const home = fixture.replace("Ihr Fahrzeug.", "Dein Auto.");
+    const cities = 'export const cities = ["Loßburg", "Freudenstadt"];\n';
+    const booking = 'export const Booking = () => <section id="buchung">Termin anfragen</section>;\n';
+    write(page, home);
+    write(data, cities);
+    write(entry, booking);
+    write("src/components/configurator.tsx", fixture);
+    write("src/routes/danke.tsx", fixture);
+    const approvedHomeBlobs = { [page]: blob(home), [data]: blob(cities), [entry]: blob(booking) };
+    const review = () => inspectDesignContent({ cwd, base, approvedHomeBlobs });
+    assert.equal(review().passed, true);
+    write(data, cities.replace("Loßburg", "Berlin"));
+    write(page, home.replace('path: "/"', 'path: "/wrong"'));
+    rmSync(join(cwd, entry));
+    write("src/routes/danke.tsx", home);
+    const failures = review().failures;
+    assert.deepEqual(failures.filter(({ kind }) => kind === "home-source").map(({ file }) => file).sort(),
+      Object.keys(approvedHomeBlobs).sort());
+    assert.ok(failures.some(({ file, kind }) => file === "src/routes/danke.tsx" && kind === "headings"));
+    for (const path of ["src/data/../../package.json", "src/routes/admin.tsx"])
+      assert.throws(() => inspectDesignContent({ cwd, base, approvedHomeBlobs: { [path]: blob(home) } }),
+        /Invalid approved homepage source/);
+  });
+});

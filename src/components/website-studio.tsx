@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useBlocker } from "@tanstack/react-router";
+import { homeCopy, homeText } from "@/data/home-copy";
 import { cities, services, site } from "@/data/site";
 import { customerPhotos, featuredPhotoIds } from "@/data/customer-photos";
 import { citySeoCopy } from "@/lib/city-copy";
@@ -73,13 +74,7 @@ function seed(key: CmsDocumentKey): CmsDocumentContent {
       title: `Über ${site.legalName}`,
       lead: `${site.owner} · Fahrzeugaufbereitung in ${site.city}`,
     };
-  if (key === "home")
-    return {
-      ...content,
-      title: "Dein Auto.\nNicht nur sauber.\nWieder besonders.",
-      lead: "Fahrzeugaufbereitung, Lackkorrektur und Keramikschutz in Horb – persönlich geprüft, stressfrei abgeholt und digital übergeben.",
-      body: "Für den täglichen Weg zur Arbeit, deinen Liebhaberwagen oder die Leasingrückgabe: Wir prüfen dein Fahrzeug persönlich und stimmen Pflege, Preis und Termin mit dir ab.",
-    };
+  if (key === "home") return { ...content, ...homeCopy };
   if (key === "gallery") {
     const ordered = [
       ...featuredPhotoIds.map((id) => customerPhotos.find((photo) => photo.id === id)!),
@@ -154,9 +149,17 @@ export function WebsiteStudio({ initialKind }: { initialKind?: CmsKind }) {
         ...current.filter((asset) => !result.assets!.some((next) => next.id === asset.id)),
         ...result.assets!,
       ]);
-    setContent(
-      result.draft ?? result.published ?? (result.archived ? emptyCmsContent() : seed(result.key)),
-    );
+    const saved = result.draft ?? result.published;
+    if (result.key === "home" && saved) {
+      setContent({
+        ...saved,
+        title: homeText("title", saved.title),
+        lead: homeText("lead", saved.lead),
+        body: homeText("body", saved.body),
+      });
+    } else {
+      setContent(saved ?? (result.archived ? emptyCmsContent() : seed(result.key)));
+    }
     setDirty(false);
   }, []);
   useEffect(() => {

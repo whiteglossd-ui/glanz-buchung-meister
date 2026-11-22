@@ -46,14 +46,12 @@ const bookingCtaName = "Jetzt Termin anfragen";
 async function bookingGeometry(page) {
   return page.evaluate(() => {
     const booking = document.querySelector("#buchung")?.getBoundingClientRect();
-    const neighbor = document.querySelector('[data-inquiry-start="rundum"]')?.getBoundingClientRect();
     return { path: location.pathname + location.hash, scrollY, documentHeight: document.documentElement.scrollHeight,
       bookingDocumentTop: booking ? booking.top + scrollY : null,
       activeElement: document.activeElement?.id || document.activeElement?.tagName,
       htmlClasses: document.documentElement.className, bodyOverflow: getComputedStyle(document.body).overflow,
       reducedMotion: matchMedia("(prefers-reduced-motion: reduce)").matches,
-      neighborReady: !!document.querySelector("#rundum-anfrage form"),
-      neighborWithinObserver: !!neighbor && neighbor.bottom >= -240 && neighbor.top <= innerHeight + 240,
+      bookingFormMounted: !!document.querySelector("#buchung .booking-flow"),
       formChunks: performance.getEntriesByType("resource").filter((entry) => /^\/assets\/rundum-service-form-[^/]+\.js$/.test(new URL(entry.name).pathname))
         .map((entry) => ({ path: new URL(entry.name).pathname, start: entry.startTime, end: entry.responseEnd })) };
   });
@@ -65,15 +63,13 @@ async function settleBookingGeometry(page, timeout, evidence) {
   try {
     await page.waitForFunction(() => {
       const probe = window.__qaBookingGeometry, now = performance.now(), height = document.documentElement.scrollHeight;
-      const neighbor = document.querySelector('[data-inquiry-start="rundum"]')?.getBoundingClientRect();
-      const ready = !!document.querySelector("#rundum-anfrage form");
-      const near = !!neighbor && neighbor.bottom >= -240 && neighbor.top <= innerHeight + 240;
-      if (Math.abs(scrollY - probe.y) > 0.5 || height !== probe.height || (near && !ready)) {
+      const formMounted = !!document.querySelector("#buchung .booking-flow");
+      if (Math.abs(scrollY - probe.y) > 0.5 || height !== probe.height || !formMounted) {
         probe.y = scrollY; probe.height = height; probe.since = now;
       }
       if (now - probe.lastSample >= 150) {
         probe.lastSample = now;
-        probe.samples.push({ at: Math.round(now), scrollY, documentHeight: height, neighborReady: ready, neighborWithinObserver: near,
+        probe.samples.push({ at: Math.round(now), scrollY, documentHeight: height, bookingFormMounted: formMounted,
           activeElement: document.activeElement?.id || document.activeElement?.tagName });
         if (probe.samples.length > 16) probe.samples.shift();
       }
@@ -197,12 +193,11 @@ async function verifyBookingActivation(page, width, reducedMotion) {
   await assertBookingArrival(page, `${width}px ${reducedMotion}, first header click`);
   const form = page.locator("#buchung .booking-flow");
   await form.waitFor({ state: "visible" });
-  const neighborLayout = { samples: [] };
-  // A genuine jump can trigger the adjacent Rundum observer. Wait for its
-  // actual replacement and stable geometry instead of suppressing lazy loading.
-  try { await settleBookingGeometry(page, 5000, neighborLayout); }
+  const bookingLayout = { samples: [] };
+  // The active form must finish loading and settle before measuring focus and scroll.
+  try { await settleBookingGeometry(page, 5000, bookingLayout); }
   catch (error) {
-    console.error("RESPONSIVE_LAYOUT_FAILURE:" + JSON.stringify({ width, reducedMotion, neighborLayout }));
+    console.error("RESPONSIVE_LAYOUT_FAILURE:" + JSON.stringify({ width, reducedMotion, bookingLayout }));
     throw error;
   }
   await assertBookingArrival(page, `${width}px ${reducedMotion}, stable first header arrival`);
@@ -268,10 +263,10 @@ async function verifyBookingActivation(page, width, reducedMotion) {
     await page.screenshot({ path: `.qa-output/review-booking-target-${width}.png`, fullPage: false });
   }
   console.log("RESPONSIVE_BOOKING_PROOF:" + JSON.stringify({ width, reducedMotion,
-    neighbor: neighborLayout.state, resets: scrollResets.map((reset) => ({ source: reset.source, activation: reset.activation,
+    booking: bookingLayout.state, resets: scrollResets.map((reset) => ({ source: reset.source, activation: reset.activation,
       beforeY: reset.before.scrollY, afterY: reset.state.scrollY, documentHeight: reset.state.documentHeight,
-      neighborReady: reset.state.neighborReady, durationMs: reset.durationMs, attempts: reset.attempts })) }));
-  return { sameHashActivations: 4, bookingHeadingFocusedAndVisible: true, draftPreserved: true, neighborLayout, scrollResets };
+      bookingFormMounted: reset.state.bookingFormMounted, durationMs: reset.durationMs, attempts: reset.attempts })) }));
+  return { sameHashActivations: 4, bookingHeadingFocusedAndVisible: true, draftPreserved: true, bookingLayout, scrollResets };
 }
 const paths = [
   ...new Set([
@@ -393,8 +388,8 @@ try {
       await context.close();
     }
   }
-  // Keep the explicit primary CTA at every width, alongside the existing
-  // desktop Termin link. Exercise the exact 959/960px navigation boundary.
+  // The homepage has one booking CTA in its header. Its desktop navigation
+  // also links to the pickup service at the 959/960px navigation boundary.
   const headerCases = [320, 390, 768, 900, 959, 960, 1024, 1440]
     .map((width) => ({ width, reducedMotion: "reduce" }));
   headerCases.push(...[390, 1440].map((width) => ({ width, reducedMotion: "no-preference" })));
@@ -417,20 +412,20 @@ try {
         `${width}px: the primary header CTA has the exact accessible name.`);
       assert.equal(await booking.isVisible(), true, `${width}px: keep the primary header CTA visible.`);
       assert.equal(await booking.getAttribute("href"), "/#buchung");
-      const navBooking = header.locator(".header-booking-link");
-      assert.equal(await navBooking.count(), 1, "Keep the existing desktop Termin navigation link.");
-      assert.equal((await navBooking.textContent()).trim(), "Termin");
-      assert.equal(await navBooking.getAttribute("href"), "/#buchung");
-      assert.equal(await navBooking.isVisible(), width >= 960,
-        `${width}px: the existing Termin navigation follows the desktop breakpoint.`);
+      assert.equal(await header.locator('a[href="/#buchung"]').count(), 1);
+      const pickupLink = header.locator('.header-quick-nav a[href="/abholservice"]');
+      assert.equal(await pickupLink.count(), 1);
+      assert.equal((await pickupLink.textContent()).trim(), "Abholservice");
+      assert.equal(await pickupLink.isVisible(), width >= 960,
+        `${width}px: pickup navigation follows the desktop breakpoint.`);
       if (width >= 960) {
-        const navBounds = await navBooking.boundingBox();
+        const navBounds = await pickupLink.boundingBox();
         assert.ok(navBounds && navBounds.height >= 44,
-          `${width}px: retain the existing Termin navigation touch-target height.`);
+          `${width}px: the pickup navigation touch target must remain accessible.`);
       }
       const heroBooking = page.locator(".scroll-film-cta");
-      assert.equal(await page.locator(".scroll-film").getByRole("link", { name: bookingCtaName, exact: true }).count(), 1,
-        `${width}px: the hero CTA uses the same exact accessible name.`);
+      assert.equal(await page.locator(".scroll-film").getByRole("link", { name: "Termin anfragen", exact: true }).count(), 1,
+        `${width}px: the hero booking link has its visible accessible name.`);
       assert.equal(await heroBooking.getAttribute("href"), "/#buchung");
       assert.equal(await heroBooking.isVisible(), true, `${width}px: the hero CTA remains visible.`);
       const bounds = await booking.boundingBox();
@@ -462,6 +457,8 @@ try {
       await toggle.press("Enter");
       const menu = page.getByRole("dialog", { name: "Hauptnavigation", exact: true });
       await menu.waitFor({ state: "visible" });
+      assert.equal(await menu.getByRole("link", { name: "Hol- und Bringservice", exact: true }).getAttribute("href"), "/abholservice");
+      assert.equal(await menu.locator('a[href="/#buchung"]').count(), 1, "The menu offers a single booking action.");
       // CSS can expose the portal before React's showModal/focus effect runs.
       // Await the required native-modal/focus result; never inject focus here.
       await page.waitForFunction(() => {
@@ -477,7 +474,7 @@ try {
         `${width}px: closing the menu restores focus to its trigger.`);
       if (reducedMotion === "reduce") await header.screenshot({ path: `.qa-output/review-header-${width}.png` });
       const activation = await verifyBookingActivation(page, width, reducedMotion);
-      results.push({ path: "/", width, reducedMotion, primaryHeaderBookingLinks: 1, desktopTerminVisible: width >= 960, menuKeyboardFocusReturned: true, ...activation });
+      results.push({ path: "/", width, reducedMotion, primaryHeaderBookingLinks: 1, desktopPickupVisible: width >= 960, menuKeyboardFocusReturned: true, ...activation });
       console.log("RESPONSIVE_CASE_DONE:" + JSON.stringify({ width, reducedMotion, elapsedMs: Date.now() - responsiveStarted, durationMs: Date.now() - caseStarted }));
     } finally {
       await context.close();
@@ -497,21 +494,23 @@ try {
         await consent.waitFor({ state: "hidden" });
       }
       const order = await page.evaluate(() => {
-        const selectors = [".workshop-personal", "#pakete", "#kundenergebnisse", ".home-craft", ".concierge-service", "#buchung"];
+        const selectors = [".scroll-film", ".workshop-personal", "#pakete", "#kundenergebnisse", ".concierge-service", "#buchung"];
         const sections = selectors.map((selector) => document.querySelector(selector));
         return {
           sectionsPresent: sections.every(Boolean),
+          trustFollowsHero: sections[0]?.nextElementSibling === sections[1],
           editorialOrder: sections.every((section, index) => Boolean(section) && (index === 0 || Boolean(
             sections[index - 1]?.compareDocumentPosition(section) & Node.DOCUMENT_POSITION_FOLLOWING,
           ))),
           bookingCount: document.querySelectorAll("#buchung").length,
         };
       });
-      assert.equal(order.sectionsPresent, true, "Retain workshop, packages, results, process, pickup and booking content.");
+      assert.equal(order.sectionsPresent, true, "Retain the workshop, packages, results, pickup process and booking.");
+      assert.equal(order.trustFollowsHero, true, "Show the personal workshop directly below the introduction.");
       assert.equal(order.editorialOrder, true, "Keep the approved editorial sequence before the request.");
       assert.equal(order.bookingCount, 1, "Keep one request flow and stable incoming anchor links.");
-      await page.locator(".home-jump-links").getByRole("link", { name: "Termin anfragen", exact: true }).click();
-      await page.getByRole("form", { name: "Ihre Aufbereitung." }).waitFor({ state: "visible", timeout: 15_000 });
+      await page.locator(".scroll-film-cta").click();
+      await page.locator("#buchung .booking-flow").waitFor({ state: "visible", timeout: 15_000 });
       assert.equal(new URL(page.url()).hash, "#buchung", "The existing jump link still targets the booking anchor.");
       await page.waitForFunction(() => {
         const heading = document.getElementById("buchung-heading")?.getBoundingClientRect();

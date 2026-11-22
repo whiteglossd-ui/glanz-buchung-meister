@@ -88,3 +88,11 @@ test("six new pickup hubs are discoverable and preserve city and package in book
     assert.deepEqual(parseBookingSelection(serviceBookingSelection("lederreparatur", slug)), { leistung: "lederreparatur", ort: slug });
   }
 });
+
+test("both Nordschwarzwald landing pages keep the chosen city in package and service inquiries", () => {
+  for (const slug of ["lossburg", "freudenstadt"]) {
+    assert.deepEqual(serviceBookingSelection("fahrzeugaufbereitung", slug), { ort: slug });
+    assert.deepEqual(serviceBookingSelection("keramikversiegelung", slug), { paket: "keramik", ort: slug });
+    assert.deepEqual(serviceBookingSelection("lederreparatur", slug), { leistung: "lederreparatur", ort: slug });
+  }
+});

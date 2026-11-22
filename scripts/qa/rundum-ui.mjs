@@ -14,7 +14,7 @@ async function assertStableRundumArrival(page, label, reads) {
   await page.waitForFunction(() => {
     const probe = window.__qaRundumArrival, now = performance.now(), height = document.documentElement.scrollHeight;
     const marker = document.querySelector('[data-inquiry-start="booking"]')?.getBoundingClientRect();
-    const near = !!marker && marker.bottom >= -240 && marker.top <= innerHeight + 240;
+    const near = !!marker && marker.width > 0 && marker.bottom >= -240 && marker.top <= innerHeight + 240;
     const ready = !!document.querySelector("#buchung .booking-flow");
     if (Math.abs(scrollY - probe.y) > 0.5 || probe.height !== height || (near && !ready)) {
       probe.y = scrollY; probe.height = height; probe.since = now;
@@ -23,7 +23,7 @@ async function assertStableRundumArrival(page, label, reads) {
     }
     return now - probe.since >= 150;
   }, undefined, { timeout: 5000 });
-  const state = await page.locator("#rundum-anfrage-heading").evaluate((element) => {
+  const state = await page.locator("#buchung-heading").evaluate((element) => {
     const heading = element.getBoundingClientRect(), header = document.querySelector(".site-header")?.getBoundingClientRect();
     const hit = document.elementFromPoint(heading.left + heading.width / 2, heading.top + heading.height / 2);
     return { path: location.pathname + location.hash, scrollY, documentHeight: document.documentElement.scrollHeight,
@@ -124,29 +124,29 @@ export async function verifyInitialRundumHero(page, { label, screenshot, documen
 
 export async function verifyRundumUi(page, { label, screenshot }) {
   const reads = observePageReads(page, page.url());
-  const intro = page.locator(".rundum-service-intro");
+  const intro = page.locator(".workshop-personal");
   await intro.waitFor({ state: "visible" });
   await page.evaluate(() => document.fonts.ready);
   const position = await page.evaluate(() => {
-    const intro = document.querySelector(".rundum-service-intro"), stats = document.querySelector(".hero-follow"), packages = document.querySelector("#pakete");
-    return { afterStats: !!(stats.compareDocumentPosition(intro) & Node.DOCUMENT_POSITION_FOLLOWING), beforePackages: !!(intro.compareDocumentPosition(packages) & Node.DOCUMENT_POSITION_FOLLOWING) };
+    const intro = document.querySelector(".workshop-personal"), hero = document.querySelector(".scroll-film"), packages = document.querySelector("#pakete");
+    return { afterHero: !!(hero.compareDocumentPosition(intro) & Node.DOCUMENT_POSITION_FOLLOWING), beforePackages: !!(intro.compareDocumentPosition(packages) & Node.DOCUMENT_POSITION_FOLLOWING) };
   });
-  assert.ok(position.afterStats && position.beforePackages, `${label}: prominent service sits above existing packages`);
-  assert.match(await intro.textContent(), /Ein Ansprechpartner\. Eine Rechnung\. Kein Stress\./);
-  const request = intro.getByRole("link", { name: "Rundum-Service anfragen", exact: true });
+  assert.ok(position.afterHero && position.beforePackages, `${label}: prominent service sits above existing packages`);
+  assert.match(await intro.textContent(), /Lars/);
+  const request = intro.getByRole("link", { name: "Aufbereitung mit Reparatur", exact: true });
   assert.equal(await request.getAttribute("href"), "#rundum-anfrage");
-  const whatsapp = intro.getByRole("link", { name: "Lieber per WhatsApp", exact: true });
+  const whatsapp = intro.getByRole("link", { name: "Lars auf WhatsApp schreiben", exact: true });
   const target = new URL(await whatsapp.getAttribute("href")), configured = new URL(site.whatsappHref);
   assert.equal(target.origin, configured.origin);
   assert.equal(target.pathname, configured.pathname);
   assert.equal(target.searchParams.get("phone"), configured.searchParams.get("phone"));
-  assert.equal(target.searchParams.get("text"), "Hallo, ich interessiere mich für euren Rundum-Service für mein Auto.");
+  assert.equal(target.searchParams.get("text"), "Hallo Lars, ich habe eine Frage zur Aufbereitung meines Autos.");
   await intro.scrollIntoViewIfNeeded();
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 2));
   await screenshot(`${label}-rundum-intro.png`, intro);
   await request.click();
   await page.waitForFunction(() => location.hash === "#rundum-anfrage");
-  const section = page.locator("#rundum-anfrage"), form = page.getByRole("form", { name: "Rundum-Service anfragen", exact: true });
+  const section = page.locator("#buchung"), form = page.getByRole("form", { name: "Rundum-Service anfragen", exact: true });
   await form.waitFor({ state: "visible", timeout: 5000 });
   await assertStableRundumArrival(page, `${label}: intro anchor`, reads);
   assert.deepEqual(await form.locator('input[name="services"]').evaluateAll((inputs) => inputs.map((input) => input.value)), [...RUNDUM_SERVICES]);
@@ -178,8 +178,8 @@ export async function verifyRundumUi(page, { label, screenshot }) {
   // recording it, including its heading below the real sticky navigation.
   const measureFrame = () => section.evaluate((element) => {
     const kicker = element.querySelector(".kicker").getBoundingClientRect();
-    const heading = element.querySelector("#rundum-anfrage-heading").getBoundingClientRect();
-    const first = element.querySelector('input:not([type="hidden"])').getBoundingClientRect();
+    const heading = element.querySelector("#buchung-heading").getBoundingClientRect();
+    const first = element.querySelector('#rundum-formular input:not([type="hidden"])').getBoundingClientRect();
     return { kickerTop: kicker.top, kickerBottom: kicker.bottom, headingTop: heading.top, headingBottom: heading.bottom,
       firstControlTop: first.top, firstControlBottom: first.bottom,
       headerBottom: Math.max(0, document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 0), viewportHeight: innerHeight };
@@ -196,7 +196,7 @@ export async function verifyRundumUi(page, { label, screenshot }) {
       window.__qaRundumFrame = { top: element.querySelector(".kicker").getBoundingClientRect().top, since: performance.now() };
     });
     await page.waitForFunction(() => {
-      const top = document.querySelector("#rundum-anfrage .kicker").getBoundingClientRect().top;
+      const top = document.querySelector("#buchung .kicker").getBoundingClientRect().top;
       const probe = window.__qaRundumFrame;
       if (Math.abs(top - probe.top) > 0.5) { probe.top = top; probe.since = performance.now(); }
       return performance.now() - probe.since >= 200;
@@ -210,7 +210,7 @@ export async function verifyRundumUi(page, { label, screenshot }) {
     const box = element.getBoundingClientRect();
     const headerBottom = Math.max(0, document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 0);
     const top = Math.max(box.top + scrollY, scrollY + headerBottom), bottom = box.bottom + scrollY;
-    const content = [".kicker", "#rundum-anfrage-heading", "form"].map((selector) => element.querySelector(selector).getBoundingClientRect());
+    const content = [".kicker", "#buchung-heading", "#rundum-formular form"].map((selector) => element.querySelector(selector).getBoundingClientRect());
     if (content.some((bounds) => bounds.top + scrollY < top || bounds.bottom + scrollY > bottom))
       throw new Error("The header-free form clip must retain the complete kicker, heading and form");
     return { x: box.x + scrollX, y: top, width: box.width, height: bottom - top };
@@ -225,19 +225,34 @@ export async function verifyRundumUi(page, { label, screenshot }) {
 export async function verifyRundumIntentLoading(page, { label, base }) {
   const reads = observePageReads(page, base);
   const form = page.getByRole("form", { name: "Rundum-Service anfragen", exact: true });
-  await page.locator(".rundum-service-actions").getByRole("link", { name: "Rundum-Service anfragen", exact: true }).click();
-  await page.waitForFunction(() => location.hash === "#rundum-anfrage");
+  await page.locator(".workshop-personal").getByRole("link", { name: "Aufbereitung mit Reparatur", exact: true }).click();
   await form.waitFor({ state: "visible", timeout: 5000 });
-  await assertStableRundumArrival(page, `${label}: hero anchor`, reads);
+  await assertStableRundumArrival(page, `${label}: introduction link`, reads);
   assert.ok(await page.evaluate(() => performance.getEntriesByType("resource").some((entry) =>
-    /^\/assets\/rundum-service-form-[^/]+\.js$/.test(new URL(entry.name).pathname))), `${label}: real anchor loads the actual form chunk`);
+    /^\/assets\/rundum-service-form-[^/]+\.js$/.test(new URL(entry.name).pathname))), `${label}: the anchor loads the actual form chunk`);
   const draft = "QA ungesendeter Formularentwurf";
+  const modes = page.getByRole("navigation", { name: "Art der Anfrage" });
+  const packageLink = modes.getByRole("link", { name: "Paket wählen", exact: true });
+  const rundumLink = modes.getByRole("link", { name: "Rundum-Service", exact: true });
+  const booking = page.locator("#paket-formular .booking-flow");
   await form.locator("#rundum-name").fill(draft);
-  await page.locator('.home-jump-links a[href="#buchung"]').click();
-  await page.waitForFunction(() => location.hash === "#buchung");
-  assert.equal(await form.locator("#rundum-name").inputValue(), draft, `${label}: a hash change keeps unsent input`);
-  await page.locator(".rundum-service-actions").getByRole("link", { name: "Rundum-Service anfragen", exact: true }).click();
-  await page.waitForFunction(() => location.hash === "#rundum-anfrage");
+  await packageLink.focus();
+  await packageLink.press("Enter");
+  await booking.waitFor({ state: "visible" });
+  assert.equal(new URL(page.url()).hash, "#buchung");
+  assert.equal(await packageLink.getAttribute("aria-current"), "location");
+  assert.equal(await form.isVisible(), false);
+  await booking.locator('input[name="klasse"][value="suv"]').check();
+  await page.goBack();
+  await form.waitFor({ state: "visible" });
+  assert.equal(await rundumLink.getAttribute("aria-current"), "location");
+  assert.equal(await form.locator("#rundum-name").inputValue(), draft);
+  await page.goForward();
+  await booking.waitFor({ state: "visible" });
+  assert.equal(await booking.locator('input[name="klasse"][value="suv"]').isChecked(), true);
+  await rundumLink.click();
+  await form.waitFor({ state: "visible" });
+  assert.equal(await booking.isVisible(), false);
   await page.locator(".scroll-film-prices").click();
   await page.waitForURL((url) => url.pathname === "/preise");
   await page.goBack({ waitUntil: "networkidle" });

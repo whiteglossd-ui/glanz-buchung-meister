@@ -1,0 +1,76 @@
+/* Keep both first-screen actions equally easy to reach, including small phones. */
+[data-home="polish"] .film-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  width: min(100%, 24rem);
+  margin: clamp(1rem, 3vh, 1.75rem) auto 0;
+}
+
+[data-shell="public"] .film-actions :is(.scroll-film-cta, .scroll-film-prices) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-width: 0;
+  min-height: 3.25rem;
+  margin: 0;
+  padding: 0.65rem 0.5rem;
+  border: 1px solid var(--color-fg);
+  font-family: var(--font-display);
+  font-size: clamp(0.8rem, 1.4vw, 0.9375rem);
+  font-weight: 500;
+  letter-spacing: 0.015em;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  text-transform: none;
+}
+
+[data-shell="public"] .film-actions .scroll-film-prices {
+  background: rgb(8 8 8 / 0.72);
+  color: var(--color-fg);
+}
+
+[data-shell="public"] .film-actions .scroll-film-prices:hover {
+  background: var(--color-fg);
+  color: var(--color-bg);
+}
+
+[data-shell="public"] .scroll-film .scroll-film-service {
+  max-width: 48ch;
+  font-size: clamp(1rem, 1.25vw, 1.125rem);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+[data-home="polish"] .workshop-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem 1.5rem;
+  margin-top: 1.25rem;
+}
+
+[data-shell="public"] .workshop-links .atelier-text-link {
+  min-height: 2.75rem;
+  margin: 0;
+}
+
+@media (min-width: 960px) {
+  [data-shell="public"] .workshop-personal,
+  [data-shell="public"] .workshop-personal .film-chapter-media {
+    min-height: clamp(28rem, 68svh, 48rem);
+  }
+}
+
+@media (max-width: 639px) {
+  [data-shell="public"] .workshop-personal .film-chapter-copy {
+    grid-row: 1;
+    padding-block: 2.75rem 2rem;
+  }
+
+  [data-shell="public"] .workshop-personal .film-chapter-media {
+    grid-row: 2;
+  }
+}

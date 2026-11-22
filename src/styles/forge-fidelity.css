@@ -121,12 +121,6 @@ body[data-nav="open"] [data-shell="public"] .site-header {
   line-height: 1.12;
   letter-spacing: -.03em;
 }
-/* Match the reference's image-left / copy-right square compositions.
- * Atmosphere is decorative; the original figure and alt remain the content.
- */
-.package-editorial-atmosphere {
-  display: none;
-}
 /* The reference's fine progress rail belongs at the bottom of the viewport. */
 [data-shell="public"] .home-scroll-progress {
   top: auto;
@@ -219,12 +213,6 @@ body[data-nav="open"] [data-shell="public"] .site-header {
   }
 }
 
-
-@media (prefers-reduced-motion: reduce) {
-  [data-shell="public"] .package-editorial .atelier-text-link {
-    transition: none;
-  }
-}
 
 /* Center the complete existing navigation; no destinations are removed.
  * Two columns accommodate the larger White-Gloss menu without shrinking type.

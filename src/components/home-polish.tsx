@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { DESKTOP_MOTION, useScrollMotion } from "@/lib/scroll-motion";
 import { setupParallax } from "@/lib/studio-motion";
 import "@/styles/concierge-editorial.css";
+import "@/styles/media-rail.css";
 
 /**
  * Homepage-only "Polished reveal" scroll motion.
@@ -18,6 +19,27 @@ export function HomePolish() {
       if (!main) return;
       // Only explicitly marked frames get parallax; package chapters own their stage.
       setupParallax(tools, main);
+      // Desktop engines without CSS view timelines use the existing scroll module.
+      if (!CSS.supports("animation-timeline", "view()")) {
+        for (const title of main.querySelectorAll<HTMLElement>(
+          "h2[data-lines], h2[data-scroll-title]",
+        )) {
+          tools.gsap.fromTo(
+            title,
+            { y: "0.24em" },
+            {
+              y: "-0.06em",
+              ease: "none",
+              scrollTrigger: {
+                trigger: title,
+                start: "top bottom",
+                end: "bottom 35%",
+                scrub: true,
+              },
+            },
+          );
+        }
+      }
 
       const concierge = main.querySelector<HTMLElement>(".concierge-service");
       const conciergeHeader = concierge?.querySelector<HTMLElement>("header");
@@ -167,10 +189,9 @@ export function HomePolish() {
       });
     }
 
-    /* ---- Page scroll progress (top cue) + hero scroll dim ---- */
+    /* ---- Page scroll progress ---- */
     let frame = 0;
     let pageP = 0;
-    let heroP = 0;
     const progressEl = progressRef.current;
 
     const paint = () => {
@@ -181,12 +202,7 @@ export function HomePolish() {
       if (Math.abs(targetPage - pageP) < 0.0005) pageP = targetPage;
       if (progressEl) progressEl.style.transform = `scaleX(${pageP})`;
 
-      const vh = window.innerHeight || 1;
-      const targetHero = Math.min(1, Math.max(0, window.scrollY / (vh * 0.85)));
-      heroP += (targetHero - heroP) * 0.14;
-      if (Math.abs(targetHero - heroP) < 0.0005) heroP = targetHero;
-
-      if (pageP !== targetPage || heroP !== targetHero) {
+      if (pageP !== targetPage) {
         frame = window.requestAnimationFrame(paint);
       } else {
         frame = 0;

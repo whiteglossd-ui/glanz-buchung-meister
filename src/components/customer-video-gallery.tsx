@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
+import { MediaRail } from "./media-rail";
 
 export type CustomerVideo = {
   title: string;
@@ -10,12 +11,19 @@ export type CustomerVideo = {
   featured?: boolean;
 };
 
-export function CustomerVideoGallery({ videos, compact = false, mobileSwipe = false }: { videos: readonly CustomerVideo[]; compact?: boolean; mobileSwipe?: boolean }) {
+export function CustomerVideoGallery({
+  videos,
+  compact = false,
+  mobileSwipe = false,
+}: {
+  videos: readonly CustomerVideo[];
+  compact?: boolean;
+  mobileSwipe?: boolean;
+}) {
   const [active, setActive] = useState<CustomerVideo | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const titleId = useId();
-  const swipeHintId = useId();
   const swipeable = mobileSwipe && !compact && videos.length > 1;
 
   useEffect(() => {
@@ -37,49 +45,111 @@ export function CustomerVideoGallery({ videos, compact = false, mobileSwipe = fa
     };
   }, [active]);
 
+  const items = videos.map((video, index) => ({
+    label: video.category,
+    content: (
+      <>
+        <button
+          type="button"
+          className={swipeable ? "wg-video-trigger wg-rail-frame" : "wg-video-trigger"}
+          onClick={(event) => {
+            triggerRef.current = event.currentTarget;
+            setActive(video);
+          }}
+          aria-labelledby={`${titleId}-play-${index} ${titleId}-title-${index} ${titleId}-preview-${index}`}
+          aria-describedby={compact ? undefined : `${titleId}-description-${index}`}
+        >
+          <span id={`${titleId}-play-${index}`} className="sr-only">
+            Video abspielen:
+          </span>
+          <img
+            src={video.poster}
+            alt=""
+            className="wg-video-poster"
+            loading="lazy"
+            decoding="async"
+          />
+          <span className="wg-video-play" aria-hidden>
+            <span />
+          </span>
+          <span id={`${titleId}-preview-${index}`} className="wg-video-meta">
+            <span>{video.category}</span> <span>{video.duration}</span>
+          </span>
+        </button>
+        <div className={swipeable ? "wg-rail-copy" : "wg-video-copy"}>
+          <h3 id={`${titleId}-title-${index}`} className="heading-3">
+            {video.title}
+          </h3>
+          {!compact && <p id={`${titleId}-description-${index}`}>{video.description}</p>}
+        </div>
+      </>
+    ),
+  }));
+
   return (
     <>
-      <ul
-        className={`wg-video-grid${compact ? " wg-video-grid--compact" : ""}${swipeable ? " wg-video-grid--swipe" : ""}`}
-        aria-label="Kundenvideos"
-        aria-describedby={swipeable ? swipeHintId : undefined}
-      >
-        {videos.map((video, index) => (
-          <li key={video.src} className={video.featured && !compact ? "wg-video-card wg-video-card--featured" : "wg-video-card"}>
-            <button type="button" className="wg-video-trigger" onClick={(event) => { triggerRef.current = event.currentTarget; setActive(video); }} aria-labelledby={`${titleId}-play-${index} ${titleId}-title-${index} ${titleId}-preview-${index}`} aria-describedby={!compact ? `${titleId}-description-${index}` : undefined}>
-              <span id={`${titleId}-play-${index}`} className="sr-only">Video abspielen:</span>
-              <img
-                src={video.poster}
-                alt=""
-                className="wg-video-poster"
-                loading="lazy"
-              />
-              <span className="wg-video-play" aria-hidden><span /></span>
-              <span id={`${titleId}-preview-${index}`} className="wg-video-meta"><span>{video.category}</span>{" "}<span>{video.duration}</span></span>
-            </button>
-            <div className="wg-video-copy">
-              <h3 id={`${titleId}-title-${index}`} className="heading-3">{video.title}</h3>
-              {!compact ? <p id={`${titleId}-description-${index}`}>{video.description}</p> : null}
-            </div>
-          </li>
-        ))}
-      </ul>
-      {swipeable ? <p id={swipeHintId} className="wg-video-swipe-hint">Nach links oder rechts wischen für weitere Videos <span aria-hidden="true">↔</span></p> : null}
+      {swipeable ? (
+        <MediaRail label="Kundenvideos" selectionLabel="Video auswählen" items={items} />
+      ) : (
+        <ul
+          className={compact ? "wg-video-grid wg-video-grid--compact" : "wg-video-grid"}
+          aria-label="Kundenvideos"
+        >
+          {items.map((item, index) => (
+            <li
+              key={videos[index].src}
+              className={
+                videos[index].featured && !compact
+                  ? "wg-video-card wg-video-card--featured"
+                  : "wg-video-card"
+              }
+            >
+              {item.content}
+            </li>
+          ))}
+        </ul>
+      )}
       <dialog
         ref={dialogRef}
         className="wg-video-dialog"
         aria-labelledby={titleId}
-        onCancel={(event) => { event.preventDefault(); setActive(null); }}
+        onCancel={(event) => {
+          event.preventDefault();
+          setActive(null);
+        }}
         onClose={() => setActive(null)}
-        onClick={(event) => { if (event.target === event.currentTarget) setActive(null); }}
+        onClick={(event) => {
+          if (event.target === event.currentTarget) setActive(null);
+        }}
       >
         {active ? (
           <div className="wg-video-modal">
             <div className="wg-video-modal-top">
-              <div><p className="kicker">{active.category} · {active.duration}</p><h2 id={titleId} className="heading-3 mt-1">{active.title}</h2></div>
-              <button type="button" className="wg-video-close" onClick={() => setActive(null)} aria-label="Video schließen">Schließen</button>
+              <div>
+                <p className="kicker">
+                  {active.category} · {active.duration}
+                </p>
+                <h2 id={titleId} className="heading-3 mt-1">
+                  {active.title}
+                </h2>
+              </div>
+              <button
+                type="button"
+                className="wg-video-close"
+                onClick={() => setActive(null)}
+                aria-label="Video schließen"
+              >
+                Schließen
+              </button>
             </div>
-            <video className="wg-video-player" controls autoPlay playsInline preload="metadata" poster={active.poster}>
+            <video
+              className="wg-video-player"
+              controls
+              autoPlay
+              playsInline
+              preload="metadata"
+              poster={active.poster}
+            >
               <source src={`${active.src}.webm`} type="video/webm" />
               <source src={`${active.src}.mp4`} type="video/mp4" />
               Dein Browser unterstützt die Videowiedergabe nicht.

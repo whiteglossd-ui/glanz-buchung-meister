@@ -1,6 +1,5 @@
 import { useRouterState } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
-import { site } from "@/data/site";
 
 const RundumServiceForm = lazy(() =>
   import("./rundum-service-form").then((module) => ({ default: module.RundumServiceForm })),
@@ -50,25 +49,13 @@ export function LazyRundumInquiry() {
     <div>
       {/* Observe the form's beginning: an anchor jump past it must not activate a hidden tail. */}
       <div ref={startRef} data-inquiry-start="rundum" className="h-px" aria-hidden="true" />
-      <noscript>
-        <style>{".lazy-rundum-js { display: none; }"}</style>
-        <p className="mb-6 text-sm text-muted">
-          Für deine Anfrage erreichst du uns telefonisch unter{" "}
-          <a href={site.phoneHref} className="underline underline-offset-4">
-            {site.phoneDisplay}
-          </a>
-          .
-        </p>
-      </noscript>
-      <div className="lazy-rundum-js">
-        {ready ? (
-          <Suspense fallback={<Skeleton />}>
-            <RundumServiceForm />
-          </Suspense>
-        ) : (
-          <Skeleton />
-        )}
-      </div>
+      {ready ? (
+        <Suspense fallback={<Skeleton />}>
+          <RundumServiceForm />
+        </Suspense>
+      ) : (
+        <Skeleton />
+      )}
     </div>
   );
 }

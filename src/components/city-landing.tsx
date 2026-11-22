@@ -21,6 +21,7 @@ import { cityJourneyText, citySeoCopy } from "@/lib/city-copy";
 import { cityPlanningText, cityLogisticsFaq } from "@/lib/city-logistics";
 import { serviceBookingSelection } from "@/lib/booking-selection";
 import { localProofFor } from "@/lib/local-proof";
+import { CityRegionalService } from "@/components/city-regional-service";
 import { CityLocalProofSection } from "@/components/city-local-proof";
 import { WebsiteStudioContent } from "@/components/website-studio-content";
 import { studioHero, type PublishedStudioDocument } from "@/lib/studio-public";
@@ -49,6 +50,7 @@ function citySteps(city: City) {
 }
 
 export function CityLanding({ city, serviceSlug, editorial }: { city: City; serviceSlug?: string; editorial?: PublishedStudioDocument | null }) {
+  const regional = city.slug === "lossburg" || city.slug === "freudenstadt";
   const jsonLd = cityJsonLd(city);
   const wa = whatsappForCity(city.name);
   const pickup = cityPickupPriceText(city);
@@ -93,8 +95,8 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
           <p className="kicker mt-5">Mit Hol- und Bringservice</p>
           <h1 className="heading-page mt-4 max-w-4xl">{editorial?.content.title.trim() || copy.heading}</h1>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
-            {editorial?.content.lead.trim() || city.blurb} Innenraumreinigung, Lackpflege oder Keramikversiegelung machen wir in
-            unserer Werkstatt in {site.city}. Hol- und Bringservice: {pickup}.
+            {editorial?.content.lead.trim() || city.blurb}
+            {!regional && ` Innenraumreinigung, Lackpflege oder Keramikversiegelung machen wir in unserer Werkstatt in ${site.city}. Hol- und Bringservice: ${pickup}.`}
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
@@ -115,11 +117,11 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
               Deine Auswahl: {selectedService.nav}. Die Leistung ist für deine Anfrage vorgemerkt.
             </p>
           ) : null}
-          <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-xs uppercase tracking-[0.14em] text-subtle">
+          {!regional && <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-xs uppercase tracking-[0.14em] text-subtle">
             <li>Preise inkl. MwSt.</li>
             <li>Hol- und Bringservice {pickup}</li>
             <li>Werkstatt {site.city}</li>
-          </ul>
+          </ul>}
         </div>
       </section>
 
@@ -131,6 +133,7 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
 
       {proof ? <CityLocalProofSection city={city} proof={proof} /> : null}
 
+      {regional ? <CityRegionalService city={city} body={editorial?.content.body.trim()} faqs={proof?.faqs} /> : <>
       <section className="cv-auto section mx-auto max-w-7xl px-4 sm:px-6">
         <p className="kicker">Blick in die Arbeit</p>
         <h2 className="heading-2 mt-4 max-w-2xl">Einblicke in die Aufbereitung</h2>
@@ -379,6 +382,7 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
         sizes="100vw"
         framed={false}
       />
+      </>}
 
       <a
         href={wa}

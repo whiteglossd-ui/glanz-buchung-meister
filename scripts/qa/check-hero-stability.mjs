@@ -501,6 +501,10 @@ try {
         if (result.overlap[name]?.area > 1)
           report.failures.push(`${viewport.name}: ${name} overlaps the consent banner ${JSON.stringify(result.overlap[name])}`);
       }
+      const { cta, prices } = result.initial;
+      if (!cta || !prices || cta.right > prices.left + 1 || Math.abs(cta.top - prices.top) > 2
+        || Math.abs(cta.height - prices.height) > 2)
+        report.failures.push(`${viewport.name}: the paired hero actions must sit side by side at a common height`);
       if (result.initial.motion === "scroll") {
         const pause = result.initial.pause;
         if (!pause || pause.visibility !== "visible" || Number(pause.opacity) <= 0 || pause.disabled || pause.ariaHidden === "true" || pause.tabIndex < 0)
@@ -584,7 +588,7 @@ try {
             }),
           };
         });
-        assert.deepEqual(result.fadedSemantics.actionTargets, ["/#buchung", "/#rundum-anfrage", "/preise"], "All three expected hero destinations remain present after fading.");
+        assert.deepEqual(result.fadedSemantics.actionTargets, ["/#buchung", "/preise"], "Both homepage actions remain present after fading.");
         assert.equal(result.fadedSemantics.headingAvailable, true, "Keep the H1 in the accessibility tree after fading.");
         assert.equal(result.fadedSemantics.hiddenActionsInert, true, "Invisible hero links must leave the keyboard sequence.");
         assert.equal(result.fadedSemantics.hiddenActionsRejectFocus, true, "Each invisible hero destination must reject programmatic focus as well.");

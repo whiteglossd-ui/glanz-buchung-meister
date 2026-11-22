@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { IconArrowRight } from "@/components/icons";
 import "./scroll-film-hero.css";
 
+import { homeCopy } from "@/data/home-copy";
 import { scrollFilm } from "@/data/scroll-film";
 import { loadSeekableVideo } from "@/lib/seekable-video";
 import { useMagnetic } from "@/lib/studio-motion";
@@ -11,22 +12,12 @@ import type { StudioAsset } from "@/lib/studio-media.model";
 type Connection = EventTarget & { saveData?: boolean; effectiveType?: string };
 type DeviceNavigator = Navigator & { connection?: Connection; deviceMemory?: number };
 
-/** Headline in Zeilen; die letzte trägt den Akzent. Wortlaut unverändert. */
-const HERO_LINES = ["Dein Auto.", "Nicht nur sauber.", "Wieder besonders."];
-
-/**
- * Maskierter Reveal: jede Zeile ist eine Maske (overflow: hidden), jedes Wort
- * steigt mit 70 ms Versatz von unten auf (CSS, studio.css Abschnitt 5).
- * Leerzeichen bleiben echte Textknoten – Screenreader und Suchmaschinen lesen
- * „Dein Auto. Nicht nur sauber. Wieder besonders.“
- */
-function HeroHeadline({ title }: { title?: string }) {
+/** Masked animated words preserve the complete accessible heading. */
+function HeroHeadline({ title = homeCopy.title }: { title?: string }) {
   const lines = title
-    ? title
-        .split("\n")
-        .map((line) => line.trim())
-        .filter(Boolean)
-    : HERO_LINES;
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
   let word = 0;
   return (
     <h1>
@@ -365,31 +356,30 @@ export function ScrollFilmHero({
         <div ref={copyRef} className="scroll-film-copy">
           <div className="scroll-film-copy-inner">
             <p className="scroll-film-eyebrow">
-              White-Gloss Detailing · <span className="scroll-film-place">Horb am Neckar</span>
+              Hol- und Bringservice · <span className="scroll-film-place">Horb am Neckar</span>
             </p>
             <HeroHeadline title={title} />
-            <p className="scroll-film-service">
-              {lead ??
-                "Fahrzeugaufbereitung, Lackkorrektur und Keramikschutz in Horb – persönlich geprüft, stressfrei abgeholt und digital übergeben."}
-            </p>
-            <Link
-              ref={ctaRef}
-              to="/"
-              hash="buchung"
-              hashScrollIntoView={{ block: "start", behavior: "instant" }}
-              className="scroll-film-cta"
-              onClick={focusBookingHeading}
-            >
-              Jetzt Termin anfragen <IconArrowRight className="size-4" aria-hidden />
-            </Link>
-            <Link to="/preise" className="scroll-film-prices">
-              Pakete & Preise
-            </Link>
+            <p className="scroll-film-service">{lead ?? homeCopy.lead}</p>
+            <nav className="film-actions" aria-label="Aufbereitung planen">
+              <Link
+                ref={ctaRef}
+                to="/"
+                hash="buchung"
+                hashScrollIntoView={{ block: "start", behavior: "instant" }}
+                className="scroll-film-cta"
+                onClick={focusBookingHeading}
+              >
+                Termin anfragen <IconArrowRight className="size-4" aria-hidden />
+              </Link>
+              <Link to="/preise" className="scroll-film-prices">
+                Pakete &amp; Preise
+              </Link>
+            </nav>
           </div>
         </div>
         <div className="scroll-film-signature" aria-hidden="true">
-          <p>Sorgfalt für dein Fahrzeug.</p>
-          <span>In unserer Werkstatt in Horb.</span>
+          <p>Fahrzeugaufbereitung.</p>
+          <span>In Horb am Neckar.</span>
         </div>
         <div className="scroll-film-bottom">
           <a href="#nach-dem-film" className="scroll-film-skip">

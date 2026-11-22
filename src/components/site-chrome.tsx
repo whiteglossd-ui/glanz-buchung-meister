@@ -44,7 +44,6 @@ const NAV_SHOT: Record<string, ShotName> = {
   Arbeitsweise: "atelier",
   "Hol- und Bringservice": "felgen",
   "Google-Bewertungen": "atelier",
-  "Individuelles Angebot": "keramik",
   Ratgeber: "dellen",
   "Häufige Fragen": "atelier",
   Werkstatt: "atelier",
@@ -56,12 +55,12 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [layer, setLayer] = useState(false);
   const toggleRef = useRef<HTMLButtonElement>(null);
-  const bookingRef = useRef<HTMLAnchorElement>(null);
+  const quickLinkRef = useRef<HTMLAnchorElement>(null);
   const closeMenu = useCallback(() => setOpen(false), []);
-  // Magnetischer Termin-CTA im Dock (ab 900 px sichtbar; nur Maus/Trackpad).
-  useMagnetic(bookingRef, 0.25);
+  useMagnetic(quickLinkRef, 0.25);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const hash = useRouterState({ select: (s) => s.location.hash });
+  const isHome = pathname === "/";
 
   useEffect(() => {
     setOpen(false);
@@ -126,10 +125,17 @@ export function SiteHeader() {
           <Link to="/leistungen" activeProps={{ "aria-current": "page" }}>Leistungen</Link>
           <Link to="/preise" activeProps={{ "aria-current": "page" }}>Preise</Link>
           <Link to="/galerie" activeProps={{ "aria-current": "page" }}>Ergebnisse</Link>
-          <Link ref={bookingRef} to="/" hash="buchung" className="header-booking-link">Termin</Link>
+          <Link
+            ref={quickLinkRef}
+            to={isHome ? "/abholservice" : "/"}
+            hash={isHome ? undefined : "buchung"}
+            className="header-booking-link"
+          >
+            {isHome ? "Abholservice" : "Termin"}
+          </Link>
         </nav>
         <div className="ga-tools flex items-center">
-          {pathname === "/" && (
+          {isHome && (
             <Link to="/" hash="buchung" hashScrollIntoView={{ block: "start", behavior: "instant" }} className="header-film-booking" onClick={focusBookingHeading}>
               Jetzt Termin anfragen
             </Link>
@@ -404,8 +410,8 @@ export function SiteFooter() {
             <BrandMark variant="footer" alt={`${site.shortName} – Professionelle Autopflege & Keramikversiegelung Horb`} />
           </Link>
           <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted">
-            Fahrzeugaufbereitung in {site.city}: Innenraumreinigung, Lackkorrektur und
-            Keramikversiegelung, mit Hol- und Bringservice in Horb und Umgebung.
+            Innenraumreinigung, Lackkorrektur und Keramikversiegelung in {site.city}.
+            Auf Wunsch hole ich dein Auto ab und bringe es dir frisch aufbereitet zurück.
           </p>
           <address className="mt-4 not-italic text-sm text-muted" aria-label="Anschrift">
             {site.legalName}
@@ -515,9 +521,10 @@ export function SiteFooter() {
           <p className="kicker">Informationen</p>
           <ul className="mt-3 space-y-2 text-sm text-muted">
             {footerExplore.map((item) => (
-              <li key={item.to}>
+              <li key={item.label}>
                 <Link
                   to={item.to}
+                  params={"params" in item ? item.params : undefined}
                   className="link-draw inline-flex min-h-11 items-center hover:text-fg"
                 >
                   {item.label}

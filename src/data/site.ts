@@ -400,7 +400,15 @@ export const cities: City[] = [
     km: 30,
     minutes: 35,
     blurb:
-      "Für die Abholung aus Freudenstadt im Nordschwarzwald beträgt die Fahrzeit ca. 35 Min. Die Aufbereitung erfolgt in unserer Werkstatt in Horb.",
+      "Du brauchst dein Auto für den Arbeitsweg oder gibst es bald ins Leasing zurück? Ich hole es in Freudenstadt ab, bereite es in Horb auf und bringe es dir persönlich zurück.",
+  },
+  {
+    slug: "lossburg",
+    name: "Loßburg",
+    km: null,
+    minutes: null,
+    blurb:
+      "In Loßburg entsteht meine neue Werkstatt. Schon jetzt kannst du deinen Wagen abholen lassen. Bis zur Eröffnung bereite ich ihn in Horb am Neckar auf.",
   },
   {
     slug: "oberndorf-am-neckar",
@@ -1192,13 +1200,12 @@ export const processSteps = [
 ];
 
 export const nav = [
+  { to: "/abholservice", label: "Hol- und Bringservice" },
   { to: "/leistungen", label: "Leistungen" },
   { to: "/luxusfahrzeuge", label: "Luxusfahrzeuge" },
   { to: "/preise", label: "Preise & Pakete" },
   { to: "/qualitaet", label: "Arbeitsweise" },
-  { to: "/abholservice", label: "Hol- und Bringservice" },
   { to: "/", label: "Google-Bewertungen", hash: "bewertungen" },
-  { to: "/", label: "Individuelles Angebot", hash: "buchung" },
   { to: "/ratgeber", label: "Ratgeber" },
   { to: "/faq", label: "Häufige Fragen" },
   { to: "/galerie", label: "Ergebnisse" },
@@ -1222,6 +1229,8 @@ export const sheetSecondary = [
 
 export const footerExplore = [
   { to: "/abholservice", label: "Hol- und Bringservice" },
+  { to: "/abholservice/$city", params: { city: "lossburg" }, label: "Fahrzeugaufbereitung Loßburg" },
+  { to: "/abholservice/$city", params: { city: "freudenstadt" }, label: "Abholservice Freudenstadt" },
   { to: "/ratgeber", label: "Ratgeber" },
   { to: "/galerie", label: "Ergebnisse" },
   { to: "/kontakt", label: "Kontakt" },

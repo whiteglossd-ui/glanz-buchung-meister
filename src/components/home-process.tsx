@@ -1,106 +1,71 @@
-import { useRef } from "react";
 import { Link } from "@tanstack/react-router";
-import { processSteps } from "@/data/site";
-import { DESKTOP_MOTION, useScrollMotion } from "@/lib/scroll-motion";
-import { IconArrowRight } from "./icons";
+import { conciergeAtmosphere } from "@/data/atmosphere-media";
 import { RevealLines } from "./reveal-lines";
+import { IconArrowRight } from "./icons";
 
-/** Leselinie im Viewport: dort leuchtet ein Schritt auf und dort steht die Lichtlinie. */
-const READING_LINE = "62%";
-
-/**
- * „So läuft’s bei uns“: links angepinnt (CSS sticky), rechts leuchten die
- * Phasen 01–04 nacheinander auf, eine Lichtlinie zeichnet den Fortschritt.
- * Ohne Desktop-Motion (Smartphone, Tablet, reduzierte Bewegung, kein JS)
- * bleibt eine vollständig lesbare, statische Zeitleiste.
- */
 export function HomeProcess() {
-  const section = useRef<HTMLElement>(null);
-  const list = useRef<HTMLOListElement>(null);
-
-  useScrollMotion(
-    DESKTOP_MOTION,
-    ({ gsap, ScrollTrigger }) => {
-      const timeline = list.current;
-      if (!timeline) return;
-      const steps = gsap.utils.toArray<HTMLElement>("li", timeline);
-      timeline.dataset.live = "";
-
-      // Lichtlinie: Fortschritt von der ersten bis zur letzten Phase, auf
-      // derselben Leselinie gemessen wie die Phasen selbst – beides bleibt
-      // dadurch exakt synchron.
-      gsap.fromTo(
-        timeline,
-        { "--process-progress": 0 },
-        {
-          "--process-progress": 1,
-          ease: "none",
-          scrollTrigger: {
-            trigger: timeline,
-            start: `top ${READING_LINE}`,
-            end: `bottom ${READING_LINE}`,
-            scrub: true,
-            invalidateOnRefresh: true,
-          },
-        },
-      );
-
-      // Aktiv ist die letzte Phase, deren Beginn die Leselinie erreicht hat;
-      // nach der letzten Phase bleibt sie leuchtend stehen. Die Marker
-      // existieren erst nach create(); ein Refresh währenddessen wird ignoriert.
-      let markers: Array<{ start: number; scroll(): number }> = [];
-      const sync = () => {
-        if (!markers.length || markers.length !== steps.length) return;
-        const position = markers[0].scroll();
-        let active = -1;
-        markers.forEach((marker, index) => {
-          if (position >= marker.start) active = index;
-        });
-        steps.forEach((step, index) => step.classList.toggle("is-active", index === active));
-      };
-      markers = steps.map((step) =>
-        ScrollTrigger.create({
-          trigger: step,
-          start: `top ${READING_LINE}`,
-          end: `bottom ${READING_LINE}`,
-          onToggle: sync,
-          onRefresh: sync,
-        }),
-      );
-      sync();
-
-      return () => {
-        delete timeline.dataset.live;
-        steps.forEach((step) => step.classList.remove("is-active"));
-      };
-    },
-    section,
-    section,
-  );
-
   return (
-    <section
-      ref={section}
-      className="home-craft mx-auto max-w-7xl px-4 sm:px-6"
-      aria-labelledby="craft-heading"
-    >
+    <section className="concierge-service" aria-labelledby="concierge-heading" id="craft-heading">
       <header>
-        <p className="kicker">Prozess</p>
-        <h2 id="craft-heading" className="heading-2 mt-4" data-lines>
-          <RevealLines lines={["So läuft’s bei uns."]} />
+        <p className="kicker">Hol- und Bringservice</p>
+        <h2 id="concierge-heading" className="heading-2" data-lines>
+          <RevealLines lines={["So läuft die", "Aufbereitung ab."]} />
         </h2>
-        <Link to="/qualitaet" className="atelier-text-link">
-          Unser Ablauf im Detail <IconArrowRight aria-hidden />
+        <Link to="/qualitaet" className="atelier-text-link mt-5">
+          Ein Blick in die Werkstatt <IconArrowRight aria-hidden />
         </Link>
+        <div className="concierge-media" aria-hidden="true">
+          {conciergeAtmosphere.map((photo) => (
+            <div className="concierge-frame" key={photo.id}>
+              <img
+                className="concierge-media-backdrop"
+                src={photo.backdrop}
+                width={384}
+                height={216}
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
+              <img
+                className="concierge-media-sharp"
+                src={photo.src}
+                srcSet={photo.srcSet}
+                sizes="(min-width: 960px) 33vh, 72vw"
+                width={photo.width}
+                height={photo.height}
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          ))}
+        </div>
       </header>
-      <ol ref={list} className="home-process">
-        {processSteps.map((step) => (
-          <li key={step.n}>
-            <span>{step.n}</span>
-            <h3>{step.title}</h3>
-            <p>{step.text}</p>
-          </li>
-        ))}
+      <ol>
+        <li>
+          <span aria-hidden="true">01</span>
+          <h3>Du fragst an</h3>
+          <p>
+            Beschreib mir dein Auto und was dich stört. Du bekommst ein persönliches Angebot mit
+            Preis und Termin. Erst wenn du zusagst, ist der Termin fest.
+          </p>
+        </li>
+        <li>
+          <span aria-hidden="true">02</span>
+          <h3>Ich hole es ab</h3>
+          <p>
+            Wir vereinbaren Ort und Uhrzeit. Bist du unterwegs, können wir die Schlüsselübergabe
+            vorab regeln. In der Werkstatt bekommt dein Auto die vereinbarte Pflege.
+          </p>
+        </li>
+        <li>
+          <span aria-hidden="true">03</span>
+          <h3>Du fährst los</h3>
+          <p>
+            Ich bringe dir dein Auto zurück. Die Übergabe halte ich digital für dich fest. Hast du
+            danach eine Frage zur Pflege, erreichst du mich direkt.
+          </p>
+        </li>
       </ol>
     </section>
   );

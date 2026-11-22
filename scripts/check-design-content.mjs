@@ -94,6 +94,31 @@ export const APPROVED_SEO_BLOBS = Object.freeze({
   "src/routes/widerruf.tsx": "58c36a01a2b121baebe7ef0bc72885e2d883a92b",
 });
 
+// Reviewed public sources for the November 22 homepage, regional entry and
+// shared booking change. Exact bytes also protect new files that were absent
+// at the original redesign baseline. No additional Git history is needed.
+const APPROVED_HOME_BLOBS = Object.freeze({
+  "src/components/city-landing.tsx": "c18b3632e2f7979b78865a208766ae2094aee87f",
+  "src/components/city-regional-service.tsx": "d944527eeb322fa0ad9181960876d1007cf98c34",
+  "src/components/customer-video-gallery.tsx": "5cf5cae100cf5d4f79e34e2049b54198d4ce1330",
+  "src/components/home-booking.tsx": "30aa060f8f55095fe3c3682bd0586a06a4dc356a",
+  "src/components/home-process.tsx": "31be5e8bc546a905f11143129ea598177a3db929",
+  "src/components/lazy-rundum-inquiry.tsx": "b8acfa0a1fd5f68645e62622f4035a55775405ad",
+  "src/components/media-rail.tsx": "7914e377fb31bc5959be785cfa457c8b149561bd",
+  "src/components/package-showcase.tsx": "b0546dccf8bdb1ba50e2f4d3f57d71756c3f136a",
+  "src/components/results-teaser.tsx": "6458935031e25f5efeaf1ab03e320b87f3b19934",
+  "src/components/scroll-film-hero.tsx": "8a1645872b87c4abdd68156b9dbfa3df2e65dccb",
+  "src/components/site-chrome.tsx": "b616c14fcb9cff9487ba1246141a0f199fd75ce1",
+  "src/components/website-studio.tsx": "33cc6b97e51f52e72ff891778811febf2d591dde",
+  "src/data/home-copy.ts": "45037ec9e291bde98f2376fa0af1719192bee5d6",
+  "src/data/site.ts": "84deb930b3a39a4456abf60fdad5a89b2cd2b7ab",
+  "src/data/sitemap-static.xml": "22bbc5bce56dc9611a8a28a4451675858d45b6ca",
+  "src/lib/city-copy.ts": "98f164cc518d27ce7cfdfff66eef96d62e842369",
+  "src/lib/city-logistics.ts": "9f964c2dfb0d0822b583c761fce7550556219e0c",
+  "src/routes/index.tsx": "843d9c551d574c9d4ac49346059301a3eb986973",
+  "src/routes/leistungen.$slug.$city.tsx": "bb360ecb62e387d7fa8569e1259ece1ab9c19872",
+});
+
 function sourceBlobId(source) {
   const bytes = Buffer.from(source.replace(/\r\n/g, "\n"), "utf8");
   return createHash("sha1").update(`blob ${bytes.length}\0`).update(bytes).digest("hex");
@@ -354,6 +379,7 @@ export function inspectDesignContent({
   sourceBaselines,
   approvedSeoBlobs,
   approvedRundumContent,
+  approvedHomeBlobs,
 } = {}) {
   const git = (args) => execFileSync("git", args, { cwd, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], maxBuffer: 16 * 1024 * 1024 });
   // Resolve once to reject unknown revisions before inspecting any content.
@@ -401,7 +427,18 @@ export function inspectDesignContent({
     if (!protectedPresent.includes(name) || !/^[a-f0-9]{40}$/.test(rundum.commit ?? ""))
       throw new Error(`Invalid approved protected Rundum source: ${name}`);
   }
+  const homeBlobs = approvedHomeBlobs ?? (commit === DESIGN_BASE ? APPROVED_HOME_BLOBS : {});
   const failures = [];
+  for (const [name, blobId] of Object.entries(homeBlobs)) {
+    const publicContent = /^(?:src\/components\/[\w-]+\.tsx|src\/data\/[\w-]+\.ts)$/.test(name);
+    if ((!sources.includes(name) && !protectedPresent.includes(name) && !publicContent)
+      || rundum.files?.[name]?.deleted || !/^[a-f0-9]{40}$/.test(blobId))
+      throw new Error(`Invalid approved homepage source: ${name}`);
+    let current;
+    try { current = readFileSync(resolve(cwd, name), "utf8"); } catch { current = null; }
+    if (current === null || sourceBlobId(current) !== blobId)
+      failures.push({ file: name, kind: "home-source", value: "Source differs from the reviewed homepage and regional update", count: 1 });
+  }
   const verifySeoBlob = (name, source) => {
     if (source && sourceBlobId(source) === seoBlobs[name]) return;
     failures.push({ file: name, kind: "seo-source", value: "Source differs from the approved SEO update", count: 1 });
@@ -431,11 +468,13 @@ export function inspectDesignContent({
     headingEntries += total("headings");
     linkEntries += total("links");
     seoEntries += total("seo");
+    if (Object.hasOwn(homeBlobs, name)) continue; // Already compared byte for byte.
     if (taskApproval) failures.push(...compareApprovedRundumContent(before, after, name, taskApproval));
     else if (Object.hasOwn(seoBlobs, name)) verifySeoBlob(name, after);
     else failures.push(...compareSource(before, after, name, { approvedCtaLabels: commit === DESIGN_BASE }));
   }
   for (const name of protectedPresent) {
+    if (Object.hasOwn(homeBlobs, name)) continue;
     let current;
     try { current = readFileSync(resolve(cwd, name), "utf8"); } catch { current = null; }
     const approvedReplacement = rundum.protectedFiles?.[name];
@@ -447,9 +486,10 @@ export function inspectDesignContent({
       failures.push({ file: name, kind: "protected-source", value: "Content/SEO source differs from baseline", count: 1 });
     }
   }
-  return { base: commit, sourceBaselines: actualSourceBaselines, protectedBase: commit, approvedSeoBlobs: seoBlobs,
-    approvedCtaLabels: commit === DESIGN_BASE ? APPROVED_CTA_LABELS : {},
-    approvedRundumContent: rundum,
+  const priorPins = (entries) => Object.fromEntries(Object.entries(entries).filter(([name]) => !Object.hasOwn(homeBlobs, name)));
+  return { base: commit, sourceBaselines: actualSourceBaselines, protectedBase: commit, approvedSeoBlobs: priorPins(seoBlobs),
+    approvedCtaLabels: commit === DESIGN_BASE ? priorPins(APPROVED_CTA_LABELS) : {},
+    approvedRundumContent: rundum, approvedHomeBlobs: homeBlobs,
     sourceFiles: sources.length, protectedFiles: protectedPresent.length,
     textEntries, headingEntries, linkEntries, seoEntries, failures, passed: failures.length === 0 };
 }
@@ -474,6 +514,8 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
         console.log(`Protected data/SEO baseline: ${result.protectedBase}`);
         for (const [file, blobId] of Object.entries(result.approvedSeoBlobs))
           console.log(`Approved SEO source: ${file} -> ${blobId}`);
+        for (const [file, blobId] of Object.entries(result.approvedHomeBlobs))
+          console.log(`Reviewed homepage source: ${file} -> ${blobId}`);
         for (const [file, label] of Object.entries(result.approvedCtaLabels)) {
           console.log(`Approved CTA label: ${file} .${label.className}: ${JSON.stringify(label.before)} -> ${JSON.stringify(label.after)} (exactly one)`);
         }
