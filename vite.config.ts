@@ -255,6 +255,15 @@ export default defineConfig(({ command, isPreview }) => {
     grokPwaPlugin(),
     tailwindcss(),
     tanstackStart({
+      router: {
+        codeSplittingOptions: {
+          // Only article pages need their editorial text during navigation.
+          // Group their loader and component so they share the same request.
+          splitBehavior: ({ routeId }) => routeId === "/ratgeber/$slug"
+            ? [["loader", "component"]]
+            : undefined,
+        },
+      },
       // Inline the complete build-collected CSS, including the matched route.
       // A partial critical stylesheet previously caused layout shifts.
       server: { build: { inlineCss: true } },
