@@ -43,7 +43,7 @@ test("the migrated website permits only its own isolated GitHub jobs", () => {
   }
   for (const update of [
     { GITHUB_REPOSITORY_ID: "1234" }, { GITHUB_REPOSITORY: "other/glanz-buchung-meister" },
-    { GITHUB_SERVER_URL: "https://example.invalid" }, { GITHUB_JOB: "publish" },
+    { GITHUB_SERVER_URL: "https://example.invalid" }, { GITHUB_JOB: "publish" }, { GITHUB_JOB: undefined },
     { GITHUB_WORKFLOW: "other" }, { GITHUB_WORKSPACE: "/different/checkout" },
   ]) {
     assert.equal(isIsolatedGithubCi({ ...context, env: { ...migrated, ...update } }), false);

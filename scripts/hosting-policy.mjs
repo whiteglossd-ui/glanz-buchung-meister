@@ -22,7 +22,7 @@ export function isIsolatedGithubCi({
   const workspace = env.GITHUB_WORKSPACE;
   const migratedWebsite = env.GITHUB_REPOSITORY === "whiteglossd-ui/glanz-buchung-meister" &&
     env.GITHUB_REPOSITORY_ID === "1468251080" && env.GITHUB_SERVER_URL === "https://github.com" &&
-    ["verify", "studio", "cross-browser"].includes(env.GITHUB_JOB);
+    ["verify", "studio", "cross-browser"].includes(env.GITHUB_JOB ?? "");
   const approvedRepository = migratedWebsite || env.GITHUB_REPOSITORY === "White-Gloss/glanz-buchung-meister";
   if (platform !== "linux" || env.GITHUB_ACTIONS !== "true" ||
       !approvedRepository ||
