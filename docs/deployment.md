@@ -1,6 +1,14 @@
-# Deployment auf IONOS – technische Vorgaben
+# Veröffentlichung der White-Gloss-Website
 
-## Build und Veröffentlichung über Forgejo
+## GitLab und Hostinger
+
+Ein Push auf den geschützten Standardbranch `main` startet fünf Prüfungen auf dem Website-Runner. Sobald Datenbank, Build, Buchungsablauf, Studio und Browser bestanden haben, veröffentlicht `hostinger-production` den geprüften Commit automatisch. Ein Merge Request durchläuft die Website-Prüfungen bereits vor dem Merge.
+
+Der Produktionsjob verwendet die geschützten Dateivariablen `HOSTINGER_SSH_PRIVATE_KEY` und `HOSTINGER_SSH_KNOWN_HOSTS` im Geltungsbereich `production`. Der öffentliche Schlüssel ist auf dem VPS an den Website-Releasebefehl für `white-gloss-ci` gebunden. Die Hostidentität wird vor der ersten Übertragung auf dem VPS geprüft. Bei bestätigter OAuth-Konfiguration im laufenden Website-Dienst verwendet `HOSTINGER_GOOGLE_OAUTH_SOURCE=runtime` das bereits geprüfte Build-Archiv. Die Verbindung wird nach der Einrichtung mit `HOSTINGER_DEPLOY_ENABLED=true` aktiviert.
+
+Vor dem Wechsel prüft GitLab das Ziel, die Prüfsumme und den aktuellen Produktionsstand. Nach der Aktivierung kontrolliert der Job die öffentliche Website. Scheitert die Liveprüfung, versucht er den bestätigten Vorgänger wiederherzustellen und meldet den Fehler im Produktionsjob. [Einrichtung des Website-Runners](../ops/gitlab-website-runner.md)
+
+## Bisheriger Build und Veröffentlichung über Forgejo
 
 - **Website-Checks:** `.forgejo/workflows/website-ci.yml` prüft PRs und
   `main` mit einem Linux-Docker-Runner vom Typ `ubuntu-latest`. Der Build
