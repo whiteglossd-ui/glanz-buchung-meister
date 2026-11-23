@@ -26,7 +26,7 @@ const run = {
   status: "completed",
   conclusion: "success",
 };
-const jobs = ["verify", "schema", "studio", "cross-browser"].map((name) => ({
+const jobs = ["verify", "unit", "schema", "studio", "cross-browser"].map((name) => ({
   name,
   head_sha: sha,
   status: "completed",
@@ -114,15 +114,19 @@ test("a newer queued, failed or cancelled run cannot be hidden by an old success
   }
 });
 
-test("missing, skipped, duplicated or failing required jobs are not a release approval", async () => {
-  for (const runJobs of [
-    jobs.filter((job) => job.name !== "studio"),
-    [...jobs, jobs[0]],
-    ...["skipped", "failure", "cancelled"].map((conclusion) =>
-      jobs.map((job) => job.name === "verify" ? { ...job, conclusion } : job)),
-    jobs.map((job) => job.name === "schema" ? { ...job, head_sha: previous } : job),
-  ]) {
-    await assert.rejects(verifyDeploymentApproval(environment, github({ runJobs }).request), /CI/);
+test("every required job must have one completed successful result for the release commit", async () => {
+  for (const required of jobs) {
+    for (const runJobs of [
+      jobs.filter((job) => job.name !== required.name),
+      [...jobs, required],
+      ...["skipped", "failure", "cancelled"].map((conclusion) =>
+        jobs.map((job) => job.name === required.name ? { ...job, conclusion } : job)),
+      jobs.map((job) => job.name === required.name ? { ...job, head_sha: previous } : job),
+      jobs.map((job) => job.name === required.name ? { ...job, status: "in_progress", conclusion: null } : job),
+    ]) {
+      await assert.rejects(verifyDeploymentApproval(environment, github({ runJobs }).request),
+        new RegExp(`Required CI job is missing or unsuccessful: ${required.name}\\.`));
+    }
   }
 });
 

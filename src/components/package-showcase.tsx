@@ -5,6 +5,7 @@ import { customerPhotos } from "@/data/customer-photos";
 import { eur } from "@/lib/utils";
 import { IconArrowRight } from "./icons";
 import { MediaRail } from "./media-rail";
+import { DeferredPackagePhoto } from "./deferred-package-photo";
 
 const photos = [
   customerPhotos.find((photo) => photo.id === "customer-14")!,
@@ -64,19 +65,7 @@ export function PackageShowcase() {
             label: pack.name.replace("White-Gloss ", ""),
             content: (
               <>
-                <div className="wg-rail-frame">
-                  <img
-                    src={photo.src}
-                    srcSet={photo.srcSet}
-                    sizes="(min-width: 1280px) 400px, (min-width: 960px) 32vw, 88vw"
-                    style={{ objectPosition: focalPoints[index] }}
-                    width={photo.width}
-                    height={photo.height}
-                    alt={photo.alt}
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
+                <DeferredPackagePhoto photo={photo} position={focalPoints[index]} />
                 <div className="wg-rail-copy">
                   <h3>{pack.name}</h3>
                   <p>{pack.kicker}</p>

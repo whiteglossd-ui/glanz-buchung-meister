@@ -247,12 +247,35 @@ async function checkMediaCollections(page, width) {
     const section = page.locator(selector);
     const track = section.locator(".wg-media-rail");
     const nav = section.locator(".wg-rail-nav");
-    for (const image of await track.locator(".wg-rail-frame img").all()) {
-      await image.scrollIntoViewIfNeeded();
-      await image.evaluate(async (element) => {
-        await element.decode();
-        if (!element.naturalWidth) throw new Error("Preview image must decode");
-      });
+    // Package sources are mounted only near the viewport. Traverse the stable
+    // frames first so deferred previews cannot make an empty image loop pass.
+    for (const frame of await track.locator(".wg-rail-frame").all()) {
+      const initialSize = await frame.evaluate((element) => ({
+        width: element.getBoundingClientRect().width,
+        height: element.getBoundingClientRect().height,
+      }));
+      await frame.scrollIntoViewIfNeeded();
+      // Ignore the no-JavaScript fallback: this test must observe the live preview.
+      const images = frame.locator("img:not(noscript img)");
+      await images.first().waitFor({ state: "visible" });
+      const expectedImages = await frame.evaluate((element) =>
+        element.classList.contains("wg-rail-comparison") ? 2 : 1);
+      assert.equal(await images.count(), expectedImages,
+        `${selector} @${width}: every media frame mounts its actual preview images`);
+      for (const image of await images.all()) {
+        await image.evaluate(async (element) => {
+          await element.decode();
+          if (!element.currentSrc || !element.naturalWidth || !element.naturalHeight)
+            throw new Error("Preview image must decode from a real source");
+        });
+      }
+      const loadedSize = await frame.evaluate((element) => ({
+        width: element.getBoundingClientRect().width,
+        height: element.getBoundingClientRect().height,
+      }));
+      assert.ok(Math.abs(initialSize.width - loadedSize.width) <= 1 &&
+        Math.abs(initialSize.height - loadedSize.height) <= 1,
+      `${selector} @${width}: loading a preview must preserve the reserved frame size`);
     }
     const overflowing = await track.evaluate((list) => list.scrollWidth > list.clientWidth + 1);
     if (overflowing) {

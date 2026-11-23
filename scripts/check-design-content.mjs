@@ -99,6 +99,7 @@ export const APPROVED_SEO_BLOBS = Object.freeze({
 // (docs/homepage-ux-2026-11-23.md). Exact bytes protect new files that were absent
 // at the original redesign baseline. No additional Git history is needed.
 const APPROVED_HOME_BLOBS = Object.freeze({
+  "src/components/deferred-package-photo.tsx": "d82763c73e2a8a4eaaa46687cb631cfcfbf0a571",
   "src/components/city-landing.tsx": "c18b3632e2f7979b78865a208766ae2094aee87f",
   "src/components/city-regional-service.tsx": "d944527eeb322fa0ad9181960876d1007cf98c34",
   "src/components/customer-video-gallery.tsx": "c351ec962b27e4fe2a3e18504c4c2fff99d959bb",
@@ -106,7 +107,7 @@ const APPROVED_HOME_BLOBS = Object.freeze({
   "src/components/home-process.tsx": "ef2d188275880831c56d7cf9fa925ff103653cbf",
   "src/components/lazy-rundum-inquiry.tsx": "5d59095e9e985a6e1de6a2164e3c17c477f2bce1",
   "src/components/media-rail.tsx": "b1777547252d502168b9fe0e704b3dee7984b6fa",
-  "src/components/package-showcase.tsx": "b0546dccf8bdb1ba50e2f4d3f57d71756c3f136a",
+  "src/components/package-showcase.tsx": "53b5f78114e8de746613fad8cfa1151ffb276384",
   "src/components/results-teaser.tsx": "9cfc89347decf120486ca49e69f854a7563b6850",
   "src/components/scroll-film-hero.tsx": "ae678176bc91fd714d9f04bd121be0775593dd46",
   "src/components/site-chrome.tsx": "90f6319473ba916d9696c74b6bb0da1ae492a733",

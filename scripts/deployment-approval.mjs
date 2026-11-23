@@ -1,7 +1,7 @@
 import { pathToFileURL } from "node:url";
 
 const shaPattern = /^[0-9a-f]{40}$/;
-const requiredJobs = ["verify", "schema", "studio", "cross-browser"];
+const requiredJobs = ["verify", "unit", "schema", "studio", "cross-browser"];
 
 // The dispatch pins a predecessor. Automatic releases capture it on the VPS
 // and use the same compare-and-swap operation as a manual deployment.

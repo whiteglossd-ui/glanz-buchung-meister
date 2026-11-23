@@ -2,7 +2,9 @@
 
 ## GitHub und Hostinger
 
-Im privaten Website-Repository startet ein Push auf `main` die vier Pflichtprüfungen `schema`, `verify`, `studio` und `cross-browser`. Die automatische Veröffentlichung übernimmt ausschließlich einen erfolgreichen Lauf aus demselben Repository, solange dessen Commit noch die Spitze von `main` ist.
+Im privaten Website-Repository startet ein Push auf `main` die fünf Pflichtprüfungen `schema`, `unit`, `verify`, `studio` und `cross-browser`. Die automatische Veröffentlichung übernimmt ausschließlich einen erfolgreichen Lauf aus demselben Repository, solange dessen Commit noch die Spitze von `main` ist. Alle fünf Jobs müssen für genau diesen Commit erfolgreich abgeschlossen sein.
+
+`unit` führt das unveränderte `npm test` mit zwei parallelen Testprozessen auf einem eigenen Ubuntu-Runner aus. So warten Build und Browserprüfungen nicht auf die Unit-Tests und teilen deren CPU-/Speicherlast nicht. Der Job startet keinen Website-Server. Ein fehlender, übersprungener oder fehlgeschlagener `unit`-Job sperrt die Veröffentlichung ebenso wie jeder andere Pflichtjob.
 
 Für den Umzug die alten automatischen Veröffentlichungen deaktivieren. Den öffentlichen Teil eines eigenen Website-Schlüssels auf dem VPS mit `ops/install-gitlab-release-gateway.py` an den bestehenden Releasebefehl des Kontos `white-gloss-ci` binden. Das Skript installiert denselben eingeschränkten Befehl für GitLab und GitHub. Im neuen GitHub-Repository die Actions-Secrets `HOSTINGER_SSH_HOST`, `HOSTINGER_SSH_USER`, `HOSTINGER_SSH_PRIVATE_KEY`, `HOSTINGER_SSH_KNOWN_HOSTS` und bei abweichendem Port `HOSTINGER_SSH_PORT` setzen.
 
@@ -250,7 +252,9 @@ Der Produktions-Smoke-Test prüft unter anderem Startseite, Preise, Leistungen, 
 
 ## CI
 
-GitHub Actions ist aktiv. Der Workflow `.github/workflows/ci.yml` prüft Pull Requests und `main` mit:
+GitHub Actions ist aktiv. Der Workflow `.github/workflows/ci.yml` prüft Pull Requests und `main`.
+
+Der unabhängige Pflichtjob `unit` führt nach `npm ci --ignore-scripts` alle Tests aus `npm test` aus. `verify` behält folgende Prüfungen:
 
 1. `npm ci --ignore-scripts`
 2. `npm audit --omit=dev --audit-level=moderate`

@@ -313,7 +313,10 @@ html:has(#rundum-anfrage:target) .scroll-film[data-motion="scroll"] {
 [data-shell="public"] .scroll-film--personal[data-motion="still"] .scroll-film-stage {
   position: relative;
 }
-[data-shell="public"] .scroll-film.scroll-film--personal .scroll-film-copy {
+[data-shell="public"] .scroll-film.scroll-film--personal[data-motion] .scroll-film-copy {
+  /* Reserve clearance in document flow from SSR onward. The legacy consent
+     translation is for the old fixed-height copy and must not shift this block. */
+  --film-copy-offset: 0px;
   position: relative;
   inset: auto;
   width: min(88%, 66rem);
@@ -402,7 +405,7 @@ html:has(#rundum-anfrage:target) .scroll-film[data-motion="scroll"] {
   text-wrap: balance;
 }
 @media (max-width: 639px) {
-  [data-shell="public"] .scroll-film.scroll-film--personal .scroll-film-copy {
+  [data-shell="public"] .scroll-film.scroll-film--personal[data-motion] .scroll-film-copy {
     width: calc(100% - 2.5rem);
     padding-block: 6.5rem 8rem;
   }
@@ -426,9 +429,10 @@ html:has(#rundum-anfrage:target) .scroll-film[data-motion="scroll"] {
     white-space: normal;
   }
 }
-/* Reading-mode copy grows naturally; never translate it behind the header. */
-[data-shell="public"] .scroll-film--personal[data-motion="still"] .scroll-film-copy {
-  --film-copy-offset: 0px;
+/* Reading-mode controls stay in their reserved footer space. Moving them above
+   the consent banner would cover the actions, even after native scrolling. */
+[data-shell="public"] .scroll-film.scroll-film--personal[data-motion="still"] .scroll-film-bottom {
+  transform: none;
 }
 body[data-consent-banner="open"] [data-shell="public"] .scroll-film--personal[data-motion="still"] .scroll-film-copy-inner {
   transform: none;
@@ -437,7 +441,7 @@ body[data-consent-banner="open"] [data-shell="public"] .scroll-film--personal[da
   [data-shell="public"] .scroll-film--personal .film-actions a {
     transition: none;
   }
-  [data-shell="public"] .scroll-film.scroll-film--personal .scroll-film-copy {
+  [data-shell="public"] .scroll-film.scroll-film--personal[data-motion] .scroll-film-copy {
     --film-copy-offset: 0px;
     transform: none !important;
   }

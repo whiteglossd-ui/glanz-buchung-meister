@@ -97,9 +97,15 @@ Der normale CI-Workflow prüft bei Pull Requests und auf `main`:
 3. ESLint
 4. Typen der Anwendung (`npm run typecheck`)
 5. Typen der Edge Functions (`npm run typecheck:functions`)
-6. Automatisierte Tests
+6. Automatisierte Tests (`npm test`) im unabhängigen Pflichtjob `unit`
 7. Syntax der Quality-Skripte und Lighthouse-Konfigurationen
 8. Produktions-Build
+
+`unit` läuft auf einem eigenen Ubuntu-Runner parallel zu `verify`; Testumfang und
+Testparallelität bleiben unverändert. Build und Browserprüfungen teilen damit
+keine CPU-/Speicherlast mit den Unit-Tests. Die Hostinger-Freigabe verlangt alle
+fünf erfolgreichen Jobs `schema`, `unit`, `verify`, `studio` und `cross-browser`
+für denselben Commit. Ein übersprungener oder fehlender Job zählt nicht als Erfolg.
 
 Dadurch können fehlerhafte Quality-Gates nicht unbemerkt in `main` gelangen.
 
