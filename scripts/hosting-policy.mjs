@@ -74,7 +74,7 @@ export function isIsolatedGitlabCi({
 
   if (env.CI_PIPELINE_SOURCE === "merge_request_event" &&
       (env.CI_MERGE_REQUEST_SOURCE_PROJECT_ID !== env.CI_PROJECT_ID ||
-       env.CI_MERGE_REQUEST_TARGET_PROJECT_ID !== env.CI_PROJECT_ID)) return false;
+       env.CI_MERGE_REQUEST_PROJECT_ID !== env.CI_PROJECT_ID)) return false;
   if (!["merge_request_event", "push", "web", "api"].includes(env.CI_PIPELINE_SOURCE || "")) return false;
 
   try {

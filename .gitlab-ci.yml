@@ -7,7 +7,7 @@ workflow:
   rules:
     - if: '$CI_SERVER_URL != "https://gitlab-p1va.srv2077393.hstgr.cloud"'
       when: never
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_PROJECT_ID == $CI_PROJECT_ID && $CI_MERGE_REQUEST_TARGET_PROJECT_ID == $CI_PROJECT_ID'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_PROJECT_ID == $CI_PROJECT_ID && $CI_MERGE_REQUEST_PROJECT_ID == $CI_PROJECT_ID'
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS'
       when: never
@@ -28,6 +28,8 @@ default:
   image: node:24-bookworm
 
 .website-check:
+  rules:
+    - when: on_success
   stage: test
   interruptible: true
   before_script:
@@ -35,6 +37,8 @@ default:
     - npm ci --ignore-scripts
 
 schema:
+  rules:
+    - when: on_success
   stage: test
   interruptible: true
   timeout: 18 minutes

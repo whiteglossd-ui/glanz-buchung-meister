@@ -60,7 +60,7 @@ test("GitLab requires the approved Hostinger instance, project, disposable runne
     CI_DISPOSABLE_ENVIRONMENT: "true", CI_BUILDS_DIR: "/builds",
     CI_PROJECT_PATH: "shop/website", CI_PROJECT_DIR: "/builds/shop/website",
     CI_PIPELINE_SOURCE: "merge_request_event", CI_MERGE_REQUEST_SOURCE_PROJECT_ID: "240",
-    CI_MERGE_REQUEST_TARGET_PROJECT_ID: "240",
+    CI_MERGE_REQUEST_PROJECT_ID: "240",
   };
   const options = { platform: "linux", cwd: env.CI_PROJECT_DIR, realpath: p => p, env };
   assert.equal(isIsolatedGitlabCi(options), true);
@@ -75,7 +75,7 @@ test("GitLab requires the approved Hostinger instance, project, disposable runne
     { WHITE_GLOSS_GITLAB_RUNNER_ID: "999" }, { CI_DISPOSABLE_ENVIRONMENT: "false" },
     { CI_BUILDS_DIR: "/" }, { CI_PROJECT_PATH: "other/repo" },
     { WHITE_GLOSS_GITLAB_PROJECT_ID: "999" }, { CI_MERGE_REQUEST_SOURCE_PROJECT_ID: "999" },
-    { CI_MERGE_REQUEST_TARGET_PROJECT_ID: "999" }, { CI_RUNNER_TAGS: '["private"]' },
+    { CI_MERGE_REQUEST_PROJECT_ID: "999" }, { CI_RUNNER_TAGS: '["private"]' },
     { CI_RUNNER_TAGS: "white-gloss-website" }, { CI_PIPELINE_SOURCE: "external" },
   ]) assert.equal(isIsolatedGitlabCi({ ...options, env: { ...env, ...update } }), false);
   for (const [dir, expected] of [
