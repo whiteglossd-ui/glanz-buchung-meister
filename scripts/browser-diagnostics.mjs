@@ -27,6 +27,7 @@ export function createBrowserDiagnostics({ origin, label = "" }) {
   const blocked = [];
   const ignored = [];
   const abortedRequests = new WeakSet();
+  let tearingDown = false;
   const externalReadUrls = new Set();
   const requestEvidence = (request) => ({
     method: request.method(),
@@ -64,9 +65,12 @@ export function createBrowserDiagnostics({ origin, label = "" }) {
       page.on("requestfailed", (request) => {
         const evidence = record("requestfailed", { ...requestEvidence(request), message: request.failure()?.errorText });
         if (abortedRequests.has(request)) ignored.push({ ...evidence, reason: "deliberate-block" });
+        else if (tearingDown && /(?:ERR_ABORTED|NS_BINDING_ABORTED)$/.test(evidence.message ?? ""))
+          ignored.push({ ...evidence, reason: "context-close" });
         else errors.push(evidence);
       });
     },
+    beginTeardown() { tearingDown = true; },
     allowRequest(request) {
       const read = ["GET", "HEAD"].includes(request.method());
       if (read && new URL(request.url()).origin === allowedOrigin) return true;

@@ -26,6 +26,11 @@ const browser = await chromium.launch({ headless: true });
 async function openContext(options) {
   const context = await browser.newContext({ ...options, serviceWorkers: "block", extraHTTPHeaders: qaClientHeaders("booking-ui", `context-${diagnostics.length}`) });
   const diagnostic = createBrowserDiagnostics({ origin: qaBase, label: `${options.viewport.width}x${options.viewport.height}` });
+  const closeContext = context.close.bind(context);
+  context.close = async (...args) => {
+    diagnostic.beginTeardown();
+    return closeContext(...args);
+  };
   diagnostics.push(diagnostic);
   const assets = [];
   await context.route("**/*", (route) => {

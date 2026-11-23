@@ -114,6 +114,18 @@ test("healthy same-origin reads pass and a crashed page fails", () => {
   assert.throws(() => assertBrowserDiagnostics([diagnostics]), /crash/);
 });
 
+test("context teardown ignores only browser-cancelled reads", () => {
+  const diagnostics = createBrowserDiagnostics({ origin });
+  const browserPage = page();
+  diagnostics.attach(browserPage);
+  diagnostics.beginTeardown();
+  browserPage.emit("requestfailed", request(`${origin}/api/availability`, "GET", "net::ERR_ABORTED"));
+  assert.doesNotThrow(() => assertBrowserDiagnostics([diagnostics]));
+  assert.equal(diagnostics.snapshot().ignored[0].reason, "context-close");
+  browserPage.emit("requestfailed", request(`${origin}/assets/main.js`, "GET", "net::ERR_FAILED"));
+  assert.throws(() => assertBrowserDiagnostics([diagnostics]), /ERR_FAILED/);
+});
+
 // Routine failures must not leak query tokens into uploaded diagnostics.
 test("request evidence removes URL credentials, query and fragment", () => {
   const diagnostics = createBrowserDiagnostics({ origin });
