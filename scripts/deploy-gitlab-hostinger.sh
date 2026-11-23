@@ -22,9 +22,9 @@ private=$(mktemp -d)
 build=''
 uploaded=false
 connected=false
-remote_archive="/home/white-gloss-ci/incoming/$RELEASE_ID.tgz"
+archive_sha=""
 cleanup() {
-  if $uploaded; then remote "rm -f '$remote_archive'" || true; fi
+  if $uploaded; then remote "discard $RELEASE_ID $archive_sha" || true; fi
   if $connected; then ssh -F "$private/config" -O exit production >/dev/null 2>&1 || true; fi
   rm -rf -- "$private"
   if [[ -n $build ]]; then rm -rf -- "$build"; fi
@@ -87,21 +87,23 @@ fi
 
 ssh -F "$private/config" -MNf production
 connected=true
-active_release() { remote 'basename "$(readlink -f /srv/white-gloss-current)"'; }
+active_release() { remote active; }
 match_file() {
   local expected actual
   expected=$(sha256sum "$1")
-  actual=$(remote "sha256sum '$2'")
-  [[ ${expected%% *} == "${actual%% *}" ]] || die "Prüfsumme für $2 stimmt nicht."
+  actual=$(remote "$2")
+  [[ ${expected%% *} == "$actual" ]] || die "Prüfsumme für $1 stimmt nicht."
 }
-match_file scripts/deploy-ionos-release.sh /usr/local/sbin/white-gloss-deploy
-match_file ops/white-gloss.service /etc/systemd/system/white-gloss.service
+match_file scripts/deploy-ionos-release.sh helper-sha
+match_file ops/white-gloss.service unit-sha
 [[ $(active_release) == "$EXPECTED_CURRENT_RELEASE" ]] || die 'Der aktive Produktionsstand hat sich geändert.'
-remote 'test -s /srv/white-gloss-current/.output/server/index.mjs && printf "white-gloss-booking-workflow=1\n" | cmp - /srv/white-gloss-current/.output/booking-workflow.contract'
-uploaded=true
-scp -F "$private/config" "$archive" "production:$remote_archive"
-match_file "$archive" "$remote_archive"
+remote "can-rollback $EXPECTED_CURRENT_RELEASE"
 archive_sha=$(sha256sum "$archive")
+archive_sha=${archive_sha%% *}
+uploaded=true
+received=$(remote "upload $RELEASE_ID $archive_sha" <"$archive")
+[[ $received == "$archive_sha" ]] || die 'Der Server hat den Upload nicht bestätigt.'
+match_file "$archive" "archive-sha $RELEASE_ID"
 verify_approval
 smoke() {
   SMOKE_BASE_URL=https://white-gloss.de SMOKE_PUBLIC_ORIGIN=https://white-gloss.de SMOKE_TIMEOUT_MS=15000 \
@@ -110,13 +112,13 @@ smoke() {
 # The server enforces the predecessor and digest under its release lock. If the
 # transport drops after activation, re-read the live pointer before recovery.
 previous=''
-if previous=$(remote "sudo -n /usr/local/sbin/white-gloss-deploy activate $RELEASE_ID $remote_archive $EXPECTED_CURRENT_RELEASE ${archive_sha%% *}") &&
+if previous=$(remote "activate $RELEASE_ID $EXPECTED_CURRENT_RELEASE $archive_sha") &&
     [[ $previous == "$EXPECTED_CURRENT_RELEASE" ]] && smoke && [[ $(active_release) == "$RELEASE_ID" ]]; then
   printf 'Website-Release %s live geprüft.\n' "$RELEASE_ID"
   exit 0
 fi
 if [[ $(active_release) == "$RELEASE_ID" ]]; then
-  remote "sudo -n /usr/local/sbin/white-gloss-deploy rollback $EXPECTED_CURRENT_RELEASE $RELEASE_ID"
+  remote "rollback $EXPECTED_CURRENT_RELEASE $RELEASE_ID"
   smoke
   die 'Die Liveprüfung schlug fehl. Der freigegebene Vorgänger wurde wieder aktiviert.'
 fi
