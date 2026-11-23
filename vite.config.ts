@@ -1,5 +1,6 @@
 import { readdirSync } from "node:fs";
 import { join } from "node:path";
+import { gzipSync } from "node:zlib";
 import type { Plugin } from "vite";
 import { defineConfig } from "vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
@@ -20,6 +21,29 @@ import { appEnvPlugin } from "./scripts/app-env-plugin.mjs";
 import { isMigrationFile } from "./scripts/migration-plan.mjs";
 import { blockLocalHosting } from "./scripts/hosting-policy.mjs";
 import { guardProductionHosting } from "./scripts/guard-production-hosting.mjs";
+
+// Nitro skips assets below 1 KiB. Small external stylesheets still benefit from gzip.
+function gzipSmallStylesheets(): Plugin {
+  return {
+    name: "white-gloss:gzip-small-stylesheets",
+    apply: "build",
+    applyToEnvironment: (env) => env.name === "client",
+    generateBundle: {
+      order: "post",
+      handler(_options, bundle) {
+        for (const asset of Object.values(bundle)) {
+          if (asset.type !== "asset" || !asset.fileName.endsWith(".css")) continue;
+          const size = Buffer.byteLength(asset.source);
+          if (size >= 1024) continue;
+          const gzip = gzipSync(asset.source);
+          if (gzip.length < size) {
+            this.emitFile({ type: "asset", fileName: asset.fileName + ".gz", source: gzip });
+          }
+        }
+      },
+    },
+  };
+}
 
 /** The files `src/lib/db.ts` globs — same directory, same non-recursive scope. */
 function hasGlobbedMigrations(root: string): boolean {
@@ -220,6 +244,7 @@ export default defineConfig(({ command, isPreview }) => {
     },
   },
   plugins: [
+    gzipSmallStylesheets(),
     pgliteBootstrapPlugin(),
     securityHeadersPlugin(),
     // Before tanstackStart so /auth/popup never falls through to the SPA.
