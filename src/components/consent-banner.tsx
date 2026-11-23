@@ -58,12 +58,16 @@ export function ConsentBanner() {
     if (!ready || !visible) return;
     document.body.dataset.consentBanner = "open";
     const banner = bannerRef.current;
+    const updateHeight = () => {
+      document.documentElement.style.setProperty(
+        "--consent-banner-height",
+        `${banner?.getBoundingClientRect().height ?? 0}px`,
+      );
+    };
+    updateHeight();
     document.documentElement.removeAttribute("data-consent-initial-open");
-    const resizeObserver = new ResizeObserver(([entry]) => {
-      const height = entry.borderBoxSize?.[0]?.blockSize ?? entry.target.getBoundingClientRect().height;
-      if (height) document.documentElement.style.setProperty("--consent-banner-height", `${height}px`);
-    });
-    if (banner) resizeObserver.observe(banner, { box: "border-box" });
+    const resizeObserver = new ResizeObserver(updateHeight);
+    if (banner) resizeObserver.observe(banner);
     const active = document.activeElement;
     previousFocusRef.current =
       active instanceof HTMLElement && active !== document.body ? active : null;
