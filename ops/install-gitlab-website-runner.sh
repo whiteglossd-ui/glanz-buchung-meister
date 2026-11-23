@@ -24,7 +24,7 @@ bin=$directory/gitlab-runner-$version
 config=$runner_home/manager/config.toml
 exec 9>/run/lock/white-gloss-gitlab-runner.lock
 flock -n 9 || die 'Ein zweiter Einrichtungsprozess ist aktiv.'
-for command in podman loginctl runuser curl python3 sha256sum dpkg; do
+for command in podman loginctl runuser curl python3 sha256sum dpkg dpkg-query apt-get; do
   command -v "$command" >/dev/null || die "Benötigtes Systemprogramm fehlt: $command"
 done
 dpkg --compare-versions "$(podman version --format '{{.Client.Version}}')" ge 4.2 ||
@@ -35,8 +35,32 @@ printf 'VPS vor Einrichtung: %s; %s GiB auf /var/lib frei.\n' \
   "$(df -BG --output=avail /var/lib | awk 'NR==2 {gsub("G",""); print $1}')"
 work=$(mktemp -d)
 trap 'rm -rf -- "$work"' EXIT
+# Ubuntu splits Podman's rootless network helper and DNS server into optional packages.
+missing=()
+for package in passt aardvark-dns; do
+  if [[ $(dpkg-query -W -f='${db:Status-Status}' "$package" 2>/dev/null || true) != installed ]]; then
+    missing+=("$package")
+  fi
+done
+if (( ${#missing[@]} )); then
+  apt_flags=(-q --no-install-recommends --no-upgrade --no-remove -o DPkg::Lock::Timeout=60)
+  for attempt in 1 2; do
+    if (( attempt == 2 )); then
+      apt-get -q -o APT::Update::Error-Mode=any update || die 'Ubuntu-Paketlisten konnten nicht aktualisiert werden.'
+    fi
+    if plan=$(LC_ALL=C apt-get -s "${apt_flags[@]}" install "${missing[@]}"); then
+      if grep -Eq '^(Remv |Inst [^ ]+ \[)' <<<"$plan"; then
+        die 'Die Netzwerkpakete würden vorhandene Pakete ändern. Installation angehalten.'
+      fi
+      if apt-get -y --download-only "${apt_flags[@]}" install "${missing[@]}"; then break; fi
+    fi
+    (( attempt < 2 )) || die 'Die Ubuntu-Netzwerkpakete sind nicht verfügbar.'
+  done
+  DEBIAN_FRONTEND=noninteractive NEEDRESTART_SUSPEND=1 apt-get -y --no-download \
+    "${apt_flags[@]}" install "${missing[@]}" || die 'Installation der Podman-Netzwerkpakete fehlgeschlagen.'
+fi
 install -d -m 0755 -o root -g root "$directory"
-if ! printf '%s  %s\n' "$checksum" "$bin" | sha256sum --check --status 2>/dev/null; then
+if [[ ! -f $bin ]] || ! printf '%s  %s\n' "$checksum" "$bin" | sha256sum --check --status; then
   curl -fsSL --proto '=https' --proto-redir '=https' --retry 3 --max-time 300 \
     "https://s3.dualstack.us-east-1.amazonaws.com/gitlab-runner-downloads/v$version/binaries/gitlab-runner-linux-amd64" \
     -o "$work/runner"

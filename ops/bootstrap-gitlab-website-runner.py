@@ -22,7 +22,7 @@ TAG = "white-gloss-website"
 CLIENT = "485264dd1182da48fc9801896053d8f99a933fc8ca10b0b4d08157cafae85375"
 SCOPES = "api create_runner manage_runner"
 LOCAL = Path("/var/lib/white-gloss-gitlab-bootstrap")
-INSTALL_SHA = "91c860052ec4a72044937ec076ea2d8d55f55627766de60b2443a9b7ab81102d"
+INSTALL_SHA = "79a1d7755de3a3fb3fdae2dec870eca0f54250639ca5ae248b405733168959d7"
 
 
 class Stop(RuntimeError):
@@ -97,6 +97,43 @@ def save_pending(path, data):
             temp.unlink(missing_ok=True)
 
 
+def read_pending(path):
+    try:
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    except FileNotFoundError:
+        return None
+    with os.fdopen(fd) as f:
+        meta = os.fstat(f.fileno())
+        if not (stat.S_ISREG(meta.st_mode) and meta.st_uid == 0 and stat.S_IMODE(meta.st_mode) == 0o600):
+            raise Stop("Die lokale Runner-Datei muss root gehören und Modus 0600 haben.")
+        data = json.load(f)
+    if not isinstance(data, dict) or type(data.get("id")) is not int or data["id"] < 1:
+        raise Stop("Ungültige lokale Runner-ID.")
+    if data == {"id": data["id"], "local_installed": True} and data.get("local_installed") is True:
+        return data
+    if not (set(data) == {"id", "token"} and isinstance(data["token"], str)
+            and re.fullmatch(r"glrt-[A-Za-z0-9_.~-]+", data["token"])):
+        raise Stop("Die lokale Runner-Registrierung ist unvollständig.")
+    return data
+
+
+def install_manager(installer, rid, pending):
+    token = pending.get("token", "") if pending else ""
+    subprocess.run(["bash", str(installer), str(rid), "--token-stdin"], input=token + "\n", text=True, check=True)
+
+
+def resume_local(installer, project_id, rid):
+    path = LOCAL / f"project-{project_id}.json"
+    pending = read_pending(path)
+    if not pending or pending["id"] != rid:
+        raise Stop("Keine passende lokale Registrierung für diese Projekt- und Runner-ID.")
+    install_manager(installer, rid, pending)
+    # The manager now holds the rotating token. A credential-free receipt permits retries.
+    save_pending(path, {"id": rid, "local_installed": True})
+    print(f"Website-Projekt #{project_id}: Runner #{rid} ist lokal geprüft und gestartet. "
+          "Projektvariablen und Freigabe in GitLab prüfen.")
+
+
 def setup(access, installer):
     api = "/api/v4"
     project = request("GET", f"{api}/projects/{urllib.parse.quote(PROJECT, safe='')}", access=access)
@@ -109,7 +146,7 @@ def setup(access, installer):
     if len(runners) > 1:
         raise Stop("Mehrere passende Projekt-Runner. Vorhandene Zuordnung zuerst klären.")
     pending_path = LOCAL / f"project-{project_id}.json"
-    pending = json.loads(pending_path.read_text()) if pending_path.exists() else None
+    pending = read_pending(pending_path)
     if runners:
         rid = runners[0]["id"]
         if pending and pending["id"] != rid:
@@ -135,8 +172,7 @@ def setup(access, installer):
         raise Stop(f"Runner #{rid} ist bereits vorhanden und manuell pausiert.")
     if not pending and not Path("/var/lib/wg-gitlab-web/manager/config.toml").is_file():
         raise Stop(f"Runner #{rid} existiert schon. Dessen glrt lokal mit dem Installer verwenden.")
-    token = pending["token"] if pending else ""
-    subprocess.run(["bash", str(installer), str(rid), "--token-stdin"], input=token + "\n", text=True, check=True)
+    install_manager(installer, rid, pending)
     for key, value in (("WHITE_GLOSS_GITLAB_PROJECT_ID", str(project_id)),
                        ("WHITE_GLOSS_GITLAB_RUNNER_ID", str(rid)),
                        ("WEBSITE_ISOLATED_FLOWTESTS_ENABLED", "true")):
@@ -163,6 +199,10 @@ def setup(access, installer):
 
 
 def main():
+    args = sys.argv[1:]
+    if args and not (len(args) == 3 and args[0] == "--resume-local"
+                     and all(re.fullmatch(r"[1-9][0-9]{0,18}", arg) for arg in args[1:])):
+        raise Stop("Aufruf: bootstrap-gitlab-website-runner.py [--resume-local PROJEKT_ID RUNNER_ID]")
     if os.geteuid() != 0 or socket.gethostname().split(".")[0] != "srv2077393":
         raise Stop("Im Rootterminal von srv2077393 ausführen.")
     os.umask(0o077)
@@ -175,6 +215,9 @@ def main():
         raise Stop("Das private Verzeichnis für die Einrichtungsdaten ist unsicher.")
     with (LOCAL / "setup.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        if args:
+            resume_local(installer, int(args[1]), int(args[2]))
+            return
         token = login()
         try:
             setup(token, installer)
