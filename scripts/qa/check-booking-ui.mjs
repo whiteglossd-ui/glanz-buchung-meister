@@ -12,6 +12,7 @@ import { qaClientHeaders } from "./client-identity.mjs";
 import { prepareBrowserFixture } from "./browser-fixture.mjs";
 import { assertBrowserDiagnostics, createBrowserDiagnostics } from "../browser-diagnostics.mjs";
 import { verifyInitialRundumHero, verifyRundumUi, verifyRundumIntentLoading, iconPreloadObservations, rundumArrivalObservations } from "./rundum-ui.mjs";
+import { completeSuccessfulRead, observeReadDuringAction } from "./read-completion.mjs";
 
 const output = ".qa-output/booking-ui";
 await mkdir(output, { recursive: true });
@@ -352,10 +353,43 @@ async function checkMediaCollections(page, width) {
   assert.ok(Math.abs(await resultRail.evaluate((list) => list.scrollLeft) - beforeRail) <= 1,
     "Comparison keyboard input adjusts the image without scrolling the enclosing rail");
 
-  await page.locator("#kundenergebnisse .wg-video-trigger").first().click();
   const dialog = page.locator("#kundenergebnisse dialog");
-  await dialog.waitFor({ state: "visible" });
+  const videoResponse = await observeReadDuringAction(page, (response) => {
+    const url = new URL(response.url());
+    return response.request().method() === "GET" && response.request().resourceType() === "media" &&
+      url.origin === new URL(qaBase).origin && /^\/media\/customer-beading\.(webm|mp4)$/.test(url.pathname);
+  }, async () => {
+    await page.locator("#kundenergebnisse .wg-video-trigger").first().click();
+    await dialog.waitFor({ state: "visible" });
+  });
   assert.equal(await dialog.locator("video[controls] source").count(), 2);
+  if (videoResponse.status() === 206) {
+    const range = /^bytes (\d+)-(\d+)\/(\d+)$/.exec(await videoResponse.headerValue("content-range") ?? "");
+    assert.ok(range && Number(range[1]) <= Number(range[2]) && Number(range[2]) < Number(range[3]),
+      "Partial video responses must declare a valid byte range");
+  }
+  await page.waitForFunction(() => {
+    const video = document.querySelector("#kundenergebnisse dialog video");
+    if (video?.error) throw new Error(`Customer video decoding failed: ${video.error.message}`);
+    return video && video.readyState >= 3 && video.videoWidth > 0 && video.videoHeight > 0 &&
+      !video.paused && video.currentTime > 0;
+  }, null, { timeout: 15000 });
+  const decodedFrame = await dialog.locator("video").evaluate((video) => new Promise((resolve, reject) => {
+    let callback;
+    const timer = setTimeout(() => {
+      video.cancelVideoFrameCallback(callback);
+      reject(new Error("Customer video did not present a decoded frame"));
+    }, 15000);
+    callback = video.requestVideoFrameCallback((_now, frame) => {
+      clearTimeout(timer);
+      resolve({ width: frame.width, height: frame.height, presentedFrames: frame.presentedFrames });
+    });
+  }));
+  assert.ok(decodedFrame.width > 0 && decodedFrame.height > 0 && decodedFrame.presentedFrames > 0,
+    "The real customer video must decode and present a frame before closing");
+  // Closing an autoplay dialog removes its media element. Finish its real read
+  // first so the test itself cannot create a premature request cancellation.
+  await completeSuccessfulRead(videoResponse, { expectedStatuses: [200, 206] });
   await page.keyboard.press("Escape");
   await dialog.waitFor({ state: "hidden" });
   assert.equal(await page.locator("#kundenergebnisse .wg-video-trigger").first().evaluate((button) =>

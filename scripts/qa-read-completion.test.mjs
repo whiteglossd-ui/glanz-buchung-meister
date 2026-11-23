@@ -39,6 +39,28 @@ test("cancelled, failed and hung browser reads remain failures", async () => {
   await assert.rejects(completeSuccessfulRead({ status: () => 200, finished: () => new Promise(() => {}) }, { timeoutMs: 5 }), /did not finish/);
 });
 
+test("partial media responses require explicit status permission and a completed body", async () => {
+  const body = Promise.withResolvers();
+  const response = { status: () => 206, finished: () => body.promise };
+  await assert.rejects(completeSuccessfulRead(response), /must succeed.*received 206/);
+  let completed = false;
+  const waiting = completeSuccessfulRead(response, { expectedStatuses: [200, 206] }).then((result) => {
+    completed = true;
+    return result;
+  });
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(completed, false, "Partial-response headers do not prove the media read finished");
+  body.resolve(null);
+  assert.deepEqual(await waiting, { status: 206, finished: true });
+});
+
+test("explicit media statuses do not hide aborted, HTTP-failed or stalled responses", async () => {
+  const options = { expectedStatuses: [200, 206], timeoutMs: 5 };
+  await assert.rejects(completeSuccessfulRead({ status: () => 206, finished: async () => new Error("net::ERR_ABORTED") }, options), /ERR_ABORTED/);
+  await assert.rejects(completeSuccessfulRead({ status: () => 503, finished: async () => null }, options), /must succeed/);
+  await assert.rejects(completeSuccessfulRead({ status: () => 206, finished: () => new Promise(() => {}) }, options), /did not finish/);
+});
+
 const origin = "http://127.0.0.1:8082";
 function pendingRead(page, path, resourceType = "image", status = 200) {
   const body = Promise.withResolvers();

@@ -18,8 +18,9 @@ export async function observeReadDuringAction(page, predicate, action, { timeout
   } finally { clearTimeout(timer); page.off("response", onResponse); }
 }
 
-export async function completeSuccessfulRead(response, { timeoutMs = 15000 } = {}) {
-  assert.equal(response.status(), 200, "The observed browser read must succeed");
+export async function completeSuccessfulRead(response, { timeoutMs = 15000, expectedStatuses = [200] } = {}) {
+  assert.ok(expectedStatuses.includes(response.status()),
+    `The observed browser read must succeed with an expected status (${expectedStatuses.join(", ")}); received ${response.status()}`);
   let timer;
   try {
     const failure = await Promise.race([
