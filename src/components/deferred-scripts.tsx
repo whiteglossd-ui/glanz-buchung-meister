@@ -50,12 +50,15 @@ function ServerDeferredScripts() {
     }
   }
   if (entries.length) {
+    const homepage = router.state.location.pathname === "/";
     scripts.push({
       tag: "script",
       attrs: { nonce },
-      children: deferredBootstrapSource(entries, [...new Set(preloads)].filter(
-        (href) => router.state.location.pathname !== "/" || !entries.includes(href),
-      )),
+      children: deferredBootstrapSource(
+        entries,
+        [...new Set(preloads)].filter((href) => !homepage || !entries.includes(href)),
+        homepage,
+      ),
     });
   }
   // Same order as Start's composeSsrBodyScripts: hydration data first, the

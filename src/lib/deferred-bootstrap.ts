@@ -31,13 +31,28 @@ function serialize(value: readonly string[]) {
  * intent starts loading immediately instead of waiting for image decoding.
  * Events are neither cancelled nor replayed, so native links remain native.
  */
-export function deferredBootstrapSource(entries: readonly string[], preloads: readonly string[]) {
+export function deferredBootstrapSource(
+  entries: readonly string[],
+  preloads: readonly string[],
+  waitForContentPaint = false,
+) {
+  // Two animation frames can precede the first contentful paint. On the
+  // homepage, use the buffered browser signal when available. Physical
+  // input and the existing time limit still go straight to the entry.
+  const afterFrames = waitForContentPaint
+    ? 'function c(){if(s)return;var P=w.PerformanceObserver;' +
+      'if(!P||!P.supportedEntryTypes||P.supportedEntryTypes.indexOf("paint")<0)return g();' +
+      'try{if(w.performance.getEntriesByName("first-contentful-paint","paint").length)return g();' +
+      'o=new P(function(q){if(q.getEntriesByName("first-contentful-paint","paint").length)g()});' +
+      'o.observe({type:"paint",buffered:true})}catch{g()}}'
+    : "";
   return (
-    '(function(d,w,e,p){var s=0,x=["pointerdown","keydown","focusin"];' +
-    "function g(){if(s)return;s=1;x.forEach(function(n){d.removeEventListener(n,g,true)});" +
+    '(function(d,w,e,p){var s=0,o,x=["pointerdown","keydown","focusin"];' +
+    "function g(){if(s)return;s=1;if(o)o.disconnect();x.forEach(function(n){d.removeEventListener(n,g,true)});" +
     'p.forEach(function(h){var l=d.createElement("link");l.rel="modulepreload";l.href=h;d.head.appendChild(l)});' +
     'e.forEach(function(h){var t=d.createElement("script");t.type="module";t.setAttribute("async","");t.src=h;d.head.appendChild(t)})}' +
-    "function f(){w.requestAnimationFrame(function(){w.requestAnimationFrame(g)})}" +
+    afterFrames +
+    `function f(){w.requestAnimationFrame(function(){w.requestAnimationFrame(${waitForContentPaint ? "c" : "g"})})}` +
     "function r(){var a=[];" +
     'd.querySelectorAll(\'img[fetchpriority="high"]:not([loading="lazy"])\').forEach(function(i){' +
     "a.push(new Promise(function(o){if(i.complete)o();else{" +
