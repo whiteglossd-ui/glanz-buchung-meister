@@ -1,6 +1,7 @@
 import { qaBase, controlBase, qaPort, controlPort, tlsPort, lighthouseBase } from "./ports.mjs";
-import { assertIsolatedGithubCi } from "../hosting-policy.mjs";
+import { assertIsolatedGithubCi, isIsolatedGitlabCi } from "../hosting-policy.mjs";
 assertIsolatedGithubCi();
+if (isIsolatedGitlabCi()) process.env.WEBSITE_STUDIO_ENABLED ??= "true";
 // Isolated local verification only; this file is not imported by the application.
 import { dirname, resolve } from "node:path";
 import { tmpdir } from "node:os";

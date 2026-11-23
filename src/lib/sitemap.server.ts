@@ -2,7 +2,7 @@ import { appendBlogSitemap, appendPublishedPageSitemap, type SitemapBlogRow, typ
 import type { Sql } from "./db.ts";
 import { isCmsSchemaUnavailable } from "./cms.store.ts";
 import { cmsEnabled } from "./cms.availability.ts";
-import { isIsolatedStudioCi } from "../../scripts/hosting-policy.mjs";
+import { isIsolatedGithubCi } from "../../scripts/hosting-policy.mjs";
 
 export async function loadPublishedSitemapBlogs(sql: Sql): Promise<SitemapBlogRow[]> {
   // Match listPublishedCms and the first matching row in /ratgeber/$slug.
@@ -16,7 +16,7 @@ export async function loadPublishedSitemapBlogs(sql: Sql): Promise<SitemapBlogRo
 
 export async function loadPublishedSitemapPages(sql: Sql, config = {
   enabled: process.env.WEBSITE_STUDIO_ENABLED,
-  isolatedCi: isIsolatedStudioCi(),
+  isolatedCi: isIsolatedGithubCi(),
 }): Promise<SitemapPageRow[]> {
   // Match the public document loader, including the production rollback switch.
   // Legacy blog discovery stays independent of this optional Studio feature.
