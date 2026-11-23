@@ -187,3 +187,33 @@
     font-size: clamp(1.8rem, 7vw, 2.5rem);
   }
 }
+
+/* Scroll story for the three service photographs; the hero is untouched. */
+@media (min-width: 960px) and (prefers-reduced-motion: no-preference) {
+  .concierge-service[data-concierge-motion="cinema"] .concierge-media {
+    perspective: 1200px;
+  }
+
+  .concierge-service[data-concierge-motion="cinema"] .concierge-frame {
+    display: block;
+    transition: none;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    will-change: transform, opacity, clip-path;
+  }
+
+  .concierge-service[data-concierge-motion="cinema"] .concierge-sheen {
+    position: absolute;
+    inset: -20% 10%;
+    width: 75%;
+    pointer-events: none;
+    background: linear-gradient(
+      105deg,
+      transparent 25%,
+      rgb(255 255 255 / 0.22) 48%,
+      transparent 70%
+    );
+    transform: skewX(-14deg);
+    will-change: transform, opacity;
+  }
+}
