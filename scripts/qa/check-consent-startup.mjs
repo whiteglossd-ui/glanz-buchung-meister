@@ -120,6 +120,20 @@ try {
           assert.equal(await page.evaluate(() => localStorage.getItem("wg-consent")), scenario === "fresh-accept" ? "accepted" : "rejected");
         }
       }
+      if (!earlyIntent) {
+        const times = await page.evaluate(() => {
+          const entry = performance.getEntriesByType("resource")
+            .find((resource) => /^\/assets\/index-[^/]+\.js$/.test(new URL(resource.name).pathname));
+          return {
+            paint: performance.getEntriesByName("first-contentful-paint", "paint")[0]?.startTime,
+            request: entry?.startTime,
+          };
+        });
+        assert.ok(Number.isFinite(times.paint) && Number.isFinite(times.request),
+          scenario + ": the browser recorded both the first contentful paint and the app request");
+        assert.ok(times.request >= times.paint,
+          scenario + ": without input the homepage was visible before the app request " + JSON.stringify(times));
+      }
       // Reopening must ignore the saved-choice first-paint marker.
       const settings = page.getByRole("button", { name: "Cookie-Einstellungen", exact: true });
       await settings.click();

@@ -186,6 +186,12 @@ def fixture_cli(name):
             if scenario == "main-advanced" and steps.read_text().count(sys.argv[1]) == 2:
                 sys.exit(1)
             return
+        if sys.argv[1] == "scripts/check-disabled-google.mjs":
+            assert sys.argv[2:] in (["before", PREVIOUS], ["active", RELEASE])
+            if (scenario == "google-before-active" and sys.argv[2] == "before" or
+                    scenario == "google-after-active" and sys.argv[2] == "active"):
+                sys.exit(1)
+            return
         assert sys.argv[1] == "scripts/smoke-production.mjs"
         assert os.environ["SMOKE_BASE_URL"] == "https://white-gloss.de"
         if scenario == "superseded":
@@ -244,8 +250,13 @@ class DeployClientTests(unittest.TestCase):
             "invalid-pointer": (PREVIOUS, 0, 0),
             "already-active": (RELEASE, 1, 0),
             "active-unhealthy": (RELEASE, 1, 0),
+            "google-disabled-ok": (RELEASE, 1, 0),
+            "google-before-active": (PREVIOUS, 0, 0),
+            "google-after-active": (PREVIOUS, 1, 1),
         }
         for provider, scenario in itertools.product(("gitlab", "github"), scenarios):
+            if scenario.startswith("google-") and provider != "github":
+                continue
             final, smokes, rollbacks = scenarios[scenario]
             with self.subTest(provider=provider, scenario=scenario), tempfile.TemporaryDirectory() as tmp:
                 root = Path(tmp)
@@ -267,6 +278,8 @@ class DeployClientTests(unittest.TestCase):
                        "HOSTINGER_SSH_USER": "white-gloss-ci", "HOSTINGER_GOOGLE_OAUTH_SOURCE": "runtime",
                        "HOSTINGER_SSH_PRIVATE_KEY": str(root / "dummy-key"), "PYTHONDONTWRITEBYTECODE": "1",
                        "HOSTINGER_SSH_KNOWN_HOSTS": str(root / "dummy-pins")}
+                if scenario.startswith("google-"):
+                    env["HOSTINGER_GOOGLE_OAUTH_SOURCE"] = "disabled"
                 if provider == "github":
                     env.update(GITHUB_WORKSPACE=tmp, GITHUB_EVENT_NAME="workflow_run", RELEASE_ID=RELEASE)
                     script = ["bash", "scripts/deploy-guarded-hostinger.sh", "github"]
@@ -276,7 +289,7 @@ class DeployClientTests(unittest.TestCase):
                     approval = "scripts/deployment-approval-gitlab.mjs"
                 result = subprocess.run(script,
                                         cwd=root, env=env, capture_output=True, text=True)
-                self.assertEqual(result.returncode == 0, scenario in ("success", "already-active"), result.stderr)
+                self.assertEqual(result.returncode == 0, scenario in ("success", "already-active", "google-disabled-ok"), result.stderr)
                 self.assertEqual((root / "current").readlink().name, final)
                 self.assertEqual(list((root / "incoming").iterdir()), [])
                 steps = (root / "steps").read_text().splitlines()
@@ -284,6 +297,11 @@ class DeployClientTests(unittest.TestCase):
                                  1 if scenario == "invalid-pointer" else 2)
                 self.assertEqual(steps.count("scripts/smoke-production.mjs"), smokes)
                 self.assertEqual(steps.count(f"rollback {PREVIOUS} {RELEASE}"), rollbacks)
+                if scenario.startswith("google-"):
+                    self.assertEqual(steps.count("scripts/check-disabled-google.mjs"),
+                                     1 if scenario == "google-before-active" else 2)
+                    if scenario == "google-before-active":
+                        self.assertFalse(any(s.startswith("activate ") for s in steps))
                 if original == RELEASE or scenario == "invalid-pointer":
                     self.assertFalse(any(s.startswith(("upload ", "activate ")) for s in steps))
 

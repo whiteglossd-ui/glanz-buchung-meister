@@ -11,11 +11,28 @@ import {
 
 type Listener = () => void;
 
-function fakePage({ readyState = "loading", images = [] as FakeImage[] } = {}) {
+function fakePage({ readyState = "loading", images = [] as FakeImage[], paintTiming = false } = {}) {
   const inserted: Record<string, string>[] = [];
   const documentListeners: Record<string, Listener[]> = {};
   const frames: Listener[] = [];
   const timers: { callback: Listener; delay: number }[] = [];
+  const paints: string[] = [];
+  const timeline = {
+    getEntriesByName: (name: string, type: string) => type === "paint" ? paints.filter((entry) => entry === name) : [],
+  };
+  let onPaint: Listener | undefined;
+  class PaintObserver {
+    static supportedEntryTypes = ["paint"];
+    private readonly callback: (entries: typeof timeline) => void;
+    constructor(callback: (entries: typeof timeline) => void) {
+      this.callback = callback;
+    }
+    observe(options: { type: string; buffered: boolean }) {
+      assert.deepEqual(options, { type: "paint", buffered: true });
+      onPaint = () => this.callback(timeline);
+    }
+    disconnect() { onPaint = undefined; }
+  }
   let selector = "";
   const document = {
     readyState,
@@ -40,6 +57,8 @@ function fakePage({ readyState = "loading", images = [] as FakeImage[] } = {}) {
     },
   };
   const window = {
+    performance: timeline,
+    PerformanceObserver: paintTiming ? PaintObserver : undefined,
     requestAnimationFrame: (callback: Listener) => frames.push(callback),
     setTimeout: (callback: Listener, delay: number) => timers.push({ callback, delay }),
   };
@@ -52,6 +71,8 @@ function fakePage({ readyState = "loading", images = [] as FakeImage[] } = {}) {
     listenerCount: (type: string) => documentListeners[type]?.length ?? 0,
     fire: (type: string) => documentListeners[type]?.forEach((listener) => listener()),
     nextFrame: () => frames.splice(0).forEach((callback) => callback()),
+    paint: (name: string) => { paints.push(name); onPaint?.(); },
+    observingPaint: () => !!onPaint,
   };
 }
 
@@ -77,6 +98,41 @@ class FakeImage {
 
 const settle = () => new Promise((accept) => setTimeout(accept, 0));
 const source = deferredBootstrapSource(["/assets/index-a.js"], ["/assets/routes-b.js"]);
+const homepage = deferredBootstrapSource(["/assets/index-a.js"], ["/assets/routes-b.js"], true);
+
+test("the homepage's animation frames can finish before its first contentful paint", async () => {
+  const page = fakePage({ readyState: "interactive", paintTiming: true });
+  page.run(homepage);
+  await settle();
+  page.nextFrame();
+  page.nextFrame();
+  assert.equal(page.observingPaint(), true);
+  page.paint("first-paint");
+  assert.equal(page.inserted.length, 0);
+  page.paint("first-contentful-paint");
+  assert.equal(page.inserted.length, 2);
+  assert.equal(page.observingPaint(), false);
+});
+
+for (const ready of ["already painted", "unsupported", "early focus", "timer"] as const) {
+  test(`homepage starts promptly for ${ready}`, async () => {
+    const page = fakePage({ readyState: "interactive", paintTiming: ready !== "unsupported" });
+    if (ready === "already painted") page.paint("first-contentful-paint");
+    page.run(homepage);
+    await settle();
+    page.nextFrame();
+    page.nextFrame();
+    if (ready === "early focus" || ready === "timer") {
+      assert.equal(page.inserted.length, 0);
+      if (ready === "early focus") page.fire("focusin");
+      else page.timers[0].callback();
+    }
+    assert.equal(page.inserted.length, 2);
+    assert.equal(page.observingPaint(), false);
+    page.paint("first-contentful-paint");
+    assert.equal(page.inserted.length, 2);
+  });
+}
 
 test("image preloads precede competing font hints while metadata and stylesheet order stay intact", () => {
   assert.equal(typeof bootstrap.prioritizeImagePreloads, "function");

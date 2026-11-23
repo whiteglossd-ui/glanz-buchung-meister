@@ -74,3 +74,17 @@
     grid-row: 2;
   }
 }
+
+/* The directory is well below the first mobile viewport. Keep the native
+   links in the document and let the browser lay out rows as they approach. */
+@media screen and (max-width: 639px) {
+  [data-home="polish"] .home-city-links > li {
+    content-visibility: auto;
+    contain-intrinsic-block-size: auto 5rem;
+  }
+
+  [data-home="polish"] .home-directory-links > li {
+    content-visibility: auto;
+    contain-intrinsic-block-size: auto 3.25rem;
+  }
+}

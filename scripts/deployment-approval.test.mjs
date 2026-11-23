@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import { test } from "node:test";
+import { checkDisabledGoogle } from "./check-disabled-google.mjs";
 import { verifyDeploymentApproval } from "./deployment-approval.mjs";
 
 const sha = "b".repeat(40);
@@ -204,4 +205,31 @@ test("only the successful same-repository main push can reach the automatic guar
     assert.match(source, /name: hostinger-website-\$\{\{ github.sha \}\}/);
     assert.match(source, /vars.HOSTINGER_AUTO_DEPLOY_REPOSITORY_ID == github.repository_id/);
   }
+});
+
+test("only the audited legacy predecessor can bypass the live Google check", async () => {
+  const audited = "0a56e9c0698117178794935142f3c0cc01b57560";
+  const unexpected = () => { throw new Error("unexpected request"); };
+  await checkDisabledGoogle("before", audited, unexpected);
+  await assert.rejects(checkDisabledGoogle("active", audited, unexpected), /unexpected request/);
+  await assert.rejects(checkDisabledGoogle("before", sha, unexpected), /unexpected request/);
+  await assert.rejects(checkDisabledGoogle("before", "../", unexpected), /Ungültiger Release/);
+});
+
+test("Google status must come from this release and this uncached non-redirected request", async () => {
+  const check = (options, responder) => checkDisabledGoogle("before", sha, async (url, init) => {
+    assert.equal(url.origin + url.pathname, "https://white-gloss.de/api/auth/google-release-status");
+    assert.equal(url.searchParams.get("release"), sha);
+    assert.equal(init.cache, "no-store");
+    assert.equal(init.redirect, "error");
+    const challenge = url.searchParams.get("challenge");
+    assert.match(challenge, /^[0-9a-f]{32}$/);
+    return new Response(responder(challenge), options);
+  });
+  await check({}, value => value);
+  for (const [settings, reply] of [
+    [{ status: 409 }, value => value],
+    [{ headers: { "content-type": "text/html" } }, value => value],
+    [{}, () => "stale"],
+  ]) await assert.rejects(check(settings, reply), /bestätigt keinen deaktivierten Google-Login/);
 });

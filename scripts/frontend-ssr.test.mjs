@@ -15,6 +15,17 @@ async function get(path, headers = {}) {
   });
   return { response, html: await response.text() };
 }
+
+test("the Google deploy check rejects a different release without starting a login", async () => {
+  const query = new URLSearchParams({ release: "d".repeat(40), challenge: "a".repeat(32) });
+  const { response, html } = await get(`/api/auth/google-release-status?${query}`);
+  assert.equal(response.status, 409);
+  assert.match(response.headers.get("cache-control") ?? "", /no-store/i);
+  assert.match(response.headers.get("content-type") ?? "", /^text\/plain/);
+  assert.equal(response.headers.get("location"), null);
+  assert.equal(html, "");
+});
+
 function canonicalLinks(html) {
   return [...html.matchAll(/<link\b[^>]*rel="canonical"[^>]*>/g)].map(
     ([tag]) => tag.match(/href="([^"]+)"/)?.[1],

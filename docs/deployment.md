@@ -8,6 +8,8 @@ Für den Umzug die alten automatischen Veröffentlichungen deaktivieren. Den öf
 
 Sind beide Google-OAuth-Werte im Website-Dienst auf dem VPS hinterlegt und geprüft, die Repository-Variable `HOSTINGER_GOOGLE_OAUTH_SOURCE=runtime` setzen. Dann verwendet die Veröffentlichung das Build-Archiv aus dem erfolgreichen CI-Lauf. Benötigt die Website das eingebettete OAuth-Paar, beide Werte als Repository-Secrets `GOOGLE_CLIENT_ID` und `GOOGLE_CLIENT_SECRET` hinterlegen. Der geschützte Build entsteht dann im Produktionsjob.
 
+Für den auf dem VPS bestätigten Stand ohne Google-Login verwendet GitHub `HOSTINGER_GOOGLE_OAUTH_SOURCE=disabled`. Der erste Wechsel ist an den geprüften Vorgänger `0a56e9c0698117178794935142f3c0cc01b57560` gebunden. Spätere Vorgänger und jeder neu aktivierte Release müssen ihren Auszustand am laufenden Website-Prozess bestätigen. Bei nachträglich eingerichtetem Google-Login auf `runtime` oder das geschützte Buildpaar umstellen.
+
 Zur Aktivierung `HOSTINGER_AUTO_DEPLOY_REPOSITORY_ID` auf die numerische GitHub-ID des neuen Website-Repositorys setzen und `HOSTINGER_DEPLOY_ENABLED=true` einschalten. Der nächste erfolgreiche Push auf `main` veröffentlicht automatisch. Der Job prüft die Dateiprüfsummen, den aktiven Vorgänger und die öffentliche Website. Scheitert die Liveprüfung, stellt er den kompatiblen Vorgänger wieder her und prüft ihn erneut.
 
 ## GitLab und Hostinger

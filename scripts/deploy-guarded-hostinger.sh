@@ -19,6 +19,15 @@ case "$1" in
     ;;
   *) die 'Unbekannter CI-Anbieter.' ;;
 esac
+check_disabled=false
+if [[ $1 == github && ${HOSTINGER_GOOGLE_OAUTH_SOURCE:-} == disabled ]]; then
+  [[ -z ${GOOGLE_CLIENT_ID:-} && -z ${GOOGLE_CLIENT_SECRET:-} ]] ||
+    die 'Deaktivierter Google-Login widerspricht den konfigurierten Build-Zugangsdaten.'
+  check_disabled=true
+fi
+require_google_parity() {
+  if $check_disabled; then node scripts/check-disabled-google.mjs "$1" "$2"; fi
+}
 verify_approval
 [[ $(git -c safe.directory="$PROJECT_DIR" rev-parse HEAD) == "$RELEASE_ID" ]] || die 'Unerwarteter ausgecheckter Commit.'
 [[ ${HOSTINGER_SSH_USER:-} == white-gloss-ci && ${HOSTINGER_SSH_HOST:-} =~ ^[a-zA-Z0-9][a-zA-Z0-9.:-]*$ ]] ||
@@ -111,6 +120,7 @@ previous=$(active_release)
 remote "can-rollback $previous"
 if [[ $previous == "$RELEASE_ID" ]]; then
   verify_approval
+  require_google_parity active "$RELEASE_ID"
   smoke
   [[ $(active_release) == "$RELEASE_ID" ]] || die 'Der aktive Stand hat sich während der Liveprüfung geändert.'
   printf 'Website-Release %s war bereits aktiv und ist live geprüft.\n' "$RELEASE_ID"
@@ -145,7 +155,7 @@ if [[ -n ${GOOGLE_CLIENT_ID:-} || -n ${GOOGLE_CLIENT_SECRET:-} ]]; then
 else
   # Existing production may rely on the embedded server-side secret. The operator can
   # explicitly select a previously verified runtime configuration in that case.
-  [[ ${HOSTINGER_GOOGLE_OAUTH_SOURCE:-} == runtime ]] ||
+  $check_disabled || [[ ${HOSTINGER_GOOGLE_OAUTH_SOURCE:-} == runtime ]] ||
     die 'Geschütztes OAuth-Buildpaar fehlt. Für bestätigte Laufzeitvariablen HOSTINGER_GOOGLE_OAUTH_SOURCE=runtime setzen.'
   sha256sum -c website-release.tgz.sha256
   cp -- website-release.tgz "$archive"
@@ -158,11 +168,13 @@ received=$(remote "upload $RELEASE_ID $archive_sha" <"$archive")
 [[ $received == "$archive_sha" ]] || die 'Der Server hat den Upload nicht bestätigt.'
 match_file "$archive" "archive-sha $RELEASE_ID"
 verify_approval
+require_google_parity before "$previous"
 # This compare-and-swap and its rollback are checked under the server release lock.
 # If SSH drops after the switch, cleanup re-reads the pointer before attempting recovery.
 activation_pending=true
 receipt=$(remote "activate $RELEASE_ID $previous $archive_sha")
 [[ $receipt == "$previous" ]] || die 'Hostinger hat den erwarteten Vorgänger nicht bestätigt.'
+require_google_parity active "$RELEASE_ID"
 smoke
 [[ $(active_release) == "$RELEASE_ID" ]] || die 'Der aktive Stand hat sich während der Liveprüfung geändert.'
 activation_pending=false

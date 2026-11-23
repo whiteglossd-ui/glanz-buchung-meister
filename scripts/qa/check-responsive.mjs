@@ -298,6 +298,19 @@ try {
         await context.setExtraHTTPHeaders(qaClientHeaders("responsive", `${width}:${path}`));
         progress = { stage: "navigation", path, width, completed: results.length, updatedAt: new Date().toISOString() };
         await page.goto(qaBase + path, { waitUntil: "networkidle" });
+        if (path === "/" && width === 390) {
+          const pickupLinks = page.getByRole("list", { name: "Abholorte" }).getByRole("link");
+          assert.equal(await pickupLinks.count(), cities.length);
+          await pickupLinks.nth(cities.length - 2).focus();
+          await page.keyboard.press("Tab");
+          await page.waitForFunction(() => {
+            const last = document.querySelector(".home-city-links > li:last-child a");
+            if (!last || document.activeElement !== last) return false;
+            const box = last.getBoundingClientRect();
+            return box.height > 0 && box.top < innerHeight && box.bottom > 0;
+          });
+          await scrollAndRender(page, 0);
+        }
         // content-visibility:auto defers layout below the fold. Exercise the real
         // scroll path before judging overflow; do not disable production styles.
         for (
