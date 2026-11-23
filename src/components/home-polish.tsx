@@ -195,9 +195,13 @@ export function HomePolish() {
     const progressEl = progressRef.current;
 
     const paint = () => {
-      const doc = document.documentElement;
-      const max = Math.max(1, doc.scrollHeight - window.innerHeight);
-      const targetPage = Math.min(1, Math.max(0, window.scrollY / max));
+      const scroll = window.scrollY;
+      if (scroll <= 0 && pageP === 0) {
+        frame = 0;
+        return;
+      }
+      const range = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      const targetPage = Math.min(1, Math.max(0, scroll / range));
       pageP += (targetPage - pageP) * 0.18;
       if (Math.abs(targetPage - pageP) < 0.0005) pageP = targetPage;
       if (progressEl) progressEl.style.transform = `scaleX(${pageP})`;
@@ -216,10 +220,14 @@ export function HomePolish() {
     };
 
     if (!reduce) {
-      paint();
+      // CSS already paints zero at the top. Read restored scroll positions
+      // after layout, including when booking or reviews change the page height.
+      const pageSize = new ResizeObserver(onScroll);
+      pageSize.observe(main);
       window.addEventListener("scroll", onScroll, { passive: true });
       window.addEventListener("resize", onScroll, { passive: true });
       cleanups.push(() => {
+        pageSize.disconnect();
         window.removeEventListener("scroll", onScroll);
         window.removeEventListener("resize", onScroll);
         if (frame) window.cancelAnimationFrame(frame);
