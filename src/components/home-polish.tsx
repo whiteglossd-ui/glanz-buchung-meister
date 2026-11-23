@@ -14,7 +14,7 @@ export function HomePolish() {
   useScrollMotion(
     DESKTOP_MOTION,
     (tools) => {
-      const { ScrollTrigger } = tools;
+      const { gsap, ScrollTrigger } = tools;
       const main = document.querySelector<HTMLElement>('[data-home="polish"]');
       if (!main) return;
       // Only explicitly marked frames get parallax; package chapters own their stage.
@@ -41,50 +41,158 @@ export function HomePolish() {
         }
       }
 
+      // Only the three service photos after the hero become a pinned story.
       const concierge = main.querySelector<HTMLElement>(".concierge-service");
       const conciergeHeader = concierge?.querySelector<HTMLElement>("header");
       const conciergeSteps = concierge
         ? [...concierge.querySelectorAll<HTMLElement>("ol > li")]
         : [];
-      let conciergeResize: ResizeObserver | undefined;
-      const syncConciergeLayout = () => {
-        if (!concierge || !conciergeHeader) return;
-        // Long copy, zoom and short laptop viewports must never trap content
-        // inside a sticky column that is taller than the available viewport.
-        const fits =
-          window.innerHeight >= 760 &&
-          conciergeHeader.getBoundingClientRect().height <= window.innerHeight - 144;
-        if (fits) concierge.dataset.conciergeMotion = "scroll";
-        else {
-          delete concierge.dataset.conciergeMotion;
-          concierge.dataset.conciergeActive = "0";
-        }
-      };
-      const syncConciergeImage = () => {
-        if (!concierge || concierge.dataset.conciergeMotion !== "scroll") return;
-        let active = 0;
-        conciergeSteps.forEach((step, index) => {
-          if (step.getBoundingClientRect().top <= window.innerHeight * 0.55) active = index;
-        });
-        concierge.dataset.conciergeActive = String(
-          Math.min(active, Math.max(0, concierge.querySelectorAll(".concierge-frame").length - 1)),
+      const frames = concierge
+        ? [...concierge.querySelectorAll<HTMLElement>(".concierge-frame")]
+        : [];
+      let destroyStory: (() => void) | undefined;
+      let rebuildFrame = 0;
+
+      const fits = () =>
+        Boolean(
+          conciergeHeader &&
+            window.innerHeight >= 760 &&
+            conciergeHeader.getBoundingClientRect().height <= window.innerHeight - 144,
         );
-      };
-      if (concierge && conciergeHeader && conciergeSteps.length === 4) {
-        concierge.dataset.conciergeActive = "0";
-        syncConciergeLayout();
-        syncConciergeImage();
-        ScrollTrigger.create({
-          trigger: concierge,
-          start: "top bottom",
-          end: "bottom top",
-          onUpdate: syncConciergeImage,
-          onRefresh: syncConciergeImage,
+
+      const installStory = () => {
+        if (!concierge || !conciergeHeader || frames.length !== 3 || conciergeSteps.length !== 4)
+          return undefined;
+
+        concierge.dataset.conciergeMotion = "cinema";
+        const sheens = frames.map((frame) => {
+          const sheen = document.createElement("span");
+          sheen.className = "concierge-sheen";
+          sheen.setAttribute("aria-hidden", "true");
+          frame.append(sheen);
+          return sheen;
         });
-        conciergeResize = new ResizeObserver(syncConciergeLayout);
-        conciergeResize.observe(conciergeHeader);
-        window.addEventListener("resize", syncConciergeLayout, { passive: true });
-      }
+
+        gsap.set(frames, {
+          opacity: 0,
+          clipPath: "inset(0 0 100% 0 round 12px)",
+          scale: 1.08,
+          rotateY: 0,
+          z: 0,
+          filter: "blur(0px) brightness(1)",
+        });
+        frames.forEach((frame, index) => gsap.set(frame, { zIndex: index + 1 }));
+        gsap.set(frames[0], {
+          opacity: 1,
+          clipPath: "inset(0 0 0% 0 round 0px)",
+          scale: 1,
+        });
+        gsap.set(sheens, { xPercent: -130, opacity: 0 });
+
+        const pin = ScrollTrigger.create({
+          trigger: concierge,
+          start: "top top+=112",
+          end: "bottom bottom",
+          pin: conciergeHeader,
+          pinSpacing: false,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+        });
+
+        const transitions = frames.slice(1).map((frame, offset) => {
+          const previous = frames[offset];
+          const sheen = sheens[offset + 1];
+          const timeline = gsap.timeline({
+            scrollTrigger: {
+              trigger: conciergeSteps[offset + 1],
+              start: "top 72%",
+              end: "top 32%",
+              scrub: 0.7,
+              invalidateOnRefresh: true,
+            },
+          });
+
+          timeline.to(previous, {
+            scale: 1.025,
+            yPercent: -1,
+            rotateY: -2,
+            z: -24,
+            filter: "blur(6px) brightness(0.7)",
+            opacity: 0.6,
+            duration: 0.75,
+            ease: "none",
+          }, 0);
+          timeline.fromTo(
+            frame,
+            {
+              opacity: 1,
+              clipPath: "inset(0 0 100% 0 round 12px)",
+              scale: 1.08,
+              yPercent: 2,
+              rotateY: 2,
+              z: 12,
+            },
+            {
+              opacity: 1,
+              clipPath: "inset(0 0 0% 0 round 0px)",
+              scale: 1,
+              yPercent: 0,
+              rotateY: 0,
+              z: 0,
+              duration: 1,
+              ease: "none",
+              immediateRender: false,
+            },
+            0,
+          );
+          timeline.fromTo(
+            sheen,
+            { xPercent: -130, opacity: 0 },
+            { xPercent: 160, opacity: 0.2, duration: 0.7, ease: "none" },
+            0.1,
+          );
+          timeline.to(previous, { opacity: 0, duration: 0.25, ease: "none" }, 0.75);
+          timeline.to(sheen, { opacity: 0, duration: 0.2, ease: "none" }, 0.8);
+          return timeline;
+        });
+
+        return () => {
+          transitions.forEach((timeline) => {
+            timeline.scrollTrigger?.kill(true);
+            timeline.kill();
+          });
+          pin.kill(true);
+          delete concierge.dataset.conciergeMotion;
+          gsap.set(frames, { clearProps: "opacity,clipPath,transform,filter,zIndex" });
+          sheens.forEach((sheen) => sheen.remove());
+        };
+      };
+
+      const canRun = () =>
+        fits() && frames.length === 3 && conciergeSteps.length === 4;
+      const reconcileStory = () => {
+        if (canRun() === Boolean(destroyStory)) return;
+        destroyStory?.();
+        destroyStory = canRun() ? installStory() : undefined;
+        ScrollTrigger.refresh();
+      };
+      if (canRun()) destroyStory = installStory();
+
+      const onConciergeResize = () => {
+        window.cancelAnimationFrame(rebuildFrame);
+        rebuildFrame = window.requestAnimationFrame(reconcileStory);
+      };
+      const conciergeResize = conciergeHeader
+        ? new ResizeObserver(onConciergeResize)
+        : undefined;
+      if (conciergeHeader) conciergeResize?.observe(conciergeHeader);
+      window.addEventListener("resize", onConciergeResize, { passive: true });
+      const cleanupConcierge = () => {
+        window.cancelAnimationFrame(rebuildFrame);
+        conciergeResize?.disconnect();
+        window.removeEventListener("resize", onConciergeResize);
+        destroyStory?.();
+      };
 
       // Lazy sections (reviews, booking) change the page height after load.
       let timer = 0;
@@ -96,12 +204,7 @@ export function HomePolish() {
       return () => {
         resize.disconnect();
         window.clearTimeout(timer);
-        conciergeResize?.disconnect();
-        window.removeEventListener("resize", syncConciergeLayout);
-        if (concierge) {
-          delete concierge.dataset.conciergeMotion;
-          delete concierge.dataset.conciergeActive;
-        }
+        cleanupConcierge();
       };
     },
     undefined,
