@@ -31,6 +31,25 @@ test("only the existing Linux GitHub CI context and exact workspace permit isola
   assert.equal(isIsolatedGithubCi({ ...context, cwd: "/some/local/checkout" }), false);
 });
 
+test("the migrated website permits only its own isolated GitHub jobs", () => {
+  const migrated = {
+    ...env, GITHUB_REPOSITORY: "whiteglossd-ui/glanz-buchung-meister",
+    GITHUB_REPOSITORY_ID: "1468251080", GITHUB_SERVER_URL: "https://github.com",
+    GITHUB_JOB: "verify", RUNNER_ENVIRONMENT: "github-hosted",
+  };
+  const context = { platform: "linux", cwd: migrated.GITHUB_WORKSPACE, realpath: p => p };
+  for (const job of ["verify", "studio", "cross-browser"]) {
+    assert.equal(isIsolatedGithubCi({ ...context, env: { ...migrated, GITHUB_JOB: job } }), true);
+  }
+  for (const update of [
+    { GITHUB_REPOSITORY_ID: "1234" }, { GITHUB_REPOSITORY: "other/glanz-buchung-meister" },
+    { GITHUB_SERVER_URL: "https://example.invalid" }, { GITHUB_JOB: "publish" },
+    { GITHUB_WORKFLOW: "other" }, { GITHUB_WORKSPACE: "/different/checkout" },
+  ]) {
+    assert.equal(isIsolatedGithubCi({ ...context, env: { ...migrated, ...update } }), false);
+  }
+});
+
 test("Forgejo requires operator opt-in and one of the isolated jobs in the website repository", () => {
   const env = {
     FORGEJO_ACTIONS: "true",
