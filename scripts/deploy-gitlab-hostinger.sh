@@ -4,11 +4,11 @@ set +x
 umask 077
 
 die() { printf '%s\n' "$*" >&2; exit 1; }
-[[ $# == 2 ]] || die 'Release und erwarteter aktueller Stand fehlen.'
-export RELEASE_ID="$1" EXPECTED_CURRENT_RELEASE="$2"
+[[ $# == 0 ]] || die 'Die Veröffentlichung übernimmt den Commit direkt aus der GitLab-Pipeline.'
+readonly RELEASE_ID="${CI_COMMIT_SHA:?GitLab-Commit fehlt}"
 verify_approval() { node scripts/deployment-approval-gitlab.mjs; }
 verify_approval
-[[ $(git rev-parse HEAD) == "$RELEASE_ID" ]] || die 'Unerwarteter ausgecheckter Commit.'
+[[ $(git -c safe.directory="$CI_PROJECT_DIR" rev-parse HEAD) == "$RELEASE_ID" ]] || die 'Unerwarteter ausgecheckter Commit.'
 [[ ${HOSTINGER_SSH_USER:-} == white-gloss-ci && ${HOSTINGER_SSH_HOST:-} =~ ^[a-zA-Z0-9][a-zA-Z0-9.:-]*$ ]] ||
   die 'Hostinger-Host oder Website-Deploykonto fehlt.'
 port=${HOSTINGER_SSH_PORT:-22}
@@ -22,14 +22,25 @@ private=$(mktemp -d)
 build=''
 uploaded=false
 connected=false
-remote_archive="/home/white-gloss-ci/incoming/$RELEASE_ID.tgz"
+archive_sha=""
+previous=''
+activation_pending=false
 cleanup() {
-  if $uploaded; then remote "rm -f '$remote_archive'" || true; fi
+  local status=$?
+  trap - EXIT
+  if $activation_pending; then
+    status=1
+    recover || printf '%s\n' 'Wiederherstellung konnte nicht bestätigt werden.' >&2
+  fi
+  if $uploaded; then remote "discard $RELEASE_ID $archive_sha" || true; fi
   if $connected; then ssh -F "$private/config" -O exit production >/dev/null 2>&1 || true; fi
   rm -rf -- "$private"
   if [[ -n $build ]]; then rm -rf -- "$build"; fi
+  exit "$status"
 }
 trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
 install -m 600 "$HOSTINGER_SSH_PRIVATE_KEY" "$private/key"
 install -m 600 "$HOSTINGER_SSH_KNOWN_HOSTS" "$private/known_hosts"
 cat >"$private/config" <<SSH
@@ -51,6 +62,49 @@ Host production
   ControlPersist 10m
 SSH
 remote() { ssh -F "$private/config" production "$@"; }
+ssh -F "$private/config" -MNf production
+connected=true
+active_release() {
+  local current
+  current=$(remote active) || return 1
+  [[ $current =~ ^[0-9a-f]{40}$ ]] || { printf '%s\n' 'Hostinger meldet keine gültige aktive Version.' >&2; return 1; }
+  printf '%s\n' "$current"
+}
+smoke() {
+  SMOKE_BASE_URL=https://white-gloss.de SMOKE_PUBLIC_ORIGIN=https://white-gloss.de SMOKE_TIMEOUT_MS=15000 \
+    node scripts/smoke-production.mjs
+}
+recover() {
+  local current
+  current=$(active_release) || return 1
+  if [[ $current == "$RELEASE_ID" ]]; then
+    remote "rollback $previous $RELEASE_ID" || return 1
+    current=$(active_release) || return 1
+    [[ $current == "$previous" ]] || return 1
+    smoke || return 1
+    printf 'Vorgänger %s wiederhergestellt und live geprüft.\n' "$previous" >&2
+  else
+    printf 'Aktiver Hostinger-Stand nach fehlgeschlagener Aktivierung: %s\n' "$current" >&2
+  fi
+}
+match_file() {
+  local expected actual
+  expected=$(sha256sum "$1")
+  actual=$(remote "$2")
+  [[ ${expected%% *} == "$actual" ]] || die "Prüfsumme für $1 stimmt nicht."
+}
+match_file scripts/deploy-ionos-release.sh helper-sha
+match_file ops/white-gloss.service unit-sha
+previous=$(active_release)
+remote "can-rollback $previous"
+if [[ $previous == "$RELEASE_ID" ]]; then
+  verify_approval
+  smoke
+  [[ $(active_release) == "$RELEASE_ID" ]] || die 'Der aktive Stand hat sich während der Liveprüfung geändert.'
+  printf 'Website-Release %s war bereits aktiv und ist live geprüft.\n' "$RELEASE_ID"
+  exit 0
+fi
+
 archive="$private/release.tgz"
 if [[ -n ${GOOGLE_CLIENT_ID:-} || -n ${GOOGLE_CLIENT_SECRET:-} ]]; then
   [[ -n ${GOOGLE_CLIENT_ID:-} && -n ${GOOGLE_CLIENT_SECRET:-} ]] || die 'Unvollständige Google-OAuth-Konfiguration.'
@@ -60,7 +114,7 @@ if [[ -n ${GOOGLE_CLIENT_ID:-} || -n ${GOOGLE_CLIENT_SECRET:-} ]]; then
   chmod go-rwx -- "$CI_PROJECT_DIR"
   build=$(mktemp -d)
   chown node:node "$build"
-  git archive --format=tar HEAD | runuser -u node -- tar -xf - -C "$build"
+  git -c safe.directory="$CI_PROJECT_DIR" archive --format=tar HEAD | runuser -u node -- tar -xf - -C "$build"
   (
     cd /
     printf '%s\0%s\0' "$GOOGLE_CLIENT_ID" "$GOOGLE_CLIENT_SECRET" |
@@ -85,39 +139,19 @@ else
   cp -- website-release.tgz "$archive"
 fi
 
-ssh -F "$private/config" -MNf production
-connected=true
-active_release() { remote 'basename "$(readlink -f /srv/white-gloss-current)"'; }
-match_file() {
-  local expected actual
-  expected=$(sha256sum "$1")
-  actual=$(remote "sha256sum '$2'")
-  [[ ${expected%% *} == "${actual%% *}" ]] || die "Prüfsumme für $2 stimmt nicht."
-}
-match_file scripts/deploy-ionos-release.sh /usr/local/sbin/white-gloss-deploy
-match_file ops/white-gloss.service /etc/systemd/system/white-gloss.service
-[[ $(active_release) == "$EXPECTED_CURRENT_RELEASE" ]] || die 'Der aktive Produktionsstand hat sich geändert.'
-remote 'test -s /srv/white-gloss-current/.output/server/index.mjs && printf "white-gloss-booking-workflow=1\n" | cmp - /srv/white-gloss-current/.output/booking-workflow.contract'
-uploaded=true
-scp -F "$private/config" "$archive" "production:$remote_archive"
-match_file "$archive" "$remote_archive"
 archive_sha=$(sha256sum "$archive")
+archive_sha=${archive_sha%% *}
+uploaded=true
+received=$(remote "upload $RELEASE_ID $archive_sha" <"$archive")
+[[ $received == "$archive_sha" ]] || die 'Der Server hat den Upload nicht bestätigt.'
+match_file "$archive" "archive-sha $RELEASE_ID"
 verify_approval
-smoke() {
-  SMOKE_BASE_URL=https://white-gloss.de SMOKE_PUBLIC_ORIGIN=https://white-gloss.de SMOKE_TIMEOUT_MS=15000 \
-    node scripts/smoke-production.mjs
-}
-# The server enforces the predecessor and digest under its release lock. If the
-# transport drops after activation, re-read the live pointer before recovery.
-previous=''
-if previous=$(remote "sudo -n /usr/local/sbin/white-gloss-deploy activate $RELEASE_ID $remote_archive $EXPECTED_CURRENT_RELEASE ${archive_sha%% *}") &&
-    [[ $previous == "$EXPECTED_CURRENT_RELEASE" ]] && smoke && [[ $(active_release) == "$RELEASE_ID" ]]; then
-  printf 'Website-Release %s live geprüft.\n' "$RELEASE_ID"
-  exit 0
-fi
-if [[ $(active_release) == "$RELEASE_ID" ]]; then
-  remote "sudo -n /usr/local/sbin/white-gloss-deploy rollback $EXPECTED_CURRENT_RELEASE $RELEASE_ID"
-  smoke
-  die 'Die Liveprüfung schlug fehl. Der freigegebene Vorgänger wurde wieder aktiviert.'
-fi
-die 'Aktivierung fehlgeschlagen. Aktiven Stand vor einem erneuten Versuch prüfen.'
+# This compare-and-swap and its rollback are checked under the server release lock.
+# If SSH drops after the switch, cleanup re-reads the pointer before attempting recovery.
+activation_pending=true
+receipt=$(remote "activate $RELEASE_ID $previous $archive_sha")
+[[ $receipt == "$previous" ]] || die 'Hostinger hat den erwarteten Vorgänger nicht bestätigt.'
+smoke
+[[ $(active_release) == "$RELEASE_ID" ]] || die 'Der aktive Stand hat sich während der Liveprüfung geändert.'
+activation_pending=false
+printf 'Website-Release %s live geprüft.\n' "$RELEASE_ID"
