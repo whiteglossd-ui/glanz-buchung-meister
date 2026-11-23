@@ -43,8 +43,8 @@ async function dismissConsent(page) {
   if (await reject.isVisible().catch(() => false)) await reject.click();
 }
 
-async function openBooking(page) {
-  await page.goto(`${qaBase}/#buchung`, { waitUntil: "networkidle" });
+async function openBooking(page, path = "/") {
+  await page.goto(`${qaBase}${path}#buchung`, { waitUntil: "networkidle" });
   await dismissConsent(page);
   await page.locator("form.booking-flow").waitFor();
   // The lazy configurator mounts after document navigation and starts a real
@@ -132,28 +132,70 @@ async function captureBookingStep(page, filename, { includeSteps = false } = {})
   await page.screenshot({ path: `${output}/${filename}` });
 }
 
-async function bookingLayout(page, desktop) {
+async function bookingLayout(page, { desktop, embedded }) {
   const geometry = await page.locator("form.booking-flow").evaluate((form) => {
+    const rect = (element) => element.getBoundingClientRect().toJSON();
     const price = form.querySelector(".booking-price");
     const panel = form.querySelector(".booking-step-panel:not([hidden])");
     const title = form.querySelector(".booking-step-title");
+    const home = form.closest(".home-booking");
+    const homeForm = home?.querySelector(".home-booking-form");
+    const homeStyle = homeForm ? getComputedStyle(homeForm) : null;
     return {
-      price: price.getBoundingClientRect().toJSON(),
-      panel: panel.getBoundingClientRect().toJSON(),
-      title: title.getBoundingClientRect().toJSON(),
+      embedded: Boolean(home),
+      form: rect(form),
+      steps: rect(form.querySelector(".booking-steps")),
+      price: rect(price),
+      panel: rect(panel),
+      title: rect(title),
+      actions: rect(form.querySelector(".booking-actions")),
+      columns: getComputedStyle(form).gridTemplateColumns.split(/\s+/).length,
       pricePosition: getComputedStyle(price).position,
+      excess: form.scrollWidth - form.clientWidth,
+      home: home ? {
+        promise: rect(home.querySelector(".home-booking-promise")),
+        card: rect(homeForm),
+        contentWidth: homeForm.clientWidth - parseFloat(homeStyle.paddingLeft) - parseFloat(homeStyle.paddingRight),
+        split: matchMedia("(min-width: 1080px)").matches,
+      } : null,
     };
   });
-  if (desktop) {
-    assert.equal(geometry.pricePosition, "sticky", "Desktop keeps the live price in its side column");
+  assert.equal(geometry.embedded, embedded, "The requested booking layout is actually mounted");
+  assert.ok(geometry.excess <= 2, "The configurator itself has no horizontal overflow");
+  if (embedded) {
+    assert.equal(geometry.columns, 1, "The homepage form has one real column, with no implicit price column");
+    assert.equal(geometry.pricePosition, "static", "The homepage price stays in normal document flow");
+    assert.ok(Math.abs(geometry.form.width - geometry.home.contentWidth) <= 2,
+      "The homepage configurator uses the full available width inside its card");
+    for (const child of ["steps", "price", "title", "panel", "actions"]) {
+      assert.ok(Math.abs(geometry[child].left - geometry.form.left) <= 2 &&
+        Math.abs(geometry[child].width - geometry.form.width) <= 2,
+      `Homepage ${child} uses the full form column: ${JSON.stringify(geometry)}`);
+    }
+    assert.ok(geometry.steps.bottom <= geometry.price.top + 2 &&
+      geometry.price.bottom <= geometry.title.top + 2 &&
+      geometry.title.bottom <= geometry.panel.top + 2 &&
+      geometry.panel.bottom <= geometry.actions.top + 2,
+    "Homepage steps, price, title, active panel and actions follow each other without overlap");
+    if (geometry.home.split) {
+      assert.ok(geometry.home.promise.right <= geometry.home.card.left,
+        "The desktop homepage promise and form occupy separate side-by-side columns");
+    } else {
+      assert.ok(geometry.home.promise.bottom <= geometry.home.card.top,
+        "The narrower homepage stacks its promise above the full-width form card");
+    }
+  } else if (desktop) {
+    assert.equal(geometry.columns, 2, "The standalone desktop calculator retains two columns");
+    assert.equal(geometry.pricePosition, "sticky", "The standalone desktop price remains sticky in its side column");
     assert.ok(geometry.price.left >= geometry.panel.right,
-      "The desktop price summary must not cover the active form step");
+      "The standalone desktop price summary must not cover the active form step");
   } else {
+    assert.equal(geometry.columns, 1, "The standalone mobile calculator uses one column");
     assert.notEqual(geometry.pricePosition, "fixed", "The mobile price must not cover form controls");
     assert.ok(geometry.price.bottom <= geometry.title.top + 1,
       "The compact mobile price stays above the active step heading");
   }
-  results.push(`${desktop ? "Desktop" : "Mobile"} price summary does not overlap the active form`);
+  results.push(`${embedded ? "Homepage" : "Standalone"} ${desktop ? "desktop" : "mobile"} booking layout: usable form width and non-overlapping price`);
 }
 
 async function checkMediaCollections(page, width) {
@@ -331,7 +373,7 @@ try {
   {
     const { context, page, assets } = await openContext({ viewport: { width: 1280, height: 900 } });
     await openBooking(page);
-    await bookingLayout(page, true);
+    await bookingLayout(page, { desktop: true, embedded: true });
     const ids = await page
       .locator('input[type=checkbox][id^="extra-"]')
       .evaluateAll((inputs) => inputs.map((input) => input.id));
@@ -445,7 +487,7 @@ try {
       hasTouch: true,
     });
     await openBooking(page);
-    await bookingLayout(page, false);
+    await bookingLayout(page, { desktop: false, embedded: true });
     await captureBookingStep(page, "mobile-390-auswahl.png", { includeSteps: true });
     await page.locator(".booking-steps button").nth(1).click();
     const extrasBox = page.locator("details.booking-extras");
@@ -473,6 +515,19 @@ try {
     );
     results.push("Phones: booking without overflow, no GSAP download");
     await context.close();
+  }
+
+  /* ---- Standalone calculator: its own desktop sidebar must remain intact. ---- */
+  for (const width of [390, 1280]) {
+    const { context, page } = await openContext({
+      viewport: { width, height: width < 700 ? 844 : 900 },
+      reducedMotion: "reduce",
+    });
+    try {
+      await openBooking(page, "/preise");
+      await bookingLayout(page, { desktop: width >= 960, embedded: false });
+      await captureBookingStep(page, `standalone-preise-${width}.png`, { includeSteps: true });
+    } finally { await context.close(); }
   }
 
   /* ---- Gallery: curated selection, all photos, uncropped viewer, keyboard ---- */
@@ -559,6 +614,7 @@ try {
       }
     }
     await openBooking(page);
+    await bookingLayout(page, { desktop: width >= 960, embedded: true });
     await captureBookingStep(page, `buchung-${width}.png`, { includeSteps: true });
     results.push(`No horizontal overflow at ${width}px on ${paths.join(", ")}`);
     await context.close();
