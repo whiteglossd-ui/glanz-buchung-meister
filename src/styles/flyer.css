@@ -1,0 +1,367 @@
+/* White-Gloss flyer finish. Geometry and scroll motion stay in their component styles. */
+:is(
+  [data-shell="public"],
+  .film-menu,
+  .wg-video-dialog,
+  .customer-photo-dialog
+) {
+  --flyer-studio-light:
+    linear-gradient(
+      123deg,
+      transparent 40%,
+      rgb(246 248 252 / 0.022) 51%,
+      transparent 64%
+    ),
+    repeating-linear-gradient(
+      123deg,
+      transparent 0 7px,
+      rgb(255 255 255 / 0.006) 7px 8px
+    ),
+    radial-gradient(circle at 80% 20%, #13171d 0%, var(--color-bg) 65%);
+  --flyer-vignette: radial-gradient(
+    ellipse at 58% 38%,
+    rgb(7 9 11 / 0.72),
+    #07090b 88%
+  );
+  --flyer-control: rgb(14 17 21 / 0.85);
+  --flyer-control-edge: rgb(255 255 255 / 0.12);
+  --flyer-focus-edge: rgb(255 255 255 / 0.35);
+  --flyer-card-edge: rgb(255 255 255 / 0.15);
+  --flyer-glow: 0 0 35px rgb(255 255 255 / 0.18);
+  color-scheme: dark;
+}
+
+[data-shell="public"],
+[data-shell="public"] main > section:where(:not(.scroll-film, .film-chapter)),
+[data-shell="public"]
+  :is(.hero-follow, .home-location, .concierge-service, .booking-section),
+.film-menu .film-menu-panel,
+[data-shell="public"] footer {
+  background: var(--flyer-studio-light);
+}
+
+[data-shell="public"] :is(h1, .heading-page, .heading-2),
+[data-shell="public"]
+  :is(.scroll-film-copy h1, .scroll-film-signature p, .home-intro > p),
+[data-shell="public"]
+  :is(.wg-rail-price strong, .ga-price .font-display, .package-price strong),
+[data-shell="public"] .booking-editorial .booking-price strong,
+[data-shell="public"] .home-booking .booking-editorial .booking-price strong {
+  color: var(--color-fg);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+}
+
+[data-shell="public"]
+  :is(.kicker, .package-eyebrow, .scroll-film-eyebrow, .ga-price .uppercase),
+[data-shell="public"] .film-chapter-copy .kicker {
+  color: var(--color-subtle);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+[data-shell="public"] .scroll-film-eyebrow {
+  color: var(--color-muted);
+}
+
+[data-shell="public"]
+  :is(.ga-num, .package-eyebrow > span:first-child, .home-process li > span),
+[data-shell="public"] .concierge-service > ol > li > span {
+  color: var(--color-subtle);
+  font-size: 0.8125rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+}
+
+[data-shell="public"] .concierge-service > ol > li h3 {
+  color: var(--color-fg);
+  font-size: clamp(1rem, 1.45vw, 1.4rem);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+[data-shell="public"]
+  :is(
+    .package-description,
+    .film-chapter-copy > p:not(.kicker),
+    .ga-pack-copy > p,
+    .wg-rail-copy > p:not(.wg-rail-price),
+    .home-location p:not(.kicker),
+    .concierge-service > header > p:not(.kicker),
+    .concierge-service > ol > li p,
+    .home-booking-lead,
+    .prose p
+  ),
+[data-shell="public"] .scroll-film .scroll-film-service {
+  color: var(--color-muted);
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+[data-shell="public"]
+  :is(.prose p, .concierge-service li p, .home-booking-benefits)
+  strong {
+  color: var(--color-fg);
+  font-weight: 600;
+}
+
+[data-shell="public"]:has([data-home="polish"]) .site-header,
+[data-shell="public"]:has([data-home="polish"])
+  .site-header[data-scrolled="true"],
+[data-shell="public"] .site-header,
+[data-shell="public"] .site-header[data-scrolled="true"],
+body[data-nav="open"] [data-shell="public"] .site-header,
+.film-menu > .fixed,
+[data-shell="public"] .consent-banner {
+  background: var(--flyer-control);
+  border-color: var(--color-line);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+.film-menu .film-menu-link {
+  font-weight: 400;
+}
+
+[data-shell="public"] :is(.film-chapter, .page-hero, .workshop-personal) {
+  background: var(--flyer-studio-light);
+}
+
+[data-shell="public"] .scroll-film-media :is(img, video),
+[data-shell="public"] .concierge-media-backdrop,
+[data-shell="public"]
+  .group:has(> .absolute.inset-0.bg-gradient-to-t)
+  > .absolute.inset-0
+  :is(img, video),
+[data-shell="public"]
+  .group:has(> .absolute.inset-0.bg-gradient-to-t)
+  > :is(img, video).absolute.inset-0,
+.film-menu .film-menu-shot {
+  filter: grayscale(100%) contrast(120%) brightness(0.35);
+}
+
+[data-shell="public"] .scroll-film-shade,
+[data-shell="public"] .group > .absolute.inset-0.bg-gradient-to-t,
+.concierge-frame::after,
+.film-menu .film-menu-visual::after {
+  background: var(--flyer-vignette);
+}
+
+[data-shell="public"] .concierge-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+[data-shell="public"] .concierge-media-sharp {
+  z-index: 1;
+  border-color: var(--flyer-card-edge);
+}
+
+[data-shell="public"]
+  :is(
+    .glass,
+    .wg-rail-card,
+    .reviews-spotlight,
+    .gd-split--duo > a,
+    article.border.bg-surface,
+    .home-booking-form
+  ),
+[data-shell="public"]
+  .booking-editorial
+  :is(.booking-choice, .booking-extra-choice),
+:is(.wg-video-dialog, .customer-photo-dialog) {
+  border-radius: var(--radius-card);
+  border-color: var(--color-line);
+  border-top-color: var(--flyer-card-edge);
+  background: var(--glass-bg);
+}
+
+[data-shell="public"]
+  :is(.glass, .wg-rail-card, .reviews-spotlight) {
+  /* These cards have no viewport-positioned descendants. */
+  box-shadow: inset 0 1px var(--flyer-card-edge);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+[data-shell="public"] .wg-rail-copy,
+[data-shell="public"] .gd-split--duo > a > div:last-child {
+  background: transparent;
+}
+
+[data-shell="public"] ol > li.gd-pack:not(:has(> .gd-pack)) {
+  border-radius: var(--radius-card);
+  background: var(--glass-bg);
+  box-shadow:
+    inset 0 0 0 1px var(--color-line),
+    inset 0 1px var(--flyer-card-edge);
+}
+
+[data-shell="public"]
+  :is(.wg-home-packages .wg-rail-frame, .gd-split--duo .ga-media)
+  img {
+  border-radius: 8px;
+  filter: grayscale(100%) contrast(115%);
+}
+
+[data-shell="public"] .gd-footer .kicker {
+  color: var(--color-subtle);
+}
+
+[data-shell="public"] :is(.chrome-rule, .wg-rail-copy, .home-location) {
+  border-color: var(--color-line);
+}
+
+[data-shell="public"] .chrome-rule {
+  background: var(--color-line);
+}
+
+[data-shell="public"] :is(.concierge-service > ol > li, .home-process li) {
+  border-color: var(--color-line);
+}
+
+:is([data-shell="public"], .film-menu) .btn-primary,
+[data-shell="public"]
+  :is(.scroll-film-cta, [data-wa-float], .btn.bg-emerald-700),
+[data-shell="public"] .site-header .header-film-booking,
+[data-shell="public"] .booking-editorial .btn-primary {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  border-radius: 14px;
+  color: var(--color-accent-fg);
+  box-shadow: var(--flyer-glow);
+  font-weight: 500;
+}
+
+:is([data-shell="public"], .film-menu)
+  .btn-primary:not(:disabled):is(:hover, :focus-visible),
+[data-shell="public"]
+  :is(.scroll-film-cta, [data-wa-float], .btn.bg-emerald-700):is(
+    :hover,
+    :focus-visible
+  ),
+[data-shell="public"]
+  .site-header
+  .header-film-booking:is(:hover, :focus-visible),
+[data-shell="public"]
+  .booking-editorial
+  .btn-primary:not(:disabled):is(:hover, :focus-visible) {
+  background: #fff;
+  border-color: #fff;
+  color: var(--color-accent-fg);
+  box-shadow: var(--flyer-glow);
+}
+
+:is([data-shell="public"], .film-menu) .btn-secondary,
+:is([data-shell="public"] .site-header, .film-menu) .menu-toggle,
+[data-shell="public"] :is(.scroll-film-pause, .instagram-badge),
+[data-shell="public"] .site-header[data-scrolled="true"] .menu-toggle,
+[data-shell="public"] .booking-editorial .btn-secondary {
+  background: var(--flyer-control);
+  border-radius: var(--radius-control);
+  color: var(--color-fg);
+  box-shadow: inset 0 0 0 1px var(--flyer-control-edge);
+}
+
+:is([data-shell="public"], .film-menu)
+  .btn-secondary:is(:hover, :focus-visible),
+:is([data-shell="public"] .site-header, .film-menu)
+  .menu-toggle:is(:hover, :focus-visible),
+[data-shell="public"]
+  .site-header[data-scrolled="true"]
+  .menu-toggle:is(:hover, :focus-visible),
+[data-shell="public"]
+  .booking-editorial
+  .btn-secondary:is(:hover, :focus-visible) {
+  background: var(--color-elevated);
+  border-color: var(--flyer-focus-edge);
+  box-shadow: inset 0 0 0 1px var(--flyer-focus-edge);
+}
+
+[data-shell="public"]
+  :is(.input-line, .booking-flow select, .booking-flow textarea),
+[data-shell="public"] .booking-editorial .input-line {
+  background: var(--flyer-control);
+  border-color: var(--flyer-control-edge);
+  border-radius: var(--radius-control);
+  color: var(--color-fg);
+  box-shadow: inset 0 0 0 1px var(--flyer-control-edge);
+}
+
+[data-shell="public"]
+  :is(.input-line, .booking-flow select, .booking-flow textarea):is(
+    :hover,
+    :focus
+  ),
+[data-shell="public"] .booking-editorial .input-line:is(:hover, :focus) {
+  border-color: var(--flyer-focus-edge);
+  box-shadow: inset 0 0 0 1px var(--flyer-focus-edge);
+}
+
+[data-shell="public"] :is(input, select, textarea)[aria-invalid="true"],
+[data-shell="public"]
+  .booking-editorial
+  :is(input, select, textarea)[aria-invalid="true"] {
+  border-color: var(--color-danger);
+  border-style: dashed;
+}
+
+[data-shell="public"] .booking-editorial .booking-choice.border-accent,
+[data-shell="public"]
+  .booking-editorial
+  .booking-extra-choice:has(input:checked) {
+  background: var(--color-elevated);
+  border-color: var(--color-fg);
+}
+
+[data-shell="public"] :is(.text-amber-400, .text-emerald-400) {
+  color: var(--color-fg);
+}
+
+[data-shell="public"] .rounded-card.bg-surface:has(.btn.bg-emerald-700) {
+  color: var(--color-accent-fg);
+  background: linear-gradient(123deg, #fff, #e5e8ec 48%, #f8fafc 82%);
+  border-radius: var(--radius-card);
+  box-shadow: var(--flyer-glow);
+}
+
+[data-shell="public"]
+  .rounded-card.bg-surface:has(.btn.bg-emerald-700)
+  :is(.text-muted, .text-subtle, .text-emerald-400, .heading-3) {
+  color: #232a33;
+}
+
+[data-shell="public"] .btn.bg-emerald-700 {
+  border-color: #7d8590;
+  outline-color: #232a33;
+}
+
+[data-shell="public"] .btn.bg-emerald-700:is(:hover, :focus-visible) {
+  border-color: #232a33;
+  outline-color: #232a33;
+}
+
+:is(.film-menu, .wg-video-dialog, .customer-photo-dialog)::backdrop {
+  background: rgb(7 9 11 / 0.88);
+}
+
+@supports not (
+  (backdrop-filter: blur(14px)) or (-webkit-backdrop-filter: blur(14px))
+) {
+  :is(
+    [data-shell="public"],
+    .film-menu,
+    .wg-video-dialog,
+    .customer-photo-dialog
+  ) {
+    --glass-bg: var(--color-surface);
+    --flyer-control: var(--color-surface);
+  }
+}
