@@ -47,6 +47,9 @@ async function openBooking(page) {
   await page.goto(`${qaBase}/#buchung`, { waitUntil: "networkidle" });
   await dismissConsent(page);
   await page.locator("form.booking-flow").waitFor();
+  // The lazy configurator mounts after document navigation and starts a real
+  // availability read. Its time-slot selector is enabled only after the body is parsed.
+  await page.locator("form.booking-flow #slot:enabled").waitFor({ state: "attached" });
   await placeBelowHeader(page, "form.booking-flow");
 }
 

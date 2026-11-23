@@ -239,6 +239,9 @@ export async function verifyRundumIntentLoading(page, { label, base }) {
   await packageLink.focus();
   await packageLink.press("Enter");
   await booking.waitFor({ state: "visible" });
+  // Wait for the newly mounted form to consume availability before exercising
+  // history and leaving the page. A disabled slot also catches a genuine API failure.
+  await booking.locator("#slot:enabled").waitFor({ state: "attached" });
   assert.equal(new URL(page.url()).hash, "#buchung");
   assert.equal(await packageLink.getAttribute("aria-current"), "location");
   assert.equal(await form.isVisible(), false);
@@ -253,11 +256,13 @@ export async function verifyRundumIntentLoading(page, { label, base }) {
   await rundumLink.click();
   await form.waitFor({ state: "visible" });
   assert.equal(await booking.isVisible(), false);
+  await reads.complete(`${label}: leave booking for prices`);
   await page.locator(".scroll-film-prices").click();
   await page.waitForURL((url) => url.pathname === "/preise");
   await page.goBack({ waitUntil: "networkidle" });
   await form.waitFor({ state: "visible", timeout: 5000 });
   assert.equal(await form.locator("#rundum-name").inputValue(), draft, `${label}: client route and back keep unsent input`);
+  await reads.complete(`${label}: reload the returned booking page`);
   await page.goto(`${base}/#rundum-anfrage`, { waitUntil: "networkidle" });
   await form.waitFor({ state: "visible", timeout: 5000 });
   await assertStableRundumArrival(page, `${label}: direct hash`, reads);
