@@ -1,5 +1,15 @@
 # Veröffentlichung der White-Gloss-Website
 
+## GitHub und Hostinger
+
+Im privaten Website-Repository startet ein Push auf `main` die vier Pflichtprüfungen `schema`, `verify`, `studio` und `cross-browser`. Die automatische Veröffentlichung übernimmt ausschließlich einen erfolgreichen Lauf aus demselben Repository, solange dessen Commit noch die Spitze von `main` ist.
+
+Für den Umzug die alten automatischen Veröffentlichungen deaktivieren. Den öffentlichen Teil eines eigenen Website-Schlüssels auf dem VPS mit `ops/install-gitlab-release-gateway.py` an den bestehenden Releasebefehl des Kontos `white-gloss-ci` binden. Das Skript installiert denselben eingeschränkten Befehl für GitLab und GitHub. Im neuen GitHub-Repository die Actions-Secrets `HOSTINGER_SSH_HOST`, `HOSTINGER_SSH_USER`, `HOSTINGER_SSH_PRIVATE_KEY`, `HOSTINGER_SSH_KNOWN_HOSTS` und bei abweichendem Port `HOSTINGER_SSH_PORT` setzen.
+
+Sind beide Google-OAuth-Werte im Website-Dienst auf dem VPS hinterlegt und geprüft, die Repository-Variable `HOSTINGER_GOOGLE_OAUTH_SOURCE=runtime` setzen. Dann verwendet die Veröffentlichung das Build-Archiv aus dem erfolgreichen CI-Lauf. Benötigt die Website das eingebettete OAuth-Paar, beide Werte als Repository-Secrets `GOOGLE_CLIENT_ID` und `GOOGLE_CLIENT_SECRET` hinterlegen. Der geschützte Build entsteht dann im Produktionsjob.
+
+Zur Aktivierung `HOSTINGER_AUTO_DEPLOY_REPOSITORY_ID` auf die numerische GitHub-ID des neuen Website-Repositorys setzen und `HOSTINGER_DEPLOY_ENABLED=true` einschalten. Der nächste erfolgreiche Push auf `main` veröffentlicht automatisch. Der Job prüft die Dateiprüfsummen, den aktiven Vorgänger und die öffentliche Website. Scheitert die Liveprüfung, stellt er den kompatiblen Vorgänger wieder her und prüft ihn erneut.
+
 ## GitLab und Hostinger
 
 Ein Push auf den geschützten Standardbranch `main` startet fünf Prüfungen auf dem Website-Runner. Sobald Datenbank, Build, Buchungsablauf, Studio und Browser bestanden haben, veröffentlicht `hostinger-production` den geprüften Commit automatisch. Ein Merge Request durchläuft die Website-Prüfungen bereits vor dem Merge.

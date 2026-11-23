@@ -1,0 +1,82 @@
+name: Website automatisch auf Hostinger veröffentlichen
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  RELEASE_ID: ${{ github.event.workflow_run.head_sha }}
+  TRIGGER_RUN_ID: ${{ github.event.workflow_run.id }}
+  TRIGGER_RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+  HOSTINGER_AUTO_DEPLOY_REPOSITORY_ID: ${{ vars.HOSTINGER_AUTO_DEPLOY_REPOSITORY_ID }}
+  HOSTINGER_DEPLOY_ENABLED: ${{ vars.HOSTINGER_DEPLOY_ENABLED }}
+
+jobs:
+  approval:
+    if: >-
+      vars.HOSTINGER_DEPLOY_ENABLED == 'true' &&
+      vars.HOSTINGER_AUTO_DEPLOY_REPOSITORY_ID == github.repository_id &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_sha == github.sha
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Erfolgreiche Pflichtprüfungen für diesen Commit bestätigen
+        run: node scripts/deployment-approval.mjs
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  publish:
+    needs: approval
+    runs-on: ubuntu-latest
+    container: node:24-bookworm
+    concurrency:
+      group: hostinger-production
+      cancel-in-progress: false
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Geprüften Website-Build übernehmen
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ github.event.workflow_run.id }}
+          name: hostinger-website-${{ github.sha }}
+      - name: Website veröffentlichen und live prüfen
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HOSTINGER_SSH_HOST: ${{ secrets.HOSTINGER_SSH_HOST }}
+          HOSTINGER_SSH_PORT: ${{ secrets.HOSTINGER_SSH_PORT }}
+          HOSTINGER_SSH_USER: ${{ secrets.HOSTINGER_SSH_USER }}
+          WEBSITE_DEPLOY_KEY: ${{ secrets.HOSTINGER_SSH_PRIVATE_KEY }}
+          WEBSITE_SERVER_PINS: ${{ secrets.HOSTINGER_SSH_KNOWN_HOSTS }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          HOSTINGER_GOOGLE_OAUTH_SOURCE: ${{ vars.HOSTINGER_GOOGLE_OAUTH_SOURCE }}
+        run: |
+          set -Eeuo pipefail
+          umask 077
+          keys=$(mktemp -d)
+          trap 'rm -rf -- "$keys"' EXIT
+          export HOSTINGER_SSH_PRIVATE_KEY="$keys/key" HOSTINGER_SSH_KNOWN_HOSTS="$keys/known_hosts"
+          printf '%s\n' "${WEBSITE_DEPLOY_KEY:?Website-Schlüssel fehlt}" >"$HOSTINGER_SSH_PRIVATE_KEY"
+          printf '%s\n' "${WEBSITE_SERVER_PINS:?Hostschlüssel fehlt}" >"$HOSTINGER_SSH_KNOWN_HOSTS"
+          unset WEBSITE_DEPLOY_KEY WEBSITE_SERVER_PINS
+          bash scripts/deploy-guarded-hostinger.sh github

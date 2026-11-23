@@ -63,7 +63,7 @@ test("only an explicit main release with green CI for its exact latest attempt i
   assert.equal(api.requests.length, 3);
 });
 
-test("automatic triggers, branch dispatches, mismatched or unsafe IDs stop before API or host access", async () => {
+test("unconfigured triggers, branch dispatches, mismatched or unsafe IDs stop before API or host access", async () => {
   for (const change of [
     { GITHUB_EVENT_NAME: "workflow_run" },
     { GITHUB_REF: "refs/heads/feature" },
@@ -164,5 +164,44 @@ test("workflow input validation explains stale or invalid approvals and fails cl
     const result = validate(change);
     assert.equal(result.status, 1);
     assert.match(result.stdout, message);
+  }
+});
+
+test("automatic publication binds the target repository and the successful push attempt", async () => {
+  const automatic = {
+    ...environment,
+    GITHUB_EVENT_NAME: "workflow_run", EXPECTED_CURRENT_RELEASE: undefined,
+    HOSTINGER_DEPLOY_ENABLED: "true", GITHUB_REPOSITORY_ID: "610",
+    HOSTINGER_AUTO_DEPLOY_REPOSITORY_ID: "610", TRIGGER_RUN_ID: "123", TRIGGER_RUN_ATTEMPT: "2",
+  };
+  const accepted = await verifyDeploymentApproval(automatic, github().request);
+  assert.equal(accepted.ciRun, 123);
+  for (const change of [
+    { HOSTINGER_DEPLOY_ENABLED: "false" }, { HOSTINGER_AUTO_DEPLOY_REPOSITORY_ID: "" },
+    { GITHUB_REPOSITORY_ID: "611" }, { GITHUB_EVENT_NAME: "pull_request" },
+    { GITHUB_REF: "refs/heads/other" }, { RELEASE_ID: previous },
+    { TRIGGER_RUN_ID: "999" }, { TRIGGER_RUN_ATTEMPT: "1" },
+  ]) {
+    await assert.rejects(verifyDeploymentApproval({ ...automatic, ...change }, github().request));
+  }
+  await assert.rejects(verifyDeploymentApproval(automatic, github({ main: previous }).request));
+  await assert.rejects(verifyDeploymentApproval(automatic, github({ runs: [{ ...run, event: "pull_request" }] }).request));
+  await assert.rejects(verifyDeploymentApproval(automatic, github({ runJobs: jobs.slice(1) }).request));
+});
+
+test("only the successful same-repository main push can reach the automatic guarded transport", async () => {
+  const workflow = await readFile(new URL("../.github/workflows/auto-deploy-hostinger.yml", import.meta.url), "utf8");
+  const ci = await readFile(new URL("../.github/workflows/ci.yml", import.meta.url), "utf8");
+  assert.match(workflow, /workflow_run:\n    workflows: \[CI\]\n    types: \[completed\]\n    branches: \[main\]/);
+  assert.match(workflow, /head_repository.full_name == github.repository/);
+  assert.match(workflow, /head_sha == github.sha/);
+  assert.match(workflow, /workflow_run.event == 'push'/);
+  assert.match(workflow, /workflow_run.conclusion == 'success'/);
+  assert.match(workflow, /needs: approval/);
+  assert.match(workflow, /run-id: \$\{\{ github.event.workflow_run.id \}\}/);
+  assert.match(workflow, /bash scripts\/deploy-guarded-hostinger.sh github/);
+  for (const source of [ci, workflow]) {
+    assert.match(source, /name: hostinger-website-\$\{\{ github.sha \}\}/);
+    assert.match(source, /vars.HOSTINGER_AUTO_DEPLOY_REPOSITORY_ID == github.repository_id/);
   }
 });

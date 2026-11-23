@@ -170,6 +170,14 @@ jobs:
       - name: Produktions-Build erstellen
         run: npm run build
 
+      - name: Geprüften Website-Build für Hostinger packen
+        if: github.event_name == 'push' && vars.HOSTINGER_DEPLOY_ENABLED == 'true' && vars.HOSTINGER_AUTO_DEPLOY_REPOSITORY_ID == github.repository_id
+        run: |
+          test -s .output/server/index.mjs
+          printf 'white-gloss-booking-workflow=1\n' | cmp - .output/booking-workflow.contract
+          tar -czf website-release.tgz .output
+          sha256sum website-release.tgz > website-release.tgz.sha256
+
       - name: Chromium für isolierte Mobilprüfung bereitstellen
         # Chromium wird ausschließlich auf diesem Linux-CI-Runner gestartet.
         # Keine lokale Vorschau und keine echten Anfrage-/Uploadaktionen.
@@ -201,6 +209,19 @@ jobs:
           include-hidden-files: true
           if-no-files-found: ignore
           retention-days: 7
+
+      - name: Website-Build für diesen Prüflauf sichern
+        if: github.event_name == 'push' && vars.HOSTINGER_DEPLOY_ENABLED == 'true' && vars.HOSTINGER_AUTO_DEPLOY_REPOSITORY_ID == github.repository_id
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: hostinger-website-${{ github.sha }}
+          path: |
+            website-release.tgz
+            website-release.tgz.sha256
+          if-no-files-found: error
+          overwrite: true
+          compression-level: 0
+          retention-days: 3
 
   studio:
     # Separate ephemeral database and media store: a Studio failure must not

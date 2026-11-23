@@ -3,17 +3,27 @@ import { pathToFileURL } from "node:url";
 const shaPattern = /^[0-9a-f]{40}$/;
 const requiredJobs = ["verify", "schema", "studio", "cross-browser"];
 
-// Read-only gate. A manual dispatch approves one commit and one expected
-// production predecessor, never whichever revision happens to exist later.
+// The dispatch pins a predecessor. Automatic releases capture it on the VPS
+// and use the same compare-and-swap operation as a manual deployment.
 export async function verifyDeploymentApproval(env, request) {
   const release = env.RELEASE_ID;
   const expectedCurrent = env.EXPECTED_CURRENT_RELEASE;
-  if (env.GITHUB_EVENT_NAME !== "workflow_dispatch" || env.GITHUB_REF !== "refs/heads/main") {
-    throw new Error("Production requires a manual dispatch from main.");
+  const automatic = env.GITHUB_EVENT_NAME === "workflow_run";
+  if (env.GITHUB_REF !== "refs/heads/main" ||
+      (!automatic && env.GITHUB_EVENT_NAME !== "workflow_dispatch") ||
+      !shaPattern.test(release ?? "") || release !== env.GITHUB_SHA) {
+    throw new Error("Deployment requires an exact, current main commit.");
   }
-  if (!shaPattern.test(release ?? "") || !shaPattern.test(expectedCurrent ?? "") ||
-      release === expectedCurrent || release !== env.GITHUB_SHA) {
-    throw new Error("Explicit release and expected current commit must be distinct full SHAs; release must equal the dispatched main commit.");
+  if (automatic) {
+    if (env.HOSTINGER_DEPLOY_ENABLED !== "true" ||
+        !/^[1-9][0-9]*$/.test(env.HOSTINGER_AUTO_DEPLOY_REPOSITORY_ID ?? "") ||
+        env.HOSTINGER_AUTO_DEPLOY_REPOSITORY_ID !== env.GITHUB_REPOSITORY_ID ||
+        !/^[1-9][0-9]*$/.test(env.TRIGGER_RUN_ID ?? "") ||
+        !/^[1-9][0-9]*$/.test(env.TRIGGER_RUN_ATTEMPT ?? "")) {
+      throw new Error("Automatic deployment requires the configured repository and triggering CI attempt.");
+    }
+  } else if (!shaPattern.test(expectedCurrent ?? "") || release === expectedCurrent) {
+    throw new Error("Dispatch requires a distinct, full SHA for the active production release.");
   }
   const repository = env.GITHUB_REPOSITORY;
   if (!/^[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+$/.test(repository ?? "")) {
@@ -22,7 +32,7 @@ export async function verifyDeploymentApproval(env, request) {
   const prefix = `repos/${repository}`;
   const main = await request(`${prefix}/git/ref/heads/main`);
   if (main.object?.sha !== release) {
-    throw new Error("main changed since approval; dispatch the intended current commit again.");
+    throw new Error("main changed since approval.");
   }
   const response = await request(
     `${prefix}/actions/workflows/ci.yml/runs?branch=main&event=push&head_sha=${release}&per_page=100`,
@@ -38,6 +48,10 @@ export async function verifyDeploymentApproval(env, request) {
       run.path !== ".github/workflows/ci.yml" ||
       run.status !== "completed" || run.conclusion !== "success") {
     throw new Error("The latest CI run for the approved main commit is missing or not successful.");
+  }
+  if (automatic && (String(run.id) !== env.TRIGGER_RUN_ID ||
+                    String(run.run_attempt) !== env.TRIGGER_RUN_ATTEMPT)) {
+    throw new Error("The triggering CI attempt has been superseded.");
   }
   const jobs = [];
   let total;
@@ -80,7 +94,7 @@ async function githubRequest(path) {
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   try {
     const result = await verifyDeploymentApproval(process.env, githubRequest);
-    console.log(`Approved commit ${result.release}; CI ${result.ciRun}, attempt ${result.ciAttempt}; expected production ${result.expectedCurrent}.`);
+    console.log(`Approved commit ${result.release}, CI ${result.ciRun}, attempt ${result.ciAttempt}.`);
   } catch (error) {
     console.error(error.message);
     process.exitCode = 1;

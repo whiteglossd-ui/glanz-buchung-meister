@@ -3,6 +3,7 @@ import base64
 import hashlib
 import importlib.util
 import io
+import itertools
 import os
 from pathlib import Path
 import stat
@@ -181,7 +182,7 @@ def fixture_cli(name):
         return
     if name == "node":
         log(sys.argv[1])
-        if sys.argv[1] == "scripts/deployment-approval-gitlab.mjs":
+        if sys.argv[1] in ("scripts/deployment-approval-gitlab.mjs", "scripts/deployment-approval.mjs"):
             if scenario == "main-advanced" and steps.read_text().count(sys.argv[1]) == 2:
                 sys.exit(1)
             return
@@ -244,8 +245,9 @@ class DeployClientTests(unittest.TestCase):
             "already-active": (RELEASE, 1, 0),
             "active-unhealthy": (RELEASE, 1, 0),
         }
-        for scenario, (final, smokes, rollbacks) in scenarios.items():
-            with self.subTest(scenario), tempfile.TemporaryDirectory() as tmp:
+        for provider, scenario in itertools.product(("gitlab", "github"), scenarios):
+            final, smokes, rollbacks = scenarios[scenario]
+            with self.subTest(provider=provider, scenario=scenario), tempfile.TemporaryDirectory() as tmp:
                 root = Path(tmp)
                 os.symlink(repo / "scripts", root / "scripts")
                 os.symlink(repo / "ops", root / "ops")
@@ -265,13 +267,20 @@ class DeployClientTests(unittest.TestCase):
                        "HOSTINGER_SSH_USER": "white-gloss-ci", "HOSTINGER_GOOGLE_OAUTH_SOURCE": "runtime",
                        "HOSTINGER_SSH_PRIVATE_KEY": str(root / "dummy-key"), "PYTHONDONTWRITEBYTECODE": "1",
                        "HOSTINGER_SSH_KNOWN_HOSTS": str(root / "dummy-pins")}
-                result = subprocess.run(["bash", "scripts/deploy-gitlab-hostinger.sh"],
+                if provider == "github":
+                    env.update(GITHUB_WORKSPACE=tmp, GITHUB_EVENT_NAME="workflow_run", RELEASE_ID=RELEASE)
+                    script = ["bash", "scripts/deploy-guarded-hostinger.sh", "github"]
+                    approval = "scripts/deployment-approval.mjs"
+                else:
+                    script = ["bash", "scripts/deploy-gitlab-hostinger.sh"]
+                    approval = "scripts/deployment-approval-gitlab.mjs"
+                result = subprocess.run(script,
                                         cwd=root, env=env, capture_output=True, text=True)
                 self.assertEqual(result.returncode == 0, scenario in ("success", "already-active"), result.stderr)
                 self.assertEqual((root / "current").readlink().name, final)
                 self.assertEqual(list((root / "incoming").iterdir()), [])
                 steps = (root / "steps").read_text().splitlines()
-                self.assertEqual(steps.count("scripts/deployment-approval-gitlab.mjs"),
+                self.assertEqual(steps.count(approval),
                                  1 if scenario == "invalid-pointer" else 2)
                 self.assertEqual(steps.count("scripts/smoke-production.mjs"), smokes)
                 self.assertEqual(steps.count(f"rollback {PREVIOUS} {RELEASE}"), rollbacks)
