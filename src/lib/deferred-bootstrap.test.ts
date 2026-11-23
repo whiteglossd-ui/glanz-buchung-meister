@@ -41,11 +41,28 @@ test("missing or ambiguous hero CSS does not preload an unrelated stylesheet", (
 
 type Listener = () => void;
 
-function fakePage({ readyState = "loading", images = [] as FakeImage[] } = {}) {
+function fakePage({ readyState = "loading", images = [] as FakeImage[], paintSupport = "none", painted = false } = {}) {
   const inserted: Record<string, string>[] = [];
   const documentListeners: Record<string, Listener[]> = {};
   const frames: Listener[] = [];
   const timers: { callback: Listener; delay: number }[] = [];
+  const paints = painted ? [{ name: "first-contentful-paint" }] : [];
+  const observers: FakePaintObserver[] = [];
+  class FakePaintObserver {
+    static supportedEntryTypes = paintSupport === "unsupported" ? ["resource"] : ["paint"];
+    disconnected = false;
+    options?: { type: string; buffered: boolean };
+    callback: (list: { getEntries(): { name: string }[] }) => void;
+    constructor(callback: (list: { getEntries(): { name: string }[] }) => void) {
+      this.callback = callback;
+      observers.push(this);
+    }
+    observe(options: { type: string; buffered: boolean }) {
+      this.options = options;
+      if (paintSupport === "throws") throw new Error("Paint observation unavailable");
+    }
+    disconnect() { this.disconnected = true; }
+  }
   let selector = "";
   const document = {
     readyState,
@@ -72,12 +89,21 @@ function fakePage({ readyState = "loading", images = [] as FakeImage[] } = {}) {
   const window = {
     requestAnimationFrame: (callback: Listener) => frames.push(callback),
     setTimeout: (callback: Listener, delay: number) => timers.push({ callback, delay }),
+    PerformanceObserver: paintSupport === "none" ? undefined : FakePaintObserver,
+    performance: { getEntriesByType: () => paints },
   };
   return {
     run: (source: string) => new Function("document", "window", source)(document, window),
     inserted,
     frames,
     timers,
+    observers,
+    paint: (name = "first-contentful-paint") => {
+      const entry = { name };
+      paints.push(entry);
+      observers.filter((observer) => !observer.disconnected).forEach((observer) =>
+        observer.callback({ getEntries: () => [entry] }));
+    },
     selector: () => selector,
     listenerCount: (type: string) => documentListeners[type]?.length ?? 0,
     fire: (type: string) => documentListeners[type]?.forEach((listener) => listener()),
@@ -165,6 +191,72 @@ test("a failed hero image or a parsed document does not hold hydration back", as
   assert.equal(page.inserted.length, 2);
 });
 
+test("frame callbacks before first contentful paint cannot start the bulk client", async () => {
+  const hero = new FakeImage(true);
+  const page = fakePage({ readyState: "interactive", images: [hero], paintSupport: "supported" });
+  page.run(source);
+  await settle();
+  page.nextFrame();
+  page.nextFrame();
+  assert.equal(hero.decoded, true);
+  assert.equal(page.inserted.length, 0, "Two animation frames do not prove content reached the screen");
+  assert.deepEqual(page.observers[0].options, { type: "paint", buffered: true });
+  page.paint("first-paint");
+  assert.equal(page.inserted.length, 0, "A blank first paint must not release hydration");
+  page.paint();
+  assert.equal(page.inserted.length, 2);
+  assert.equal(page.observers[0].disconnected, true);
+  assert.equal(page.listenerCount("focusin"), 0);
+  page.timers[0].callback();
+  assert.equal(page.inserted.length, 2);
+});
+
+test("an existing contentful paint still waits for the real hero image to decode", async () => {
+  const hero = new FakeImage(false);
+  const page = fakePage({ readyState: "interactive", images: [hero], paintSupport: "supported", painted: true });
+  page.run(source);
+  await settle();
+  assert.equal(page.inserted.length, 0);
+  assert.equal(page.frames.length, 0);
+  hero.emit("load");
+  await settle();
+  page.nextFrame();
+  page.nextFrame();
+  assert.equal(hero.decoded, true);
+  assert.equal(page.inserted.length, 2);
+  assert.equal(page.observers.length, 0, "A recorded paint needs no extra observer");
+});
+
+for (const wake of ["pointerdown", "keydown", "focusin", "fallback"]) {
+  test(`${wake} bypasses a pending paint observer and releases it`, async () => {
+    const page = fakePage({ readyState: "interactive", paintSupport: "supported" });
+    page.run(source);
+    await settle();
+    page.nextFrame();
+    page.nextFrame();
+    assert.equal(page.inserted.length, 0);
+    if (wake === "fallback") page.timers[0].callback();
+    else page.fire(wake);
+    assert.equal(page.inserted.length, 2);
+    assert.equal(page.observers[0].disconnected, true);
+    page.paint();
+    assert.equal(page.inserted.length, 2);
+  });
+}
+
+for (const paintSupport of ["unsupported", "throws"]) {
+  test(`${paintSupport} paint observation retains the decoded image and two-frame fallback`, async () => {
+    const page = fakePage({ readyState: "interactive", paintSupport });
+    page.run(source);
+    await settle();
+    page.nextFrame();
+    assert.equal(page.inserted.length, 0);
+    page.nextFrame();
+    assert.equal(page.inserted.length, 2);
+    if (paintSupport === "throws") assert.equal(page.observers[0].disconnected, true);
+  });
+}
+
 test("the fallback timer hydrates when frames never run", () => {
   const page = fakePage({ images: [new FakeImage(false)] });
   page.run(source);
@@ -181,6 +273,7 @@ for (const intent of ["pointerdown", "keydown", "focusin"]) {
     page.fire(intent);
     assert.equal(page.inserted.length, 2, "Interaction intent should start the client immediately.");
     assert.equal(hero.decoded, false, "The unfinished image must not delay interaction readiness.");
+    assert.equal(page.listenerCount("DOMContentLoaded"), 0);
     for (const event of ["pointerdown", "keydown", "focusin"]) {
       assert.equal(page.listenerCount(event), 0, "Release every intent listener once loading starts.");
       page.fire(event);
