@@ -230,6 +230,69 @@ def fixture_cli(name):
 
 
 class DeployClientTests(unittest.TestCase):
+    def test_explicit_oauth_modes_preserve_artifact_and_partial_secret_guards(self):
+        repo = Path(__file__).resolve().parent.parent
+        # The "disabled" source selects a secret-free CI artifact. It must not
+        # relax partial-secret, artifact-integrity or explicit-mode requirements.
+        cases = [
+            ("disabled", "", "", False, True),
+            ("", "", "", False, False),
+            ("unknown", "", "", False, False),
+            ("disabled", "", "", True, False),
+        ]
+        for mode in ("runtime", "disabled"):
+            cases.extend([
+                (mode, "fixture-client-only", "", False, False),
+                (mode, "", "fixture-secret-only", False, False),
+            ])
+        for provider, (mode, client_id, client_secret, corrupt, succeeds) in itertools.product(
+                ("gitlab", "github"), cases):
+            with self.subTest(provider=provider, mode=mode, partial=bool(client_id or client_secret),
+                              corrupt=corrupt), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                os.symlink(repo / "scripts", root / "scripts")
+                os.symlink(repo / "ops", root / "ops")
+                (root / "bin").mkdir()
+                (root / "incoming").mkdir()
+                (root / "current").symlink_to(root / "releases" / PREVIOUS)
+                for name in ("ssh", "git", "node"):
+                    (root / "bin" / name).symlink_to(Path(__file__).resolve())
+                (root / "dummy-key").write_text("test-only")
+                (root / "dummy-pins").write_text("test-only")
+                (root / "website-release.tgz").write_bytes(DATA + (b"corrupt" if corrupt else b""))
+                (root / "website-release.tgz.sha256").write_text(DIGEST + "  website-release.tgz\n")
+                env = {
+                    "CI_COMMIT_SHA": RELEASE, "CI_PROJECT_DIR": tmp,
+                    "PATH": str(root / "bin") + ":" + os.defpath, "FIXTURE": tmp, "TMPDIR": tmp,
+                    "SCENARIO": "success", "HOSTINGER_SSH_HOST": "fixture.invalid",
+                    "HOSTINGER_SSH_USER": "white-gloss-ci", "HOSTINGER_GOOGLE_OAUTH_SOURCE": mode,
+                    "HOSTINGER_SSH_PRIVATE_KEY": str(root / "dummy-key"), "PYTHONDONTWRITEBYTECODE": "1",
+                    "HOSTINGER_SSH_KNOWN_HOSTS": str(root / "dummy-pins"),
+                    "GOOGLE_CLIENT_ID": client_id, "GOOGLE_CLIENT_SECRET": client_secret,
+                }
+                if provider == "github":
+                    env.update(GITHUB_WORKSPACE=tmp, GITHUB_EVENT_NAME="workflow_run", RELEASE_ID=RELEASE)
+                    script = ["bash", "scripts/deploy-guarded-hostinger.sh", "github"]
+                else:
+                    script = ["bash", "scripts/deploy-gitlab-hostinger.sh"]
+                result = subprocess.run(script, cwd=root, env=env, capture_output=True, text=True)
+                self.assertEqual(result.returncode == 0, succeeds, result.stderr)
+                self.assertEqual((root / "current").readlink().name, RELEASE if succeeds else PREVIOUS)
+                self.assertEqual(list((root / "incoming").iterdir()), [])
+                steps = (root / "steps").read_text().splitlines()
+                if succeeds:
+                    self.assertIn(f"upload {RELEASE} {DIGEST}", steps)
+                    self.assertIn(f"activate {RELEASE} {PREVIOUS} {DIGEST}", steps)
+                    self.assertIn("scripts/smoke-production.mjs", steps)
+                else:
+                    self.assertFalse(any(step.startswith(("upload ", "activate ")) for step in steps))
+                    self.assertNotIn("scripts/smoke-production.mjs", steps)
+                for credential in (client_id, client_secret):
+                    if credential:
+                        self.assertNotIn(credential, result.stdout + result.stderr)
+                if client_id or client_secret:
+                    self.assertIn("Unvollständige Google-OAuth-Konfiguration", result.stderr)
+
     def test_verified_client_transfer_and_conditional_rollback(self):
         repo = Path(__file__).resolve().parent.parent
         # Expected live pointer, public smoke calls and conditional recovery calls.

@@ -143,10 +143,13 @@ if [[ -n ${GOOGLE_CLIENT_ID:-} || -n ${GOOGLE_CLIENT_SECRET:-} ]]; then
     runuser -u node -- tar -czf - -C "$build" .output >"$archive"
   )
 else
-  # Existing production may rely on the embedded server-side secret. The operator can
-  # explicitly select a previously verified runtime configuration in that case.
-  [[ ${HOSTINGER_GOOGLE_OAUTH_SOURCE:-} == runtime ]] ||
-    die 'Geschütztes OAuth-Buildpaar fehlt. Für bestätigte Laufzeitvariablen HOSTINGER_GOOGLE_OAUTH_SOURCE=runtime setzen.'
+  # Reuse the verified artifact only for an explicitly selected credential source.
+  # "disabled" permits no embedded pair; it never changes the server environment
+  # or disables a provider configured there. Partial CI pairs still fail above.
+  case ${HOSTINGER_GOOGLE_OAUTH_SOURCE:-} in
+    runtime|disabled) ;;
+    *) die 'Geschütztes OAuth-Buildpaar fehlt. Für bestätigte Laufzeitvariablen HOSTINGER_GOOGLE_OAUTH_SOURCE=runtime setzen; ohne benötigtes eingebettetes Google-OAuth-Paar ausdrücklich disabled wählen.' ;;
+  esac
   sha256sum -c website-release.tgz.sha256
   cp -- website-release.tgz "$archive"
 fi
