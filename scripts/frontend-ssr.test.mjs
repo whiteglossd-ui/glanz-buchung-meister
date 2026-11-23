@@ -32,7 +32,7 @@ function executableInlineScripts(html) {
 
 test("production SSR nonces match streamed scripts on successful and 404 documents", async () => {
   const nonces = new Set();
-  for (const path of ["/", "/", "/preise", "/leistungen/nicht-vorhanden"]) {
+  for (const path of ["/", "/", "/freudenstadt-lossburg", "/preise", "/leistungen/nicht-vorhanden"]) {
     const { response, html } = await get(path, { "x-forwarded-host": "white-gloss.de" });
     assert.equal(response.status, path.includes("nicht-vorhanden") ? 404 : 200);
     assert.equal(response.headers.get("cross-origin-opener-policy"), "same-origin");
@@ -213,13 +213,31 @@ test("Node serves compressed build assets and revalidates mutable media", async 
     .map((value) => value.tsrStartManifest))];
   assert.equal(manifestFactories.length, 1);
   const manifest = manifestFactories[0]();
-  assert.equal(manifest.routes["/"].css.length, 1);
-  const homeCss = manifest.routes["/"].css[0];
-  const homeCssHref = typeof homeCss === "string" ? homeCss : homeCss.href;
-  const homeCssSource = manifest.inlineCss.styles[homeCssHref];
-  assert.ok(homeCssSource && homeCssSource.includes(".scroll-film{"));
+  const homePaths = ["/", "/freudenstadt-lossburg"];
+  const routeStyles = Object.fromEntries(homePaths.map((path) => {
+    const css = manifest.routes[path]?.css;
+    assert.ok(css?.length, `${path} must retain its complete route stylesheet inventory`);
+    const hrefs = css.map((asset) => typeof asset === "string" ? asset : asset.href);
+    assert.equal(hrefs.length, new Set(hrefs).size, `${path} cannot apply duplicate route styles`);
+    return [path, hrefs.map((href) => {
+      const source = manifest.inlineCss.styles[href];
+      assert.ok(source, `${path}: ${href} must be available for no-JavaScript rendering`);
+      const file = stylesheets.find(({ name }) => href === `/assets/${name}`);
+      assert.ok(file, `${path}: ${href} must identify a real built stylesheet`);
+      assert.equal(source.trim(), file.source.trim(), `${path}: the inline source must contain the complete built stylesheet`);
+      return { href, source };
+    })];
+  }));
+  assert.deepEqual(routeStyles[homePaths[0]], routeStyles[homePaths[1]],
+    "Both home variants must share the same complete CSS in the same cascade order");
+  const heroStyles = routeStyles["/"].filter(({ source }) => source.includes(".scroll-film{"));
+  const railStyles = routeStyles["/"].filter(({ source }) => source.includes(".wg-media-rail{"));
+  assert.equal(heroStyles.length, 1, "The shared hero must have one identifiable stylesheet");
+  assert.equal(railStyles.length, 1, "The shared swipe rail must have one identifiable stylesheet");
+  const homeCssHref = heroStyles[0].href;
   for (const path of [
     "/",
+    "/freudenstadt-lossburg",
     "/preise",
     "/leistungen/keramikversiegelung",
     "/leistungen/keramikversiegelung/nagold",
@@ -251,12 +269,18 @@ test("Node serves compressed build assets and revalidates mutable media", async 
       `${path} must not duplicate the external desktop stylesheet inline`);
     const earlyStylePreloads = [...head.matchAll(/<link\b(?=[^>]*rel="preload")(?=[^>]*as="style")[^>]*>/g)]
       .map(([tag]) => tag);
-    assert.equal(earlyStylePreloads.length, path === "/" ? 1 : 0,
-      `${path} prepares only the existing homepage CSS without another applied stylesheet`);
-    if (path === "/") {
-      assert.ok(inlineCss.includes(homeCssSource), "The exact complete homepage CSS remains inline");
-      assert.ok(inlineCss.indexOf(globals[0].source.trim()) < inlineCss.indexOf(homeCssSource),
-        "The homepage CSS must keep its existing place after the global inline cascade");
+    const home = homePaths.includes(path);
+    assert.equal(earlyStylePreloads.length, home ? 1 : 0,
+      `${path} prepares only the hero CSS without another applied stylesheet`);
+    if (home) {
+      let previous = inlineCss.indexOf(globals[0].source.trim());
+      for (const { href, source } of routeStyles[path]) {
+        const position = inlineCss.indexOf(source);
+        assert.ok(position >= 0, `${path}: the exact complete ${href} remains inline`);
+        assert.ok(position > previous,
+          `${path}: every route stylesheet follows global CSS in manifest cascade order`);
+        previous = position;
+      }
       assert.equal(earlyStylePreloads[0].match(/href="([^"]+)"/)?.[1], homeCssHref);
       assert.equal(earlyStylePreloads[0].match(/fetchpriority="([^"]+)"/i)?.[1], "high");
       assert.equal(earlyStylePreloads[0].match(/crossorigin="([^"]+)"/i)?.[1], "anonymous",
@@ -267,13 +291,15 @@ test("Node serves compressed build assets and revalidates mutable media", async 
     }
     const earlyModulePreloads = [...head.matchAll(/<link\b[^>]*rel="modulepreload"[^>]*>/g)]
       .map(([tag]) => tag);
-    assert.equal(earlyModulePreloads.length, path === "/" ? 1 : 0,
+    assert.equal(earlyModulePreloads.length, home ? 1 : 0,
       `${path} prepares only the small homepage route before first paint`);
     const routeHint = earlyModulePreloads.find((tag) => /fetchpriority="high"/i.test(tag));
     const earlyRoutePreload = routeHint?.match(/href="([^"]+)"/)?.[1];
-    if (path === "/") {
+    if (home) {
       assert.ok(earlyRoutePreload, "The small homepage route remains prepared");
       assert.match(earlyRoutePreload, /^\/assets\/[\w.-]+\.js$/);
+      assert.equal(earlyRoutePreload, manifest.routes[path].preloads[0],
+        `${path} prepares its own route module, not the other location's route`);
     }
     assert.doesNotMatch(
       html,

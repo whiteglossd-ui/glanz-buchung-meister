@@ -2,22 +2,19 @@
 
 import { Asset, useRouter, useTags } from "@tanstack/react-router";
 import { createIsomorphicFn } from "@tanstack/react-start";
-import { getAssetCrossOrigin, resolveManifestCssLink, type AssetCrossOriginConfig } from "@tanstack/router-core";
+import { getAssetCrossOrigin, type AssetCrossOriginConfig } from "@tanstack/router-core";
 import { isServer } from "@tanstack/router-core/isServer";
 import { tsrStartManifest } from "tanstack-start-manifest:v";
-import { isModulePreload, prioritizeImagePreloads } from "@/lib/deferred-bootstrap";
+import { isHomepageRoute, isModulePreload, prioritizeImagePreloads, selectHomepageCssPreload } from "@/lib/deferred-bootstrap";
 
 // Start strips inlined stylesheets from its rendered manifest. Read the build
 // manifest only on the server to prepare the same client asset without applying it.
 const homepageCssPreload = createIsomorphicFn()
-  .server(() => {
+  .server((pathname: string) => {
     const manifest = tsrStartManifest();
-    const stylesheet = manifest.routes["/"]?.css?.[0];
-    if (!stylesheet) return undefined;
-    const link = resolveManifestCssLink(stylesheet);
-    return manifest.inlineCss?.styles[link.href] === undefined ? undefined : link;
+    return selectHomepageCssPreload(manifest.routes[pathname]?.css, manifest.inlineCss?.styles);
   })
-  .client(() => undefined);
+  .client((_pathname: string) => undefined);
 
 export interface PrioritizedHeadContentProps {
   assetCrossOrigin?: AssetCrossOriginConfig;
@@ -37,10 +34,12 @@ export function PrioritizedHeadContent(props: PrioritizedHeadContentProps) {
   const router = useRouter();
   const nonce = router.options.ssr?.nonce;
   const server = isServer ?? router.isServer;
-  const earlyRoutePreload = router.state.location.pathname === "/"
-    ? router.ssr?.manifest?.routes["/"]?.preloads?.[0]
+  const pathname = router.state.location.pathname;
+  const home = isHomepageRoute(pathname);
+  const earlyRoutePreload = home
+    ? router.ssr?.manifest?.routes[pathname]?.preloads?.[0]
     : undefined;
-  const earlyCssPreload = router.state.location.pathname === "/" ? homepageCssPreload() : undefined;
+  const earlyCssPreload = home ? homepageCssPreload(pathname) : undefined;
 
   return (
     <>

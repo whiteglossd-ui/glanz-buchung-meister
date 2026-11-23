@@ -7,7 +7,37 @@ import {
   deferredBootstrapSource,
   isModuleEntry,
   isModulePreload,
+  isHomepageRoute,
+  selectHomepageCssPreload,
 } from "./deferred-bootstrap.ts";
+
+test("both shared homepage routes receive early hints without extending them to unrelated pages", () => {
+  assert.equal(isHomepageRoute("/"), true);
+  assert.equal(isHomepageRoute("/freudenstadt-lossburg"), true);
+  for (const path of ["/preise", "/abholservice/lossburg", "/freudenstadt-lossburg-extra"]) {
+    assert.equal(isHomepageRoute(path), false);
+  }
+});
+
+test("the hero style hint follows CSS content instead of the first shared chunk", () => {
+  const hero = { href: "/assets/home-abc.css", crossOrigin: "anonymous" as const };
+  const styles = {
+    "/assets/media-def.css": ".wg-media-rail{display:flex}",
+    [hero.href]: ".home-booking{display:grid}.scroll-film{position:relative}",
+  };
+  assert.equal(selectHomepageCssPreload(["/assets/media-def.css", hero], styles), hero);
+  assert.equal(selectHomepageCssPreload([hero, "/assets/media-def.css"], styles), hero);
+  assert.deepEqual(selectHomepageCssPreload([hero.href], styles), { href: hero.href, crossOrigin: undefined });
+});
+
+test("missing or ambiguous hero CSS does not preload an unrelated stylesheet", () => {
+  assert.equal(selectHomepageCssPreload(undefined, undefined), undefined);
+  assert.equal(selectHomepageCssPreload(["/rail.css"], { "/rail.css": ".wg-media-rail{display:flex}" }), undefined);
+  assert.equal(selectHomepageCssPreload(["/hero.css"], {}), undefined);
+  assert.equal(selectHomepageCssPreload(["/one.css", "/two.css"], {
+    "/one.css": ".scroll-film{color:red}", "/two.css": ".scroll-film{color:blue}",
+  }), undefined);
+});
 
 type Listener = () => void;
 

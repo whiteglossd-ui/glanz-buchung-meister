@@ -1,7 +1,24 @@
-import type { RouterManagedTag } from "@tanstack/router-core";
+import type { ManifestCssLink, RouterManagedTag } from "@tanstack/router-core";
 
 /** Hydration starts at the latest this long after the bootstrap ran. */
 export const DEFERRED_BOOTSTRAP_FALLBACK_MS = 3000;
+
+export function isHomepageRoute(pathname: string) {
+  return pathname === "/" || pathname === "/freudenstadt-lossburg";
+}
+
+/** A shared media chunk can precede the hero stylesheet in the route manifest.
+ * Prepare only the unique stylesheet containing the hero, never a guessed
+ * filename or unrelated first chunk. All route styles still render inline. */
+export function selectHomepageCssPreload(
+  assets: readonly ManifestCssLink[] | undefined,
+  styles: Record<string, string> | undefined,
+) {
+  const candidates = (assets ?? [])
+    .map((asset) => typeof asset === "string" ? { href: asset, crossOrigin: undefined } : asset)
+    .filter((asset) => styles?.[asset.href]?.includes(".scroll-film{"));
+  return candidates.length === 1 ? candidates[0] : undefined;
+}
 
 /** Discover responsive hero images before fonts compete for the first connection. */
 export function prioritizeImagePreloads(tags: RouterManagedTag[]): RouterManagedTag[] {

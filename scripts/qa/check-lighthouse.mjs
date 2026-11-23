@@ -183,9 +183,15 @@ try {
     "The early homepage hint must not select the bulk root entry");
   const routeSource = await readFile(resolve(".output/public" + expectedRoutePath));
   summary.routePreloadAsset = { path: expectedRoutePath, bytes: routeSource.length };
-  assert.equal(homeRoute.css.length, 1, "The current homepage has one existing client stylesheet");
-  const homeStylesheet = homeRoute.css[0];
-  const expectedStylePath = typeof homeStylesheet === "string" ? homeStylesheet : homeStylesheet.href;
+  const homeStylesheets = homeRoute.css.map((stylesheet) => {
+    const href = typeof stylesheet === "string" ? stylesheet : stylesheet.href;
+    const source = buildManifest.inlineCss.styles[href];
+    assert.ok(source, `The homepage stylesheet ${href} must remain complete and inline`);
+    return { href, source };
+  });
+  const heroStylesheets = homeStylesheets.filter(({ source }) => source.includes(".scroll-film{"));
+  assert.equal(heroStylesheets.length, 1, "Only the complete hero stylesheet receives the early style hint");
+  const expectedStylePath = heroStylesheets[0].href;
   assert.match(expectedStylePath, /^\/assets\/[\w.-]+\.css$/);
   const styleSource = await readFile(resolve(".output/public" + expectedStylePath));
   assert.equal(buildManifest.inlineCss.styles[expectedStylePath], styleSource.toString("utf8").trimEnd(),

@@ -3,7 +3,7 @@
 import { Asset, Scripts, useRouter, useTags } from "@tanstack/react-router";
 import { _getAssetMatches, type RouterManagedTag } from "@tanstack/router-core";
 import { isServer } from "@tanstack/router-core/isServer";
-import { deferredBootstrapSource, isModuleEntry, isModulePreload } from "@/lib/deferred-bootstrap";
+import { deferredBootstrapSource, isHomepageRoute, isModuleEntry, isModulePreload } from "@/lib/deferred-bootstrap";
 
 type ScriptAsset = RouterManagedTag & { preventScriptHoist?: boolean };
 
@@ -17,8 +17,10 @@ type ScriptAsset = RouterManagedTag & { preventScriptHoist?: boolean };
 function ServerDeferredScripts() {
   const router = useRouter();
   const nonce = router.options.ssr?.nonce;
-  const earlyRoutePreload = router.state.location.pathname === "/"
-    ? router.ssr?.manifest?.routes["/"]?.preloads?.[0]
+  const pathname = router.state.location.pathname;
+  const home = isHomepageRoute(pathname);
+  const earlyRoutePreload = home
+    ? router.ssr?.manifest?.routes[pathname]?.preloads?.[0]
     : undefined;
   const preloads = useTags()
     .filter(isModulePreload)
@@ -54,7 +56,7 @@ function ServerDeferredScripts() {
       tag: "script",
       attrs: { nonce },
       children: deferredBootstrapSource(entries, [...new Set(preloads)].filter(
-        (href) => router.state.location.pathname !== "/" || !entries.includes(href),
+        (href) => !home || !entries.includes(href),
       )),
     });
   }
