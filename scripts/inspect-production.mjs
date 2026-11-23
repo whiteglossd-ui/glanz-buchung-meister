@@ -38,6 +38,7 @@ export const expectedMigrations = [
   "0024_qonto_webhook.sql",
   "0025_website_studio.sql",
   "0026_panel_intake.sql",
+  "0027_panel_catalog.sql",
 ];
 const tables = [
   "_migrations",
