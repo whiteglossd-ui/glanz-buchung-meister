@@ -146,21 +146,21 @@ body[data-nav="open"] [data-shell="public"] .site-header,
 
 [data-shell="public"] .scroll-film-shade,
 [data-shell="public"] .group > .absolute.inset-0.bg-gradient-to-t,
-.concierge-frame::after,
 .film-menu .film-menu-visual::after {
   background: var(--flyer-vignette);
 }
 
-[data-shell="public"] .concierge-frame::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
+/* Fade the backdrop itself so scrolling reflections still paint above the photo. */
+[data-shell="public"] .concierge-media {
+  background: var(--color-bg);
+}
+
+[data-shell="public"] .concierge-media-backdrop {
+  -webkit-mask-image: radial-gradient(ellipse at 58% 38%, rgb(0 0 0 / 0.28), transparent 88%);
+  mask-image: radial-gradient(ellipse at 58% 38%, rgb(0 0 0 / 0.28), transparent 88%);
 }
 
 [data-shell="public"] .concierge-media-sharp {
-  z-index: 1;
   border-color: var(--flyer-card-edge);
 }
 
