@@ -190,40 +190,11 @@
 
 /* Scroll story for the three service photographs; the hero is untouched. */
 @media (min-width: 960px) and (prefers-reduced-motion: no-preference) {
-  /* GSAP wraps the pinned header. Keep its original direct-child typography. */
-  [data-shell="public"] .concierge-service[data-concierge-motion="cinema"] > .pin-spacer {
-    min-width: 0;
-  }
-
-  [data-shell="public"] .concierge-service[data-concierge-motion="cinema"] > .pin-spacer > header {
-    min-width: 0;
-  }
-
-  [data-shell="public"] .concierge-service[data-concierge-motion="cinema"] > .pin-spacer > header .heading-2 {
-    max-width: 20ch;
-    margin-top: 1.25rem;
-    font-size: clamp(2.4rem, 3.6vw, 4rem);
-    line-height: 1.06;
-    letter-spacing: -0.025em;
-  }
-
-  [data-shell="public"] .concierge-service[data-concierge-motion="cinema"] > .pin-spacer > header > p:not(.kicker) {
-    max-width: 46ch;
-    margin-top: 1.25rem;
-    color: var(--color-muted);
-    font-size: 0.9375rem;
-    line-height: 1.7;
-  }
-
-  [data-shell="public"] .concierge-service[data-concierge-motion="cinema"] > .pin-spacer > header > .concierge-area {
-    font-size: 0.8125rem;
-  }
-
-  .concierge-service[data-concierge-motion="cinema"] .concierge-media {
+  .concierge-service[data-concierge-cinema="true"] .concierge-media {
     perspective: 1200px;
   }
 
-  .concierge-service[data-concierge-motion="cinema"] .concierge-frame {
+  .concierge-service[data-concierge-cinema="true"] .concierge-frame {
     display: block;
     transition: none;
     transform-style: preserve-3d;
@@ -231,7 +202,7 @@
     will-change: transform, opacity, clip-path;
   }
 
-  .concierge-service[data-concierge-motion="cinema"] .concierge-sheen {
+  .concierge-service[data-concierge-cinema="true"] .concierge-sheen {
     position: absolute;
     inset: -20% 10%;
     width: 75%;
