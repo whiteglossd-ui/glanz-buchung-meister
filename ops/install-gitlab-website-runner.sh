@@ -16,6 +16,7 @@ mode=${2:-}
 account=wg-gitlab-web
 runner_home=/var/lib/$account
 url=https://gitlab-p1va.srv2077393.hstgr.cloud
+gitlab_mapping=${url#https://}:host-gateway
 service=white-gloss-gitlab-runner.service
 directory=/opt/white-gloss-gitlab-runner
 version=19.6.0
@@ -127,6 +128,7 @@ if ! as_runner test -s "$config"; then
     exec "$@"' sh "$bin" register --non-interactive --config "$to_verify" --url "$url" \
       --name white-gloss-website --executor docker --limit 1 --docker-host "unix://$socket" \
       --docker-image node:24-bookworm --docker-disable-cache --docker-pull-policy always \
+      --docker-extra-hosts "$gitlab_mapping" \
       --docker-allowed-pull-policies always --docker-services-limit 1 \
       --docker-shm-size 536870912 --docker-memory 4g --docker-cpus 2 \
       --docker-service-memory 768m --docker-service-cpus 1 \
@@ -138,10 +140,14 @@ if ! as_runner test -s "$config"; then
 fi
 
 # Both an initial install and a rerun must match the exact per-project runner.
-as_runner python3 -I - "$to_verify" "$url" "$socket" "$expected_id" <<'PY'
-import sys, tomllib
-with open(sys.argv[1], "rb") as handle:
-    conf = tomllib.load(handle)
+as_runner python3 -I - "$to_verify" "$url" "$socket" "$expected_id" "$gitlab_mapping" <<'PY'
+import os, re, sys, tempfile, tomllib
+from pathlib import Path
+
+path = Path(sys.argv[1])
+original = path.read_bytes()
+source = original.decode()
+conf = tomllib.loads(source)
 runners = conf.get("runners", [])
 if len(runners) != 1:
     raise SystemExit("Erwartet wurde genau ein Website-Runner.")
@@ -154,6 +160,39 @@ if not (r.get("id") == int(sys.argv[4]) and r.get("url", "").rstrip("/") == sys.
         and d.get("disable_cache") and d.get("allowed_services") == ["postgres:16"]
         and d.get("allowed_images") == ["node:24-bookworm", "mcr.microsoft.com/playwright:v1.62.1-noble@sha256:dcc5531e97840b9b5e794f2814476b21571c5124a3fca2267d73041f56e7580e"]):
     raise SystemExit("Vorhandene Runner-Zuordnung oder Docker-Isolierung abweichend. Dienst wurde nicht gestartet.")
+
+mapping = sys.argv[5]
+host, target = mapping.split(":")
+entries = d.get("extra_hosts", [])
+matched = False
+for entry in entries:
+    names, addr = re.split("[:=]", entry, maxsplit=1)
+    if host in (name.lower().rstrip(".") for name in names.split(";")):
+        if addr != target:
+            raise SystemExit("Die vorhandene Zuordnung des GitLab-Hosts weicht ab.")
+        matched = True
+if not matched:
+    if "extra_hosts" in d:
+        pattern = r"(?m)^([ \t]*extra_hosts[ \t]*=[ \t]*\[)"
+        replacement = rf'\g<1>"{mapping}", '
+    else:
+        pattern = r"(?m)^([ \t]*\[runners\.docker\][^\n]*$)"
+        replacement = rf'\g<1>\n    extra_hosts = ["{mapping}"]'
+    updated, count = re.subn(pattern, replacement, source)
+    d["extra_hosts"] = [mapping, *entries]
+    if count != 1 or tomllib.loads(updated) != conf:
+        raise SystemExit("Die Zuordnung kann im vorhandenen TOML nicht eindeutig ergänzt werden.")
+    with tempfile.NamedTemporaryFile(dir=path.parent, delete=False) as f:
+        tmp = Path(f.name)
+        try:
+            f.write(updated.encode())
+            f.flush()
+            os.fsync(f.fileno())
+            if path.read_bytes() != original:
+                raise SystemExit("Die Runner-Konfiguration wurde zwischenzeitlich geändert. Erneut ausführen.")
+            tmp.replace(path)
+        finally:
+            tmp.unlink(missing_ok=True)
 PY
 as_runner chmod 0600 "$to_verify"
 as_runner "$bin" verify --config "$to_verify" >/dev/null 2>&1 || die 'Registrierung ist bei GitLab nicht gültig.'

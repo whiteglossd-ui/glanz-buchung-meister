@@ -22,7 +22,7 @@ TAG = "white-gloss-website"
 CLIENT = "485264dd1182da48fc9801896053d8f99a933fc8ca10b0b4d08157cafae85375"
 SCOPES = "api create_runner manage_runner"
 LOCAL = Path("/var/lib/white-gloss-gitlab-bootstrap")
-INSTALL_SHA = "79a1d7755de3a3fb3fdae2dec870eca0f54250639ca5ae248b405733168959d7"
+INSTALL_SHA = "e762244625de0fc048825b02858b9174d7f85d8df316bf39486a6e09072430e6"
 
 
 class Stop(RuntimeError):
