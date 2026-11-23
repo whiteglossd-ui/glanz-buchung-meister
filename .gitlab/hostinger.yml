@@ -20,21 +20,9 @@ hostinger-production:
     - job: cross-browser
       artifacts: false
   rules:
-    - if: '$CI_SERVER_HOST == "gitlab-p1va.srv2077393.hstgr.cloud" && $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "main" && $CI_COMMIT_REF_PROTECTED == "true" && $HOSTINGER_DEPLOY_ENABLED == "true" && $WEBSITE_ISOLATED_FLOWTESTS_ENABLED == "true" && $WHITE_GLOSS_GITLAB_PROJECT_ID == $CI_PROJECT_ID'
-      when: manual
-      # An unused production button must not block the regular main CI.
-      allow_failure: true
-  manual_confirmation: "Diesen geprüften Stand auf white-gloss.de veröffentlichen?"
-  inputs:
-    release_sha:
-      default: PENDING
-      regex: '^(PENDING|[0-9a-f]{40})$'
-      description: Freigegebener vollständiger main-Commit
-    expected_current_release:
-      default: PENDING
-      regex: '^(PENDING|[0-9a-f]{40})$'
-      description: Bestätigter aktiver Website-Commit auf Hostinger
-  # SSH key and known_hosts are protected file variables scoped to production.
-  # Enable HOSTINGER_DEPLOY_ENABLED only after the credential and runtime checks.
+    - if: '$CI_SERVER_HOST == "gitlab-p1va.srv2077393.hstgr.cloud" && $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "main" && $CI_COMMIT_REF_PROTECTED == "true"'
+      when: on_success
+  allow_failure: false
+  # Only this job receives the protected production-scoped SSH file variables.
   script:
-    - bash scripts/deploy-gitlab-hostinger.sh '${{ job.inputs.release_sha }}' '${{ job.inputs.expected_current_release }}'
+    - bash scripts/deploy-gitlab-hostinger.sh

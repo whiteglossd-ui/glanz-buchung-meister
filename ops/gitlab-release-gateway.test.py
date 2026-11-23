@@ -18,6 +18,7 @@ gw = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(gw)
 RELEASE = "a" * 40
 PREVIOUS = "b" * 40
+OTHER = "c" * 40
 DATA = b"artifact" * 20000
 DIGEST = hashlib.sha256(DATA).hexdigest()
 
@@ -163,18 +164,33 @@ def fixture_cli(name):
     root = Path(os.environ["FIXTURE"])
     gw.INCOMING, gw.CURRENT, gw.RELEASES = root / "incoming", root / "current", root / "releases"
     gw.HELPER, gw.UNIT = "scripts/deploy-ionos-release.sh", "ops/white-gloss.service"
+    scenario = os.environ["SCENARIO"]
+    steps = root / "steps"
+
+    def log(step):
+        with steps.open("a") as file:
+            print(step, file=file)
+
+    def move_active(sha):
+        gw.CURRENT.unlink()
+        gw.CURRENT.symlink_to(gw.RELEASES / sha)
+
     if name == "git":
-        assert sys.argv[1:] == ["rev-parse", "HEAD"]
+        assert sys.argv[1:] == ["-c", f"safe.directory={root}", "rev-parse", "HEAD"]
         print(RELEASE)
         return
     if name == "node":
-        with (root / "steps").open("a") as log:
-            print(sys.argv[1], file=log)
+        log(sys.argv[1])
         if sys.argv[1] == "scripts/deployment-approval-gitlab.mjs":
+            if scenario == "main-advanced" and steps.read_text().count(sys.argv[1]) == 2:
+                sys.exit(1)
             return
         assert sys.argv[1] == "scripts/smoke-production.mjs"
         assert os.environ["SMOKE_BASE_URL"] == "https://white-gloss.de"
-        if os.environ["SCENARIO"] == "smoke-failure" and gw.active() == RELEASE:
+        if scenario == "superseded":
+            move_active(OTHER)
+            sys.exit(1)
+        if scenario in ("smoke-failure", "active-unhealthy") and gw.active() == RELEASE:
             sys.exit(1)
         return
     args = sys.argv[1:]
@@ -183,20 +199,31 @@ def fixture_cli(name):
         return
     assert len(args) == 4 and args[2] == "production"
 
+    command = args[3]
+    log(command)
+    if command == "active" and scenario == "invalid-pointer":
+        print("invalid")
+        return
+    if command.startswith("activate ") and scenario == "stale-predecessor":
+        move_active(OTHER)
+
     def helper(action, *arguments):
         release = arguments[0]
         if action == "activate":
-            assert arguments == (RELEASE, str(gw.INCOMING / (RELEASE + ".tgz")), gw.active(), DIGEST)
+            if arguments[2] != gw.active():
+                raise gw.Refused("active predecessor changed")
+            assert arguments == (RELEASE, str(gw.INCOMING / (RELEASE + ".tgz")), PREVIOUS, DIGEST)
             assert (gw.INCOMING / (RELEASE + ".tgz")).read_bytes() == DATA
-            print(gw.active())
+            print(OTHER if scenario == "wrong-receipt" else gw.active())
         else:
             assert action == "rollback" and arguments == (PREVIOUS, gw.active())
-        gw.CURRENT.unlink()
-        gw.CURRENT.symlink_to(gw.RELEASES / release)
+        move_active(release)
+        if action == "activate" and scenario == "lost-receipt":
+            sys.exit(255)
 
     with mock.patch.object(gw, "checked_helper", helper), mock.patch.object(gw.subprocess, "run") as rollback:
         rollback.return_value.stdout = (gw.active() + "\n").encode()
-        result = gw.dispatch(args[3], sys.stdin.buffer)
+        result = gw.dispatch(command, sys.stdin.buffer)
         if result is not None:
             print(result)
 
@@ -204,14 +231,27 @@ def fixture_cli(name):
 class DeployClientTests(unittest.TestCase):
     def test_verified_client_transfer_and_conditional_rollback(self):
         repo = Path(__file__).resolve().parent.parent
-        for scenario in ("success", "smoke-failure", "stale"):
+        # Expected live pointer, public smoke calls and conditional recovery calls.
+        scenarios = {
+            "success": (RELEASE, 1, 0),
+            "smoke-failure": (PREVIOUS, 2, 1),
+            "lost-receipt": (PREVIOUS, 1, 1),
+            "wrong-receipt": (PREVIOUS, 1, 1),
+            "stale-predecessor": (OTHER, 0, 0),
+            "superseded": (OTHER, 1, 0),
+            "main-advanced": (PREVIOUS, 0, 0),
+            "invalid-pointer": (PREVIOUS, 0, 0),
+            "already-active": (RELEASE, 1, 0),
+            "active-unhealthy": (RELEASE, 1, 0),
+        }
+        for scenario, (final, smokes, rollbacks) in scenarios.items():
             with self.subTest(scenario), tempfile.TemporaryDirectory() as tmp:
                 root = Path(tmp)
                 os.symlink(repo / "scripts", root / "scripts")
                 os.symlink(repo / "ops", root / "ops")
                 (root / "bin").mkdir()
                 (root / "incoming").mkdir()
-                original = "c" * 40 if scenario == "stale" else PREVIOUS
+                original = RELEASE if scenario in ("already-active", "active-unhealthy") else PREVIOUS
                 (root / "current").symlink_to(root / "releases" / original)
                 for name in ("ssh", "git", "node"):
                     (root / "bin" / name).symlink_to(Path(__file__).resolve())
@@ -219,19 +259,24 @@ class DeployClientTests(unittest.TestCase):
                 (root / "dummy-pins").write_text("test-only")
                 (root / "website-release.tgz").write_bytes(DATA)
                 (root / "website-release.tgz.sha256").write_text(DIGEST + "  website-release.tgz\n")
-                env = {"PATH": str(root / "bin") + ":" + os.defpath, "FIXTURE": tmp, "TMPDIR": tmp,
+                env = {"CI_COMMIT_SHA": RELEASE, "CI_PROJECT_DIR": tmp,
+                       "PATH": str(root / "bin") + ":" + os.defpath, "FIXTURE": tmp, "TMPDIR": tmp,
                        "SCENARIO": scenario, "HOSTINGER_SSH_HOST": "fixture.invalid",
                        "HOSTINGER_SSH_USER": "white-gloss-ci", "HOSTINGER_GOOGLE_OAUTH_SOURCE": "runtime",
                        "HOSTINGER_SSH_PRIVATE_KEY": str(root / "dummy-key"), "PYTHONDONTWRITEBYTECODE": "1",
                        "HOSTINGER_SSH_KNOWN_HOSTS": str(root / "dummy-pins")}
-                result = subprocess.run(["bash", "scripts/deploy-gitlab-hostinger.sh", RELEASE, PREVIOUS],
+                result = subprocess.run(["bash", "scripts/deploy-gitlab-hostinger.sh"],
                                         cwd=root, env=env, capture_output=True, text=True)
-                self.assertEqual(result.returncode == 0, scenario == "success", result.stderr)
-                self.assertEqual((root / "current").readlink().name, RELEASE if scenario == "success" else original)
+                self.assertEqual(result.returncode == 0, scenario in ("success", "already-active"), result.stderr)
+                self.assertEqual((root / "current").readlink().name, final)
                 self.assertEqual(list((root / "incoming").iterdir()), [])
                 steps = (root / "steps").read_text().splitlines()
                 self.assertEqual(steps.count("scripts/deployment-approval-gitlab.mjs"),
-                                 1 if scenario == "stale" else 2)
+                                 1 if scenario == "invalid-pointer" else 2)
+                self.assertEqual(steps.count("scripts/smoke-production.mjs"), smokes)
+                self.assertEqual(steps.count(f"rollback {PREVIOUS} {RELEASE}"), rollbacks)
+                if original == RELEASE or scenario == "invalid-pointer":
+                    self.assertFalse(any(s.startswith(("upload ", "activate ")) for s in steps))
 
 
 if __name__ == "__main__":
