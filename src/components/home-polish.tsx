@@ -114,8 +114,8 @@ export function HomePolish() {
           const timeline = gsap.timeline({
             scrollTrigger: {
               trigger: conciergeSteps[offset + 1],
-              start: "top 82%",
-              end: "top 58%",
+              start: "top 55%",
+              end: "top 52%",
               scrub: 0.7,
               invalidateOnRefresh: true,
             },
