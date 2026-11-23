@@ -1,5 +1,4 @@
 import { Fragment, useEffect, useRef, useState } from "react";
-import { Link } from "@tanstack/react-router";
 import { IconArrowRight } from "@/components/icons";
 import "./scroll-film-hero.css";
 
@@ -47,10 +46,12 @@ export function ScrollFilmHero({
   title,
   lead,
   heroImage,
+  locationLabel = "Horb am Neckar",
 }: {
   title?: string;
   lead?: string;
   heroImage?: StudioAsset;
+  locationLabel?: string;
 }) {
   const hasCustomHero = Boolean(heroImage);
   const sectionRef = useRef<HTMLElement>(null);
@@ -95,7 +96,7 @@ export function ScrollFilmHero({
     let distance = 1;
     let top = 0;
     let inView = false;
-    const directBooking = ["#buchung", "#rundum-anfrage"].includes(window.location.hash);
+    const directBooking = ["#buchung", "#termin", "#service", "#rundum-service", "#rundum-anfrage"].includes(window.location.hash);
     let started = false;
     let firstFrame = false;
     let releaseVideo: (() => void) | undefined;
@@ -108,6 +109,9 @@ export function ScrollFilmHero({
       !directBooking &&
       !reduce.matches &&
       !shortLandscape.matches &&
+      // Longer copy and larger text sizes use a reading layout instead of
+      // trapping the actions in a sticky stage taller than the viewport.
+      !(window.innerHeight && stage.offsetHeight > window.innerHeight) &&
       !connection?.saveData &&
       !["slow-2g", "2g", "3g"].includes(connection?.effectiveType ?? "") &&
       !(device.deviceMemory && device.deviceMemory <= 2) &&
@@ -261,7 +265,10 @@ export function ScrollFilmHero({
       }
     });
     observer.observe(section);
-    const resize = new ResizeObserver(measure);
+    const resize = new ResizeObserver(() => {
+      if (enabled !== allowed()) configure();
+      else measure();
+    });
     resize.observe(section);
     resize.observe(stage);
     poster.addEventListener("load", start);
@@ -309,7 +316,7 @@ export function ScrollFilmHero({
   return (
     <section
       ref={sectionRef}
-      className="scroll-film"
+      className="scroll-film scroll-film--personal"
       data-motion={hasCustomHero || motion === false ? "still" : "scroll"}
       aria-label="White-Gloss Detailing – bis ins Detail"
     >
@@ -356,30 +363,32 @@ export function ScrollFilmHero({
         <div ref={copyRef} className="scroll-film-copy">
           <div className="scroll-film-copy-inner">
             <p className="scroll-film-eyebrow">
-              Hol- und Bringservice · <span className="scroll-film-place">Horb am Neckar</span>
+              Hol- und Bringservice · <span className="scroll-film-place">{locationLabel}</span>
             </p>
             <HeroHeadline title={title} />
             <p className="scroll-film-service">{lead ?? homeCopy.lead}</p>
             <nav className="film-actions" aria-label="Aufbereitung planen">
-              <Link
+              <a
                 ref={ctaRef}
-                to="/"
-                hash="buchung"
-                hashScrollIntoView={{ block: "start", behavior: "instant" }}
+                href="#buchung"
                 className="scroll-film-cta"
                 onClick={focusBookingHeading}
               >
-                Termin anfragen <IconArrowRight className="size-4" aria-hidden />
-              </Link>
-              <Link to="/preise" className="scroll-film-prices">
-                Pakete &amp; Preise
-              </Link>
+                Jetzt Termin anfragen <IconArrowRight className="size-4" aria-hidden />
+              </a>
+              <a href="#ablauf" className="scroll-film-prices">
+                Hol- &amp; Bringservice entdecken
+              </a>
             </nav>
+            <div className="scroll-film-trust" data-stagger>
+              <p data-stagger-item>Dein Fahrzeug in guten Händen</p>
+              <span data-stagger-item>Persönliche Fahrzeugannahme · Ein fester Ansprechpartner · Transparente Festpreise</span>
+            </div>
           </div>
         </div>
         <div className="scroll-film-signature" aria-hidden="true">
           <p>Fahrzeugaufbereitung.</p>
-          <span>In Horb am Neckar.</span>
+          <span>In {locationLabel}.</span>
         </div>
         <div className="scroll-film-bottom">
           <a href="#nach-dem-film" className="scroll-film-skip">

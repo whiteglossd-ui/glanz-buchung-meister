@@ -1,3 +1,12 @@
+# Betreiberfreigabe: automatisch auf Hostinger veröffentlichen (23.11.2026)
+
+Beauftragte Websiteänderungen nach erfolgreichen Pflichtprüfungen über den
+bestehenden GitHub→Hostinger-Automatikweg veröffentlichen und den Release sowie
+die Live-Seiten prüfen. Dafür ist keine erneute Veröffentlichungsbestätigung
+nötig. `docs/deployment.md` beschreibt den aktuellen Weg. Fehlende Zugänge oder
+fehlgeschlagene Prüfungen konkret melden; eine Veröffentlichung nie behaupten,
+solange der Hostinger-Release nicht bestätigt ist. Keine CI-Sperren umgehen.
+
 # Betreiberregel: kein lokales Hosting (27.09.2026)
 
 Diese ausdrückliche Nutzerregel geht allen nachfolgenden älteren Scaffold-
@@ -7,7 +16,7 @@ Preview-, QA-, Docker-, Tunnel- oder statischer Ersatzserver; Sperren nicht
 umgehen, keine CI-Umgebung vortäuschen. Lokale Builds, Lint, Typprüfung und
 Tests ohne Website-Server sind erlaubt. Browserprüfungen erfolgen auf der
 veröffentlichten IONOS-Website ohne echte Kundenanfragen/Nachrichten/Uploads.
-Veröffentlichung nur über den bestehenden freigegebenen IONOS-Weg.
+Veröffentlichung über den oben freigegebenen Hostinger-Weg.
 Die vorhandenen isolierten Flowtests bleiben ausschließlich im Linux-GitHub-
 CI-Job zugelassen; sie dürfen nicht auf den lokalen Rechner verlagert werden.
 Eine Aufhebung erfordert eine ausdrückliche neue Betreiberanweisung.

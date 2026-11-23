@@ -22,6 +22,7 @@ const REQUEST_TIMEOUT_MS = Number(process.env.SMOKE_TIMEOUT_MS || 15000);
 
 const pageChecks = [
   { path: "/", markers: ["Fahrzeugaufbereitung", "White Gloss"] },
+  { path: "/freudenstadt-lossburg", markers: ["Loßburg", "Freudenstadt", "in Vorbereitung", "buchung"] },
   { path: "/preise", markers: ["Pakete", "Preise"] },
   { path: "/leistungen", markers: ["Leistungsspektrum", "Leistungen"] },
   { path: "/abholservice", markers: ["Hol", "Bringservice"] },

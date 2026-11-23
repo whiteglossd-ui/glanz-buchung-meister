@@ -36,6 +36,11 @@ export const seoIntents: Record<string, SearchIntent> = {
     intent: "local",
     purpose: "Betrieb in Horb finden und Termin anfragen",
   },
+  "/freudenstadt-lossburg": {
+    cluster: "werkstatt lossburg freudenstadt",
+    intent: "local",
+    purpose: "Geplanten Standort Loßburg kennenlernen und Abholung im Raum Freudenstadt anfragen",
+  },
   "/leistungen": {
     cluster: "autopflege leistungen übersicht",
     intent: "commercial",

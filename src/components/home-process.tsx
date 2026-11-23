@@ -3,14 +3,24 @@ import { conciergeAtmosphere } from "@/data/atmosphere-media";
 import { RevealLines } from "./reveal-lines";
 import { IconArrowRight } from "./icons";
 
-export function HomeProcess() {
+export function HomeProcess({
+  serviceArea = "Horb am Neckar und Umgebung",
+}: {
+  serviceArea?: string;
+}) {
   return (
-    <section className="concierge-service" aria-labelledby="concierge-heading" id="craft-heading">
+    <section className="concierge-service" aria-labelledby="concierge-heading" id="ablauf">
+      <span id="craft-heading" className="concierge-anchor" aria-hidden="true" />
       <header>
-        <p className="kicker">Hol- und Bringservice</p>
+        <p className="kicker">Dein Hol- und Bringservice</p>
         <h2 id="concierge-heading" className="heading-2" data-lines>
-          <RevealLines lines={["So läuft die", "Aufbereitung ab."]} />
+          <RevealLines lines={["Ein Ansprechpartner.", "Alles für dein Auto."]} />
         </h2>
+        <p>
+          Du behältst deinen Alltag. Wir kümmern uns um Abholung, Aufbereitung und Rückgabe –
+          persönlich, abgestimmt und ohne Umwege.
+        </p>
+        <p className="concierge-area">Dein Servicegebiet: {serviceArea}.</p>
         <Link to="/qualitaet" className="atelier-text-link mt-5">
           Ein Blick in die Werkstatt <IconArrowRight aria-hidden />
         </Link>
@@ -41,29 +51,39 @@ export function HomeProcess() {
           ))}
         </div>
       </header>
-      <ol>
-        <li>
+      <ol aria-label="In vier Schritten zu deinem aufbereiteten Auto" data-stagger>
+        <li data-stagger-item>
           <span aria-hidden="true">01</span>
-          <h3>Du fragst an</h3>
+          <h3>Persönliche Beratung &amp; Festpreis</h3>
           <p>
-            Beschreib mir dein Auto und was dich stört. Du bekommst ein persönliches Angebot mit
-            Preis und Termin. Erst wenn du zusagst, ist der Termin fest.
+            Du schickst uns deine Anfrage. Wir besprechen den Zustand deines Autos und klären
+            Pflegeumfang, Preis und Termin verbindlich. Erst wenn du zusagst, ist der Termin fest.
           </p>
         </li>
-        <li>
+        <li data-stagger-item>
           <span aria-hidden="true">02</span>
-          <h3>Ich hole es ab</h3>
+          <h3>Hol- &amp; Bringservice. Zeit für dich.</h3>
           <p>
-            Wir vereinbaren Ort und Uhrzeit. Bist du unterwegs, können wir die Schlüsselübergabe
-            vorab regeln. In der Werkstatt bekommt dein Auto die vereinbarte Pflege.
+            Kein Hin- und Herfahren: Wir holen dein Fahrzeug nach Absprache bei dir zu Hause oder am
+            Arbeitsplatz ab und bringen es aufbereitet wieder zurück. Ort, Uhrzeit und Abholkosten
+            stehen vorher fest.
           </p>
         </li>
-        <li>
+        <li data-stagger-item>
           <span aria-hidden="true">03</span>
-          <h3>Du fährst los</h3>
+          <h3>Ein fester Ansprechpartner für alles</h3>
           <p>
-            Ich bringe dir dein Auto zurück. Die Übergabe halte ich digital für dich fest. Hast du
-            danach eine Frage zur Pflege, erreichst du mich direkt.
+            Vom ersten Foto bei der Übergabe bis zum letzten Finish: Lars betreut dein Auto
+            persönlich, stimmt alle Arbeiten mit dir ab und kümmert sich um jedes Detail.
+          </p>
+        </li>
+        <li data-stagger-item>
+          <span aria-hidden="true">04</span>
+          <h3>Übergabe mit Wow-Effekt</h3>
+          <p>
+            Du bekommst dein Fahrzeug frisch aufbereitet zurück. Wir gehen das Ergebnis gemeinsam
+            durch – inklusive transparenter Dokumentation der vereinbarten Arbeiten und Tipps, damit
+            du lange Freude daran hast.
           </p>
         </li>
       </ol>

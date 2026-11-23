@@ -80,12 +80,30 @@ export function ResultsTeaser({ service }: { service?: string }) {
       {service ? (
         <CustomerVideoGallery videos={videos} compact />
       ) : (
-        <>
-          <div id="vorher-nachher" className="wg-home-compare scroll-mt-24">
-            <LazyBeforeAfterSlider />
-          </div>
-          <CustomerVideoGallery videos={videos} mobileSwipe />
-        </>
+        <CustomerVideoGallery
+          videos={videos}
+          mobileSwipe
+          leadingItems={[
+            {
+              id: "vorher-nachher",
+              label: "Lackaufbereitung im Vergleich",
+              content: (
+                <>
+                  <div className="wg-rail-frame wg-rail-comparison">
+                    <LazyBeforeAfterSlider />
+                  </div>
+                  <div className="wg-rail-copy">
+                    <h3>Lackaufbereitung im Vergleich</h3>
+                    <p>
+                      Zieh den Griff nach links oder rechts: So verändert die Politur den Lack unter
+                      demselben Prüflicht.
+                    </p>
+                  </div>
+                </>
+              ),
+            },
+          ]}
+        />
       )}
       <p className="wg-results-note">
         Die Aufnahmen stammen aus freigegebenen Kundenaufträgen. Du startest die Videos per Klick.

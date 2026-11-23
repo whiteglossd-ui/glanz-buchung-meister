@@ -154,6 +154,9 @@ async function geometry(page) {
       whatsapp: rect('[data-wa-float]:not([aria-hidden="true"])'),
       cta: rect(".scroll-film-cta"),
       prices: rect(".scroll-film-prices"),
+      trust: rect(".scroll-film-trust"),
+      headingText: title?.textContent.trim(),
+      actionCount: document.querySelectorAll(".film-actions a[href]").length,
       banner: rect(".consent-banner"),
       copyCss: style && {
         bottom: style.bottom,
@@ -355,12 +358,16 @@ async function verifyConciergeMedia(page, result, phase) {
       Math.abs(element.getBoundingClientRect().top + parseFloat(getComputedStyle(element).paddingTop) - 112) <= 2)) break;
   }
   result.conciergeMedia = [];
+  assert.equal(await page.locator(".concierge-service > ol > li").count(), 4, "The combined pickup process has four steps.");
+  assert.equal(await page.locator(".concierge-frame").count(), 3, "Retain the three approved process images.");
   const sticky = await header.evaluate((element) => getComputedStyle(element).position === "sticky");
   if (!sticky && await header.evaluate((element) => element.getBoundingClientRect().height > innerHeight - 128))
     await scrollTo(".concierge-media", 112);
-  for (const index of sticky ? [0, 1] : [0]) {
-    if (index) await scrollTo(`.concierge-service > ol > li:nth-child(${index + 1})`, result.viewport.height * 0.5);
-    await phase.run(`concierge-${index + 1}-decoded`, () => page.waitForFunction((frameIndex) => {
+  for (const stepIndex of sticky ? [0, 1, 2, 3] : [0]) {
+    // The last two steps intentionally share the final approved photograph.
+    const index = Math.min(stepIndex, 2);
+    if (stepIndex) await scrollTo(`.concierge-service > ol > li:nth-child(${stepIndex + 1})`, result.viewport.height * 0.5);
+    await phase.run(`concierge-step-${stepIndex + 1}-decoded`, () => page.waitForFunction((frameIndex) => {
       const section = document.querySelector(".concierge-service");
       const frame = section.querySelectorAll(".concierge-frame")[frameIndex];
       if (!frame || (section.dataset.conciergeMotion === "scroll" && Number(section.dataset.conciergeActive) !== frameIndex)) return false;
@@ -385,9 +392,9 @@ async function verifyConciergeMedia(page, result, phase) {
     });
     assert.ok(evidence.visible && evidence.inset, "Show the decoded concierge backdrop and sharp inset within the viewport.");
     assert.equal(await header.locator("#concierge-heading").isVisible(), true);
-    const screenshot = `${result.viewport.name}-concierge-${index + 1}.png`;
+    const screenshot = `${result.viewport.name}-concierge-step-${stepIndex + 1}.png`;
     await header.screenshot({ path: `${output}/${screenshot}` });
-    result.conciergeMedia.push({ index, sticky, screenshot, ...redactHeroEvidence(evidence) });
+    result.conciergeMedia.push({ stepIndex, index, sticky, screenshot, ...redactHeroEvidence(evidence) });
   }
   console.log("CONCIERGE_MEDIA:" + JSON.stringify({ viewport: result.viewport.name, frames: result.conciergeMedia }));
 }
@@ -477,8 +484,13 @@ try {
       assert.equal(result.observerSupported, true, "Layout-shift observation must be supported.");
       assert.ok(result.initial.banner && result.initial.banner.width > 0 && result.initial.banner.height > 0, "The visible consent banner must have measurable bounds.");
       const { copy, reservedCopy, stage, banner, controls, header, titleStart } = result.initial;
-      const scrollLayout = (result.initial.shortLandscape || result.initial.compactPortrait) && stage && header && stage.height > viewport.height - header.bottom + 1;
+      // Long copy, text scaling and compact windows now use a content-sized,
+      // non-sticky reading layout. Its controls must remain reachable by actual
+      // scrolling; all ordinary motion layouts keep the first-viewport checks.
+      const scrollLayout = result.initial.motion === "still" && stage && header && stage.height > viewport.height - header.bottom + 1;
       result.intentionalScrollLayout = Boolean(scrollLayout);
+      assert.equal(result.initial.headingText, "Gib uns den Schlüssel – wir kümmern uns um den Rest.");
+      assert.equal(result.initial.actionCount, 2, "The hero has exactly two primary actions.");
       if (!copy || !stage || copy.top < stage.top - 1 || copy.bottom > (scrollLayout ? stage.bottom : banner.top) + 1
         || (scrollLayout && (copy.left < stage.left - 1 || copy.right > stage.right + 1)))
         report.failures.push(
@@ -487,8 +499,10 @@ try {
       if (scrollLayout && (!titleStart || titleStart.top < header.bottom - 1 || titleStart.top >= banner.top - 1
         || !result.initial.titleStartHit || Number(result.initial.copyCss?.opacity) < 0.99 || result.initial.copyCss?.inert))
         report.failures.push(`${viewport.name}: the start of the hero title is not initially visible ${JSON.stringify({ titleStart, titleFontBounds: result.initial.titleFontBounds, titleMaskBounds: result.initial.titleMaskBounds, titleHitElement: result.initial.titleHitElement, header, banner, copyCss: result.initial.copyCss })}`);
-      if (!reservedCopy || !stage || reservedCopy.width <= 0 || Math.abs(reservedCopy.height - stage.height) > 1)
-        report.failures.push(`${viewport.name}: copy space is not reserved for the full stage height`);
+      if (!reservedCopy || !stage || !copy || reservedCopy.width <= 0
+        || reservedCopy.height < copy.height - 1 || reservedCopy.top < stage.top - 1
+        || reservedCopy.bottom > stage.bottom + 1)
+        report.failures.push(`${viewport.name}: the complete copy has no reserved layout space inside the stage`);
       if (!controls || controls.top < stage.top - 1 || controls.bottom > (scrollLayout ? stage.bottom : banner.top) + 1)
         report.failures.push(`${viewport.name}: film controls are outside the visible area above consent`);
       if (result.cls > 0.1) report.failures.push(`${viewport.name}: initial CLS ${result.cls} exceeds 0.1`);
@@ -502,9 +516,17 @@ try {
           report.failures.push(`${viewport.name}: ${name} overlaps the consent banner ${JSON.stringify(result.overlap[name])}`);
       }
       const { cta, prices } = result.initial;
-      if (!cta || !prices || cta.right > prices.left + 1 || Math.abs(cta.top - prices.top) > 2
-        || Math.abs(cta.height - prices.height) > 2)
-        report.failures.push(`${viewport.name}: the paired hero actions must sit side by side at a common height`);
+      const mobileActions = viewport.width < 640;
+      const alignedActions = cta && prices && Math.abs(cta.height - prices.height) <= 2
+        && (mobileActions
+          ? prices.top >= cta.bottom + 15 && Math.abs(cta.left - prices.left) <= 2 && Math.abs(cta.width - prices.width) <= 2
+          : prices.left >= cta.right + 15 && Math.abs(cta.top - prices.top) <= 2);
+      if (!alignedActions)
+        report.failures.push(`${viewport.name}: equal-height hero actions must have a 1rem gap and ${mobileActions ? "stack on mobile" : "sit side by side"}`);
+      const trust = result.initial.trust;
+      if (!trust || !cta || !prices || !copy || trust.top < Math.max(cta.bottom, prices.bottom) + 15
+        || trust.bottom > copy.bottom + 1)
+        report.failures.push(`${viewport.name}: the trust row must follow both actions inside the copy surface`);
       if (result.initial.motion === "scroll") {
         const pause = result.initial.pause;
         if (!pause || pause.visibility !== "visible" || Number(pause.opacity) <= 0 || pause.disabled || pause.ariaHidden === "true" || pause.tabIndex < 0)
@@ -515,7 +537,7 @@ try {
         result.reachability = {};
         try {
           for (const name of ["cta", "prices", "controls"]) {
-            result.reachability[name] = await phase.run(`landscape-${name}-reachability`, () => scrollToVisibleTarget(page, name));
+            result.reachability[name] = await phase.run(`reading-layout-${name}-reachability`, () => scrollToVisibleTarget(page, name));
             if (result.reachability[name].failure)
               report.failures.push(`${viewport.name}: ${name} ${result.reachability[name].failure} after native page scrolling`);
             await page.screenshot({ path: `${output}/${viewport.name}-${name}-reachable.png` });
@@ -588,7 +610,7 @@ try {
             }),
           };
         });
-        assert.deepEqual(result.fadedSemantics.actionTargets, ["/#buchung", "/preise"], "Both homepage actions remain present after fading.");
+        assert.deepEqual(result.fadedSemantics.actionTargets, ["/#ablauf", "/#buchung"], "Both homepage actions remain present after fading.");
         assert.equal(result.fadedSemantics.headingAvailable, true, "Keep the H1 in the accessibility tree after fading.");
         assert.equal(result.fadedSemantics.hiddenActionsInert, true, "Invisible hero links must leave the keyboard sequence.");
         assert.equal(result.fadedSemantics.hiddenActionsRejectFocus, true, "Each invisible hero destination must reject programmatic focus as well.");

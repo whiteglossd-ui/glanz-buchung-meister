@@ -261,7 +261,7 @@ try {
   const desktop = await openStudio(1440);
   const initialHomeHeading = desktop.page.getByLabel("Überschrift", { exact: true });
   assert.equal(await initialHomeHeading.evaluate((element) => element.tagName), "TEXTAREA", "The homepage heading must retain its multiline editor");
-  assert.equal(await initialHomeHeading.inputValue(), "Gib mir den\nSchlüssel.", "The homepage heading keeps its intended line break in the editor");
+  assert.equal(await initialHomeHeading.inputValue(), "Gib uns den Schlüssel – wir kümmern uns um den Rest.", "The homepage editor starts with the approved new heading and retains its multiline input");
   await selectAbout(desktop.page);
   assert.equal(await desktop.page.getByLabel("Überschrift", { exact: true }).inputValue(), firstContent.title);
   assert.match(await desktop.page.locator('meta[name="robots"]').last().getAttribute("content"), /noindex/);

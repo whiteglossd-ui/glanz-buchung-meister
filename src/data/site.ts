@@ -1229,7 +1229,7 @@ export const sheetSecondary = [
 
 export const footerExplore = [
   { to: "/abholservice", label: "Hol- und Bringservice" },
-  { to: "/abholservice/$city", params: { city: "lossburg" }, label: "Fahrzeugaufbereitung Loßburg" },
+  { to: "/freudenstadt-lossburg", label: "Fahrzeugaufbereitung Loßburg" },
   { to: "/abholservice/$city", params: { city: "freudenstadt" }, label: "Abholservice Freudenstadt" },
   { to: "/ratgeber", label: "Ratgeber" },
   { to: "/galerie", label: "Ergebnisse" },

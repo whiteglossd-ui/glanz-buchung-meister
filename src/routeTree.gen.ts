@@ -22,6 +22,7 @@ import { Route as DatenschutzRouteImport } from './routes/datenschutz'
 import { Route as DellenHagelschadenRouteImport } from './routes/dellen-hagelschaden'
 import { Route as FahrzeugZustandRouteImport } from './routes/fahrzeug-zustand'
 import { Route as FaqRouteImport } from './routes/faq'
+import { Route as FreudenstadtLossburgRouteImport } from './routes/freudenstadt-lossburg'
 import { Route as GalerieRouteImport } from './routes/galerie'
 import { Route as ImpressumRouteImport } from './routes/impressum'
 import { Route as KontaktRouteImport } from './routes/kontakt'
@@ -139,6 +140,11 @@ const FahrzeugZustandRoute = FahrzeugZustandRouteImport.update({
 const FaqRoute = FaqRouteImport.update({
   id: '/faq',
   path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FreudenstadtLossburgRoute = FreudenstadtLossburgRouteImport.update({
+  id: '/freudenstadt-lossburg',
+  path: '/freudenstadt-lossburg',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GalerieRoute = GalerieRouteImport.update({
@@ -421,6 +427,7 @@ export interface FileRoutesByFullPath {
   '/dellen-hagelschaden': typeof DellenHagelschadenRoute
   '/fahrzeug-zustand': typeof FahrzeugZustandRoute
   '/faq': typeof FaqRoute
+  '/freudenstadt-lossburg': typeof FreudenstadtLossburgRoute
   '/galerie': typeof GalerieRoute
   '/impressum': typeof ImpressumRoute
   '/kontakt': typeof KontaktRoute
@@ -487,6 +494,7 @@ export interface FileRoutesByTo {
   '/dellen-hagelschaden': typeof DellenHagelschadenRoute
   '/fahrzeug-zustand': typeof FahrzeugZustandRoute
   '/faq': typeof FaqRoute
+  '/freudenstadt-lossburg': typeof FreudenstadtLossburgRoute
   '/galerie': typeof GalerieRoute
   '/impressum': typeof ImpressumRoute
   '/kontakt': typeof KontaktRoute
@@ -553,6 +561,7 @@ export interface FileRoutesById {
   '/dellen-hagelschaden': typeof DellenHagelschadenRoute
   '/fahrzeug-zustand': typeof FahrzeugZustandRoute
   '/faq': typeof FaqRoute
+  '/freudenstadt-lossburg': typeof FreudenstadtLossburgRoute
   '/galerie': typeof GalerieRoute
   '/impressum': typeof ImpressumRoute
   '/kontakt': typeof KontaktRoute
@@ -623,6 +632,7 @@ export interface FileRouteTypes {
     | '/dellen-hagelschaden'
     | '/fahrzeug-zustand'
     | '/faq'
+    | '/freudenstadt-lossburg'
     | '/galerie'
     | '/impressum'
     | '/kontakt'
@@ -689,6 +699,7 @@ export interface FileRouteTypes {
     | '/dellen-hagelschaden'
     | '/fahrzeug-zustand'
     | '/faq'
+    | '/freudenstadt-lossburg'
     | '/galerie'
     | '/impressum'
     | '/kontakt'
@@ -754,6 +765,7 @@ export interface FileRouteTypes {
     | '/dellen-hagelschaden'
     | '/fahrzeug-zustand'
     | '/faq'
+    | '/freudenstadt-lossburg'
     | '/galerie'
     | '/impressum'
     | '/kontakt'
@@ -823,6 +835,7 @@ export interface RootRouteChildren {
   DellenHagelschadenRoute: typeof DellenHagelschadenRoute
   FahrzeugZustandRoute: typeof FahrzeugZustandRoute
   FaqRoute: typeof FaqRoute
+  FreudenstadtLossburgRoute: typeof FreudenstadtLossburgRoute
   GalerieRoute: typeof GalerieRoute
   ImpressumRoute: typeof ImpressumRoute
   KontaktRoute: typeof KontaktRoute
@@ -943,6 +956,13 @@ declare module '@tanstack/react-router' {
       path: '/faq'
       fullPath: '/faq'
       preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/freudenstadt-lossburg': {
+      id: '/freudenstadt-lossburg'
+      path: '/freudenstadt-lossburg'
+      fullPath: '/freudenstadt-lossburg'
+      preLoaderRoute: typeof FreudenstadtLossburgRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/galerie': {
@@ -1433,6 +1453,7 @@ const rootRouteChildren: RootRouteChildren = {
   DellenHagelschadenRoute: DellenHagelschadenRoute,
   FahrzeugZustandRoute: FahrzeugZustandRoute,
   FaqRoute: FaqRoute,
+  FreudenstadtLossburgRoute: FreudenstadtLossburgRoute,
   GalerieRoute: GalerieRoute,
   ImpressumRoute: ImpressumRoute,
   KontaktRoute: KontaktRoute,

@@ -60,7 +60,8 @@ export function SiteHeader() {
   useMagnetic(quickLinkRef, 0.25);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const hash = useRouterState({ select: (s) => s.location.hash });
-  const isHome = pathname === "/";
+  const isHome = pathname === "/" || pathname === "/freudenstadt-lossburg";
+  const homePath = pathname === "/freudenstadt-lossburg" ? "/freudenstadt-lossburg" : "/";
 
   useEffect(() => {
     setOpen(false);
@@ -125,10 +126,11 @@ export function SiteHeader() {
           <Link to="/leistungen" activeProps={{ "aria-current": "page" }}>Leistungen</Link>
           <Link to="/preise" activeProps={{ "aria-current": "page" }}>Preise</Link>
           <Link to="/galerie" activeProps={{ "aria-current": "page" }}>Ergebnisse</Link>
+          <Link to={homePath} hash="standorte">Standorte</Link>
           <Link
             ref={quickLinkRef}
-            to={isHome ? "/abholservice" : "/"}
-            hash={isHome ? undefined : "buchung"}
+            to={homePath}
+            hash={isHome ? "ablauf" : "buchung"}
             className="header-booking-link"
           >
             {isHome ? "Abholservice" : "Termin"}
@@ -136,7 +138,7 @@ export function SiteHeader() {
         </nav>
         <div className="ga-tools flex items-center">
           {isHome && (
-            <Link to="/" hash="buchung" hashScrollIntoView={{ block: "start", behavior: "instant" }} className="header-film-booking" onClick={focusBookingHeading}>
+            <Link to={homePath} hash="buchung" hashScrollIntoView={{ block: "start", behavior: "instant" }} className="header-film-booking" onClick={focusBookingHeading}>
               Jetzt Termin anfragen
             </Link>
           )}
@@ -195,7 +197,8 @@ function FilmMenu({
 
   if (typeof document === "undefined") return null;
 
-  const items = [{ to: "/", label: "Startseite" as const }, ...nav];
+  const homePath = pathname === "/freudenstadt-lossburg" ? "/freudenstadt-lossburg" : "/";
+  const items = [{ to: "/", label: "Horb am Neckar" as const }, { to: "/freudenstadt-lossburg", label: "Loßburg / Freudenstadt" as const }, ...nav];
 
   return createPortal(
     <dialog
@@ -287,7 +290,7 @@ function FilmMenu({
               <li key={item.label} style={{ ["--i" as string]: i }}>
                 {"hash" in item && item.hash ? (
                   <Link
-                    to={item.to}
+                    to={homePath}
                     hash={item.hash}
                     className="film-menu-link"
                     onClick={onClose}
@@ -313,7 +316,7 @@ function FilmMenu({
           })}
         </ul>
         <div className="film-menu-cta">
-          <Link ref={ctaRef} to="/" hash="buchung" className={ctaPrimary} onClick={onClose}>
+          <Link ref={ctaRef} to={homePath} hash="buchung" className={ctaPrimary} onClick={onClose}>
             Termin anfragen
             <IconArrowRight className="size-4" />
           </Link>
@@ -333,7 +336,7 @@ function FilmScroll() {
 
   useEffect(() => {
     // The homepage owns its reveals after its lazy route has hydrated.
-    if (pathname === "/") return;
+    if (pathname === "/" || pathname === "/freudenstadt-lossburg") return;
     const root = document.documentElement;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -401,6 +404,8 @@ function FilmScroll() {
 }
 
 export function SiteFooter() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const homePath = pathname === "/freudenstadt-lossburg" ? "/freudenstadt-lossburg" : "/";
   return (
     <footer className="bg-bg">
       <div className="chrome-rule" aria-hidden />
@@ -453,6 +458,11 @@ export function SiteFooter() {
               WhatsApp
             </a>
           </div>
+          <nav className="footer-locations" aria-label="Standorte und Anfrage">
+            <Link to="/">Horb am Neckar · aktuelle Werkstatt</Link>
+            <Link to="/freudenstadt-lossburg">Loßburg / Freudenstadt · in Vorbereitung</Link>
+            <Link to={homePath} hash="buchung" onClick={focusBookingHeading}>Jetzt Termin anfragen</Link>
+          </nav>
           <div className="mt-5"><InstagramBadge /></div>
         </div>
         <nav aria-label="Leistungen" className="ga-leistungen">

@@ -22,7 +22,7 @@ export function HomePolish() {
       // Desktop engines without CSS view timelines use the existing scroll module.
       if (!CSS.supports("animation-timeline", "view()")) {
         for (const title of main.querySelectorAll<HTMLElement>(
-          "h2[data-lines], h2[data-scroll-title]",
+          "h2[data-lines], h2[data-scroll-title], [data-parallax-type]",
         )) {
           tools.gsap.fromTo(
             title,
@@ -66,9 +66,11 @@ export function HomePolish() {
         conciergeSteps.forEach((step, index) => {
           if (step.getBoundingClientRect().top <= window.innerHeight * 0.55) active = index;
         });
-        concierge.dataset.conciergeActive = String(active);
+        concierge.dataset.conciergeActive = String(
+          Math.min(active, Math.max(0, concierge.querySelectorAll(".concierge-frame").length - 1)),
+        );
       };
-      if (concierge && conciergeHeader && conciergeSteps.length === 3) {
+      if (concierge && conciergeHeader && conciergeSteps.length === 4) {
         concierge.dataset.conciergeActive = "0";
         syncConciergeLayout();
         syncConciergeImage();
@@ -155,9 +157,40 @@ export function HomePolish() {
       el.classList.add("is-in"),
     );
 
-    onceIn([...main.querySelectorAll<HTMLElement>("[data-stagger]")], (el) =>
-      el.classList.add("is-in"),
-    );
+    const entranceAnimations: Animation[] = [];
+    const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const revealItem = (item: HTMLElement, index = 0) => {
+      if (motionPreference.matches || typeof item.animate !== "function") return;
+      entranceAnimations.push(
+        item.animate(
+          [
+            { opacity: 0, transform: "translateY(12px)" },
+            { opacity: 1, transform: "translateY(0)" },
+          ],
+          {
+            duration: 650,
+            delay: Math.min(index * 75, 225),
+            easing: "cubic-bezier(.2,.7,.2,1)",
+            fill: "backwards",
+          },
+        ),
+      );
+    };
+    onceIn([...main.querySelectorAll<HTMLElement>("[data-stagger]")], (el) => {
+      el.classList.add("is-in");
+      const items = [...el.querySelectorAll<HTMLElement>("[data-stagger-item]")];
+      // Tall process steps enter independently; horizontal cards reveal as a group.
+      if (el.closest(".concierge-service")) onceIn(items, (item) => revealItem(item));
+      else items.forEach(revealItem);
+    });
+    const stopEntrances = () => {
+      if (motionPreference.matches) entranceAnimations.forEach((animation) => animation.cancel());
+    };
+    motionPreference.addEventListener("change", stopEntrances);
+    cleanups.push(() => {
+      motionPreference.removeEventListener("change", stopEntrances);
+      entranceAnimations.forEach((animation) => animation.cancel());
+    });
 
     onceIn(
       [...main.querySelectorAll<HTMLElement>("[data-polish-ba]")],

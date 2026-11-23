@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { MediaRail } from "./media-rail";
+import { MediaRail, type MediaRailItem } from "./media-rail";
 
 export type CustomerVideo = {
   title: string;
@@ -15,16 +15,18 @@ export function CustomerVideoGallery({
   videos,
   compact = false,
   mobileSwipe = false,
+  leadingItems = [],
 }: {
   videos: readonly CustomerVideo[];
   compact?: boolean;
   mobileSwipe?: boolean;
+  leadingItems?: MediaRailItem[];
 }) {
   const [active, setActive] = useState<CustomerVideo | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const titleId = useId();
-  const swipeable = mobileSwipe && !compact && videos.length > 1;
+  const swipeable = mobileSwipe && !compact && videos.length + leadingItems.length > 1;
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -89,7 +91,11 @@ export function CustomerVideoGallery({
   return (
     <>
       {swipeable ? (
-        <MediaRail label="Kundenvideos" selectionLabel="Video auswählen" items={items} />
+        <MediaRail
+          label={leadingItems.length ? "Vorher-Nachher und Kundenvideos" : "Kundenvideos"}
+          selectionLabel="Kundenergebnis auswählen"
+          items={[...leadingItems, ...items]}
+        />
       ) : (
         <ul
           className={compact ? "wg-video-grid wg-video-grid--compact" : "wg-video-grid"}

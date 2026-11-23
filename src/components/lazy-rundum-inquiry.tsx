@@ -25,7 +25,7 @@ export function LazyRundumInquiry() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    if (hash === "rundum-anfrage") setReady(true);
+    if (["rundum-anfrage", "rundum-service", "service"].includes(hash)) setReady(true);
   }, [hash]);
 
   useEffect(() => {

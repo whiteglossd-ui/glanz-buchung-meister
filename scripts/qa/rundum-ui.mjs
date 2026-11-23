@@ -63,6 +63,8 @@ export function verifyOriginalIconHead(documentHtml, label) {
 // these actions never submit a request, upload a file or open WhatsApp.
 export async function verifyInitialRundumHero(page, { label, screenshot, documentHtml }) {
   const link = page.locator(".scroll-film-cta");
+  const secondary = page.locator(".scroll-film-prices");
+  assert.equal(await page.locator(".film-actions a").count(), 2, `${label}: the hero has exactly two actions`);
   assert.equal(await page.locator(".scroll-film-rundum").count(), 0, `${label}: the hero keeps one primary and one secondary action`);
   await link.waitFor({ state: "visible" });
   await page.evaluate(() => document.fonts.ready);
@@ -96,7 +98,12 @@ export async function verifyInitialRundumHero(page, { label, screenshot, documen
   const target = new URL(await link.getAttribute("href"), page.url());
   assert.equal(target.pathname, "/");
   assert.equal(target.hash, "#buchung");
-  const measure = () => link.evaluate((element) => {
+  const serviceTarget = new URL(await secondary.getAttribute("href"), page.url());
+  assert.equal(serviceTarget.pathname, "/");
+  assert.equal(serviceTarget.hash, "#ablauf");
+  assert.equal((await secondary.textContent()).trim(), "Hol- & Bringservice entdecken");
+  assert.equal((await page.locator(".scroll-film-trust p").textContent()).trim(), "Dein Fahrzeug in guten Händen");
+  const measure = (action) => action.evaluate((element) => {
     const rect = element.getBoundingClientRect(), header = document.querySelector(".site-header")?.getBoundingClientRect(), consent = document.querySelector(".consent-banner")?.getBoundingClientRect();
     const atCenter = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
     return { top: rect.top, bottom: rect.bottom, left: rect.left, right: rect.right, height: rect.height, layoutHeight: element.offsetHeight,
@@ -104,12 +111,18 @@ export async function verifyInitialRundumHero(page, { label, screenshot, documen
       width: innerWidth, heightOfViewport: innerHeight, unobscured: element.contains(atCenter), scrollY };
   });
   const verify = async (state) => {
-    const geometry = await measure();
+    const geometry = await measure(link), secondaryGeometry = await measure(secondary);
     // WebKit can return 43.999969px for a transformed 44px target. Keep the
     // layout minimum exact and allow only this subpixel bounding-box rounding.
     assert.ok(geometry.scrollY <= 1 && geometry.top >= geometry.headerBottom && geometry.bottom <= geometry.availableBottom + 1
       && geometry.left >= 0 && geometry.right <= geometry.width && geometry.layoutHeight >= 44 && geometry.height >= 44 - 0.01 && geometry.unobscured,
       `${label} ${state}: initial Rundum CTA visible, usable and clear of header/consent: ${JSON.stringify(geometry)}`);
+    assert.ok(secondaryGeometry.top >= secondaryGeometry.headerBottom && secondaryGeometry.bottom <= secondaryGeometry.availableBottom + 1
+      && secondaryGeometry.left >= 0 && secondaryGeometry.right <= secondaryGeometry.width
+      && secondaryGeometry.layoutHeight >= 44 && secondaryGeometry.unobscured,
+      `${label} ${state}: secondary service CTA is equally reachable: ${JSON.stringify(secondaryGeometry)}`);
+    assert.ok(Math.abs(geometry.layoutHeight - secondaryGeometry.layoutHeight) <= 1,
+      `${label} ${state}: both hero actions have the same height`);
     await screenshot(`${label}-rundum-initial-${state}.png`);
   };
   await verify("first-visit");
@@ -124,31 +137,42 @@ export async function verifyInitialRundumHero(page, { label, screenshot, documen
 
 export async function verifyRundumUi(page, { label, screenshot }) {
   const reads = observePageReads(page, page.url());
-  const intro = page.locator(".workshop-personal");
+  const section = page.locator("#buchung"), intro = section.locator(".home-booking-promise");
+  const formPanel = section.locator(".home-booking-form");
+  await page.locator(".scroll-film-cta").click();
+  await page.waitForFunction(() => location.hash === "#buchung");
   await intro.waitFor({ state: "visible" });
   await page.evaluate(() => document.fonts.ready);
   const position = await page.evaluate(() => {
-    const intro = document.querySelector(".workshop-personal"), hero = document.querySelector(".scroll-film"), packages = document.querySelector("#pakete");
-    return { afterHero: !!(hero.compareDocumentPosition(intro) & Node.DOCUMENT_POSITION_FOLLOWING), beforePackages: !!(intro.compareDocumentPosition(packages) & Node.DOCUMENT_POSITION_FOLLOWING) };
+    const section = document.querySelector("#buchung"), process = document.querySelector("#ablauf"), packages = document.querySelector("#pakete");
+    const promise = section.querySelector(".home-booking-promise").getBoundingClientRect();
+    const form = section.querySelector(".home-booking-form").getBoundingClientRect();
+    return { afterPackages: !!(packages.compareDocumentPosition(section) & Node.DOCUMENT_POSITION_FOLLOWING),
+      afterProcess: !!(process.compareDocumentPosition(section) & Node.DOCUMENT_POSITION_FOLLOWING),
+      split: matchMedia("(min-width: 1080px)").matches, promise: promise.toJSON(), form: form.toJSON() };
   });
-  assert.ok(position.afterHero && position.beforePackages, `${label}: prominent service sits above existing packages`);
-  assert.match(await intro.textContent(), /Lars/);
-  const request = intro.getByRole("link", { name: "Aufbereitung mit Reparatur", exact: true });
+  assert.ok(position.afterPackages && position.afterProcess, `${label}: the combined service and request section closes the package/process flow`);
+  assert.ok(position.split ? position.promise.right <= position.form.left && Math.abs(position.promise.top - position.form.top) <= 1
+    : position.promise.bottom <= position.form.top,
+    `${label}: service promise and form use the intended responsive split/stack: ${JSON.stringify(position)}`);
+  assert.match(await intro.textContent(), /Pflege und Reparatur aus einer Hand/);
+  assert.match(await intro.textContent(), /Du kennst Leistungen und Festpreis, bevor du zusagst\./);
+  const request = section.getByRole("navigation", { name: "Art der Anfrage" }).getByRole("link", { name: "Rundum-Service", exact: true });
   assert.equal(await request.getAttribute("href"), "#rundum-anfrage");
-  const whatsapp = intro.getByRole("link", { name: "Lars auf WhatsApp schreiben", exact: true });
-  const target = new URL(await whatsapp.getAttribute("href")), configured = new URL(site.whatsappHref);
+  const whatsapp = page.locator("[data-wa-float]");
+  const target = new URL(await whatsapp.getAttribute("href")), configured = new URL(site.whatsapp);
   assert.equal(target.origin, configured.origin);
   assert.equal(target.pathname, configured.pathname);
   assert.equal(target.searchParams.get("phone"), configured.searchParams.get("phone"));
-  assert.equal(target.searchParams.get("text"), "Hallo Lars, ich habe eine Frage zur Aufbereitung meines Autos.");
+  assert.equal(target.searchParams.get("text"), configured.searchParams.get("text"));
   await intro.scrollIntoViewIfNeeded();
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 2));
   await screenshot(`${label}-rundum-intro.png`, intro);
   await request.click();
   await page.waitForFunction(() => location.hash === "#rundum-anfrage");
-  const section = page.locator("#buchung"), form = page.getByRole("form", { name: "Rundum-Service anfragen", exact: true });
+  const form = page.getByRole("form", { name: "Rundum-Service anfragen", exact: true });
   await form.waitFor({ state: "visible", timeout: 5000 });
-  await assertStableRundumArrival(page, `${label}: intro anchor`, reads);
+  await assertStableRundumArrival(page, `${label}: combined section mode link`, reads);
   assert.deepEqual(await form.locator('input[name="services"]').evaluateAll((inputs) => inputs.map((input) => input.value)), [...RUNDUM_SERVICES]);
   for (const [id, required] of [["name", true], ["email", true], ["phone", false], ["vehicleMake", true], ["vehicleModel", true], ["text", true], ["date", false]]) {
     const input = form.locator("#rundum-" + id);
@@ -174,29 +198,27 @@ export async function verifyRundumUi(page, { label, screenshot }) {
     return element.type !== "hidden" && element.tabIndex >= 0 && box.width > 0 && (box.left < -1 || box.right > innerWidth + 1);
   }).map((element) => element.id || element.name));
   assert.deepEqual(clipped, [], `${label}: no clipped controls`);
-  // The keyboard check scrolls to email. Reframe the complete section before
-  // recording it, including its heading below the real sticky navigation.
-  const measureFrame = () => section.evaluate((element) => {
-    const kicker = element.querySelector(".kicker").getBoundingClientRect();
-    const heading = element.querySelector("#buchung-heading").getBoundingClientRect();
+  // The promise is a separate stacked block on mobile. Its arrival and image
+  // were checked above; now verify the form title and controls in their panel.
+  const measureFrame = () => formPanel.evaluate((element) => {
+    const heading = element.querySelector("#anfrage-heading").getBoundingClientRect();
     const first = element.querySelector('#rundum-formular input:not([type="hidden"])').getBoundingClientRect();
-    return { kickerTop: kicker.top, kickerBottom: kicker.bottom, headingTop: heading.top, headingBottom: heading.bottom,
+    return { headingTop: heading.top, headingBottom: heading.bottom,
       firstControlTop: first.top, firstControlBottom: first.bottom,
       headerBottom: Math.max(0, document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 0), viewportHeight: innerHeight };
   });
-  const contentClear = (frame) => frame.kickerTop >= frame.headerBottom && frame.kickerBottom <= frame.viewportHeight
-    && frame.headingTop >= frame.headerBottom && frame.headingBottom <= frame.viewportHeight
+  const contentClear = (frame) => frame.headingTop >= frame.headerBottom && frame.headingBottom <= frame.viewportHeight
     && frame.firstControlTop >= frame.headerBottom && frame.firstControlBottom <= frame.viewportHeight;
   const framingDeadline = Date.now() + 2000;
   let frame;
   for (let attempt = 0; attempt < 3 && Date.now() < framingDeadline; attempt++) {
-    await section.evaluate((element) => {
+    await formPanel.evaluate((element) => {
       const headerBottom = Math.max(0, document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 0);
-      window.scrollTo({ top: scrollY + element.querySelector(".kicker").getBoundingClientRect().top - headerBottom - 16, behavior: "instant" });
-      window.__qaRundumFrame = { top: element.querySelector(".kicker").getBoundingClientRect().top, since: performance.now() };
+      window.scrollTo({ top: scrollY + element.querySelector("#anfrage-heading").getBoundingClientRect().top - headerBottom - 16, behavior: "instant" });
+      window.__qaRundumFrame = { top: element.querySelector("#anfrage-heading").getBoundingClientRect().top, since: performance.now() };
     });
     await page.waitForFunction(() => {
-      const top = document.querySelector("#buchung .kicker").getBoundingClientRect().top;
+      const top = document.querySelector("#anfrage-heading").getBoundingClientRect().top;
       const probe = window.__qaRundumFrame;
       if (Math.abs(top - probe.top) > 0.5) { probe.top = top; probe.since = performance.now(); }
       return performance.now() - probe.since >= 200;
@@ -205,29 +227,31 @@ export async function verifyRundumUi(page, { label, screenshot }) {
     if (contentClear(frame)) break;
   }
   assert.ok(frame && contentClear(frame),
-    `${label}: final form capture frames the complete kicker, heading and first controls below the sticky header: ${JSON.stringify(frame)}`);
-  const clip = await section.evaluate((element) => {
+    `${label}: final form capture frames its complete heading and first controls below the sticky header: ${JSON.stringify(frame)}`);
+  const clip = await formPanel.evaluate((element) => {
     const box = element.getBoundingClientRect();
     const headerBottom = Math.max(0, document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 0);
     const top = Math.max(box.top + scrollY, scrollY + headerBottom), bottom = box.bottom + scrollY;
-    const content = [".kicker", "#buchung-heading", "#rundum-formular form"].map((selector) => element.querySelector(selector).getBoundingClientRect());
+    const content = ["#anfrage-heading", "#rundum-formular form"].map((selector) => element.querySelector(selector).getBoundingClientRect());
     if (content.some((bounds) => bounds.top + scrollY < top || bounds.bottom + scrollY > bottom))
-      throw new Error("The header-free form clip must retain the complete kicker, heading and form");
+      throw new Error("The header-free form clip must retain the complete heading and form");
     return { x: box.x + scrollX, y: top, width: box.width, height: bottom - top };
   });
   // Locator screenshots perform another automatic scroll after our geometric
   // check. Capture the measured document clip without moving the section again.
-  await screenshot(`${label}-rundum-form.png`, section, { fullPage: true, clip });
-  return `${label}: compact prominent service, exact WhatsApp channel, request anchor, seven multiple choices, optional phone/date, no public upload, usable controls and layout`;
+  await screenshot(`${label}-rundum-form.png`, formPanel, { fullPage: true, clip });
+  return `${label}: combined service/form split and mobile stack, exact global WhatsApp channel, request anchor, seven multiple choices, optional phone/date, no public upload, usable controls and layout`;
 }
 
 // Exercise real same-origin anchors and client routing without submitting data.
 export async function verifyRundumIntentLoading(page, { label, base }) {
   const reads = observePageReads(page, base);
   const form = page.getByRole("form", { name: "Rundum-Service anfragen", exact: true });
-  await page.locator(".workshop-personal").getByRole("link", { name: "Aufbereitung mit Reparatur", exact: true }).click();
+  await page.locator(".scroll-film-cta").click();
+  await page.waitForFunction(() => location.hash === "#buchung");
+  await page.getByRole("navigation", { name: "Art der Anfrage" }).getByRole("link", { name: "Rundum-Service", exact: true }).click();
   await form.waitFor({ state: "visible", timeout: 5000 });
-  await assertStableRundumArrival(page, `${label}: introduction link`, reads);
+  await assertStableRundumArrival(page, `${label}: hero and shared request mode`, reads);
   assert.ok(await page.evaluate(() => performance.getEntriesByType("resource").some((entry) =>
     /^\/assets\/rundum-service-form-[^/]+\.js$/.test(new URL(entry.name).pathname))), `${label}: the anchor loads the actual form chunk`);
   const draft = "QA ungesendeter Formularentwurf";
@@ -256,8 +280,14 @@ export async function verifyRundumIntentLoading(page, { label, base }) {
   await rundumLink.click();
   await form.waitFor({ state: "visible" });
   assert.equal(await booking.isVisible(), false);
-  await reads.complete(`${label}: leave booking for prices`);
   await page.locator(".scroll-film-prices").click();
+  await page.waitForURL((url) => url.pathname === "/" && url.hash === "#ablauf");
+  await page.locator("#ablauf").getByRole("heading", { name: "Ein Ansprechpartner. Alles für dein Auto.", exact: true }).waitFor();
+  await page.goBack();
+  await form.waitFor({ state: "visible" });
+  assert.equal(await form.locator("#rundum-name").inputValue(), draft, `${label}: service anchor and back keep unsent input`);
+  await reads.complete(`${label}: leave booking for prices`);
+  await page.getByRole("contentinfo").getByRole("link", { name: "Preise", exact: true }).click();
   await page.waitForURL((url) => url.pathname === "/preise");
   await page.goBack({ waitUntil: "networkidle" });
   await form.waitFor({ state: "visible", timeout: 5000 });
@@ -267,5 +297,5 @@ export async function verifyRundumIntentLoading(page, { label, base }) {
   await form.waitFor({ state: "visible", timeout: 5000 });
   await assertStableRundumArrival(page, `${label}: direct hash`, reads);
   assert.equal(await page.locator('main input[type="file"]').count(), 0);
-  return `${label}: deferred form loads within five seconds through hero/intro anchors and a direct URL; hash/client-route changes preserve an unsent draft`;
+  return `${label}: deferred form loads within five seconds through the hero/shared request controls and a direct URL; service/hash/client-route changes preserve an unsent draft`;
 }

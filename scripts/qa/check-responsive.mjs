@@ -271,6 +271,7 @@ async function verifyBookingActivation(page, width, reducedMotion) {
 const paths = [
   ...new Set([
     "/",
+    "/freudenstadt-lossburg",
     "/preise",
     "/leistungen",
     "/leistungen/keramikversiegelung",
@@ -413,7 +414,7 @@ try {
       assert.equal(await booking.isVisible(), true, `${width}px: keep the primary header CTA visible.`);
       assert.equal(await booking.getAttribute("href"), "/#buchung");
       assert.equal(await header.locator('a[href="/#buchung"]').count(), 1);
-      const pickupLink = header.locator('.header-quick-nav a[href="/abholservice"]');
+      const pickupLink = header.locator('.header-quick-nav a[href="/#ablauf"]');
       assert.equal(await pickupLink.count(), 1);
       assert.equal((await pickupLink.textContent()).trim(), "Abholservice");
       assert.equal(await pickupLink.isVisible(), width >= 960,
@@ -424,9 +425,13 @@ try {
           `${width}px: the pickup navigation touch target must remain accessible.`);
       }
       const heroBooking = page.locator(".scroll-film-cta");
-      assert.equal(await page.locator(".scroll-film").getByRole("link", { name: "Termin anfragen", exact: true }).count(), 1,
+      assert.equal(await page.locator(".scroll-film").getByRole("link", { name: bookingCtaName, exact: true }).count(), 1,
         `${width}px: the hero booking link has its visible accessible name.`);
-      assert.equal(await heroBooking.getAttribute("href"), "/#buchung");
+      assert.equal(await heroBooking.getAttribute("href"), "#buchung");
+      assert.equal(await page.locator('.film-actions a[href="#ablauf"]').count(), 1,
+        `${width}px: the secondary hero action links to the combined pickup process.`);
+      assert.equal(await page.locator(".film-actions a[href]").count(), 2,
+        `${width}px: keep exactly two hero actions.`);
       assert.equal(await heroBooking.isVisible(), true, `${width}px: the hero CTA remains visible.`);
       const bounds = await booking.boundingBox();
       assert.ok(bounds && bounds.height >= 44 && bounds.width >= 44 && bounds.x >= 0 && bounds.x + bounds.width <= width,
@@ -482,42 +487,65 @@ try {
   }
   // Review the changed request path at phone and desktop sizes. These images
   // are produced by the existing isolated Linux CI job, never a local server.
-  for (const width of [390, 1440]) {
-    console.log("RESPONSIVE_REVIEW_START:" + JSON.stringify({ width, elapsedMs: Date.now() - responsiveStarted }));
+  for (const { width, path } of [390, 1440].flatMap((width) => ["/", "/freudenstadt-lossburg"].map((path) => ({ width, path })))) {
+    const routeLabel = path === "/" ? "home" : "lossburg";
+    console.log("RESPONSIVE_REVIEW_START:" + JSON.stringify({ width, path, elapsedMs: Date.now() - responsiveStarted }));
     const { context, page } = await openPage({ width, height: width === 390 ? 844 : 1000 });
     try {
-      progress = { stage: "review-navigation", path: "/", width, completed: results.length, updatedAt: new Date().toISOString() };
-      await page.goto(qaBase + "/", { waitUntil: "networkidle" });
+      progress = { stage: "review-navigation", path, width, completed: results.length, updatedAt: new Date().toISOString() };
+      await page.goto(qaBase + path, { waitUntil: "networkidle" });
       const consent = page.getByRole("dialog", { name: "Cookie-Einstellungen", exact: true });
       if (await consent.isVisible()) {
         await consent.getByRole("button", { name: "Ablehnen", exact: true }).click();
         await consent.waitFor({ state: "hidden" });
       }
       const order = await page.evaluate(() => {
-        const selectors = [".scroll-film", ".workshop-personal", "#pakete", "#kundenergebnisse", ".concierge-service", "#buchung"];
+        const selectors = [".scroll-film", ".home-location-switch", "#pakete", "#kundenergebnisse", ".concierge-service", "#buchung"];
         const sections = selectors.map((selector) => document.querySelector(selector));
         return {
           sectionsPresent: sections.every(Boolean),
-          trustFollowsHero: sections[0]?.nextElementSibling === sections[1],
+          locationChoiceFollowsHero: sections[0]?.nextElementSibling === sections[1],
           editorialOrder: sections.every((section, index) => Boolean(section) && (index === 0 || Boolean(
             sections[index - 1]?.compareDocumentPosition(section) & Node.DOCUMENT_POSITION_FOLLOWING,
           ))),
           bookingCount: document.querySelectorAll("#buchung").length,
+          processSteps: document.querySelectorAll("#ablauf > ol > li").length,
+          bookingAliases: ["termin", "service", "rundum-service", "rundum-anfrage"].map((id) => ({
+            id,
+            count: document.querySelectorAll(`#${id}`).length,
+            insideBooking: Boolean(document.getElementById(id)?.closest("#buchung")),
+          })),
         };
       });
-      assert.equal(order.sectionsPresent, true, "Retain the workshop, packages, results, pickup process and booking.");
-      assert.equal(order.trustFollowsHero, true, "Show the personal workshop directly below the introduction.");
+      assert.equal(order.sectionsPresent, true, "Retain the location choice, packages, results, pickup process and booking.");
+      assert.equal(order.locationChoiceFollowsHero, true, "Offer both locations directly below the introduction.");
       assert.equal(order.editorialOrder, true, "Keep the approved editorial sequence before the request.");
       assert.equal(order.bookingCount, 1, "Keep one request flow and stable incoming anchor links.");
+      assert.equal(order.processSteps, 4, "The combined service section has four clear steps.");
+      assert.ok(order.bookingAliases.every((alias) => alias.count === 1 && alias.insideBooking),
+        "Every supported incoming request anchor resolves once inside the combined booking section.");
+      const locationChoice = page.getByRole("navigation", { name: "Standort wählen", exact: true });
+      assert.equal(await locationChoice.locator(`a[aria-current="page"][href="${path}"]`).count(), 1,
+        "Mark the current location and keep both location choices available.");
+      assert.equal(await locationChoice.locator("a[href]").count(), 2);
+      await page.locator('.film-actions a[href="#ablauf"]').click();
+      assert.equal(new URL(page.url()).pathname, path, "The service action stays on the chosen location page.");
+      assert.equal(new URL(page.url()).hash, "#ablauf");
+      await page.waitForFunction(() => {
+        const section = document.getElementById("ablauf")?.getBoundingClientRect();
+        const header = document.querySelector(".site-header")?.getBoundingClientRect();
+        return section && header && section.top >= header.bottom - 1 && section.top < innerHeight;
+      }, undefined, { timeout: 5000 });
       await page.locator(".scroll-film-cta").click();
       await page.locator("#buchung .booking-flow").waitFor({ state: "visible", timeout: 15_000 });
       assert.equal(new URL(page.url()).hash, "#buchung", "The existing jump link still targets the booking anchor.");
+      assert.equal(new URL(page.url()).pathname, path, "The booking action retains the chosen location.");
       await page.waitForFunction(() => {
         const heading = document.getElementById("buchung-heading")?.getBoundingClientRect();
         const header = document.querySelector(".site-header")?.getBoundingClientRect();
         return heading && header && heading.top >= header.bottom - 1 && heading.top < innerHeight;
       }, undefined, { timeout: 5000 });
-      await page.locator("#buchung").screenshot({ path: `.qa-output/review-request-${width}.png` });
+      await page.locator("#buchung").screenshot({ path: `.qa-output/review-request-${path === "/" ? "" : "lossburg-"}${width}.png` });
       await page.locator("#kundenergebnisse").scrollIntoViewIfNeeded();
       const video = page.getByRole("button", { name: "Video abspielen: Hydrophober Lackschutz White-Gloss Ceramic 0:11 Min.", exact: true });
       await video.focus();
@@ -526,14 +554,14 @@ try {
       await page.keyboard.press("Escape");
       await page.locator(".wg-video-dialog").waitFor({ state: "hidden" });
       assert.equal(await video.evaluate((element) => element === document.activeElement), true, "Return keyboard focus to the video trigger.");
-      await page.locator("#kundenergebnisse").screenshot({ path: `.qa-output/review-results-${width}.png` });
+      await page.locator("#kundenergebnisse").screenshot({ path: `.qa-output/review-results-${path === "/" ? "" : "lossburg-"}${width}.png` });
       for (let y = 0; y < await page.evaluate(() => document.documentElement.scrollHeight); y += 650) {
-        progress = { stage: "review-scroll", path: "/", width, top: y, completed: results.length, updatedAt: new Date().toISOString() };
+        progress = { stage: "review-scroll", path, width, top: y, completed: results.length, updatedAt: new Date().toISOString() };
         await scrollAndRender(page, y);
       }
       await page.evaluate(() => window.scrollTo(0, 0));
-      await page.screenshot({ path: `.qa-output/review-home-${width}.png`, fullPage: true });
-      results.push({ path: "/", width, review: true, ...order, videoKeyboardFocusReturned: true });
+      await page.screenshot({ path: `.qa-output/review-${routeLabel}-${width}.png`, fullPage: true });
+      results.push({ path, width, review: true, ...order, videoKeyboardFocusReturned: true });
     } finally {
       await context.close();
     }

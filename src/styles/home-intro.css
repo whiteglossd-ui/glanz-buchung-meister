@@ -74,3 +74,94 @@
     grid-row: 2;
   }
 }
+
+.home-location-switch {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem 2rem;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--color-line);
+}
+.home-location-switch > span {
+  color: var(--color-muted);
+  font-size: 0.8125rem;
+}
+.home-location-switch a {
+  display: grid;
+  gap: 0.25rem;
+  min-height: 2.75rem;
+  padding-block: 0.5rem;
+  border-bottom: 2px solid transparent;
+  font-weight: 500;
+}
+.home-location-switch a[aria-current] {
+  border-color: var(--color-accent);
+}
+.home-location-switch small {
+  color: var(--color-muted);
+  font-weight: 400;
+}
+.home-location-switch a:hover {
+  color: var(--color-accent);
+}
+.home-location-switch a:focus-visible,
+.footer-locations a:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 5px;
+}
+.footer-locations {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+.footer-locations a {
+  display: flex;
+  align-items: center;
+  min-height: 2.75rem;
+  font-size: 0.875rem;
+}
+[data-home="polish"] .home-directory > header {
+  position: relative;
+  isolation: isolate;
+}
+.home-ambient-type {
+  position: absolute;
+  z-index: -1;
+  inset: -0.3em 0 auto;
+  color: var(--color-fg);
+  opacity: 0.045;
+  overflow: clip;
+  font: 500 clamp(3rem, 12vw, 10rem)/1 var(--font-display);
+  letter-spacing: -0.045em;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) and (min-width: 960px) {
+  @supports (animation-timeline: view()) {
+    [data-home="polish"] [data-parallax-type] {
+      animation: home-type-drift linear both;
+      animation-timeline: view();
+      animation-range: entry 0% exit 100%;
+    }
+  }
+}
+@keyframes home-type-drift {
+  from {
+    transform: translateY(0.16em);
+  }
+  to {
+    transform: translateY(-0.08em);
+  }
+}
+@media (max-width: 479px) {
+  .home-location-switch {
+    justify-content: flex-start;
+    gap: 0.75rem 1.5rem;
+  }
+  .home-location-switch > span {
+    flex-basis: 100%;
+  }
+}

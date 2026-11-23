@@ -96,7 +96,7 @@ function harness({
     getBoundingClientRect: () => ({ top: -window.scrollY }),
   });
   const stage = { offsetHeight: 1000 };
-  const actions = [{ tagName: "A", href: "/#buchung", inert: false }, { tagName: "A", href: "/preise", inert: false }];
+  const actions = [{ tagName: "A", href: "#buchung", inert: false }, { tagName: "A", href: "#ablauf", inert: false }];
   const copy = {
     style: style(),
     inert: false,
@@ -261,8 +261,26 @@ test("home copy follows the new defaults and keeps each custom Studio field", ()
   const hero = renderHero();
   assert.match(hero, /Hol- und Bringservice/);
   assert.match(hero, /Liebhaberwagen oder Leasingrückgabe/);
-  assert.match(hero, /href="\/#buchung"/);
-  assert.match(hero, /href="\/preise"/);
+  const heading = /<h1[^>]*>([\s\S]*?)<\/h1>/.exec(hero)?.[1].replace(/<[^>]+>/g, "");
+  assert.equal(heading, "Gib uns den Schlüssel – wir kümmern uns um den Rest.");
+  assert.match(hero, /Ob Daily Driver, Liebhaberwagen oder Leasingrückgabe: Wir prüfen dein Fahrzeug persönlich und stimmen Detailing, Lackpflege, Preis und Termin direkt mit dir ab\./);
+  const actions = /<nav[^>]*class="film-actions"[^>]*>([\s\S]*?)<\/nav>/.exec(hero)?.[1];
+  assert.ok(actions, "The hero exposes one named action group.");
+  assert.equal((actions.match(/<a\s/g) ?? []).length, 2);
+  assert.match(actions, /href="#buchung"/);
+  assert.match(actions, /Jetzt Termin anfragen/);
+  assert.match(actions, /href="#ablauf"/);
+  assert.match(actions, /Hol- &amp; Bringservice entdecken/);
+  assert.ok(hero.indexOf("Dein Fahrzeug in guten Händen") > hero.indexOf(actions));
+  assert.match(hero, /Persönliche Fahrzeugannahme · Ein fester Ansprechpartner · Transparente Festpreise/);
+});
+
+test("the local hero keeps both CTA destinations on the current location page", () => {
+  const hero = renderHero({ locationLabel: "Loßburg · Freudenstadt" });
+  assert.match(hero, /Loßburg · Freudenstadt/);
+  assert.match(hero, /href="#buchung"/);
+  assert.match(hero, /href="#ablauf"/);
+  assert.doesNotMatch(hero, /Horb am Neckar|href="\/#buchung"/);
 });
 
 test("a published hero image starts as a correctly sized still image in SSR", () => {
@@ -293,6 +311,9 @@ for (const options of [
   { memory: 2 },
   { cores: 2 },
   { hash: "#buchung" },
+  { hash: "#termin" },
+  { hash: "#service" },
+  { hash: "#rundum-service" },
   { hash: "#rundum-anfrage" },
   { hasCustomHero: true },
 ]) {

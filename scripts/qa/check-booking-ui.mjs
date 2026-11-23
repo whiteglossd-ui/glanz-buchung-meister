@@ -158,18 +158,43 @@ async function bookingLayout(page, desktop) {
 
 async function checkMediaCollections(page, width) {
   const tracks = page.locator(".wg-media-rail");
-  assert.equal(await tracks.count(), 2, "Packages and videos share the same collection layout");
+  assert.equal(await tracks.count(), 2, "Packages, comparison and videos use two shared media rails");
+  assert.equal(await page.locator("#pakete .wg-rail-card").count(), 3, "All three packages remain available");
+  assert.equal(await page.locator("#kundenergebnisse .wg-rail-card").count(), 4,
+    "The result collection contains one comparison and three video cards");
+  assert.equal(await page.locator("#kundenergebnisse .wg-video-trigger").count(), 3,
+    "The comparison card is not counted as a video");
+  await page.locator("#vorher-nachher").scrollIntoViewIfNeeded();
+  await page.locator('#vorher-nachher [role="slider"]').waitFor({ state: "visible" });
   const frames = await page.locator(".wg-media-rail .wg-rail-frame").evaluateAll((elements) =>
     elements.map((frame) => {
       const { width, height } = frame.getBoundingClientRect();
-      return { width, height };
+      const card = frame.closest(".wg-rail-card");
+      const cardStyle = getComputedStyle(card);
+      const frameStyle = getComputedStyle(frame);
+      return {
+        width, height,
+        radius: cardStyle.borderRadius,
+        border: cardStyle.border,
+        shadow: cardStyle.boxShadow,
+        frameBorder: frameStyle.borderBottom,
+        captionMinHeight: getComputedStyle(card.querySelector(".wg-rail-copy")).minBlockSize,
+        gap: getComputedStyle(card.parentElement).columnGap,
+        snap: getComputedStyle(card.parentElement).scrollSnapType,
+      };
     }),
   );
-  assert.equal(frames.length, 6);
+  assert.equal(frames.length, 7);
   assert.ok(frames.every((frame) =>
     frame.width > 0 && Math.abs(frame.width - frames[0].width) <= 2 &&
-    Math.abs(frame.height - frames[0].height) <= 2),
-    `Packages and videos @${width}: all six media windows have matching sizes`);
+    Math.abs(frame.height - frames[0].height) <= 2 &&
+    Math.abs(frame.width / frame.height - 4 / 3) <= 0.02),
+    `Packages, comparison and videos @${width}: all seven media windows have matching 4:3 sizes`);
+  for (const property of ["radius", "border", "shadow", "frameBorder", "captionMinHeight", "gap", "snap"]) {
+    assert.ok(frames.every((frame) => frame[property] === frames[0][property]),
+      `Packages, comparison and videos @${width}: shared ${property}`);
+  }
+  assert.equal(frames[0].snap, "x mandatory", "All rails retain native horizontal scroll snapping");
 
   const packages = page.locator("#pakete");
   await packages.getByRole("button", { name: "SUV / Limousine" }).click();
@@ -187,27 +212,81 @@ async function checkMediaCollections(page, width) {
         if (!element.naturalWidth) throw new Error("Preview image must decode");
       });
     }
-    if (width < 960) {
-      for (const index of [2, 0, 1]) {
-        const button = nav.getByRole("button").nth(index);
-        await button.focus();
-        await page.keyboard.press("Enter");
-        await page.waitForFunction(([selector, index]) => {
-          const section = document.querySelector(selector);
-          return section.querySelectorAll(".wg-rail-nav button")[index]?.getAttribute("aria-current") === "true";
-        }, [selector, index]);
-        const visible = await track.locator(".wg-rail-card").nth(index).evaluate((card) => {
-          const viewport = card.parentElement.getBoundingClientRect();
+    const overflowing = await track.evaluate((list) => list.scrollWidth > list.clientWidth + 1);
+    if (overflowing) {
+      await nav.waitFor({ state: "visible" });
+      assert.equal(await nav.getByRole("button").count(), 2, "Every rail uses the same two navigation arrows");
+      assert.equal(flat(await nav.locator(".wg-rail-hint").textContent()), "Wischen oder mit den Pfeilen entdecken");
+      await track.evaluate((list) => list.scrollTo({ left: 0, behavior: "instant" }));
+      await page.waitForFunction((selector) =>
+        document.querySelector(`${selector} .wg-rail-nav button[aria-label="Vorherige Karte"]`)?.disabled === true,
+      selector);
+      const next = nav.getByRole("button", { name: "Nächste Karte", exact: true });
+      assert.equal(await next.isDisabled(), false);
+      await next.focus();
+      await page.keyboard.press("Enter");
+      await page.waitForFunction((selector) => {
+        const list = document.querySelector(`${selector} .wg-media-rail`);
+        const card = list.children[1];
+        const viewport = list.getBoundingClientRect();
+        const rect = card.getBoundingClientRect();
+        return list.scrollLeft > 1 && rect.left >= viewport.left - 2 && rect.right <= viewport.right + 2;
+      }, selector);
+      results.push(`${selector} @${width}: next arrow brings the second card fully into view`);
+
+      // Native list keyboard navigation must work independently of its child controls.
+      await track.focus();
+      await page.keyboard.press("End");
+      await page.waitForFunction((selector) => {
+        const list = document.querySelector(`${selector} .wg-media-rail`);
+        const next = document.querySelector(`${selector} .wg-rail-nav button[aria-label="Nächste Karte"]`);
+        return list.scrollLeft + list.clientWidth >= list.scrollWidth - 2 && next?.disabled === true;
+      }, selector);
+      const lastVisible = await track.locator(".wg-rail-card").last().evaluate((card) => {
+        const viewport = card.parentElement.getBoundingClientRect();
+        const rect = card.getBoundingClientRect();
+        return rect.left >= viewport.left - 2 && rect.right <= viewport.right + 2;
+      });
+      assert.ok(lastVisible, `${selector} @${width}: End reaches the last card without clipping`);
+      await page.waitForFunction((selector) => {
+        const section = document.querySelector(selector);
+        const list = section.querySelector(".wg-media-rail");
+        const bounds = list.getBoundingClientRect();
+        const shown = [...list.children].flatMap((card, index) => {
           const rect = card.getBoundingClientRect();
-          return rect.left >= viewport.left - 1 && rect.right <= viewport.right + 1;
+          return Math.min(rect.right, bounds.right) - Math.max(rect.left, bounds.left) >= rect.width / 2
+            ? [index + 1] : [];
         });
-        assert.ok(visible, `${selector} @${width}: selecting a card brings it fully into view`);
-      }
+        if (!shown.length) return false;
+        const first = shown[0];
+        const last = shown[shown.length - 1];
+        const expected = `${first}${last > first ? `–${last}` : ""} / ${list.children.length}`;
+        return section.querySelector(".wg-rail-position").textContent.replace(/\s+/g, " ").includes(expected);
+      }, selector);
+      await page.keyboard.press("Home");
+      await page.waitForFunction((selector) => {
+        const list = document.querySelector(`${selector} .wg-media-rail`);
+        return list.scrollLeft <= 1 &&
+          document.querySelector(`${selector} .wg-rail-nav button[aria-label="Vorherige Karte"]`)?.disabled === true;
+      }, selector);
     } else {
-      assert.equal(await nav.count(), 0, "No scroll controls when all cards fit");
+      assert.equal(await nav.count(), 0, "No scroll controls when every card fits");
       assert.equal(await track.evaluate((list) => list.scrollWidth <= list.clientWidth + 1), true);
     }
   }
+  const comparison = page.locator('#vorher-nachher [role="slider"]');
+  await comparison.scrollIntoViewIfNeeded();
+  await comparison.focus();
+  const beforeComparison = Number(await comparison.getAttribute("aria-valuenow"));
+  const resultRail = page.locator("#kundenergebnisse .wg-media-rail");
+  const beforeRail = await resultRail.evaluate((list) => list.scrollLeft);
+  await page.keyboard.press("ArrowRight");
+  await page.waitForFunction((expected) =>
+    Number(document.querySelector('#vorher-nachher [role="slider"]')?.getAttribute("aria-valuenow")) === expected,
+  Math.min(100, beforeComparison + 5));
+  assert.ok(Math.abs(await resultRail.evaluate((list) => list.scrollLeft) - beforeRail) <= 1,
+    "Comparison keyboard input adjusts the image without scrolling the enclosing rail");
+
   await page.locator("#kundenergebnisse .wg-video-trigger").first().click();
   const dialog = page.locator("#kundenergebnisse dialog");
   await dialog.waitFor({ state: "visible" });
@@ -216,7 +295,7 @@ async function checkMediaCollections(page, width) {
   await dialog.waitFor({ state: "hidden" });
   assert.equal(await page.locator("#kundenergebnisse .wg-video-trigger").first().evaluate((button) =>
     button === document.activeElement), true, "Closing the video returns focus to its thumbnail");
-  results.push(`Packages and videos @${width}: matching frames, selection, package pricing and video dialog`);
+  results.push(`Packages, comparison and videos @${width}: shared geometry, arrows, keyboard, visible range, pricing and video dialog`);
 }
 
 try {

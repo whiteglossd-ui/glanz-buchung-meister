@@ -95,28 +95,33 @@ export const APPROVED_SEO_BLOBS = Object.freeze({
 });
 
 // Reviewed public sources for the November 22 homepage, regional entry and
-// shared booking change. Exact bytes also protect new files that were absent
+// shared booking change; updated for the explicit November 23 owner request
+// (docs/homepage-ux-2026-11-23.md). Exact bytes protect new files that were absent
 // at the original redesign baseline. No additional Git history is needed.
 const APPROVED_HOME_BLOBS = Object.freeze({
   "src/components/city-landing.tsx": "c18b3632e2f7979b78865a208766ae2094aee87f",
   "src/components/city-regional-service.tsx": "d944527eeb322fa0ad9181960876d1007cf98c34",
-  "src/components/customer-video-gallery.tsx": "5cf5cae100cf5d4f79e34e2049b54198d4ce1330",
-  "src/components/home-booking.tsx": "30aa060f8f55095fe3c3682bd0586a06a4dc356a",
-  "src/components/home-process.tsx": "31be5e8bc546a905f11143129ea598177a3db929",
-  "src/components/lazy-rundum-inquiry.tsx": "b8acfa0a1fd5f68645e62622f4035a55775405ad",
-  "src/components/media-rail.tsx": "7914e377fb31bc5959be785cfa457c8b149561bd",
+  "src/components/customer-video-gallery.tsx": "c351ec962b27e4fe2a3e18504c4c2fff99d959bb",
+  "src/components/home-booking.tsx": "32e0a0d8591c554dbd6bfd315b288ab91e0ee9f3",
+  "src/components/home-process.tsx": "ef2d188275880831c56d7cf9fa925ff103653cbf",
+  "src/components/lazy-rundum-inquiry.tsx": "5d59095e9e985a6e1de6a2164e3c17c477f2bce1",
+  "src/components/media-rail.tsx": "b1777547252d502168b9fe0e704b3dee7984b6fa",
   "src/components/package-showcase.tsx": "b0546dccf8bdb1ba50e2f4d3f57d71756c3f136a",
-  "src/components/results-teaser.tsx": "6458935031e25f5efeaf1ab03e320b87f3b19934",
-  "src/components/scroll-film-hero.tsx": "8a1645872b87c4abdd68156b9dbfa3df2e65dccb",
-  "src/components/site-chrome.tsx": "b616c14fcb9cff9487ba1246141a0f199fd75ce1",
+  "src/components/results-teaser.tsx": "9cfc89347decf120486ca49e69f854a7563b6850",
+  "src/components/scroll-film-hero.tsx": "ae678176bc91fd714d9f04bd121be0775593dd46",
+  "src/components/site-chrome.tsx": "90f6319473ba916d9696c74b6bb0da1ae492a733",
   "src/components/website-studio.tsx": "33cc6b97e51f52e72ff891778811febf2d591dde",
-  "src/data/home-copy.ts": "45037ec9e291bde98f2376fa0af1719192bee5d6",
-  "src/data/site.ts": "84deb930b3a39a4456abf60fdad5a89b2cd2b7ab",
-  "src/data/sitemap-static.xml": "22bbc5bce56dc9611a8a28a4451675858d45b6ca",
+  "src/data/home-copy.ts": "f829b684e32560fbde054e7e4405568036b5ca82",
+  "src/data/site.ts": "57be27b676924cd007d0649fc98e7af080c16c2f",
+  "src/data/sitemap-static.xml": "a572c20315d05306ee42de41c5f11f3dc6cf5f24",
   "src/lib/city-copy.ts": "98f164cc518d27ce7cfdfff66eef96d62e842369",
   "src/lib/city-logistics.ts": "9f964c2dfb0d0822b583c761fce7550556219e0c",
-  "src/routes/index.tsx": "843d9c551d574c9d4ac49346059301a3eb986973",
+  "src/routes/index.tsx": "7b87df2a86c7dac7b0f432e210d57f12ec64e3c2",
   "src/routes/leistungen.$slug.$city.tsx": "bb360ecb62e387d7fa8569e1259ece1ab9c19872",
+  "src/lib/seo-intents.ts": "a61bd78880457eb49e9a57001386d3035021efd1",
+  "src/components/home-page.tsx": "ae0b3757e1488cd8c2657551044168909a34bc0a",
+  "src/data/home-location.ts": "22916b03c538e31757ef9dd4e42be8119b6ea982",
+  "src/components/lazy-configurator.tsx": "2e1849b66392f02c2d985a1637d4f28dc26e8dfd",
 });
 
 function sourceBlobId(source) {

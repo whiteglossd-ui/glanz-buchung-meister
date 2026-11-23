@@ -1,6 +1,109 @@
 [data-shell="public"] .home-booking {
   position: relative;
-  padding-block: clamp(2rem, 5vw, 4.5rem);
+  padding-block: clamp(4rem, 8vw, 7rem);
+}
+
+.home-booking-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 3rem;
+}
+
+.home-booking-layout > * {
+  min-width: 0;
+}
+
+[data-shell="public"] .home-booking-promise .heading-2 {
+  max-width: 15ch;
+  font-size: clamp(2.5rem, 4.2vw, 4.25rem);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.home-booking-intro {
+  max-width: 48ch;
+  margin-top: 1.5rem;
+  line-height: 1.75;
+  color: var(--color-muted);
+}
+
+.home-booking-benefits {
+  display: grid;
+  gap: 1.5rem;
+  margin-block: 2rem;
+}
+
+.home-booking-benefits li {
+  display: grid;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-line-strong);
+  line-height: 1.65;
+}
+
+.home-booking-benefits strong {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.home-booking-benefits span,
+.home-booking-note {
+  max-width: 48ch;
+  color: var(--color-muted);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+
+.home-booking-form {
+  padding: clamp(1.25rem, 3vw, 2.5rem);
+  border: 1px solid var(--color-line-strong);
+  background: var(--color-surface);
+}
+
+.home-booking-form-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+/* The existing configurator remains usable inside the narrower split column.
+   Its separate desktop price column would otherwise create three thin columns. */
+[data-shell="public"] .home-booking .booking-editorial {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+[data-shell="public"] .home-booking .booking-editorial > * {
+  grid-column: 1;
+  grid-row: auto;
+}
+
+[data-shell="public"] .home-booking .booking-editorial .booking-price {
+  position: static;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding-block: 1.25rem;
+}
+
+[data-shell="public"] .home-booking .booking-editorial .booking-price strong {
+  font-size: clamp(2rem, 3vw, 3rem);
+}
+
+[data-shell="public"] .home-booking .booking-editorial .booking-vehicle-options {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 1080px) {
+  .home-booking-layout {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr);
+    gap: clamp(2.5rem, 5vw, 5rem);
+  }
 }
 
 .home-booking-anchor {

@@ -32,7 +32,7 @@ export function LazyConfigurator({
   const [ready, setReady] = useState(eager);
 
   useEffect(() => {
-    if (eager || hash === "buchung") setReady(true);
+    if (eager || ["buchung", "termin"].includes(hash)) setReady(true);
   }, [eager, hash]);
 
   useEffect(() => {
