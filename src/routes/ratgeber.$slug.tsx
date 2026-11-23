@@ -2,7 +2,7 @@ import { serializeJsonLd } from "@/lib/json-ld";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { PageHero } from "@/components/page-hero";
 import { ctaPrimary } from "@/components/ui";
-import { articles, getArticle, type Article } from "@/data/ratgeber";
+import { articles, type Article } from "@/data/ratgeber";
 import { listPublishedCms } from "@/lib/cms.functions";
 import { cmsPublishedDate } from "@/lib/cms-date";
 import { logoJsonLdHref } from "@/data/media-src";
@@ -19,6 +19,9 @@ const pickupGuideSlugs = new Set([
 ]);
 
 async function loadArticle(slug: string): Promise<Omit<Article, "date"> & { date?: string }> {
+  // Keep article text out of unrelated routes' startup graph. The page's
+  // component import is already split by TanStack; its loader needs the same boundary.
+  const { getArticle } = await import("@/data/ratgeber");
   const staticArticle = getArticle(slug);
   if (staticArticle) return staticArticle;
   const rows = await listPublishedCms({ data: { kind: "blog" } });

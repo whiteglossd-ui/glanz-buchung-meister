@@ -30,6 +30,10 @@ export function MediaRail({ label, selectionLabel, items }: MediaRailProps) {
     const list = track.current;
     if (!list) return;
     let frame = 0;
+    let active = false;
+    let disposed = false;
+    let viewport: IntersectionObserver | undefined;
+    let resize: ResizeObserver | undefined;
     const measure = () => {
       frame = 0;
       const hasOverflow = list.scrollWidth > list.clientWidth + 1;
@@ -56,15 +60,39 @@ export function MediaRail({ label, selectionLabel, items }: MediaRailProps) {
       }
     };
     const schedule = () => {
-      if (!frame) frame = requestAnimationFrame(measure);
+      if (!disposed && !frame) frame = requestAnimationFrame(measure);
     };
-    const resize = new ResizeObserver(schedule);
-    resize.observe(list);
-    list.addEventListener("scroll", schedule, { passive: true });
-    measure();
+    const activate = () => {
+      if (active || disposed) return;
+      active = true;
+      viewport?.disconnect();
+      resize = new ResizeObserver(schedule);
+      resize.observe(list);
+      schedule();
+    };
+    const onScroll = () => {
+      // Programmatic restoration can scroll a rail before it enters the viewport.
+      activate();
+      schedule();
+    };
+    list.addEventListener("scroll", onScroll, { passive: true });
+    list.addEventListener("focusin", activate);
+    list.addEventListener("pointerdown", activate, { passive: true });
+    if (typeof IntersectionObserver === "undefined") activate();
+    else {
+      // Cards retain native scrolling; only offscreen geometry work is deferred.
+      viewport = new IntersectionObserver((entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) activate();
+      }, { rootMargin: "240px 0px" });
+      viewport.observe(list);
+    }
     return () => {
-      resize.disconnect();
-      list.removeEventListener("scroll", schedule);
+      disposed = true;
+      viewport?.disconnect();
+      resize?.disconnect();
+      list.removeEventListener("scroll", onScroll);
+      list.removeEventListener("focusin", activate);
+      list.removeEventListener("pointerdown", activate);
       cancelAnimationFrame(frame);
     };
   }, [items.length]);

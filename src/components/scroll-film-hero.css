@@ -404,6 +404,16 @@ html:has(#rundum-anfrage:target) .scroll-film[data-motion="scroll"] {
   line-height: 1.6;
   text-wrap: balance;
 }
+@media (max-width: 959px) {
+  /* Show the complete promise immediately on mobile without creating a
+     separate startup animation layer for every word. */
+  [data-shell="public"] .scroll-film--personal .hero-word {
+    animation: none;
+    opacity: 1;
+    translate: none;
+    transform: none;
+  }
+}
 @media (max-width: 639px) {
   [data-shell="public"] .scroll-film.scroll-film--personal[data-motion] .scroll-film-copy {
     width: calc(100% - 2.5rem);

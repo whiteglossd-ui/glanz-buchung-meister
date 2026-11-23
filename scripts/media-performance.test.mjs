@@ -36,6 +36,138 @@ function sliderCallback(name, scope) {
     : declaration.initializer;
   return execute(callback, source, scope);
 }
+
+function mediaRail({ observerSupported = true, scrollLeft = 0 } = {}) {
+  const source = sourceFile("media-rail");
+  const effect = find(source, (node) => ts.isCallExpression(node) && node.expression.getText(source) === "useEffect");
+  const frames = new Map();
+  const counts = { geometry: 0, resizeObservers: 0 };
+  const state = { visible: { first: 1, last: 1 }, edges: { start: true, end: false }, overflowing: false };
+  let viewport, resize, nextFrame = 0;
+  const list = Object.assign(new EventTarget(), {
+    scrollLeft,
+    getBoundingClientRect() { counts.geometry++; return { left: 0, right: 300, width: 300 }; },
+  });
+  Object.defineProperties(list, {
+    clientWidth: { get() { counts.geometry++; return 300; } },
+    scrollWidth: { get() { counts.geometry++; return 900; } },
+    children: { value: [0, 1, 2].map((index) => ({
+      getBoundingClientRect() {
+        counts.geometry++;
+        return { left: index * 300 - list.scrollLeft, right: (index + 1) * 300 - list.scrollLeft, width: 300 };
+      },
+    })) },
+  });
+  const update = (key) => (next) => { state[key] = typeof next === "function" ? next(state[key]) : next; };
+  const cleanup = execute(effect.arguments[0], source, {
+    track: { current: list },
+    setOverflowing: update("overflowing"),
+    setEdges: update("edges"),
+    setVisible: update("visible"),
+    requestAnimationFrame(callback) { frames.set(++nextFrame, callback); return nextFrame; },
+    cancelAnimationFrame(id) { frames.delete(id); },
+    ResizeObserver: class {
+      constructor(callback) { counts.resizeObservers++; resize = this; this.callback = callback; }
+      observe(element) { assert.equal(element, list); }
+      disconnect() { this.disconnected = true; }
+    },
+    IntersectionObserver: observerSupported ? class {
+      constructor(callback, options) { viewport = this; this.callback = callback; this.options = options; }
+      observe(element) { assert.equal(element, list); }
+      disconnect() { this.disconnected = true; }
+    } : undefined,
+  })();
+  return {
+    counts, state, list, cleanup, frames,
+    viewport: () => viewport,
+    resize: () => resize,
+    near(value = true) { viewport?.callback([{ isIntersecting: value }]); },
+    flush() { const callbacks = [...frames.values()]; frames.clear(); callbacks.forEach((callback) => callback()); },
+  };
+}
+
+test("offscreen rails do no geometry work until a real viewport approach", () => {
+  const h = mediaRail();
+  assert.equal(h.viewport().options.rootMargin, "240px 0px");
+  h.near(false);
+  h.flush();
+  assert.equal(h.counts.geometry, 0);
+  assert.equal(h.counts.resizeObservers, 0);
+  h.near();
+  h.resize().callback();
+  assert.equal(h.frames.size, 1, "activation and initial resize share one frame");
+  h.flush();
+  assert.ok(h.counts.geometry > 0);
+  assert.equal(h.state.overflowing, true);
+  assert.equal(h.state.visible.first, 1);
+  assert.equal(h.viewport().disconnected, true);
+  const measured = h.counts.geometry;
+  h.resize().callback();
+  h.flush();
+  assert.ok(h.counts.geometry > measured, "active rails keep responding to resize");
+  h.cleanup();
+});
+
+test("rail activation respects restored horizontal position and subsequent scrolling", () => {
+  const h = mediaRail({ scrollLeft: 600 });
+  h.list.dispatchEvent(new Event("scroll"));
+  h.flush();
+  assert.equal(h.state.visible.first, 3);
+  assert.equal(h.state.edges.end, true);
+  h.list.scrollLeft = 300;
+  h.list.dispatchEvent(new Event("scroll"));
+  h.flush();
+  assert.equal(h.state.visible.first, 2);
+  assert.equal(h.state.edges.start, false);
+  assert.equal(h.state.edges.end, false);
+  h.cleanup();
+});
+
+for (const event of ["focusin", "pointerdown"]) {
+  test(`rail ${event} activates controls before viewport observation`, () => {
+    const h = mediaRail();
+    h.list.dispatchEvent(new Event(event));
+    h.flush();
+    assert.equal(h.state.overflowing, true);
+    assert.equal(h.counts.resizeObservers, 1);
+    h.cleanup();
+  });
+}
+
+test("rail controls remain available without IntersectionObserver and clean up queued work", () => {
+  const h = mediaRail({ observerSupported: false });
+  h.flush();
+  assert.equal(h.state.overflowing, true);
+  h.resize().callback();
+  h.cleanup();
+  assert.equal(h.frames.size, 0);
+  assert.equal(h.resize().disconnected, true);
+  const pending = mediaRail();
+  pending.cleanup();
+  pending.near();
+  pending.list.dispatchEvent(new Event("focusin"));
+  assert.equal(pending.frames.size, 0);
+  assert.equal(pending.counts.resizeObservers, 0);
+});
+
+test("home progress avoids document layout at the top and measures restored scroll positions", () => {
+  const source = sourceFile("home-polish");
+  const declaration = find(source, (node) => ts.isVariableDeclaration(node) && node.name.getText(source) === "paint");
+  let heightReads = 0;
+  const progressEl = { style: {} };
+  const window = { scrollY: 0, innerHeight: 800, requestAnimationFrame() { return 1; } };
+  const paint = execute(declaration.initializer, source, {
+    window, progressEl, pageP: 0, frame: 0, paint: () => paint(),
+    document: { documentElement: { get scrollHeight() { heightReads++; return 1800; } } },
+  });
+  paint();
+  assert.equal(heightReads, 0);
+  assert.equal(progressEl.style.transform, "scaleX(0)");
+  window.scrollY = 500;
+  paint();
+  assert.equal(heightReads, 1);
+  assert.equal(progressEl.style.transform, "scaleX(0.09)");
+});
 function hero({ ready = false, reduced = false, saveData = false, idle = true } = {}) {
   const source = sourceFile("media");
   const effect = find(source, (node) => ts.isCallExpression(node) && node.expression.getText(source) === "useEffect" && node.arguments[0]?.getText(source).includes("if (!imageReady) return;"));

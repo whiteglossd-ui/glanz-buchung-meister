@@ -5,12 +5,18 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+const wholeEuroFormatter = new Intl.NumberFormat("de-DE", {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+});
+const fractionalEuroFormatter = new Intl.NumberFormat("de-DE", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
 export function money(value: number) {
   const hasCents = Math.round(value * 100) % 100 !== 0;
-  return new Intl.NumberFormat("de-DE", {
-    minimumFractionDigits: hasCents ? 2 : 0,
-    maximumFractionDigits: hasCents ? 2 : 0,
-  }).format(value);
+  return (hasCents ? fractionalEuroFormatter : wholeEuroFormatter).format(value);
 }
 
 export function eur(value: number) {

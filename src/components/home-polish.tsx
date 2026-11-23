@@ -207,10 +207,10 @@ export function HomePolish() {
     if (lines.length && !reduce) {
       const root = document.documentElement;
       const fold = window.innerHeight;
-      const pending = lines.filter((el) => {
-        const visible = el.getBoundingClientRect().top < fold;
+      const positions = lines.map((el) => ({ el, visible: el.getBoundingClientRect().top < fold }));
+      const pending = positions.flatMap(({ el, visible }) => {
         if (visible) el.classList.add("is-in");
-        return !visible;
+        return visible ? [] : [el];
       });
       root.dataset.lines = "armed";
       onceIn(pending, (el) => el.classList.add("is-in"), {
@@ -228,9 +228,11 @@ export function HomePolish() {
     const progressEl = progressRef.current;
 
     const paint = () => {
-      const doc = document.documentElement;
-      const max = Math.max(1, doc.scrollHeight - window.innerHeight);
-      const targetPage = Math.min(1, Math.max(0, window.scrollY / max));
+      const scrollY = window.scrollY;
+      // At the top, progress is known without forcing layout of the full page.
+      const targetPage = scrollY <= 0
+        ? 0
+        : Math.min(1, scrollY / Math.max(1, document.documentElement.scrollHeight - window.innerHeight));
       pageP += (targetPage - pageP) * 0.18;
       if (Math.abs(targetPage - pageP) < 0.0005) pageP = targetPage;
       if (progressEl) progressEl.style.transform = `scaleX(${pageP})`;
