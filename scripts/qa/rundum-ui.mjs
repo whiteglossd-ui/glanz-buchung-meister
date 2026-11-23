@@ -289,6 +289,11 @@ export async function verifyRundumIntentLoading(page, { label, base }) {
   await reads.complete(`${label}: leave booking for prices`);
   await page.getByRole("contentinfo").getByRole("link", { name: "Preise", exact: true }).click();
   await page.waitForURL((url) => url.pathname === "/preise");
+  // The prices route eagerly mounts its own configurator. Let its availability
+  // response finish before history navigation unmounts and aborts the request.
+  await page.getByRole("heading", { name: "Preise für die Aufbereitung.", exact: true }).waitFor({ state: "visible" });
+  await page.locator("form.booking-flow #slot:enabled").waitFor({ state: "attached" });
+  await reads.complete(`${label}: leave prices after availability`);
   await page.goBack({ waitUntil: "networkidle" });
   await form.waitFor({ state: "visible", timeout: 5000 });
   assert.equal(await form.locator("#rundum-name").inputValue(), draft, `${label}: client route and back keep unsent input`);
