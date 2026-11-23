@@ -50,3 +50,9 @@ compose 1920 1080 0.5 0.5 "$journey_tmp/landscape.mkv"
 compose 720 1280 0.4 0.45 "$journey_tmp/portrait.mkv"
 bash "$script_dir/prepare-scroll-film.sh" \
   "$journey_tmp/portrait.mkv" "$journey_tmp/landscape.mkv" "$output_dir"
+
+# Keep the previous poster URLs usable in already cached website releases.
+for width in 540 720; do
+  ffmpeg -hide_banner -loglevel error -nostdin -y -i "$output_dir/poster-mobile-$width.webp" \
+    -frames:v 1 -c:v libwebp -compression_level 6 -quality 55 "$output_dir/poster-mobile-$width-v2.webp"
+done

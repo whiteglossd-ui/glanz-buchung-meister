@@ -35,6 +35,12 @@ werden nur einmal verlustbehaftet codiert.
 | `poster-desktop-1920.webp` | 1920 × 1080 | 79.798 |
 | `poster-mobile-540.webp` | 540 × 960 | 26.116 |
 | `poster-mobile-720.webp` | 720 × 1280 | 41.088 |
+| `poster-mobile-540-v2.webp` | 540 × 960 | 18.248 |
+| `poster-mobile-720-v2.webp` | 720 × 1280 | 24.134 |
+
+Die mobilen v2-Poster verwenden dasselbe Bild in derselben Größe. Für die
+kompaktere Auslieferung wurden die jeweiligen WebP-Poster mit FFmpeg und
+`-frames:v 1 -c:v libwebp -compression_level 6 -quality 55` kodiert.
 
 Beide MP4s: H.264/yuv420p, 192 Frames, 24 Bilder/s, keine Audiospur,
 64 Schlüsselbilder im Abstand von drei Frames, keine B-Frames, `faststart`.

@@ -6,8 +6,8 @@ export const scrollFilm = {
   mobileVideo: `${base}/classic-mobile-540.mp4`,
   desktopPoster: `${base}/poster-desktop-1280.webp`,
   desktopPosters: `${base}/poster-desktop-1280.webp 1280w, ${base}/poster-desktop-1920.webp 1920w`,
-  mobilePoster: `${base}/poster-mobile-540.webp`,
-  mobilePosters: `${base}/poster-mobile-540.webp 540w, ${base}/poster-mobile-720.webp 720w`,
+  mobilePoster: `${base}/poster-mobile-540-v2.webp`,
+  mobilePosters: `${base}/poster-mobile-540-v2.webp 540w, ${base}/poster-mobile-720-v2.webp 720w`,
 };
 
 export const scrollFilmPreloads = [
