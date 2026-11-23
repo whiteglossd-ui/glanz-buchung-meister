@@ -142,16 +142,28 @@ fi
 as_runner mkdir -p -m 0700 "$work"
 as_runner chmod 0700 "$work"
 ensure_idle() {
-  local ids id display=()
-  ids=$(as_runner env XDG_RUNTIME_DIR="/run/user/$uid" timeout 15 \
-    podman --remote --url "unix://$socket" ps --quiet --no-trunc) ||
+  local rows id name extra display=()
+  local workflow=bf60d2f73ffc07f8259feeb8832d3894f39ea325f7cedbefd37e14c8d9818be1
+  rows=$(as_runner env XDG_RUNTIME_DIR="/run/user/$uid" timeout 15 \
+    podman --remote --url "unix://$socket" ps --no-trunc --format '{{.ID}} {{.Names}}') ||
     fail 'Podman konnte die laufenden Container des Website-Runners nicht abfragen.'
-  [[ -n $ids ]] || return 0
-  while IFS= read -r id; do
-    [[ $id =~ ^[[:xdigit:]]{64}$ ]] || fail 'Podman lieferte eine unerwartete Container-ID.'
+  [[ -n $rows ]] || return 0
+  while read -r id name extra; do
+    [[ $id =~ ^[[:xdigit:]]{64}$ && -n $name && -z $extra ]] || fail 'Podman lieferte eine unerwartete Containerliste.'
+    # Forgejo lists tasks 1, 8, 13 and 18 as cancelled in this repository.
+    # Preserve only the four observed Podman containers with those exact task names.
+    case ${id:0:12} in
+      a001c2f014f3|fd6acf93b756|438ad5b113f9|8c31137e0eda)
+        if [[ $name =~ ^FORGEJO-ACTIONS-TASK-(1|8|13|18)_WORKFLOW-${workflow}_JOB-schema$ ]]; then
+          continue
+        fi
+        ;;
+    esac
     display+=("${id:0:12}")
-  done <<< "$ids"
-  fail "Podman meldet laufende Container beim Website-Runner: ${display[*]}."
+  done <<< "$rows"
+  if (( ${#display[@]} )); then
+    fail "Podman meldet weitere laufende Container beim Website-Runner: ${display[*]}."
+  fi
 }
 ensure_idle
 if ! as_runner test -s "$candidate"; then
