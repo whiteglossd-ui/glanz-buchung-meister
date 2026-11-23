@@ -145,16 +145,36 @@ describe("first-paint consent clearance", () => {
   for (const visible of [true, false]) {
     it(`reserves measured space only for a visible initial dialog: ${visible}`, () => {
       const attributes = new Map<string, string>(), properties = new Map<string, string>();
-      new Function("document", "getComputedStyle", CONSENT_INITIAL_LAYOUT_SCRIPT)(
+      let notify: ((entries: { borderBoxSize: { blockSize: number }[] }[]) => void) | undefined;
+      let disconnected = false;
+      const banner = { hasAttribute: (key: string) => key === "data-consent-initial" };
+      class Observer {
+        constructor(callback: typeof notify) { notify = callback; }
+        observe(target: object, options: object) {
+          assert.equal(target, banner);
+          assert.deepEqual(options, { box: "border-box" });
+        }
+        disconnect() { disconnected = true; }
+      }
+      new Function("document", "ResizeObserver", CONSENT_INITIAL_LAYOUT_SCRIPT)(
         {
-          querySelector: () => ({ getBoundingClientRect: () => ({ height: 214 }) }),
+          querySelector: () => banner,
           documentElement: {
+            hasAttribute: (key: string) => key === "data-consent-stored" && !visible,
             setAttribute: (key: string, value: string) => attributes.set(key, value),
             style: { setProperty: (key: string, value: string) => properties.set(key, value) },
           },
         },
-        () => ({ display: visible ? "block" : "none" }),
+        Observer,
       );
+      assert.equal(properties.size, 0, "the parser script must not force synchronous layout");
+      if (visible) {
+        assert.ok(notify);
+        notify([{ borderBoxSize: [{ blockSize: 214 }] }]);
+        assert.equal(disconnected, true);
+      } else {
+        assert.equal(notify, undefined);
+      }
       assert.equal(attributes.get("data-consent-initial-open"), visible ? "true" : undefined);
       assert.equal(properties.get("--consent-banner-height"), visible ? "214px" : undefined);
     });

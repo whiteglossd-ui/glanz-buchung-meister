@@ -20,12 +20,19 @@ export const CONSENT_INITIAL_STATE_SCRIPT =
   'if(c==="accepted"||c==="rejected")document.documentElement.setAttribute("data-consent-stored","true")' +
   '}catch{}})();';
 
-/** Preserve the existing hero clearance before the client handlers are ready. */
+/**
+ * ResizeObserver delivers border-box sizes after layout and before paint. An
+ * inline synchronous measurement here otherwise forces layout of the whole
+ * partially parsed homepage before the browser can paint the dialog.
+ */
 export const CONSENT_INITIAL_LAYOUT_SCRIPT =
-  '(function(){var e=document.querySelector(".consent-banner[data-consent-initial]");' +
-  'if(e&&getComputedStyle(e).display!=="none"){var r=document.documentElement;' +
-  'r.style.setProperty("--consent-banner-height",e.getBoundingClientRect().height+"px");' +
-  'r.setAttribute("data-consent-initial-open","true")}})();';
+  '(function(){var r=document.documentElement,e=document.querySelector(".consent-banner[data-consent-initial]");' +
+  'if(!e||r.hasAttribute("data-consent-stored"))return;' +
+  'r.setAttribute("data-consent-initial-open","true");' +
+  'var o=new ResizeObserver(function(entries){if(!e.hasAttribute("data-consent-initial")){o.disconnect();return;}' +
+  'var b=entries[0].borderBoxSize,h=b?(b[0]||b).blockSize:e.getBoundingClientRect().height;' +
+  'if(h>0)r.style.setProperty("--consent-banner-height",h+"px");o.disconnect()});' +
+  'o.observe(e,{box:"border-box"})})();';
 
 const CONSENT_CHANGE_EVENT = "wg-consent-change";
 export const CONSENT_SETTINGS_EVENT = "wg-consent-settings";
