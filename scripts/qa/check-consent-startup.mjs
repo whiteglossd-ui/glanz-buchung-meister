@@ -31,6 +31,33 @@ try {
           if (choice === "accepted" || choice === "rejected") localStorage.setItem("wg-consent", choice);
         }
       }, scenario);
+      const earlyIntent = { "fresh-reject": "pointerdown", "fresh-accept": "keydown", rejected: "focusin" }[scenario];
+      if (earlyIntent) {
+        // Exercise the actual SSR link and inline bootstrap before DOMContentLoaded.
+        // External module responses remain gated, so React cannot handle this input.
+        await context.addInitScript((intent) => {
+          document.addEventListener("readystatechange", () => {
+            if (document.readyState !== "interactive") return;
+            const link = document.querySelector(".scroll-film-cta");
+            if (!link) return;
+            const selector = 'head script[type="module"][src]';
+            const before = document.querySelectorAll(selector).length;
+            let event;
+            if (intent === "focusin") {
+              link.focus({ preventScroll: true });
+            } else {
+              event = intent === "keydown"
+                ? new KeyboardEvent(intent, { key: "Enter", bubbles: true, cancelable: true })
+                : new PointerEvent(intent, { bubbles: true, cancelable: true });
+              link.dispatchEvent(event);
+            }
+            window.__qaEarlyBookingIntent = {
+              before, after: document.querySelectorAll(selector).length,
+              hash: new URL(link.href).hash, prevented: !!event?.defaultPrevented,
+            };
+          });
+        }, earlyIntent);
+      }
       await context.route("**/*", async (route) => {
         const request = route.request(), url = new URL(request.url());
         if (url.origin !== qaBase) {
@@ -49,6 +76,11 @@ try {
           pageErrors.push(message.text());
       });
       await page.goto(qaBase, { waitUntil: "domcontentloaded" });
+      if (earlyIntent) {
+        assert.deepEqual(await page.evaluate(() => window.__qaEarlyBookingIntent),
+          { before: 0, after: 1, hash: "#buchung", prevented: false },
+          `${earlyIntent}: the real booking link requests its client synchronously and retains native navigation`);
+      }
       // The real inline startup script and CSS run; only the client JS waits.
       // This checks first paint independently of hydration speed.
       const initial = page.locator('.consent-banner[data-consent-initial="true"]');
