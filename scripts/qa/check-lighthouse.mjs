@@ -42,7 +42,7 @@ const summary = {
   status: "running",
   url: `${lighthouseBase}/`,
   source: "Actual PR production build served by this run's isolated QA server",
-  commit: process.env.GITHUB_SHA,
+  commit: process.env.CI_COMMIT_SHA || process.env.GITHUB_SHA || process.env.FORGEJO_SHA,
   qaRunId: process.env.QA_RUN_ID,
   runtimeBudgetMs: budgetMs,
   throttling:

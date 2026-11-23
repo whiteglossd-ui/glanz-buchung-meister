@@ -12,7 +12,7 @@ export function blockLocalHosting() {
 }
 
 // No local override switch. CI=true and a production NODE_ENV do not authorize hosting.
-// Only the existing Linux GitHub CI job may run its isolated, synthetic flow tests.
+// The provider-specific checks below identify the operator-approved isolated jobs.
 export function isIsolatedGithubCi({
   platform = process.platform,
   env = process.env,
@@ -33,7 +33,7 @@ export function isIsolatedGithubCi({
 }
 
 export function assertIsolatedGithubCi() {
-  if (!isIsolatedGithubCi() && !isIsolatedForgejoCi()) blockLocalHosting();
+  if (!isIsolatedGithubCi() && !isIsolatedForgejoCi() && !isIsolatedGitlabCi()) blockLocalHosting();
 }
 
 export function isIsolatedForgejoCi({
@@ -56,6 +56,44 @@ export function isIsolatedForgejoCi({
   }
 }
 
+export function isIsolatedGitlabCi({
+  platform = process.platform,
+  env = process.env,
+  cwd = process.cwd(),
+  realpath = realpathSync,
+} = {}) {
+  const workspace = env.CI_PROJECT_DIR;
+  if (platform !== "linux" || env.GITLAB_CI !== "true" || env.CI_SERVER_URL !== "https://gitlab-p1va.srv2077393.hstgr.cloud" ||
+      env.CI_DISPOSABLE_ENVIRONMENT !== "true" || env.CI_BUILDS_DIR !== "/builds" ||
+      !/^[1-9]\d*$/.test(env.CI_PROJECT_ID || "") || env.CI_PROJECT_ID !== env.WHITE_GLOSS_GITLAB_PROJECT_ID ||
+      env.WEBSITE_ISOLATED_FLOWTESTS_ENABLED !== "true" ||
+      !["flows", "studio", "cross-browser"].includes(env.CI_JOB_NAME || "") ||
+      !/^[1-9]\d*$/.test(env.CI_JOB_ID || "") || !/^[1-9]\d*$/.test(env.CI_PIPELINE_ID || "") ||
+      !/^[1-9]\d*$/.test(env.CI_RUNNER_ID || "") || env.CI_RUNNER_ID !== env.WHITE_GLOSS_GITLAB_RUNNER_ID ||
+      !env.CI_PROJECT_PATH || !workspace) return false;
+
+  if (env.CI_PIPELINE_SOURCE === "merge_request_event" &&
+      (env.CI_MERGE_REQUEST_SOURCE_PROJECT_ID !== env.CI_PROJECT_ID ||
+       env.CI_MERGE_REQUEST_TARGET_PROJECT_ID !== env.CI_PROJECT_ID)) return false;
+  if (!["merge_request_event", "push", "web", "api"].includes(env.CI_PIPELINE_SOURCE || "")) return false;
+
+  try {
+    const tags = JSON.parse(env.CI_RUNNER_TAGS || "null");
+    const checkout = realpath(workspace);
+    // Docker executors may add runner/concurrency directories before the namespace.
+    return Array.isArray(tags) && tags.includes("white-gloss-website") &&
+      checkout.startsWith(realpath(env.CI_BUILDS_DIR) + "/") &&
+      checkout.endsWith("/" + env.CI_PROJECT_PATH) && realpath(cwd) === checkout;
+  } catch {
+    return false;
+  }
+}
+
+// The temporary Studio database and media storage are enabled only inside these CI flows.
+export function isIsolatedStudioCi() {
+  return isIsolatedGithubCi() || isIsolatedGitlabCi();
+}
+
 /** @param {string | URL} entryUrl */
 export function isActiveIonosRelease(entryUrl, {
   platform = process.platform,
@@ -75,6 +113,6 @@ export function isActiveIonosRelease(entryUrl, {
 
 /** @param {string | URL} entryUrl */
 export function assertProductionHosting(entryUrl) {
-  if (!isIsolatedGithubCi() && !isIsolatedForgejoCi() && !isActiveIonosRelease(entryUrl)) blockLocalHosting();
+  if (!isIsolatedGithubCi() && !isIsolatedForgejoCi() && !isIsolatedGitlabCi() && !isActiveIonosRelease(entryUrl)) blockLocalHosting();
 }
 

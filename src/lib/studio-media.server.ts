@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { isIsolatedGithubCi } from "../../scripts/hosting-policy.mjs";
+import { isIsolatedStudioCi } from "../../scripts/hosting-policy.mjs";
 import { cmsEnabled } from "./cms.availability.ts";
 import { customerPhotos } from "../data/customer-photos.ts";
 import type { Sql } from "./db.ts";
@@ -17,7 +17,7 @@ const SHOP = "white-gloss";
 export function studioMediaEnabled(): boolean {
   return cmsEnabled({
     enabled: process.env.WEBSITE_STUDIO_ENABLED,
-    isolatedCi: isIsolatedGithubCi(),
+    isolatedCi: isIsolatedStudioCi(),
   });
 }
 export function assertStudioMediaEnabled(): void {
@@ -166,7 +166,7 @@ export function assertStudioMediaStorage(): string {
   if (
     process.env.NODE_ENV === "production" &&
     !process.env.DATABASE_URL?.trim() &&
-    !isIsolatedGithubCi()
+    !isIsolatedStudioCi()
   ) {
     throw new Error("Der Bildspeicher benötigt eine dauerhaft angebundene Datenbank.");
   }

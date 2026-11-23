@@ -1,11 +1,12 @@
 import { existsSync } from "node:fs";
 import { createRequire } from "node:module";
 import { chromium, firefox, webkit } from "playwright";
-import { isIsolatedForgejoCi } from "./hosting-policy.mjs";
+import { isIsolatedForgejoCi, isIsolatedGitlabCi } from "./hosting-policy.mjs";
 
 // This validates the preinstalled image; it never starts an application or a
 // browser. The normal isolated CI tests still launch and exercise each engine.
-if (!(process.env.GITHUB_ACTIONS === "true" && process.env.RUNNER_OS === "Linux") && !isIsolatedForgejoCi()) {
+if (!(process.env.GITHUB_ACTIONS === "true" && process.env.RUNNER_OS === "Linux") &&
+    !isIsolatedForgejoCi() && !isIsolatedGitlabCi()) {
   throw new Error("Vorinstallierte Browser werden nur in freigegebenen Linux-CI-Läufen geprüft.");
 }
 const [expected, ...engines] = process.argv.slice(2);

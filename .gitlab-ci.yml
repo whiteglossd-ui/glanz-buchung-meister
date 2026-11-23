@@ -1,0 +1,153 @@
+include:
+  - local: '/.gitlab/hostinger.yml'
+
+workflow:
+  auto_cancel:
+    on_new_commit: interruptible
+  rules:
+    - if: '$CI_SERVER_URL != "https://gitlab-p1va.srv2077393.hstgr.cloud"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_PROJECT_ID == $CI_PROJECT_ID && $CI_MERGE_REQUEST_TARGET_PROJECT_ID == $CI_PROJECT_ID'
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH'
+    - if: '($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api") && $CI_COMMIT_BRANCH'
+
+stages:
+  - test
+  - deploy
+
+variables:
+  GIT_STRATEGY: clone
+  FF_NETWORK_PER_BUILD: "true"
+
+default:
+  tags:
+    - white-gloss-website
+  image: node:24-bookworm
+
+.website-check:
+  stage: test
+  interruptible: true
+  before_script:
+    - git config --global --add safe.directory "$CI_PROJECT_DIR"
+    - npm ci --ignore-scripts
+
+schema:
+  stage: test
+  interruptible: true
+  timeout: 18 minutes
+  services:
+    - name: postgres:16
+      alias: website-ci-postgres
+      variables:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+        POSTGRES_DB: postgres
+  script:
+    - unset PGHOSTADDR PGSERVICE PGSERVICEFILE
+    - export PGHOST=website-ci-postgres PGPORT=5432 PGUSER=postgres PGPASSWORD=postgres
+    - apt-get update -qq
+    - apt-get install -y --no-install-recommends postgresql-client
+    - |
+      for attempt in $(seq 1 30); do
+        if pg_isready --quiet; then break; fi
+        sleep 1
+      done
+      pg_isready
+    - npm run check:migrations
+    - npm run check:rls
+    - npm run check:erpnext-approval
+
+verify:
+  extends: .website-check
+  timeout: 45 minutes
+  script:
+    - |
+      quality_status=0
+      npm audit --omit=dev --audit-level=moderate || quality_status=1
+      npm run lint || quality_status=1
+      npm run typecheck || quality_status=1
+      npm run typecheck:functions || quality_status=1
+      npm test || quality_status=1
+      test "$quality_status" -eq 0
+    - node --test src/lib/seo-policy.test.ts src/lib/seo-intents.test.ts
+    - |
+      git fetch --no-tags --depth=1 origin \
+        db305e3c190cf53a0213c90ea3e788625ece091d \
+        6daf3fc01834e94720ef4834f36e0534dfc93aaa \
+        333487b4f12a01727ace6ec2f36d22c849551b00
+    - npm run check:design-content
+    - npx --no-install vitest run src/lib/city-seo.test.ts
+    - |
+      for script in scripts/deploy-ionos-release.sh scripts/check-migrations.sh \
+        scripts/check-rls.sh scripts/check-erpnext-operational-approval.sh; do
+        bash -n "$script"
+      done
+      for script in scripts/smoke-production.mjs scripts/write-google-oauth.mjs \
+        scripts/audit-domain-migration.mjs scripts/qa/run-checks.mjs \
+        scripts/qa/check-lighthouse.mjs scripts/qa/lighthouse-digest.mjs \
+        scripts/qa/check-hero-stability.mjs scripts/qa/check-website-studio.mjs \
+        scripts/qa/check-cross-browser.mjs lighthouserc.mobile.cjs lighthouserc.desktop.cjs; do
+        node --check "$script"
+      done
+    - env -u GOOGLE_CLIENT_ID -u GOOGLE_CLIENT_SECRET npm run build
+    - test -s .output/server/index.mjs
+    - printf 'white-gloss-booking-workflow=1\n' | cmp - .output/booking-workflow.contract
+    - tar -czf website-release.tgz .output
+    - sha256sum website-release.tgz > website-release.tgz.sha256
+  artifacts:
+    name: website-release-$CI_COMMIT_SHA
+    expire_in: 7 days
+    paths:
+      - website-release.tgz
+      - website-release.tgz.sha256
+
+.website-browser:
+  extends: .website-check
+  image: mcr.microsoft.com/playwright:v1.62.1-noble@sha256:dcc5531e97840b9b5e794f2814476b21571c5124a3fca2267d73041f56e7580e
+  rules:
+    - if: '$WEBSITE_ISOLATED_FLOWTESTS_ENABLED == "true"'
+  before_script:
+    - |
+      if [ "$(node -p "process.versions.node.split('.')[0]")" != "24" ]; then
+        tool_dir=$(mktemp -d)
+        npm install --prefix "$tool_dir" --no-save --no-audit --no-fund node@24
+        export PATH="$tool_dir/node_modules/.bin:$PATH"
+      fi
+    - git config --global --add safe.directory "$CI_PROJECT_DIR"
+    - npm ci --ignore-scripts
+    - env -u GOOGLE_CLIENT_ID -u GOOGLE_CLIENT_SECRET npm run build
+  artifacts:
+    name: "$CI_JOB_NAME-$CI_PIPELINE_ID"
+    expire_in: 7 days
+    when: always
+    paths:
+      - .qa-output/
+
+flows:
+  extends: .website-browser
+  timeout: 40 minutes
+  script:
+    - node scripts/check-ci-browsers.mjs 1.62.1 chromium
+    - npm run test:release
+  after_script:
+    - node scripts/qa/export-review-images.mjs
+
+studio:
+  extends: .website-browser
+  timeout: 30 minutes
+  script:
+    - node scripts/check-ci-browsers.mjs 1.62.1 chromium
+    - timeout 5m node scripts/qa/run-checks.mjs --studio-only
+  after_script:
+    - node scripts/qa/export-review-images.mjs
+
+cross-browser:
+  extends: .website-browser
+  timeout: 35 minutes
+  script:
+    - git diff --exit-code -- src/routeTree.gen.ts
+    - node scripts/check-ci-browsers.mjs 1.62.1 firefox webkit
+    - node scripts/qa/run-checks.mjs --cross-browser-only

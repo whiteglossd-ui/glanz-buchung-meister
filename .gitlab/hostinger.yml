@@ -1,0 +1,40 @@
+hostinger-production:
+  stage: deploy
+  image: node:24-bookworm
+  tags: [white-gloss-website]
+  environment:
+    name: production
+    url: https://white-gloss.de
+  resource_group: white-gloss-hostinger-production
+  interruptible: false
+  timeout: 25 minutes
+  needs:
+    - job: schema
+      artifacts: false
+    - job: verify
+      artifacts: true
+    - job: flows
+      artifacts: false
+    - job: studio
+      artifacts: false
+    - job: cross-browser
+      artifacts: false
+  rules:
+    - if: '$CI_SERVER_HOST == "gitlab-p1va.srv2077393.hstgr.cloud" && $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "main" && $CI_COMMIT_REF_PROTECTED == "true" && $HOSTINGER_DEPLOY_ENABLED == "true" && $WEBSITE_ISOLATED_FLOWTESTS_ENABLED == "true" && $WHITE_GLOSS_GITLAB_PROJECT_ID == $CI_PROJECT_ID'
+      when: manual
+      # An unused production button must not block the regular main CI.
+      allow_failure: true
+  manual_confirmation: "Diesen geprüften Stand auf white-gloss.de veröffentlichen?"
+  inputs:
+    release_sha:
+      default: PENDING
+      regex: '^(PENDING|[0-9a-f]{40})$'
+      description: Freigegebener vollständiger main-Commit
+    expected_current_release:
+      default: PENDING
+      regex: '^(PENDING|[0-9a-f]{40})$'
+      description: Bestätigter aktiver Website-Commit auf Hostinger
+  # SSH key and known_hosts are protected file variables scoped to production.
+  # Enable HOSTINGER_DEPLOY_ENABLED only after the credential and runtime checks.
+  script:
+    - bash scripts/deploy-gitlab-hostinger.sh '${{ job.inputs.release_sha }}' '${{ job.inputs.expected_current_release }}'

@@ -24,8 +24,8 @@ const readOptionalCms = createOptionalCmsReader({
 });
 
 async function studioEnabled() {
-  const { isIsolatedGithubCi } = await import("../../scripts/hosting-policy.mjs");
-  return cmsEnabled({ enabled: process.env.WEBSITE_STUDIO_ENABLED, isolatedCi: isIsolatedGithubCi() });
+  const { isIsolatedStudioCi } = await import("../../scripts/hosting-policy.mjs");
+  return cmsEnabled({ enabled: process.env.WEBSITE_STUDIO_ENABLED, isolatedCi: isIsolatedStudioCi() });
 }
 
 export const getCmsEditorMode = createServerFn({ method: "GET" })
@@ -68,8 +68,8 @@ export type CmsRow = {
 async function studioStore(actor?: string) {
   if (!(await studioEnabled())) throw new Error("Website Studio ist noch nicht freigeschaltet. Datenbank, Medienspeicher und Veröffentlichung benötigen die separate Einrichtungsfreigabe.");
   if (actor && process.env.NODE_ENV === "production" && !process.env.DATABASE_URL?.trim()) {
-    const { isIsolatedGithubCi } = await import("../../scripts/hosting-policy.mjs");
-    if (!isIsolatedGithubCi()) throw new Error("Website Studio benötigt die persistente Datenbank. Bitte die Einrichtung prüfen lassen.");
+    const { isIsolatedStudioCi } = await import("../../scripts/hosting-policy.mjs");
+    if (!isIsolatedStudioCi()) throw new Error("Website Studio benötigt die persistente Datenbank. Bitte die Einrichtung prüfen lassen.");
   }
   const sql = await getSql();
   const { validateCmsAssetsForPublication } = await import("./studio-media.server");

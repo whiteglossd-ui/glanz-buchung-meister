@@ -6,7 +6,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { spawnSync } from "node:child_process";
-import { isIsolatedForgejoCi, isIsolatedGithubCi, isActiveIonosRelease } from "./hosting-policy.mjs";
+import { isIsolatedForgejoCi, isIsolatedGithubCi, isIsolatedGitlabCi, isActiveIonosRelease } from "./hosting-policy.mjs";
 import { guardProductionHosting } from "./guard-production-hosting.mjs";
 
 const root = resolve(import.meta.dirname, "..");
@@ -49,6 +49,44 @@ test("Forgejo requires operator opt-in and one of the isolated jobs in the websi
   assert.equal(isIsolatedForgejoCi({ ...options, env: { ...env, FORGEJO_JOB: "verify" } }), false);
   assert.equal(isIsolatedForgejoCi({ ...options, env: { ...env, FORGEJO_ACTIONS: "false" } }), false);
   assert.equal(isIsolatedForgejoCi({ ...options, cwd: "/local" }), false);
+});
+
+test("GitLab requires the approved Hostinger instance, project, disposable runner, job and checkout", () => {
+  const env = {
+    GITLAB_CI: "true", CI_SERVER_URL: "https://gitlab-p1va.srv2077393.hstgr.cloud", CI_PROJECT_ID: "240",
+    WHITE_GLOSS_GITLAB_PROJECT_ID: "240", WEBSITE_ISOLATED_FLOWTESTS_ENABLED: "true",
+    CI_JOB_NAME: "flows", CI_JOB_ID: "482", CI_PIPELINE_ID: "328", CI_RUNNER_ID: "52",
+    CI_RUNNER_TAGS: '["white-gloss-website"]', WHITE_GLOSS_GITLAB_RUNNER_ID: "52",
+    CI_DISPOSABLE_ENVIRONMENT: "true", CI_BUILDS_DIR: "/builds",
+    CI_PROJECT_PATH: "shop/website", CI_PROJECT_DIR: "/builds/shop/website",
+    CI_PIPELINE_SOURCE: "merge_request_event", CI_MERGE_REQUEST_SOURCE_PROJECT_ID: "240",
+    CI_MERGE_REQUEST_TARGET_PROJECT_ID: "240",
+  };
+  const options = { platform: "linux", cwd: env.CI_PROJECT_DIR, realpath: p => p, env };
+  assert.equal(isIsolatedGitlabCi(options), true);
+  for (const name of Object.keys(env)) {
+    assert.equal(isIsolatedGitlabCi({ ...options, env: { ...env, [name]: "" } }), false, name);
+  }
+  for (const job of ["studio", "cross-browser"]) {
+    assert.equal(isIsolatedGitlabCi({ ...options, env: { ...env, CI_JOB_NAME: job } }), true);
+  }
+  for (const update of [
+    { CI_SERVER_URL: "https://gitlab.com" }, { CI_JOB_NAME: "verify" },
+    { WHITE_GLOSS_GITLAB_RUNNER_ID: "999" }, { CI_DISPOSABLE_ENVIRONMENT: "false" },
+    { CI_BUILDS_DIR: "/" }, { CI_PROJECT_PATH: "other/repo" },
+    { WHITE_GLOSS_GITLAB_PROJECT_ID: "999" }, { CI_MERGE_REQUEST_SOURCE_PROJECT_ID: "999" },
+    { CI_MERGE_REQUEST_TARGET_PROJECT_ID: "999" }, { CI_RUNNER_TAGS: '["private"]' },
+    { CI_RUNNER_TAGS: "white-gloss-website" }, { CI_PIPELINE_SOURCE: "external" },
+  ]) assert.equal(isIsolatedGitlabCi({ ...options, env: { ...env, ...update } }), false);
+  for (const [dir, expected] of [
+    ["/builds/runner1/0/shop/website", true], ["/builds2/shop/website", false],
+    ["/builds/shop/other", false], ["/tmp/shop/website", false],
+  ]) {
+    assert.equal(isIsolatedGitlabCi({ ...options, env: { ...env, CI_PROJECT_DIR: dir }, cwd: dir }), expected);
+  }
+  assert.equal(isIsolatedGitlabCi({ ...options, platform: "darwin" }), false);
+  assert.equal(isIsolatedGitlabCi({ ...options, cwd: "/tmp/website" }), false);
+  assert.equal(isIsolatedGitlabCi({ ...options, realpath: () => { throw Error("missing directory"); } }), false);
 });
 
 test("production requires Linux, the active IONOS release and its working directory", () => {
