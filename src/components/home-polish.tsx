@@ -64,7 +64,10 @@ export function HomePolish() {
         if (!concierge || !conciergeHeader || frames.length !== 3 || conciergeSteps.length !== 4)
           return undefined;
 
-        concierge.dataset.conciergeMotion = "cinema";
+        // The existing sticky header keeps its exact grid and typography.
+        concierge.dataset.conciergeMotion = "scroll";
+        concierge.dataset.conciergeCinema = "true";
+        concierge.dataset.conciergeActive = "0";
         const sheens = frames.map((frame) => {
           const sheen = document.createElement("span");
           sheen.className = "concierge-sheen";
@@ -89,15 +92,21 @@ export function HomePolish() {
         });
         gsap.set(sheens, { xPercent: -130, opacity: 0 });
 
-        const pin = ScrollTrigger.create({
+        const syncActive = () => {
+          let active = 0;
+          conciergeSteps.forEach((step, index) => {
+            if (step.getBoundingClientRect().top <= window.innerHeight * 0.55) active = index;
+          });
+          concierge.dataset.conciergeActive = String(Math.min(active, frames.length - 1));
+        };
+        const activeTrigger = ScrollTrigger.create({
           trigger: concierge,
-          start: "top top+=112",
-          end: "bottom bottom",
-          pin: conciergeHeader,
-          pinSpacing: false,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
+          start: "top bottom",
+          end: "bottom top",
+          onUpdate: syncActive,
+          onRefresh: syncActive,
         });
+        syncActive();
 
         const transitions = frames.slice(1).map((frame, offset) => {
           const previous = frames[offset];
@@ -105,8 +114,8 @@ export function HomePolish() {
           const timeline = gsap.timeline({
             scrollTrigger: {
               trigger: conciergeSteps[offset + 1],
-              start: "top 72%",
-              end: "top 32%",
+              start: "top 82%",
+              end: "top 58%",
               scrub: 0.7,
               invalidateOnRefresh: true,
             },
@@ -161,8 +170,10 @@ export function HomePolish() {
             timeline.scrollTrigger?.kill(true);
             timeline.kill();
           });
-          pin.kill(true);
+          activeTrigger.kill(true);
+          delete concierge.dataset.conciergeCinema;
           delete concierge.dataset.conciergeMotion;
+          concierge.dataset.conciergeActive = "0";
           gsap.set(frames, { clearProps: "opacity,clipPath,transform,filter,zIndex" });
           sheens.forEach((sheen) => sheen.remove());
         };
@@ -174,8 +185,10 @@ export function HomePolish() {
         if (canRun() === Boolean(destroyStory)) return;
         destroyStory?.();
         destroyStory = canRun() ? installStory() : undefined;
+        if (!destroyStory && concierge) concierge.dataset.conciergeActive = "0";
         ScrollTrigger.refresh();
       };
+      if (concierge) concierge.dataset.conciergeActive = "0";
       if (canRun()) destroyStory = installStory();
 
       const onConciergeResize = () => {
@@ -192,6 +205,7 @@ export function HomePolish() {
         conciergeResize?.disconnect();
         window.removeEventListener("resize", onConciergeResize);
         destroyStory?.();
+        if (concierge) delete concierge.dataset.conciergeActive;
       };
 
       // Lazy sections (reviews, booking) change the page height after load.
