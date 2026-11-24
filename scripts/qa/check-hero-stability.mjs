@@ -597,7 +597,27 @@ try {
         result.scrollActions.push(fadeEvidence);
         const fadeScroll = await phase.run("copy-fade-scroll", () => wheelToHeroPosition(page, fadeTarget, fadeEvidence));
         await phase.run("copy-fade-opacity", () => page.waitForFunction(() => Number(getComputedStyle(document.querySelector(".scroll-film-copy")).opacity) < 0.03, undefined, { timeout: remainingScrollBudget(fadeScroll) }));
+        await phase.run("finish-chapter-opacity", () => page.waitForFunction(() => Number(getComputedStyle(document.querySelector(".film-finish")).opacity) >= 0.99, undefined, { timeout: remainingScrollBudget(fadeScroll) }));
         result.fadedGeometry = await geometry(page);
+        result.finishChapter = await page.locator(".film-finish").evaluate((chapter) => {
+          const content = chapter.querySelector(".film-finish-content");
+          const range = document.createRange();
+          range.selectNodeContents(content);
+          const bounds = [...range.getClientRects()].filter((rect) => rect.width && rect.height);
+          const stage = chapter.closest(".scroll-film-stage").getBoundingClientRect();
+          const controls = document.querySelector(".scroll-film-bottom").getBoundingClientRect();
+          const header = document.querySelector(".site-header").getBoundingClientRect();
+          return {
+            opacity: Number(getComputedStyle(chapter).opacity),
+            text: content.textContent.replace(/\s+/g, " ").trim(),
+            fits: bounds.every((rect) => rect.left >= stage.left - 1 && rect.right <= stage.right + 1
+              && rect.top >= header.bottom - 1 && rect.bottom <= controls.top + 1),
+            bounds: bounds.map((rect) => rect.toJSON()),
+          };
+        });
+        assert.ok(result.finishChapter.opacity >= 0.99, "The second film chapter must be fully visible after the introduction.");
+        assert.ok(result.finishChapter.fits, "Every word in the second film chapter must fit between the header and film controls, including mobile.");
+        assert.match(result.finishChapter.text, /Fahrzeugaufbereitung.*Dein Auto\..*Wieder besonders\./);
         result.fadedSemantics = await page.locator(".scroll-film-copy").evaluate((copy) => {
           const actions = [...copy.querySelectorAll("a[href]")];
           return {

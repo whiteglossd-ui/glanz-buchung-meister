@@ -456,3 +456,105 @@ body[data-consent-banner="open"] [data-shell="public"] .scroll-film--personal[da
     transform: none !important;
   }
 }
+
+/* A second, deliberately composed film chapter. Progress comes from the same
+   rAF as the video, so reverse scrolling and the pause control stay in sync. */
+[data-shell="public"] .scroll-film--personal .film-finish {
+  --finish-enter: clamp(0, calc((var(--film-progress) - 0.48) / 0.2), 1);
+  inset: 0;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  padding: 6rem 1.25rem 8rem;
+  opacity: var(--finish-enter);
+  transform: none;
+  text-align: center;
+  pointer-events: none;
+}
+[data-shell="public"] .scroll-film--personal:not([data-motion="scroll"]) .film-finish {
+  display: none;
+}
+.film-finish::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgb(2 3 3 / 0.76), rgb(2 3 3 / 0.3) 65%, transparent);
+}
+.film-finish-content {
+  position: relative;
+  width: min(100%, 72rem);
+  transform: translateY(calc((1 - var(--finish-enter)) * 2rem));
+}
+[data-shell="public"] .scroll-film--personal .film-finish-kicker {
+  margin: 0 0 1.5rem;
+  color: var(--color-muted);
+  font: 500 0.6875rem/1.5 var(--font-sans);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+[data-shell="public"] .scroll-film--personal .film-finish-title {
+  max-width: none;
+  margin: 0;
+  color: var(--color-fg);
+  font: 400 clamp(3rem, 7.5vw, 7.5rem)/1.02 var(--font-display);
+  letter-spacing: -0.045em;
+}
+[data-shell="public"] .scroll-film--personal .film-finish-title > span {
+  display: block;
+  margin: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: none;
+}
+[data-shell="public"] .scroll-film--personal .film-finish-title > span:last-child {
+  color: var(--color-accent);
+  transform: translateY(calc((1 - var(--finish-enter)) * 1rem));
+}
+[data-shell="public"] .scroll-film--personal .film-finish-description {
+  max-width: 42ch;
+  margin: 1.75rem auto 0;
+  color: var(--color-fg);
+  font: 400 clamp(0.9375rem, 1.4vw, 1.125rem)/1.65 var(--font-sans);
+  letter-spacing: 0;
+  text-wrap: pretty;
+}
+[data-shell="public"] .scroll-film--personal .film-finish-location {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  margin: 2rem 0 0;
+  color: var(--color-muted);
+  font: 400 0.6875rem/1.5 var(--font-sans);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.film-finish-location::before {
+  content: "";
+  width: 5rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+  transform: scaleX(var(--finish-enter));
+}
+@media (max-width: 639px) {
+  [data-shell="public"] .scroll-film--personal .film-finish {
+    padding-inline: 1.25rem;
+  }
+  [data-shell="public"] .scroll-film--personal .film-finish-title {
+    font-size: clamp(2rem, 10vw, 4rem);
+    line-height: 1.08;
+  }
+  [data-shell="public"] .scroll-film--personal .film-finish-kicker {
+    margin-bottom: 1.25rem;
+    font-size: 0.625rem;
+    letter-spacing: 0.18em;
+  }
+  [data-shell="public"] .scroll-film--personal .film-finish-description {
+    margin-top: 1.5rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-shell="public"] .scroll-film--personal .film-finish {
+    display: none;
+  }
+}

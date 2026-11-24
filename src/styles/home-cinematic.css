@@ -1,0 +1,229 @@
+/* Homepage finish: platinum highlights, tactile details and a calmer mobile
+   rhythm. The existing native rails and scroll-story own their interactions. */
+[data-home="polish"] {
+  --home-finish-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-home="polish"] .home-location-switch {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--color-accent) 4.5%, transparent), transparent);
+}
+
+[data-home="polish"] .home-location-switch a {
+  min-width: 0;
+  text-wrap: balance;
+}
+
+[data-home="polish"] :is(.wg-collection-head, .home-directory > header, .home-booking-promise) {
+  position: relative;
+}
+
+[data-home="polish"] :is(.wg-collection-head, .home-directory > header, .home-booking-promise)::before {
+  content: "";
+  display: block;
+  position: absolute;
+  inset: -1.25rem auto auto 0;
+  width: 4rem;
+  height: 1px;
+  background: linear-gradient(90deg, var(--color-accent), transparent);
+  transform-origin: left;
+  pointer-events: none;
+}
+
+[data-home="polish"] :is(.wg-home-packages, .wg-home-results) {
+  margin-block: clamp(4.5rem, 9vw, 8rem);
+}
+
+[data-home="polish"] .wg-media-rail {
+  --wg-rail-radius: 0.5rem;
+}
+
+[data-home="polish"] .wg-rail-card {
+  position: relative;
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--color-accent) 5.5%, transparent), transparent 60%),
+    var(--color-surface);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-fg) 8%, transparent);
+}
+
+[data-home="polish"] .wg-rail-copy {
+  padding: clamp(1.25rem, 2vw, 1.75rem);
+}
+
+[data-home="polish"] .wg-home-results .wg-rail-copy {
+  min-block-size: 13.5rem;
+}
+
+[data-home="polish"] .wg-home-packages .wg-rail-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 20%, color-mix(in srgb, var(--color-fg) 15%, transparent) 48%, transparent 72%);
+  opacity: 0;
+  transform: translateX(-110%);
+  pointer-events: none;
+}
+
+[data-home="polish"] .wg-vehicle-switch {
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+[data-home="polish"] .wg-vehicle-switch button {
+  min-height: 3rem;
+  padding-inline: 1rem;
+  border-radius: 0.25rem;
+}
+
+[data-home="polish"] .wg-rail-nav {
+  padding-block: 0.5rem;
+}
+
+[data-home="polish"] .concierge-service > ol > li {
+  position: relative;
+}
+
+[data-home="polish"] .concierge-service > ol > li::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: min(100%, 10rem);
+  height: 1px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--color-accent) 70%, transparent), transparent);
+  pointer-events: none;
+}
+
+[data-shell="public"] [data-home="polish"] .concierge-service > ol > li > span {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin-top: 0.125rem;
+  padding: 0;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 50%;
+  color: var(--color-accent);
+  font-size: 0.75rem;
+}
+
+[data-shell="public"] [data-home="polish"] .home-directory .heading-2 {
+  max-width: 22ch;
+  font-size: clamp(1.8rem, 2.7vw, 2.75rem);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+
+[data-shell="public"] [data-home="polish"] .home-directory header > p {
+  margin-top: 1.25rem;
+  color: var(--color-muted);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+[data-home="polish"] .home-directory-links a {
+  min-height: 3.75rem;
+  padding-inline: 0.5rem;
+}
+
+[data-shell="public"] [data-home="polish"] .home-location {
+  background:
+    radial-gradient(ellipse at 0 0, color-mix(in srgb, var(--color-accent) 6%, transparent), transparent 65%),
+    var(--color-bg);
+}
+
+[data-home="polish"] .home-location > div > div,
+[data-home="polish"] .home-directory > * {
+  min-width: 0;
+}
+
+[data-home="polish"] .home-booking-form {
+  background:
+    linear-gradient(160deg, color-mix(in srgb, var(--color-accent) 4.5%, transparent), transparent 40%),
+    var(--color-surface);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-fg) 10%, transparent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-home="polish"] .home-cinema-in::before {
+    animation: home-finish-line 900ms var(--home-finish-ease) both;
+  }
+
+  [data-home="polish"] .wg-home-packages .wg-media-rail.is-in .wg-rail-frame::after {
+    animation: home-finish-sheen 1400ms var(--home-finish-ease) 150ms both;
+  }
+
+  [data-home="polish"] .wg-home-packages .wg-rail-card:nth-child(2) .wg-rail-frame::after {
+    animation-delay: 250ms;
+  }
+
+  [data-home="polish"] .wg-home-packages .wg-rail-card:nth-child(3) .wg-rail-frame::after {
+    animation-delay: 350ms;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  [data-home="polish"] .wg-home-packages .wg-rail-frame > img {
+    transition: transform 850ms var(--home-finish-ease);
+  }
+
+  [data-home="polish"] .wg-home-packages .wg-rail-card:is(:hover, :focus-within) .wg-rail-frame > img {
+    transform: scale(1.045);
+  }
+
+  [data-home="polish"] .home-directory-links a {
+    transition: color 250ms var(--home-finish-ease), background-color 250ms var(--home-finish-ease);
+  }
+
+  [data-home="polish"] .home-directory-links a:is(:hover, :focus-visible) {
+    color: var(--color-fg);
+    background-color: color-mix(in srgb, var(--color-accent) 5.5%, transparent);
+  }
+}
+
+@media (max-width: 639px) {
+  [data-shell="public"] [data-home="polish"] .wg-collection-head .heading-2 {
+    font-size: clamp(2rem, 8.3vw, 3.25rem);
+    max-width: 21ch;
+    line-height: 1.1;
+  }
+
+  [data-home="polish"] .wg-vehicle-switch button {
+    flex: 1 1 auto;
+  }
+
+  [data-home="polish"] .wg-home-packages .wg-rail-copy {
+    min-block-size: 17rem;
+  }
+
+  [data-shell="public"] [data-home="polish"] .concierge-service > ol > li {
+    grid-template-columns: 2.25rem minmax(0, 1fr);
+    column-gap: 1rem;
+    padding-block: 2rem;
+  }
+
+  [data-shell="public"] [data-home="polish"] .home-location h3 {
+    font-size: clamp(1.6rem, 6.5vw, 2.25rem);
+    text-wrap: balance;
+  }
+
+  [data-home="polish"] .home-booking-form {
+    padding: 1rem;
+  }
+
+  [data-home="polish"] .home-location-switch {
+    padding-inline: 1.25rem;
+  }
+}
+
+@keyframes home-finish-line {
+  from { opacity: 0; transform: scaleX(0); }
+  to { opacity: 1; transform: scaleX(1); }
+}
+
+@keyframes home-finish-sheen {
+  0% { opacity: 0; transform: translateX(-110%); }
+  25% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(110%); }
+}

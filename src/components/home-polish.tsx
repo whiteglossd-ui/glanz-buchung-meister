@@ -3,6 +3,7 @@ import { DESKTOP_MOTION, useScrollMotion } from "@/lib/scroll-motion";
 import { setupParallax } from "@/lib/studio-motion";
 import "@/styles/concierge-editorial.css";
 import "@/styles/media-rail.css";
+import "@/styles/home-cinematic.css";
 
 /**
  * Homepage-only "Polished reveal" scroll motion.
@@ -272,6 +273,15 @@ export function HomePolish() {
 
     onceIn([...main.querySelectorAll<HTMLElement>("[data-reveal]")], (el) =>
       el.classList.add("is-in"),
+    );
+
+    // These markers animate decorative highlights only. Content stays readable
+    // before hydration, without observers and with reduced motion enabled.
+    onceIn(
+      [...main.querySelectorAll<HTMLElement>(
+        ".wg-collection-head, .home-directory > header, .home-booking-promise",
+      )],
+      (el) => el.classList.add("home-cinema-in"),
     );
 
     const entranceAnimations: Animation[] = [];
