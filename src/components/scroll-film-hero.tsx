@@ -140,11 +140,13 @@ export function ScrollFilmHero({
     };
     const paint = () => {
       frame = 0;
-      if (!enabled || !inView || document.hidden) return;
+      if (!enabled || !inView || document.hidden || pausedRef.current) return;
       target = Math.min(1, Math.max(0, (window.scrollY - top) / distance));
       const difference = target - position;
       position = Math.abs(difference) < 0.0008 ? target : position + difference * 0.24;
-      const opacity = Math.max(0, 1 - position / 0.65);
+      // Give the car a quiet beat between the introduction and the second
+      // chapter. Text never competes with another text layer while dissolving.
+      const opacity = 1 - Math.min(1, Math.max(0, (position - 0.08) / 0.34));
       copy.style.opacity = String(opacity);
       setCopyTransform(-position * 24);
       // Invisible links must not remain keyboard focus targets.
@@ -239,6 +241,7 @@ export function ScrollFilmHero({
         copy.style.opacity = "1";
         setCopyTransform(0);
         setActionsInert(false);
+        section.style.setProperty("--film-progress", "0");
       }
     };
     const failed = () => {
@@ -250,6 +253,7 @@ export function ScrollFilmHero({
       copy.style.opacity = "1";
       setCopyTransform(0);
       setActionsInert(false);
+      section.style.setProperty("--film-progress", "0");
     };
     const visibility = () => {
       if (!document.hidden) {
@@ -386,9 +390,19 @@ export function ScrollFilmHero({
             </div>
           </div>
         </div>
-        <div className="scroll-film-signature" aria-hidden="true">
-          <p>Fahrzeugaufbereitung.</p>
-          <span>In {locationLabel}.</span>
+        <div className="scroll-film-signature film-finish" aria-hidden="true">
+          <div className="film-finish-content">
+            <span className="film-finish-kicker">Fahrzeugaufbereitung</span>
+            <p className="film-finish-title">
+              <span>Dein Auto.</span>
+              <span>Wieder besonders.</span>
+            </p>
+            <p className="film-finish-description">
+              Klarer Lack. Frischer Innenraum.<br />
+              Ein Finish, das den Unterschied macht.
+            </p>
+            <span className="film-finish-location">{locationLabel}</span>
+          </div>
         </div>
         <div className="scroll-film-bottom">
           <a href="#nach-dem-film" className="scroll-film-skip">

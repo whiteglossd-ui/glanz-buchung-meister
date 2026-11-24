@@ -330,9 +330,10 @@ test("forward and reverse scroll reach matching times, with no overlapping seeks
   h.load();
   h.scroll(1800);
   assert.ok(Math.abs(h.video.currentTime - 3.979) < 0.03);
-  // The shortened introduction keeps readable links available halfway through.
+  // The introduction clears before the second chapter enters.
   assert.equal(h.copy.inert, false);
-  assert.ok(h.actions.every((action) => !action.inert), "Readable action links remain focusable halfway through.");
+  assert.equal(h.copy.style.opacity, "0");
+  assert.ok(h.actions.every((action) => action.inert), "Faded actions leave the focus order before the second chapter.");
   h.scroll(720);
   assert.ok(Math.abs(h.video.currentTime - 1.592) < 0.03);
   h.scroll(0);
@@ -352,13 +353,18 @@ test("pause holds the decoded frame and resume seeks to the current scroll posit
   h.load();
   h.scroll(720);
   const held = h.video.currentTime;
+  const heldProgress = h.section.style["--film-progress"];
+  const heldOpacity = h.copy.style.opacity;
   h.pausedRef.current = true;
   h.scroll(2400);
   assert.equal(h.video.currentTime, held);
+  assert.equal(h.section.style["--film-progress"], heldProgress, "Pause also freezes the film typography.");
+  assert.equal(h.copy.style.opacity, heldOpacity);
   h.pausedRef.current = false;
   h.section.dispatchEvent(new Event("film-resume"));
   h.flush();
   assert.ok(h.video.currentTime > 5.2);
+  assert.ok(Number(h.section.style["--film-progress"]) > Number(heldProgress));
   h.cleanup();
 });
 test("hidden and offscreen heroes do not continue decoding", () => {

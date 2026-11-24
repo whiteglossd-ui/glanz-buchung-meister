@@ -109,7 +109,9 @@ const APPROVED_HOME_BLOBS = Object.freeze({
   "src/components/media-rail.tsx": "eea74893c74a9e60c4704df77d6eec2ee1ca0b3e",
   "src/components/package-showcase.tsx": "53b5f78114e8de746613fad8cfa1151ffb276384",
   "src/components/results-teaser.tsx": "9cfc89347decf120486ca49e69f854a7563b6850",
-  "src/components/scroll-film-hero.tsx": "ae678176bc91fd714d9f04bd121be0775593dd46",
+  // November 24 owner request: improve the second scroll-film chapter.
+  // See docs/homepage-cinematic-2026-11-24.md; all other content pins remain.
+  "src/components/scroll-film-hero.tsx": "22dd7d41339d72c84788cc437e381a6bb6890665",
   "src/components/site-chrome.tsx": "90f6319473ba916d9696c74b6bb0da1ae492a733",
   "src/components/website-studio.tsx": "33cc6b97e51f52e72ff891778811febf2d591dde",
   "src/data/home-copy.ts": "f829b684e32560fbde054e7e4405568036b5ca82",
