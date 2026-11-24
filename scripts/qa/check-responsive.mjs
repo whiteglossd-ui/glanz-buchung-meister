@@ -317,23 +317,31 @@ try {
           }
         }
         await page.evaluate(() => window.scrollTo(0, 0));
-        const state = await page.evaluate(() => ({
-          viewport: document.documentElement.clientWidth,
-          scroll: document.documentElement.scrollWidth,
-          h1: [...document.querySelectorAll("h1")].map((e) => e.textContent),
-          duplicateMinutePeriod: /\bMin\.\./.test(document.querySelector("main")?.textContent ?? ""),
-          horizontalOffenders: [...document.querySelectorAll("main *")]
+        const state = await page.evaluate(() => {
+          const viewport = document.documentElement.clientWidth;
+          const scroll = document.documentElement.scrollWidth;
+          // Detailed failure diagnostics must not force layout of every
+          // content-visibility descendant after each successful crawl. The
+          // real scroll path above still checks overflow at every 650px step.
+          const horizontalOffenders = scroll > viewport + 2 ? [...document.querySelectorAll("main *")]
             .filter((e) => {
               const box = e.getBoundingClientRect();
               return (
                 box.width > 0 &&
-                (box.right > document.documentElement.clientWidth + 2 || box.left < -2) &&
+                (box.right > viewport + 2 || box.left < -2) &&
                 getComputedStyle(e).position !== "absolute"
               );
             })
             .slice(0, 8)
-            .map((e) => ({ tag: e.tagName, class: e.className })),
-        }));
+            .map((e) => ({ tag: e.tagName, class: e.className })) : [];
+          return {
+            viewport,
+            scroll,
+            h1: [...document.querySelectorAll("h1")].map((e) => e.textContent),
+            duplicateMinutePeriod: /\bMin\.\./.test(document.querySelector("main")?.textContent ?? ""),
+            horizontalOffenders,
+          };
+        });
         results.push({ path, width, ...state });
         if (["/", "/abholservice/nagold", "/leistungen/keramikversiegelung/nagold"].includes(path)) {
           await page.screenshot({

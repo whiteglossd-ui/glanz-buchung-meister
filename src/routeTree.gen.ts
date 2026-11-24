@@ -61,6 +61,7 @@ import { Route as ApiBitrixWorkshopRouteImport } from './routes/api/bitrix-works
 import { Route as ApiGoogleReviewsRouteImport } from './routes/api.google-reviews'
 import { Route as ApiHubRouteImport } from './routes/api/hub'
 import { Route as ApiOperatorRouteImport } from './routes/api.operator'
+import { Route as ApiPanelCatalogRouteImport } from './routes/api/panel-catalog'
 import { Route as ApiQontoWebhookRouteImport } from './routes/api/qonto-webhook'
 import { Route as ApiRoCallbackRouteImport } from './routes/api.ro-callback'
 import { Route as ApiRoDiagnosticsRouteImport } from './routes/api.ro-diagnostics'
@@ -337,6 +338,11 @@ const ApiOperatorRoute = ApiOperatorRouteImport.update({
   path: '/api/operator',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPanelCatalogRoute = ApiPanelCatalogRouteImport.update({
+  id: '/api/panel-catalog',
+  path: '/api/panel-catalog',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiQontoWebhookRoute = ApiQontoWebhookRouteImport.update({
   id: '/api/qonto-webhook',
   path: '/api/qonto-webhook',
@@ -464,6 +470,7 @@ export interface FileRoutesByFullPath {
   '/api/google-reviews': typeof ApiGoogleReviewsRoute
   '/api/hub': typeof ApiHubRoute
   '/api/operator': typeof ApiOperatorRoute
+  '/api/panel-catalog': typeof ApiPanelCatalogRoute
   '/api/qonto-webhook': typeof ApiQontoWebhookRoute
   '/api/ro-callback': typeof ApiRoCallbackRoute
   '/api/ro-diagnostics': typeof ApiRoDiagnosticsRoute
@@ -529,6 +536,7 @@ export interface FileRoutesByTo {
   '/api/google-reviews': typeof ApiGoogleReviewsRoute
   '/api/hub': typeof ApiHubRoute
   '/api/operator': typeof ApiOperatorRoute
+  '/api/panel-catalog': typeof ApiPanelCatalogRoute
   '/api/qonto-webhook': typeof ApiQontoWebhookRoute
   '/api/ro-callback': typeof ApiRoCallbackRoute
   '/api/ro-diagnostics': typeof ApiRoDiagnosticsRoute
@@ -598,6 +606,7 @@ export interface FileRoutesById {
   '/api/google-reviews': typeof ApiGoogleReviewsRoute
   '/api/hub': typeof ApiHubRoute
   '/api/operator': typeof ApiOperatorRoute
+  '/api/panel-catalog': typeof ApiPanelCatalogRoute
   '/api/qonto-webhook': typeof ApiQontoWebhookRoute
   '/api/ro-callback': typeof ApiRoCallbackRoute
   '/api/ro-diagnostics': typeof ApiRoDiagnosticsRoute
@@ -669,6 +678,7 @@ export interface FileRouteTypes {
     | '/api/google-reviews'
     | '/api/hub'
     | '/api/operator'
+    | '/api/panel-catalog'
     | '/api/qonto-webhook'
     | '/api/ro-callback'
     | '/api/ro-diagnostics'
@@ -734,6 +744,7 @@ export interface FileRouteTypes {
     | '/api/google-reviews'
     | '/api/hub'
     | '/api/operator'
+    | '/api/panel-catalog'
     | '/api/qonto-webhook'
     | '/api/ro-callback'
     | '/api/ro-diagnostics'
@@ -802,6 +813,7 @@ export interface FileRouteTypes {
     | '/api/google-reviews'
     | '/api/hub'
     | '/api/operator'
+    | '/api/panel-catalog'
     | '/api/qonto-webhook'
     | '/api/ro-callback'
     | '/api/ro-diagnostics'
@@ -854,6 +866,7 @@ export interface RootRouteChildren {
   ApiGoogleReviewsRoute: typeof ApiGoogleReviewsRoute
   ApiHubRoute: typeof ApiHubRoute
   ApiOperatorRoute: typeof ApiOperatorRoute
+  ApiPanelCatalogRoute: typeof ApiPanelCatalogRoute
   ApiQontoWebhookRoute: typeof ApiQontoWebhookRoute
   ApiRoCallbackRoute: typeof ApiRoCallbackRoute
   ApiRoDiagnosticsRoute: typeof ApiRoDiagnosticsRoute
@@ -1231,6 +1244,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiOperatorRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/panel-catalog': {
+      id: '/api/panel-catalog'
+      path: '/api/panel-catalog'
+      fullPath: '/api/panel-catalog'
+      preLoaderRoute: typeof ApiPanelCatalogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/qonto-webhook': {
       id: '/api/qonto-webhook'
       path: '/api/qonto-webhook'
@@ -1472,6 +1492,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiGoogleReviewsRoute: ApiGoogleReviewsRoute,
   ApiHubRoute: ApiHubRoute,
   ApiOperatorRoute: ApiOperatorRoute,
+  ApiPanelCatalogRoute: ApiPanelCatalogRoute,
   ApiQontoWebhookRoute: ApiQontoWebhookRoute,
   ApiRoCallbackRoute: ApiRoCallbackRoute,
   ApiRoDiagnosticsRoute: ApiRoDiagnosticsRoute,
