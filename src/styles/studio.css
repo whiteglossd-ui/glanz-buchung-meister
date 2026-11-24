@@ -3,53 +3,52 @@
  * Content, semantic headings and application-shell tokens are unchanged.
  * Component-owned layouts: media-rail.css and booking-editorial.css.
  */
-/* Google Fonts Latin subsets, served on the website's own origin. */
+/* One regular serif face covers the editorial design. Do not register a
+ * second variable face: inherited weights below the fold would download it
+ * during initial layout even when every first-viewport heading uses 400. */
 @font-face {
-  font-family: "Space Grotesk";
+  font-family: "Cormorant Garamond";
   font-style: normal;
-  font-weight: 300 600;
+  font-weight: 400;
   font-display: swap;
-  src: url("/fonts/space-grotesk-latin-variable.woff2") format("woff2");
+  src: url("/fonts/cormorant-garamond-latin-400.woff2") format("woff2");
 }
 @font-face {
-  font-family: "Inter";
+  font-family: "Geist";
   font-style: normal;
-  font-weight: 300 600;
+  font-weight: 100 900;
   font-display: swap;
-  src: url("/fonts/inter-latin-variable.woff2") format("woff2");
+  src: url("/fonts/geist-latin-variable.woff2") format("woff2");
 }
 /* Portalled public dialogs receive the same palette and typography. */
 :is([data-shell="public"], .film-menu, .wg-video-dialog, .customer-photo-dialog) {
-  --color-bg: #07090b;
-  --color-surface: #0e1115;
-  --color-elevated: #161a20;
-  --color-fg: #f8fafc;
-  --color-muted: #9ca3af;
-  --color-subtle: #7d8590;
-  --color-accent: #f8fafc;
-  --color-accent-fg: #07090b;
-  --color-danger: #dce1e8;
-  --color-wa: #f8fafc;
-  --color-line: rgb(255 255 255 / 0.08);
-  --color-line-strong: rgb(255 255 255 / 0.15);
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Space Grotesk", var(--font-sans);
-  --chrome-solid: #f8fafc;
-  --chrome-dim: #9ca3af;
-  --chrome-gradient: linear-gradient(135deg, #fff, #a8b0bc);
-  --chrome-line: var(--color-line);
-  --radius-control: 10px;
-  --radius-card: 14px;
-  --radius-glass: 14px;
-  --radius-chip: 10px;
-  --radius-pill: 14px;
-  --glass-bg: rgb(14 17 21 / 0.78);
+  --color-bg: #080808;
+  --color-surface: #111111;
+  --color-elevated: #1c1b19;
+  --color-fg: #f3f0e8;
+  --color-muted: #bcb8b0;
+  --color-subtle: #a6a198;
+  --color-accent: #f3f0e8;
+  --color-accent-fg: #080808;
+  --color-wa: #d2ccc0;
+  --color-line: rgba(243, 240, 232, .16);
+  --color-line-strong: rgba(243, 240, 232, .3);
+  --font-sans: "Geist", Arial, sans-serif;
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --chrome-solid: #f3f0e8;
+  --chrome-dim: #bcb8b0;
+  --radius-control: 0px;
+  --radius-card: 0px;
+  --radius-glass: 0px;
+  --radius-chip: 0px;
+  --radius-pill: 0px;
+  --glass-bg: #111111;
   --glass-bg-raised: transparent;
   --glass-highlight: none;
-  --glass-edge: var(--color-line);
-  --glass-edge-strong: var(--color-line-strong);
-  --glass-edge-hover: rgb(255 255 255 / 0.35);
-  --light-rail: #f8fafc;
+  --glass-edge: rgba(243, 240, 232, .16);
+  --glass-edge-strong: rgba(243, 240, 232, .3);
+  --glass-edge-hover: rgba(243, 240, 232, .55);
+  --light-rail: #f3f0e8;
   --studio-ease-out: cubic-bezier(.22, 1, .36, 1);
   --studio-dur-ui: 300ms;
   --studio-dur-hover: 240ms;
@@ -67,7 +66,8 @@
   text-wrap: balance;
   font-feature-settings: "kern" 1, "liga" 1;
 }
-/* Keep secondary display text at its regular weight. */
+/* The inherited Barlow utility defaults to 600. Public serif labels use the
+ * same regular weight as their headings, including the first-viewport stats. */
 [data-shell="public"] .font-display { font-weight: 400; }
 [data-shell="public"] :is(.heading-page, .page-hero .heading-page) {
   font-size: clamp(3.1rem, 6.4vw, 6.4rem);
@@ -95,7 +95,7 @@
 [data-shell="public"] :is(.package-price, .city-chip-meta, .gd-stats, input) {
   font-variant-numeric: lining-nums tabular-nums;
 }
-[data-shell="public"] ::selection { background: var(--color-fg); color: var(--color-bg); }
+[data-shell="public"] ::selection { background: #f3f0e8; color: #080808; }
 [data-shell="public"] :is(main, section, [id]) { scroll-margin-top: 7.5rem; }
 [data-shell="public"] :is(a, button, input, select, textarea, summary):focus-visible,
 .film-menu :is(a, button):focus-visible {
@@ -143,7 +143,7 @@ body[data-nav="open"] [data-shell="public"] .site-header {
   padding: 0;
   border: 0;
   border-bottom: 1px solid var(--color-line);
-  background: var(--color-bg);
+  background: #080808;
   backdrop-filter: none;
   pointer-events: auto;
 }
@@ -240,8 +240,8 @@ body[data-nav="open"] [data-shell="public"] .site-header {
   letter-spacing: .15em;
 }
 .film-menu { grid-template-columns: 44% minmax(0, 1fr); }
-.film-menu > .fixed { background: var(--color-bg); border-bottom: 1px solid var(--color-line); }
-.film-menu .film-menu-visual { background: var(--color-bg); }
+.film-menu > .fixed { background: #080808; border-bottom: 1px solid var(--color-line); }
+.film-menu .film-menu-visual { background: #080808; }
 .film-menu .film-menu-visual::after { background: none; }
 .film-menu .film-menu-panel { padding: 8rem clamp(2rem, 5vw, 6rem) 3rem; }
 .film-menu .film-menu-link {
@@ -518,7 +518,7 @@ html[data-lines="armed"] [data-lines].is-in .reveal-line > span {
 
 .home-process::after {
   background: var(--light-rail);
-  box-shadow: 0 0 14px rgba(255, 255, 255, 0.45);
+  box-shadow: 0 0 14px rgba(243, 240, 232, 0.45);
   -webkit-mask: linear-gradient(180deg, #000 82%, transparent);
   mask: linear-gradient(180deg, #000 82%, transparent);
   transform: scaleY(var(--process-progress));
@@ -573,11 +573,11 @@ html[data-lines="armed"] [data-lines].is-in .reveal-line > span {
 
 .home-process li.is-active::before,
 .home-process:not([data-live]) li::before {
-  border-color: var(--color-fg);
-  background: var(--color-fg);
+  border-color: #f3f0e8;
+  background: #f3f0e8;
   box-shadow:
-    0 0 0 4px rgba(255, 255, 255, 0.12),
-    0 0 18px rgba(255, 255, 255, 0.7);
+    0 0 0 4px rgba(243, 240, 232, 0.12),
+    0 0 18px rgba(243, 240, 232, 0.7);
 }
 
 @media (min-width: 960px) and (prefers-reduced-motion: no-preference) {
@@ -695,13 +695,13 @@ html[data-lines="armed"] [data-lines].is-in .reveal-line > span {
 }
 
 .city-chip-status[data-status="free"] {
-  border-color: rgba(255, 255, 255, 0.4);
+  border-color: rgba(243, 240, 232, 0.4);
   color: var(--color-fg);
 }
 
 .city-chip-status[data-status="free"]::before {
-  background: var(--color-fg);
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.85);
+  background: #f3f0e8;
+  box-shadow: 0 0 8px rgba(243, 240, 232, 0.85);
 }
 
 .city-chip-status[data-status="request"]::before {
