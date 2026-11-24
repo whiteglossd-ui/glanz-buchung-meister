@@ -49,10 +49,6 @@
   padding: clamp(1.25rem, 2vw, 1.75rem);
 }
 
-[data-home="polish"] .wg-home-results .wg-rail-copy {
-  min-block-size: 13.5rem;
-}
-
 [data-home="polish"] .wg-home-packages .wg-rail-frame::after {
   content: "";
   position: absolute;
@@ -191,10 +187,6 @@
 
   [data-home="polish"] .wg-vehicle-switch button {
     flex: 1 1 auto;
-  }
-
-  [data-home="polish"] .wg-home-packages .wg-rail-copy {
-    min-block-size: 17rem;
   }
 
   [data-shell="public"] [data-home="polish"] .concierge-service > ol > li {
