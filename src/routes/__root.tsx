@@ -16,6 +16,7 @@ import "../styles/luxury.css";
 import "../styles/hero-clearance.css";
 import "../styles/studio.css";
 import "../styles/forge-fidelity.css";
+import "../styles/flyer.css";
 import forgeDesktopCss from "../styles/forge-desktop.css?url";
 
 export const Route = createRootRoute({
@@ -24,12 +25,10 @@ export const Route = createRootRoute({
     const app = matches.some((match: AnyRouteMatch) =>
       /^\/(admin|login)(\/|$)/.test(match.routeId),
     );
-    // The public first viewport uses Cormorant 400 and Geist's UI weights.
-    // Cormorant has one regular face; Geist supplies all UI weights.
-    // Operational screens retain their existing Barlow family.
+    // Preload the same self-hosted font files used by each shell.
     const fontPreloads = (app
       ? ["barlow-400", "barlow-300"]
-      : ["cormorant-garamond-latin-400", "geist-latin-variable"]
+      : ["space-grotesk-latin-variable", "inter-latin-variable"]
     ).map((name) => ({
       rel: "preload",
       href: `/fonts/${name}.woff2`,
