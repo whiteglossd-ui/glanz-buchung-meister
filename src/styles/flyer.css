@@ -261,7 +261,7 @@ body[data-nav="open"] [data-shell="public"] .site-header,
 
 :is([data-shell="public"], .film-menu) .btn-secondary,
 :is([data-shell="public"] .site-header, .film-menu) .menu-toggle,
-[data-shell="public"] :is(.scroll-film-pause, .instagram-badge),
+[data-shell="public"] :is(.scroll-film-pause, .scroll-film-prices, .instagram-badge),
 [data-shell="public"] .site-header[data-scrolled="true"] .menu-toggle,
 [data-shell="public"] .booking-editorial .btn-secondary {
   background: var(--flyer-control);
@@ -277,12 +277,17 @@ body[data-nav="open"] [data-shell="public"] .site-header,
 [data-shell="public"]
   .site-header[data-scrolled="true"]
   .menu-toggle:is(:hover, :focus-visible),
+[data-shell="public"] .scroll-film-prices:is(:hover, :focus-visible),
 [data-shell="public"]
   .booking-editorial
   .btn-secondary:is(:hover, :focus-visible) {
   background: var(--color-elevated);
   border-color: var(--flyer-focus-edge);
   box-shadow: inset 0 0 0 1px var(--flyer-focus-edge);
+}
+
+[data-shell="public"] :is(.wg-vehicle-switch, .wg-rail-nav) button {
+  border-radius: var(--radius-control);
 }
 
 [data-shell="public"]
