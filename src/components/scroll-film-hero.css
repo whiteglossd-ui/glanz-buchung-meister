@@ -309,6 +309,10 @@ html:has(#rundum-anfrage:target) .scroll-film[data-motion="scroll"] {
   align-items: center;
   height: auto;
   min-height: 100svh;
+  /* The initial consent observer and hydrated banner share this measurement.
+     Reserving it in flow lets the existing stage-fit policy choose native
+     reading when copy, controls and consent cannot fit in one viewport. */
+  padding-bottom: var(--consent-banner-height, 0px);
 }
 [data-shell="public"] .scroll-film--personal[data-motion="still"] .scroll-film-stage {
   position: relative;
@@ -444,7 +448,9 @@ html:has(#rundum-anfrage:target) .scroll-film[data-motion="scroll"] {
 [data-shell="public"] .scroll-film.scroll-film--personal[data-motion="still"] .scroll-film-bottom {
   transform: none;
 }
-body[data-consent-banner="open"] [data-shell="public"] .scroll-film--personal[data-motion="still"] .scroll-film-copy-inner {
+/* The stage already reserves consent space; never apply the legacy second
+   translation to this content-sized hero, including its motion layout. */
+body[data-consent-banner="open"] [data-shell="public"] .scroll-film--personal[data-motion] .scroll-film-copy-inner {
   transform: none;
 }
 @media (prefers-reduced-motion: reduce) {

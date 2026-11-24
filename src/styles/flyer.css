@@ -31,7 +31,6 @@
   color-scheme: dark;
 }
 
-[data-shell="public"],
 [data-shell="public"] main > section:where(:not(.scroll-film, .film-chapter)),
 [data-shell="public"]
   :is(.hero-follow, .home-location, .concierge-service, .booking-section),
