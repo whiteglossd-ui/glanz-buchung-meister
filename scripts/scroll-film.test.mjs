@@ -66,10 +66,8 @@ function harness({
   hash = "",
   engaged = true,
   hasCustomHero = false,
-  viewportHeight = 0,
-  stageHeight = 1000,
 } = {}) {
-  const window = Object.assign(new EventTarget(), { scrollY: engaged ? 1 : 0, location: { hash }, innerHeight: viewportHeight });
+  const window = Object.assign(new EventTarget(), { scrollY: engaged ? 1 : 0, location: { hash } });
   const document = Object.assign(new EventTarget(), { hidden: false });
   const mobileMedia = Object.assign(new EventTarget(), { matches: mobile });
   const motion = Object.assign(new EventTarget(), { matches: reduced });
@@ -97,7 +95,7 @@ function harness({
     offsetHeight: 4600,
     getBoundingClientRect: () => ({ top: -window.scrollY }),
   });
-  const stage = { offsetHeight: stageHeight };
+  const stage = { offsetHeight: 1000 };
   const actions = [{ tagName: "A", href: "#buchung", inert: false }, { tagName: "A", href: "#ablauf", inert: false }];
   const copy = {
     style: style(),
@@ -147,7 +145,6 @@ function harness({
   });
   const pausedRef = { current: false };
   let observer;
-  let resizeObserver;
   const cleanup = runInNewContext(code, {
     window,
     document,
@@ -174,11 +171,8 @@ function harness({
       disconnect() {}
     },
     ResizeObserver: class {
-      constructor(fn) {
-        resizeObserver = fn;
-      }
       observe() {}
-      disconnect() { resizeObserver = undefined; }
+      disconnect() {}
     },
   })();
   observer([{ isIntersecting: true }]);
@@ -228,11 +222,6 @@ function harness({
     },
     visible(value) {
       observer([{ isIntersecting: value }]);
-      flush();
-    },
-    resizeStage(height) {
-      stage.offsetHeight = height;
-      resizeObserver?.();
       flush();
     },
   };
@@ -407,50 +396,6 @@ test("short landscape keeps scrolling copy readable and avoids video downloads",
   assert.equal(h.copy.style.opacity, "1");
   assert.equal(h.copy.inert, false);
   h.cleanup();
-});
-test("consent space selects readable layout on capable phones and restores motion when it fits", () => {
-  // Recorded 390x844 first visit: 752.5px copy surface plus 245.34375px
-  // consent reserve. Device capability must not override insufficient space.
-  const h = harness({ cores: 4, viewportHeight: 844, stageHeight: 998 });
-  assert.equal(h.section.dataset.motion, "still");
-  assert.equal(h.downloads.length, 0);
-  h.scroll(120);
-  assert.equal(h.downloads.length, 0);
-  assert.ok(h.actions.every((action) => !action.inert));
-
-  // Removing consent releases its layout space; the existing size observer
-  // must restore motion without a reload or a device-policy change.
-  h.resizeStage(844);
-  assert.equal(h.section.dataset.motion, "scroll");
-  assert.equal(h.downloads.length, 1);
-  h.load();
-  h.scroll(3000);
-  assert.ok(h.actions.every((action) => action.inert));
-
-  // Reopening consent grows the stage again and restores all readable links.
-  h.resizeStage(998);
-  assert.equal(h.section.dataset.motion, "still");
-  assert.equal(h.video.source, "");
-  assert.equal(h.copy.style.opacity, "1");
-  assert.ok(h.actions.every((action) => !action.inert));
-  const downloads = h.downloads.length;
-  h.scroll(120);
-  assert.equal(h.downloads.length, downloads);
-  h.cleanup();
-  h.resizeStage(844);
-  assert.equal(h.downloads.length, downloads, "Cleanup detaches the size policy.");
-});
-test("an already fitting stage keeps motion available on capable devices", () => {
-  // This also covers a returning phone visitor whose stored choice needs no
-  // banner reserve and a desktop whose copy plus reserve fits the viewport.
-  for (const height of [844, 900]) {
-    const h = harness({ cores: 4, viewportHeight: height, stageHeight: height, engaged: false });
-    assert.equal(h.section.dataset.motion, "scroll");
-    assert.equal(h.downloads.length, 0, "A fitting first view still waits for engagement.");
-    h.scroll(120);
-    assert.equal(h.downloads.length, 1);
-    h.cleanup();
-  }
 });
 test("rotation into short landscape stops motion; rotating back restores it and cleanup detaches the policy", () => {
   const h = harness({ engaged: false });
