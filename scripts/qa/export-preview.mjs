@@ -86,6 +86,11 @@ try {
     }
     for (const r of refs(html)) await fetchAsset(r);
   }
+  // Dark-Edition-Hero: Bildfolge und Bildvorschau werden per Skript geladen.
+  for (const set of ["d", "m"])
+    for (let i = 1; i <= 96; i++) await fetchAsset(`/media/dark/seq/${set}/${String(i).padStart(3, "0")}.webp`);
+  for (const name of ["beads-sq", "hood-wide", "inspection", "stitching", "leather-wide", "cockpit-wide", "towels", "key", "headlight-wide", "profile-wide", "foamwash", "glove-towel", "foam-sq", "taillight"])
+    await fetchAsset(`/media/dark/gen/${name}-800.webp`);
   for (const page of extra) {
     const res = await fetch(qaBase + page, { signal: AbortSignal.timeout(20000) });
     if (!res.ok) continue;

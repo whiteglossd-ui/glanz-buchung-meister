@@ -13,6 +13,7 @@ import { trackCtaInteraction } from "@/lib/googleTag";
 import { useMagnetic } from "@/lib/studio-motion";
 import { SmoothScroll } from "./smooth-scroll";
 import { focusBookingHeading } from "@/lib/booking-anchor-focus";
+import { DarkFooter, DarkHeader } from "./dark/dark-chrome";
 import forgeMenuCss from "../styles/forge-menu.css?inline";
 
 export function SkipLink() {
@@ -628,10 +629,11 @@ export function Shell() {
       <RouteFocus />
       <SkipLink />
       <SmoothScroll />
-      <SiteHeader />
+      {/* Dark Edition (Inhaberauftrag 25.11.2026): Kopf- und Fußzeile der Vorlage. */}
+      <DarkHeader />
       <FilmScroll />
       <Outlet />
-      <SiteFooter />
+      <DarkFooter />
       <WhatsAppFloat />
       <ConsentBanner />
     </div>
