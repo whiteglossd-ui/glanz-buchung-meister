@@ -123,9 +123,12 @@ export function initDarkHome(root: HTMLElement): () => void {
   // Flache Fenster (Handy quer): Hero steht still wie bei reduzierter Bewegung,
   // damit Überschrift und Buttons vollständig erreichbar bleiben.
   const short = matchMedia("(max-height: 560px)");
+  const reduceMq = matchMedia("(prefers-reduced-motion: reduce)");
   const reel = () => {
-    if (!reelEl || reduce) return;
-    if (short.matches) {
+    if (!reelEl) return;
+    // Reduzierte Bewegung (auch nachträglich eingeschaltet) und flache Fenster:
+    // statische Einleitung, ihre Links müssen bedienbar sein.
+    if (reduceMq.matches || short.matches) {
       if (chIdx !== 0) {
         chIdx = 0;
         reelEl.dataset.ch = "0";
@@ -161,6 +164,8 @@ export function initDarkHome(root: HTMLElement): () => void {
     loadSet();
     size();
     addEventListener("resize", () => { loadSet(); size(); reel(); }, on);
+    reduceMq.addEventListener("change", reel, { signal: ac.signal });
+    short.addEventListener("change", reel, { signal: ac.signal });
   }
 
   /* ---------- Scroll-Choreografie ---------- */
