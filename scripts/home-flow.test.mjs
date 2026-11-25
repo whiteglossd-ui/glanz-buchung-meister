@@ -196,6 +196,9 @@ function loadDarkHome({ hash = "", hydrated = false } = {}) {
         "data-eager": String(eager),
       }),
     },
+    "@/components/lazy-google-reviews": {
+      LazyGoogleReviews: () => React.createElement("aside", { "data-test-reviews": "google" }),
+    },
     "@/components/lazy-rundum-inquiry": {
       LazyRundumInquiry: () => React.createElement("form", { "data-test-form": "rundum" }),
     },

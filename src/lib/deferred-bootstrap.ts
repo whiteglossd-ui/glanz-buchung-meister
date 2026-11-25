@@ -8,6 +8,7 @@ export function isHomepageRoute(pathname: string) {
 }
 
 /** A shared media chunk can precede the hero stylesheet in the route manifest.
+ * The hero is the Dark-Edition cockpit sequence (`.wgt .reel`, dark-hero.css).
  * Prepare only the unique stylesheet containing the hero, never a guessed
  * filename or unrelated first chunk. All route styles still render inline. */
 export function selectHomepageCssPreload(
@@ -16,7 +17,7 @@ export function selectHomepageCssPreload(
 ) {
   const candidates = (assets ?? [])
     .map((asset) => typeof asset === "string" ? { href: asset, crossOrigin: undefined } : asset)
-    .filter((asset) => styles?.[asset.href]?.includes(".scroll-film{"));
+    .filter((asset) => styles?.[asset.href]?.includes(".wgt .reel{"));
   return candidates.length === 1 ? candidates[0] : undefined;
 }
 

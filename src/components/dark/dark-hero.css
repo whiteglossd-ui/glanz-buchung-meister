@@ -1,0 +1,44 @@
+/* Dark Edition: Cockpit-Bildfolge-Hero der Startseite (aus dark-template.css ausgelagert, nur auf den Startseiten geladen). */
+.wgt .reel{position:relative;height:420vh;background:#000}
+.wgt .reel__stick{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+.wgt .reel__canvas,.wgt .reel__poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.wgt .reel__poster{transition:opacity .6s}
+.wgt .reel.is-live .reel__poster{opacity:0}
+.wgt .reel__shade{position:absolute;inset:0;pointer-events:none;background:radial-gradient(70% 60% at 50% 50%,rgba(0,0,0,.5),rgba(0,0,0,.15) 70%),linear-gradient(180deg,rgba(9,10,13,.55),transparent 22%,transparent 70%,rgba(9,10,13,.85))}
+.wgt .reel__ch{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:calc(var(--hdr) + 20px) 20px 120px;opacity:0;visibility:hidden;transition:opacity .9s var(--ease),visibility 0s .9s}
+.wgt .reel__ch.is-on{opacity:1;visibility:visible;transition:opacity .9s var(--ease),visibility 0s}
+.wgt .reel__ch > *{transform:translateY(calc(var(--d,0) * 1px))}
+.wgt .reel__ch--0 .hero__title{max-width:900px}
+.wgt .reel__ch .hero__lead{max-width:540px}
+.wgt .reel__big{font:400 clamp(52px,8vw,124px)/.98 var(--serif);letter-spacing:-.035em;margin:0;text-shadow:none}
+.wgt .reel__sub{margin:26px 0 0;font:400 18px/1.4 var(--sans);color:var(--ink-2)}
+.wgt .reel .kicker{color:var(--ink)}
+.wgt .reel__bar{position:absolute;left:41px;right:110px;bottom:34px;display:flex;align-items:center;gap:22px;font:500 10px/1 var(--ui);letter-spacing:.16em;text-transform:uppercase}
+.wgt .reel__track{flex:1;height:1px;background:rgba(243,240,232,.2);position:relative;overflow:hidden}
+.wgt .reel__fill{position:absolute;inset:0;background:linear-gradient(90deg,#8ca4bf,#f4f6fa);transform-origin:left;transform:scaleX(0)}
+.wgt .reel__count{color:var(--ink-2)}
+.wgt .reel__count b{color:var(--ink);font-weight:500}
+@media (max-width:820px){.wgt .reel{height:360vh}
+.wgt .reel__bar{left:20px;right:96px;bottom:30px}
+.wgt .reel__bar-l{display:none}
+}
+@media (prefers-reduced-motion:reduce){.wgt .reel{height:auto}
+.wgt .reel__stick{position:relative}
+.wgt .reel__ch--1,.wgt .reel__ch--2,.wgt .reel__bar{display:none}
+}
+.wgt .reel__shade{background:radial-gradient(70% 60% at 50% 50%,rgba(0,0,0,.5),rgba(0,0,0,.15) 70%),linear-gradient(180deg,rgba(9,10,13,.55),transparent 22%,transparent 72%,var(--bg) 100%)}
+.wgt .reel .chrome{filter:drop-shadow(0 2px 22px rgba(0,0,0,.55))}
+.wgt .reel__ch p,.wgt .reel__ch strong,.wgt .reel__ch span{text-shadow:0 1px 14px rgba(0,0,0,.6)}
+.wgt .reel__shade::after{content:"";position:absolute;inset:0;background:rgba(5,6,8,.18);transition:opacity .9s var(--ease)}
+.wgt .reel[data-ch="0"] .reel__shade::after{background:rgba(5,6,8,.34)}
+@media (max-width:767px){.wgt .reel__shade::after{background:rgba(5,6,8,.32)}
+.wgt .reel[data-ch="0"] .reel__shade::after{background:rgba(5,6,8,.52)}
+}
+.wgt .reel__big{font-weight:300;letter-spacing:-.01em}
+@media (max-width:820px){.wgt .reel__ch--0{justify-content:flex-end;padding:calc(var(--hdr) + 12px) 20px 78px}
+.wgt .reel__ch--0 .kicker{margin-bottom:16px;font-size:10px;letter-spacing:.28em}
+.wgt .reel__ch--0 .hero__title{font-size:clamp(34px,9.6vw,44px);margin-bottom:16px}
+.wgt .reel__ch--0 .hero__lead{font-size:15px;margin-bottom:22px}
+.wgt .reel__ch--0 .hero__actions{gap:10px}
+.wgt .reel__ch--0 .hero__trust{margin-top:16px;padding-top:14px}
+}

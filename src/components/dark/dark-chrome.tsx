@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { site, services } from "@/data/site";
 import { CookieSettingsButton } from "@/components/consent-banner";
 import { focusBookingHeading } from "@/lib/booking-anchor-focus";
@@ -22,6 +22,7 @@ export function DarkHeader() {
   const [up, setUp] = useState(false);
   const openRef = useRef(false);
   const toggleRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   openRef.current = open;
 
   useEffect(() => setOpen(false), [pathname, hash]);
@@ -34,7 +35,10 @@ export function DarkHeader() {
       document.body.style.overflow = "hidden";
       let inner = 0;
       const outer = requestAnimationFrame(() => {
-        inner = requestAnimationFrame(() => setVisible(true));
+        inner = requestAnimationFrame(() => {
+          setVisible(true);
+          menuRef.current?.querySelector<HTMLElement>(".menu__nav a")?.focus({ preventScroll: true });
+        });
       });
       return () => {
         cancelAnimationFrame(outer);
@@ -86,6 +90,20 @@ export function DarkHeader() {
   }, []);
 
   const close = () => setOpen(false);
+  // Tastatur bleibt im offenen Menü (wie im bisherigen Menü-Dialog).
+  const trapFocus = (event: ReactKeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== "Tab") return;
+    const controls = event.currentTarget.querySelectorAll<HTMLElement>("a[href], button:not([disabled])");
+    const first = controls[0];
+    const last = controls[controls.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last?.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first?.focus();
+    }
+  };
 
   return (
     <div className="wgt wgt-chrome">
@@ -113,6 +131,8 @@ export function DarkHeader() {
             type="button"
             aria-expanded={open}
             aria-controls="wgt-menu"
+            aria-haspopup="dialog"
+            aria-label={open ? "Menü schließen" : "Menü öffnen"}
             onClick={() => setOpen((v) => !v)}
           >
             <span className="hdr__menu-label">{open ? "Schließen" : "Menü"}</span>
@@ -121,7 +141,16 @@ export function DarkHeader() {
         </div>
       </header>
 
-      <div className={`menu${visible ? " is-open" : ""}`} id="wgt-menu" hidden={!shown}>
+      <div
+        ref={menuRef}
+        className={`menu${visible ? " is-open" : ""}`}
+        id="wgt-menu"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Hauptnavigation"
+        hidden={!shown}
+        onKeyDown={trapFocus}
+      >
         <figure className="menu__fig" aria-hidden="true">
           <img src="/media/dark/gen/profile-wide-1600.webp" alt="" loading="lazy" />
         </figure>

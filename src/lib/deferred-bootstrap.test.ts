@@ -23,7 +23,7 @@ test("the hero style hint follows CSS content instead of the first shared chunk"
   const hero = { href: "/assets/home-abc.css", crossOrigin: "anonymous" as const };
   const styles = {
     "/assets/media-def.css": ".wg-media-rail{display:flex}",
-    [hero.href]: ".home-booking{display:grid}.scroll-film{position:relative}",
+    [hero.href]: ".home-booking{display:grid}.wgt .reel{position:relative}",
   };
   assert.equal(selectHomepageCssPreload(["/assets/media-def.css", hero], styles), hero);
   assert.equal(selectHomepageCssPreload([hero, "/assets/media-def.css"], styles), hero);
@@ -35,7 +35,7 @@ test("missing or ambiguous hero CSS does not preload an unrelated stylesheet", (
   assert.equal(selectHomepageCssPreload(["/rail.css"], { "/rail.css": ".wg-media-rail{display:flex}" }), undefined);
   assert.equal(selectHomepageCssPreload(["/hero.css"], {}), undefined);
   assert.equal(selectHomepageCssPreload(["/one.css", "/two.css"], {
-    "/one.css": ".scroll-film{color:red}", "/two.css": ".scroll-film{color:blue}",
+    "/one.css": ".wgt .reel{color:red}", "/two.css": ".wgt .reel{color:blue}",
   }), undefined);
 });
 

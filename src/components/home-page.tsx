@@ -15,6 +15,7 @@ import { lossburgHome } from "@/data/home-location";
 export function HomePage({
   location = "horb",
   document,
+  aboutPublished = false,
   initialPackage,
   initialCity,
 }: {
@@ -38,6 +39,7 @@ export function HomePage({
   return (
     <DarkHome
       location={location}
+      aboutPublished={aboutPublished}
       title={regional ? homeCopy.title : homeText("title", document?.content.title.trim() || undefined)}
       lead={regional ? lossburgHome.lead : homeText("lead", document?.content.lead.trim() || undefined)}
       initialPackage={initialPackage}

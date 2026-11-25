@@ -18,6 +18,8 @@ import { LazyConfigurator } from "@/components/lazy-configurator";
 import { LazyRundumInquiry } from "@/components/lazy-rundum-inquiry";
 import { focusBookingHeading } from "@/lib/booking-anchor-focus";
 import { cityDistanceLine, pickupDistanceLabel } from "@/lib/city-copy";
+import { LazyGoogleReviews } from "@/components/lazy-google-reviews";
+import "./dark-hero.css";
 import { darkFrameSrc, initDarkHome, tweenNumber } from "@/lib/dark-motion";
 
 const IMG = "/media/dark/gen";
@@ -97,6 +99,7 @@ function Packages() {
   };
   return (
     <section className="sec sec--packs" id="preise" aria-labelledby="preise-h">
+      <span id="pakete" className="anchor" aria-hidden="true" />
       {atmo("drops-wide")}
       <div className="wrap">
         <div className="packs-head">
@@ -242,7 +245,7 @@ function DarkBooking({
       ))}
       {atmo("leather-wide")}
       <div className="wrap book">
-        <div className="book__intro">
+        <div className="book__intro home-booking-promise">
           <p className="label label--rule" data-reveal>08 / Dein Rundum-Service</p>
           <h2 className="h2 h2--xl chrome" id="buchung-heading" tabIndex={-1} data-reveal>
             <Words text={"Dein Auto.\nDein Wunsch.\nWir kümmern uns."} />
@@ -274,7 +277,7 @@ function DarkBooking({
           </p>
         </div>
 
-        <div className="cfg wgt-booking" data-reveal>
+        <div className="cfg wgt-booking home-booking-form" aria-labelledby="anfrage-heading">
           <h3 className="h3 h3--lg" id="anfrage-heading">Jetzt Termin anfragen</h3>
           <nav className="cfg__mode" aria-label="Art der Anfrage">
             <a href="#buchung" aria-current={!rundum ? "location" : undefined} aria-controls="paket-formular">
@@ -320,7 +323,9 @@ export function DarkHome({
   initialCity,
   jsonLd,
   studio,
+  aboutPublished = false,
 }: {
+  aboutPublished?: boolean;
   location?: "horb" | "lossburg";
   title?: string;
   lead?: string;
@@ -350,14 +355,14 @@ export function DarkHome({
               <p className="kicker" data-hero>Hol- und Bringservice · {regional ? "Loßburg / Freudenstadt" : site.city}</p>
               <h1 className="hero__title chrome" data-hero><Lines text={heroTitle} /></h1>
               <p className="hero__lead" data-hero>{lead}</p>
-              <div className="hero__actions" data-hero>
-                <Link className="btn btn--solid" to={regional ? "/freudenstadt-lossburg" : "/"} hash="buchung" onClick={focusBookingHeading}>
+              <div className="hero__actions film-actions" data-hero>
+                <Link className="btn btn--solid scroll-film-cta" to={regional ? "/freudenstadt-lossburg" : "/"} hash="buchung" onClick={focusBookingHeading}>
                   Jetzt Termin anfragen <span className="arr" aria-hidden="true">→</span>
                 </Link>
-                <a className="btn btn--line" href="#ablauf">Hol- &amp; Bringservice entdecken</a>
+                <a className="btn btn--line scroll-film-prices" href="#ablauf">Hol- &amp; Bringservice entdecken</a>
               </div>
-              <div className="hero__trust" data-hero>
-                <strong>Dein Fahrzeug in guten Händen</strong>
+              <div className="hero__trust scroll-film-trust" data-hero>
+                <p><strong>Dein Fahrzeug in guten Händen</strong></p>
                 <span>Persönliche Fahrzeugannahme · Ein fester Ansprechpartner · Transparente Festpreise</span>
               </div>
               <nav className="hero__loc" data-hero aria-label="Standort wählen">
@@ -471,13 +476,10 @@ export function DarkHome({
               <p className="label label--rule" data-reveal>03 / Google</p>
               <h2 className="h2 chrome" id="rev-h" data-reveal><Words text={"Erfahrungen\nunserer Kunden."} /></h2>
             </div>
-            <a className="review__card" href="https://www.google.com/maps?cid=6247539959424569458" target="_blank" rel="noopener noreferrer" data-reveal>
-              <span className="review__brand">Google</span>
-              <span className="review__row">
-                <span>Alle Bewertungen auf Google ansehen</span>
-                <span className="review__arr" aria-hidden="true">→</span>
-              </span>
-            </a>
+            {/* Echte Google-Bewertungen (wie bisher), lädt erst kurz vor dem Sichtbereich. */}
+            <div className="review__live" data-reveal>
+              <LazyGoogleReviews compact />
+            </div>
           </div>
         </section>
 
@@ -554,7 +556,12 @@ export function DarkHome({
                   <br />
                   {site.hoursLabel}
                 </p>
-                <Link className="tlink" to="/kontakt">Kontakt &amp; Anfahrt <span aria-hidden="true">→</span></Link>
+                <div className="loc__links">
+                  <Link className="tlink" to="/kontakt">Kontakt &amp; Anfahrt <span aria-hidden="true">→</span></Link>
+                  {aboutPublished && (
+                    <Link className="tlink" to="/ueber-uns">Über White-Gloss <span aria-hidden="true">→</span></Link>
+                  )}
+                </div>
               </article>
               <article className="loc" data-reveal>
                 <figure className="loc__img clip">

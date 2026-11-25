@@ -125,7 +125,7 @@ const APPROVED_HOME_BLOBS = Object.freeze({
   "src/routes/leistungen.$slug.$city.tsx": "bb360ecb62e387d7fa8569e1259ece1ab9c19872",
   "src/lib/seo-intents.ts": "a61bd78880457eb49e9a57001386d3035021efd1",
   // November 25 owner request: homepage rebuilt on the Dark-Edition template.
-  "src/components/home-page.tsx": "929612cf515757e79c7042226d687ecfe5226bbf",
+  "src/components/home-page.tsx": "d37d849ef4ab0ca90afdf2ab8bf558a3473b853e",
   "src/data/home-location.ts": "22916b03c538e31757ef9dd4e42be8119b6ea982",
   "src/components/lazy-configurator.tsx": "2e1849b66392f02c2d985a1637d4f28dc26e8dfd",
 });
