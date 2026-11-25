@@ -195,6 +195,25 @@ async function assertBookingArrival(page, label) {
           ({ pointerEvents, visibility, opacity, transform, display }))(getComputedStyle(heading)),
         inert: !!heading?.closest("[inert]"),
         openDialog: document.querySelector("dialog[open]")?.id ?? null,
+        checkVisibility: heading?.checkVisibility?.({ checkOpacity: true, checkVisibilityCSS: true }),
+        ancestors: (() => {
+          const out = [];
+          for (let el = heading; el && out.length < 6; el = el.parentElement) {
+            const cs = getComputedStyle(el);
+            out.push({ el: `${el.tagName.toLowerCase()}.${[...el.classList].join(".")}`, overflow: cs.overflow,
+              clipPath: cs.clipPath, filter: cs.filter, transform: cs.transform, position: cs.position,
+              zIndex: cs.zIndex, contain: cs.contain, contentVisibility: cs.contentVisibility, rect: el.getBoundingClientRect().toJSON() });
+          }
+          return out;
+        })(),
+        firstWord: (() => {
+          const word = heading?.querySelector(".w");
+          const r = word?.getBoundingClientRect();
+          return r ? { rect: r.toJSON(), stack: document.elementsFromPoint(r.left + r.width / 2, r.top + r.height / 2).slice(0, 4)
+            .map((el) => `${el.tagName.toLowerCase()}.${[...el.classList].join(".")}`) } : null;
+        })(),
+        scrollY,
+        htmlClass: document.documentElement.className,
       };
     });
     throw new Error(`${label}: booking heading must receive focus and remain fully visible below the header: ${JSON.stringify(state)}`, { cause: error });

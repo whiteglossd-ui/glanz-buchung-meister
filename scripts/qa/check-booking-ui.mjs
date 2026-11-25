@@ -533,7 +533,7 @@ try {
         }));
         await checkMediaCollections(page, width);
         if (width === 1280) {
-          await placeBelowHeader(page, "#pakete");
+          await placeBelowHeader(page, "#preise");
           await page.screenshot({ path: `${output}/desktop-packages-reduced-motion.png` });
         }
       }
