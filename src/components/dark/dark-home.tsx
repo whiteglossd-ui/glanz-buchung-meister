@@ -473,14 +473,11 @@ export function DarkHome({
           </div>
         </section>
 
-        <section className="sec sec--tight" id="bewertungen" aria-labelledby="rev-h">
-          <div className="wrap review">
-            <div>
-              <p className="label label--rule" data-reveal>03 / Google</p>
-              <h2 className="h2 chrome" id="rev-h" data-reveal><Words text={"Erfahrungen\nunserer Kunden."} /></h2>
-            </div>
-            {/* Echte Google-Bewertungen (wie bisher), lädt erst kurz vor dem Sichtbereich. */}
-            <div className="review__live" data-reveal>
+        {/* Google-Bewertungen: Überschrift kommt aus der echten Bewertungskomponente. */}
+        <section className="sec sec--tight" id="bewertungen">
+          <div className="wrap">
+            <p className="label label--rule" data-reveal>03 / Google</p>
+            <div className="review__live">
               <LazyGoogleReviews compact />
             </div>
           </div>
