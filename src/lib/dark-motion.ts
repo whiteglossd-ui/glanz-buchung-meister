@@ -285,6 +285,18 @@ export function initDarkHome(root: HTMLElement): () => void {
   );
   observers.push(rio);
   $$("[data-reveal]").forEach((el) => rio.observe(el));
+  // React kann Teilbäume nach dem Start neu erzeugen (Suspense, Client-Rendering
+  // nach der Hydration). Ohne Nachbeobachtung blieben sie unsichtbar.
+  const mo = new MutationObserver((records) => {
+    for (const r of records)
+      r.addedNodes.forEach((n) => {
+        if (!(n instanceof HTMLElement)) return;
+        const found = n.matches("[data-reveal]") ? [n] : [];
+        found.push(...n.querySelectorAll<HTMLElement>("[data-reveal]"));
+        found.forEach((el) => { if (!el.classList.contains("is-in")) rio.observe(el); });
+      });
+  });
+  mo.observe(root, { childList: true, subtree: true });
 
   /* ---------- Vorher/Nachher ---------- */
   const cmp = $(".compare");
@@ -308,6 +320,7 @@ export function initDarkHome(root: HTMLElement): () => void {
   return () => {
     ac.abort();
     observers.forEach((o) => o.disconnect());
+    mo.disconnect();
     frames.forEach((id) => cancelAnimationFrame(id));
     unready();
     layer.remove();

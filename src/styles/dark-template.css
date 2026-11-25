@@ -836,3 +836,8 @@ html.lenis,html.lenis body{height:auto}
 /* Vergleichsregler: sichtbarer Tastaturfokus (Range-Input ist transparent). */
 .wgt .compare:has(.compare__range:focus-visible){outline:2px solid var(--cream);outline-offset:3px}
 .wgt .compare:has(.compare__range:focus-visible) .compare__handle i{background:var(--cream);color:var(--on-cream);border-color:var(--cream)}
+/* Buchung: Zusage und Formular erst ab 1080px nebeneinander, darunter gestapelt (volle Formularbreite). */
+@media (max-width:1079px){.wgt .book{grid-template-columns:1fr}}
+/* Ein per Sprungziel fokussiertes Element ist immer sichtbar, auch vor der Einblendung. */
+.wgt.js [data-reveal]:focus{opacity:1;transform:none}
+.wgt [data-reveal]:focus .w > span{transform:none}
