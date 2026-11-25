@@ -825,3 +825,11 @@ html.lenis,html.lenis body{height:auto}
 }
 .wgt .hdr__links a{display:inline-flex;align-items:center;min-height:44px}
 .wgt .hdr__links a::after{bottom:10px}
+/* Echtes Buchungsformular in der schmalen Spalte (wie bisher in home-booking.css):
+   keine eigene Preisspalte, alles untereinander. */
+.wgt .book > *{min-width:0}
+.wgt .wgt-booking .booking-editorial{grid-template-columns:minmax(0,1fr);gap:1.5rem;margin-top:1.5rem}
+.wgt .wgt-booking .booking-editorial > :is(.booking-steps,.booking-price,.booking-step-title,.booking-step-panel,.booking-actions){grid-column:1;grid-row:auto}
+.wgt .wgt-booking .booking-editorial .booking-price{position:static;flex-direction:row;align-items:center;justify-content:space-between;flex-wrap:wrap;padding-block:1.25rem}
+.wgt .wgt-booking .booking-editorial .booking-price strong{font-size:clamp(2rem,3vw,3rem)}
+.wgt .wgt-booking .booking-editorial .booking-vehicle-options{grid-template-columns:minmax(0,1fr)}

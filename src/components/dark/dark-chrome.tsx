@@ -20,11 +20,16 @@ export function DarkHeader() {
   const [solid, setSolid] = useState(false);
   const [up, setUp] = useState(false);
   const openRef = useRef(false);
+  // "navigate": Menülink gewählt → Modal sofort schließen, Fokus übernimmt die Zielseite.
+  const closeMode = useRef<"dismiss" | "navigate">("dismiss");
   const toggleRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDialogElement>(null);
   openRef.current = open;
 
-  useEffect(() => setOpen(false), [pathname, hash]);
+  useEffect(() => {
+    closeMode.current = "navigate";
+    setOpen(false);
+  }, [pathname, hash]);
 
   // Natives Modal (showModal): Hintergrund ist inert, Escape schließt, der
   // Fokus bleibt im Menü und kehrt danach zum Menü-Knopf zurück.
@@ -48,6 +53,11 @@ export function DarkHeader() {
     setVisible(false);
     document.body.style.overflow = "";
     if (!dialog.open) return;
+    if (closeMode.current === "navigate") {
+      closeMode.current = "dismiss";
+      dialog.close();
+      return;
+    }
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const finish = () => {
       if (dialog.open) dialog.close();
@@ -88,7 +98,16 @@ export function DarkHeader() {
     };
   }, []);
 
-  const close = () => setOpen(false);
+  const dismiss = () => {
+    closeMode.current = "dismiss";
+    setOpen(false);
+  };
+  const close = () => {
+    closeMode.current = "navigate";
+    // Sofort schließen, damit die Zielseite bzw. der Buchungsbereich den Fokus bekommt.
+    if (menuRef.current?.open) menuRef.current.close();
+    setOpen(false);
+  };
   // Tab-Schleife innerhalb des Menüs (wie im bisherigen Menü-Dialog).
   const trapFocus = (event: ReactKeyboardEvent<HTMLDialogElement>) => {
     if (event.key !== "Tab") return;
@@ -163,14 +182,14 @@ export function DarkHeader() {
         onKeyDown={trapFocus}
         onCancel={(event) => {
           event.preventDefault();
-          close();
+          dismiss();
         }}
       >
         <div className="hdr hdr--menu is-solid">
           <span className="hdr__links" aria-hidden="true" />
           {logo(close)}
           <div className="hdr__right">
-            <button className="hdr__menu" type="button" aria-expanded="true" aria-label="Menü schließen" onClick={close}>
+            <button className="hdr__menu" type="button" aria-expanded="true" aria-label="Menü schließen" onClick={dismiss}>
               <span className="hdr__menu-label">Schließen</span>
               <span className="hdr__menu-icon" aria-hidden="true"><i /><i /><i /></span>
             </button>
