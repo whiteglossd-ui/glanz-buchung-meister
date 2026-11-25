@@ -35,3 +35,10 @@ gemergt, weil ein Merge auf `main` automatisch auf Hostinger veröffentlicht.
 
 Die exakten Inhaltspins für `home-page.tsx` und `site-chrome.tsx` folgen
 diesem beauftragten Umbau. Lokales Hosting bleibt ausgeschaltet.
+
+## Kundenfotos Mercedes S-Klasse Coupé (Inhaberauftrag 25.11.2026)
+
+- 6 von 16 Inhaberfotos (24.11.2026) ausgewählt, Duplikate verworfen.
+- Außenaufnahmen: Fahrzeug freigestellt, Umgebung abgedunkelt und stark unscharf (fremde Fahrzeuge, Händlerschilder und Kennzeichen unkenntlich).
+- Innenaufnahmen: Fensterflächen (Parkplatz, Gebäude, fremde Autos) abgedunkelt und unscharf.
+- Einsatz: Laufband der Startseite (Hochformat), Kundengalerie (`sclass-01` bis `sclass-06`), zwei davon in der kuratierten Auswahl.

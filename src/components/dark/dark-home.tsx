@@ -200,9 +200,18 @@ function VideoCard({ v }: { v: (typeof videos)[number] }) {
   );
 }
 
-const gallery: [string, "t" | "w"][] = [
-  ["glove-towel", "t"], ["hood-wide", "w"], ["stitching", "t"], ["taillight", "w"], ["applicator", "t"],
-  ["cockpit-wide", "w"], ["exhaust", "t"], ["foamwash", "w"], ["key", "t"], ["profile-wide", "w"],
+// Laufband: Hochformat-Kundenfotos (S-Klasse Coupé, Inhaber 24.11.2026) im Wechsel mit Atelier-Motiven.
+const CP = "/media/customer-photos";
+const gallery: { src: string; srcSet: string; sizes: string; shape: "t" | "w" }[] = [
+  ...[
+    "sclass-01:t", "hood-wide:w", "sclass-03:t", "taillight:w", "sclass-04:t",
+    "cockpit-wide:w", "sclass-05:t", "foamwash:w", "sclass-06:t", "profile-wide:w", "sclass-02:t",
+  ].map((entry) => {
+    const [name, shape] = entry.split(":") as [string, "t" | "w"];
+    return name.startsWith("sclass-")
+      ? { src: `${CP}/${name}-1400.webp`, srcSet: `${CP}/${name}-480.webp 480w, ${CP}/${name}-900.webp 900w, ${CP}/${name}-1400.webp 1200w`, sizes: "(max-width:820px) 80vw, 34vw", shape }
+      : { src: `${IMG}/${name}-1600.webp`, srcSet: `${IMG}/${name}-800.webp 800w, ${IMG}/${name}-1600.webp 1600w`, sizes: "(max-width:820px) 80vw, 50vw", shape };
+  }),
 ];
 
 const steps = [
@@ -452,16 +461,9 @@ export function DarkHome({
         <section className="hg" aria-hidden="true">
           <div className="hg__stick">
             <div className="hg__track">
-              {gallery.map(([name, shape], i) => (
-                <figure key={name} className={`hg__f hg__f--${shape}`}>
-                  <img
-                    src={`${IMG}/${name}-1600.webp`}
-                    srcSet={`${IMG}/${name}-800.webp 800w, ${IMG}/${name}-1600.webp 1600w`}
-                    sizes="(max-width:820px) 80vw, 50vw"
-                    alt=""
-                    loading="lazy"
-                    decoding="async"
-                  />
+              {gallery.map(({ src, srcSet, sizes, shape }, i) => (
+                <figure key={src} className={`hg__f hg__f--${shape}`}>
+                  <img src={src} srcSet={srcSet} sizes={sizes} alt="" loading="lazy" decoding="async" />
                   <span className="hg__n">{String(i + 1).padStart(2, "0")}</span>
                 </figure>
               ))}

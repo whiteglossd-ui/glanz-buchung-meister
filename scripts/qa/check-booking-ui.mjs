@@ -608,7 +608,7 @@ try {
     await page.keyboard.press("Escape");
     await dialog.waitFor({ state: "hidden" });
     await page.locator(".customer-photo-all").click();
-    assert.equal(await page.locator(".customer-photo-grid > li").count(), 19);
+    assert.equal(await page.locator(".customer-photo-grid > li").count(), 25);
     const trigger = page.locator(".customer-photo-trigger").first();
     await trigger.click();
     await dialog.waitFor({ state: "visible" });
@@ -618,15 +618,15 @@ try {
         .evaluate((img) => getComputedStyle(img).objectFit),
       "contain",
     );
-    await expectText(page, "dialog.customer-photo-dialog .kicker", "Bild 1 von 19", "Viewer start");
+    await expectText(page, "dialog.customer-photo-dialog .kicker", "Bild 1 von 25", "Viewer start");
     await page.keyboard.press("ArrowRight");
-    await expectText(page, "dialog.customer-photo-dialog .kicker", "Bild 2 von 19", "ArrowRight");
+    await expectText(page, "dialog.customer-photo-dialog .kicker", "Bild 2 von 25", "ArrowRight");
     await page.screenshot({ path: `${output}/desktop-1280-galerie-viewer.png` });
     await page.keyboard.press("Escape");
     await dialog.waitFor({ state: "hidden" });
     assert.equal(await trigger.evaluate((element) => element === document.activeElement), true);
     results.push(
-      "Gallery: 6 curated, all 19 photos, uncropped viewer, arrows, Escape, focus return",
+      "Gallery: 6 curated, all 25 photos, uncropped viewer, arrows, Escape, focus return",
     );
     assert.equal(
       (await page.locator("#kundenbeispiele video, #kundenbeispiele .wg-video-card").count()) > 0,

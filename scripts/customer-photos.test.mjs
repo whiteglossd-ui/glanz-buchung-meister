@@ -4,8 +4,8 @@ import { test } from "node:test";
 import { customerPhotos } from "../src/data/customer-photos.ts";
 
 test("all approved customer photographs have complete public responsive assets", () => {
-  assert.equal(customerPhotos.length, 19);
-  assert.equal(new Set(customerPhotos.map((photo) => photo.id)).size, 19);
+  assert.equal(customerPhotos.length, 25);
+  assert.equal(new Set(customerPhotos.map((photo) => photo.id)).size, 25);
   for (const photo of customerPhotos) {
     assert.ok(photo.title.length > 5);
     assert.ok(photo.alt.length > 20);
