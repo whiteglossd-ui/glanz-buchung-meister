@@ -141,11 +141,16 @@ function evaluate(relativePath, dependencies, globals = {}) {
   return module.exports;
 }
 
+const pageSchema = evaluate("lib/page-schema.ts", {
+  "../data/site.ts": siteData,
+});
+
 const seo = evaluate("lib/seo.ts", {
   "@/data/site": siteData,
   "@/data/media-src": mediaData,
   "@/data/google-profile": googleData,
   "@/lib/seo-policy": seoPolicy,
+  "@/lib/page-schema": pageSchema,
 });
 
 test("the planned Loßburg route has its own canonical and truthful local metadata", () => {
