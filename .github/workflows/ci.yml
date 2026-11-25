@@ -213,8 +213,10 @@ jobs:
         run: node scripts/qa/run-checks.mjs
 
       - name: Sandbox-Vorschau als statische Seiten exportieren
-        # Nur für PRs mit "[Sandbox" im Titel; gleicher isolierter Server, keine echten Daten.
-        if: ${{ success() && github.event_name == 'pull_request' && contains(github.event.pull_request.title, '[Sandbox') }}
+        # Nur für PRs mit "[Sandbox" im Titel; eigener isolierter Server, keine echten Daten.
+        # Läuft auch, wenn eine QA-Prüfung rot ist: Die Vorschau dient der Sichtprüfung
+        # durch den Inhaber, ein Merge bleibt durch die roten Prüfungen gesperrt.
+        if: ${{ !cancelled() && github.event_name == 'pull_request' && contains(github.event.pull_request.title, '[Sandbox') }}
         timeout-minutes: 5
         run: node scripts/qa/export-preview.mjs
 

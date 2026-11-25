@@ -664,7 +664,8 @@ html.lenis,html.lenis body{height:auto}
 .wgt .ribbon span{display:inline-block;font:300 clamp(54px,9vw,150px)/1 var(--serif);letter-spacing:.02em;text-transform:uppercase;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.35);transform:translateX(calc(var(--rx,0) * -1%))}
 .wgt .ribbon i{display:inline-block;width:.3em;height:.3em;margin:0 .45em;vertical-align:middle;border-radius:50%;background:rgba(255,255,255,.4)}
 .wgt .w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.08em;margin-bottom:-.08em}
-.wgt .w > span{display:inline-block;transform:translateY(108%);transition:transform 1.15s var(--ease);transition-delay:calc(var(--i,0) * 55ms)}
+.wgt .w > span{display:inline-block}
+.wgt.js .w > span{transform:translateY(108%);transition:transform 1.15s var(--ease);transition-delay:calc(var(--i,0) * 55ms)}
 .wgt .chrome .w > span{background:var(--chrome);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
 .wgt .is-in .w > span,.wgt.js.is-ready [data-hero] .w > span,.wgt .split-done.is-in .w > span{transform:none}
 .wgt.js [data-reveal].split-done{opacity:1;transform:none}
@@ -802,3 +803,4 @@ html.lenis,html.lenis body{height:auto}
 .wgt .hdr__links a.is-active::after{transform:scaleX(1);transform-origin:left}
 .wgt .hero__trust p{margin:0}
 .wgt .sec--packs{position:relative}
+.wgt .menu{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
