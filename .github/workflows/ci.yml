@@ -212,6 +212,12 @@ jobs:
         timeout-minutes: 18
         run: node scripts/qa/run-checks.mjs
 
+      - name: Sandbox-Vorschau als statische Seiten exportieren
+        # Nur für PRs mit "[Sandbox" im Titel; gleicher isolierter Server, keine echten Daten.
+        if: ${{ success() && github.event_name == 'pull_request' && contains(github.event.pull_request.title, '[Sandbox') }}
+        timeout-minutes: 5
+        run: node scripts/qa/export-preview.mjs
+
       - name: Kompakte visuelle Prüfnachweise ausgeben
         if: always()
         run: node scripts/qa/export-review-images.mjs
