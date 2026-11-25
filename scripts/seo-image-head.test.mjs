@@ -6,6 +6,7 @@ import * as media from "../src/data/media-src.ts";
 import * as site from "../src/data/site.ts";
 import * as profile from "../src/data/google-profile.ts";
 import * as policy from "../src/lib/seo-policy.ts";
+import * as pageSchema from "../src/lib/page-schema.ts";
 
 const require = createRequire(import.meta.url);
 const ts = require("typescript");
@@ -18,6 +19,7 @@ const dependencies = {
   "@/data/site": site,
   "@/data/google-profile": profile,
   "@/lib/seo-policy": policy,
+  "@/lib/page-schema": pageSchema,
 };
 const exports = {};
 new Function("require", "exports", compiled.outputText)((specifier) => {
