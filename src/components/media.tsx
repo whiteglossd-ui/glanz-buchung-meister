@@ -45,7 +45,7 @@ export function HeroMedia({
 
   useEffect(() => {
     setControlHost(
-      containerRef.current?.closest<HTMLElement>(".hero-stage, .film-chapter") ?? null,
+      containerRef.current?.closest<HTMLElement>(".hero-stage, .film-chapter, .phero") ?? null,
     );
   }, []);
 

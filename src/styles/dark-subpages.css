@@ -54,3 +54,6 @@
   .wgt.wgt-page .btn-primary:hover { background: transparent; color: var(--cream); }
   .wgt.wgt-page .btn-secondary:hover { background: rgba(255, 255, 255, .92); color: #0b0c0f; border-color: transparent; }
 }
+
+/* Der Seitenkopf hat eigene Bildkante und Verlauf: keine Abschnitts-Zierlinie aus styles.css. */
+.wgt.wgt-page main > section.phero::before { content: none; }
