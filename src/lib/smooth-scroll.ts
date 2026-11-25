@@ -115,8 +115,10 @@ export function browserSmoothScrollEnv(): SmoothScrollEnv {
         ({ default: LenisClass }) =>
           new LenisClass({
             autoRaf: true,
-            // Standardwerte von Lenis 1.3 (lerp 0.1): gedämpft, aber ohne
-            // schwammiges Nachlaufen.
+            // Dark Edition: feste Dauer mit Quart-Ausklang wie in der
+            // Vorlage. duration + easing haben in Lenis 1.3 Vorrang vor lerp.
+            duration: 1.2,
+            easing: (t: number) => 1 - Math.pow(1 - t, 4),
             smoothWheel: true,
             // Innere Scrollbereiche (Formulare, Listen, Karten) scrollen nativ.
             allowNestedScroll: true,

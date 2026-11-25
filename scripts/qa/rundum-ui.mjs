@@ -24,7 +24,7 @@ async function assertStableRundumArrival(page, label, reads) {
     return now - probe.since >= 150;
   }, undefined, { timeout: 5000 });
   const state = await page.locator("#buchung-heading").evaluate((element) => {
-    const heading = element.getBoundingClientRect(), header = document.querySelector(".site-header")?.getBoundingClientRect();
+    const heading = element.getBoundingClientRect(), header = document.querySelector("[data-site-header]")?.getBoundingClientRect();
     const hit = document.elementFromPoint(heading.left + heading.width / 2, heading.top + heading.height / 2);
     return { path: location.pathname + location.hash, scrollY, documentHeight: document.documentElement.scrollHeight,
       activeElement: document.activeElement?.id || document.activeElement?.tagName,
@@ -62,9 +62,9 @@ export function verifyOriginalIconHead(documentHtml, label) {
 // Read-only controls and layout checks. The CI runner supplies the browser;
 // these actions never submit a request, upload a file or open WhatsApp.
 export async function verifyInitialRundumHero(page, { label, screenshot, documentHtml }) {
-  const link = page.locator(".scroll-film-cta");
-  const secondary = page.locator(".scroll-film-prices");
-  assert.equal(await page.locator(".film-actions a").count(), 2, `${label}: the hero has exactly two actions`);
+  const link = page.locator("[data-hero-cta=booking]");
+  const secondary = page.locator("[data-hero-cta=pickup]");
+  assert.equal(await page.locator("[data-hero-actions] a").count(), 2, `${label}: the hero has exactly two actions`);
   assert.equal(await page.locator(".scroll-film-rundum").count(), 0, `${label}: the hero keeps one primary and one secondary action`);
   await link.waitFor({ state: "visible" });
   await page.evaluate(() => document.fonts.ready);
@@ -102,9 +102,9 @@ export async function verifyInitialRundumHero(page, { label, screenshot, documen
   assert.equal(serviceTarget.pathname, "/");
   assert.equal(serviceTarget.hash, "#ablauf");
   assert.equal((await secondary.textContent()).trim(), "Hol- & Bringservice entdecken");
-  assert.equal((await page.locator(".scroll-film-trust p").textContent()).trim(), "Dein Fahrzeug in guten Händen");
+  assert.equal((await page.locator("[data-hero-trust] p").textContent()).trim(), "Dein Fahrzeug in guten Händen");
   const measure = (action) => action.evaluate((element) => {
-    const rect = element.getBoundingClientRect(), header = document.querySelector(".site-header")?.getBoundingClientRect(), consent = document.querySelector(".consent-banner")?.getBoundingClientRect();
+    const rect = element.getBoundingClientRect(), header = document.querySelector("[data-site-header]")?.getBoundingClientRect(), consent = document.querySelector(".consent-banner")?.getBoundingClientRect();
     const atCenter = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
     return { top: rect.top, bottom: rect.bottom, left: rect.left, right: rect.right, height: rect.height, layoutHeight: element.offsetHeight,
       headerBottom: Math.max(0, header?.bottom ?? 0), availableBottom: consent && consent.height > 0 ? consent.top : innerHeight,
@@ -137,16 +137,16 @@ export async function verifyInitialRundumHero(page, { label, screenshot, documen
 
 export async function verifyRundumUi(page, { label, screenshot }) {
   const reads = observePageReads(page, page.url());
-  const section = page.locator("#buchung"), intro = section.locator(".home-booking-promise");
-  const formPanel = section.locator(".home-booking-form");
-  await page.locator(".scroll-film-cta").click();
+  const section = page.locator("#buchung"), intro = section.locator("[data-booking-promise]");
+  const formPanel = section.locator("[data-booking-form]");
+  await page.locator("[data-hero-cta=booking]").click();
   await page.waitForFunction(() => location.hash === "#buchung");
   await intro.waitFor({ state: "visible" });
   await page.evaluate(() => document.fonts.ready);
   const position = await page.evaluate(() => {
     const section = document.querySelector("#buchung"), process = document.querySelector("#ablauf"), packages = document.querySelector("#pakete");
-    const promise = section.querySelector(".home-booking-promise").getBoundingClientRect();
-    const form = section.querySelector(".home-booking-form").getBoundingClientRect();
+    const promise = section.querySelector("[data-booking-promise]").getBoundingClientRect();
+    const form = section.querySelector("[data-booking-form]").getBoundingClientRect();
     return { afterPackages: !!(packages.compareDocumentPosition(section) & Node.DOCUMENT_POSITION_FOLLOWING),
       afterProcess: !!(process.compareDocumentPosition(section) & Node.DOCUMENT_POSITION_FOLLOWING),
       split: matchMedia("(min-width: 1080px)").matches, promise: promise.toJSON(), form: form.toJSON() };
@@ -205,7 +205,7 @@ export async function verifyRundumUi(page, { label, screenshot }) {
     const first = element.querySelector('#rundum-formular input:not([type="hidden"])').getBoundingClientRect();
     return { headingTop: heading.top, headingBottom: heading.bottom,
       firstControlTop: first.top, firstControlBottom: first.bottom,
-      headerBottom: Math.max(0, document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 0), viewportHeight: innerHeight };
+      headerBottom: Math.max(0, document.querySelector("[data-site-header]")?.getBoundingClientRect().bottom ?? 0), viewportHeight: innerHeight };
   });
   const contentClear = (frame) => frame.headingTop >= frame.headerBottom && frame.headingBottom <= frame.viewportHeight
     && frame.firstControlTop >= frame.headerBottom && frame.firstControlBottom <= frame.viewportHeight;
@@ -213,7 +213,7 @@ export async function verifyRundumUi(page, { label, screenshot }) {
   let frame;
   for (let attempt = 0; attempt < 3 && Date.now() < framingDeadline; attempt++) {
     await formPanel.evaluate((element) => {
-      const headerBottom = Math.max(0, document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 0);
+      const headerBottom = Math.max(0, document.querySelector("[data-site-header]")?.getBoundingClientRect().bottom ?? 0);
       window.scrollTo({ top: scrollY + element.querySelector("#anfrage-heading").getBoundingClientRect().top - headerBottom - 16, behavior: "instant" });
       window.__qaRundumFrame = { top: element.querySelector("#anfrage-heading").getBoundingClientRect().top, since: performance.now() };
     });
@@ -230,7 +230,7 @@ export async function verifyRundumUi(page, { label, screenshot }) {
     `${label}: final form capture frames its complete heading and first controls below the sticky header: ${JSON.stringify(frame)}`);
   const clip = await formPanel.evaluate((element) => {
     const box = element.getBoundingClientRect();
-    const headerBottom = Math.max(0, document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 0);
+    const headerBottom = Math.max(0, document.querySelector("[data-site-header]")?.getBoundingClientRect().bottom ?? 0);
     const top = Math.max(box.top + scrollY, scrollY + headerBottom), bottom = box.bottom + scrollY;
     const content = ["#anfrage-heading", "#rundum-formular form"].map((selector) => element.querySelector(selector).getBoundingClientRect());
     if (content.some((bounds) => bounds.top + scrollY < top || bounds.bottom + scrollY > bottom))
@@ -247,7 +247,7 @@ export async function verifyRundumUi(page, { label, screenshot }) {
 export async function verifyRundumIntentLoading(page, { label, base }) {
   const reads = observePageReads(page, base);
   const form = page.getByRole("form", { name: "Rundum-Service anfragen", exact: true });
-  await page.locator(".scroll-film-cta").click();
+  await page.locator("[data-hero-cta=booking]").click();
   await page.waitForFunction(() => location.hash === "#buchung");
   await page.getByRole("navigation", { name: "Art der Anfrage" }).getByRole("link", { name: "Rundum-Service", exact: true }).click();
   await form.waitFor({ state: "visible", timeout: 5000 });
@@ -280,7 +280,7 @@ export async function verifyRundumIntentLoading(page, { label, base }) {
   await rundumLink.click();
   await form.waitFor({ state: "visible" });
   assert.equal(await booking.isVisible(), false);
-  await page.locator(".scroll-film-prices").click();
+  await page.locator("[data-hero-cta=pickup]").click();
   await page.waitForURL((url) => url.pathname === "/" && url.hash === "#ablauf");
   await page.locator("#ablauf").getByRole("heading", { name: "Ein Ansprechpartner. Alles für dein Auto.", exact: true }).waitFor();
   await page.goBack();

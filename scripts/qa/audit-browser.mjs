@@ -42,14 +42,14 @@ async function assertHeader(width) {
   if (await reject.isVisible()) await reject.click();
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
   await wait();
-  const bounds = await page.locator("header .menu-toggle").evaluate((el) => {
+  const bounds = await page.locator("header [data-menu-toggle]").evaluate((el) => {
     const b = el.getBoundingClientRect();
     return { left: b.left, right: b.right, width: b.width, viewport: innerWidth, clientWidth: document.documentElement.clientWidth, scrollWidth: document.documentElement.scrollWidth };
   });
   assert.ok(bounds.left >= 0 && bounds.right <= bounds.clientWidth + 1, JSON.stringify(bounds));
   assert.ok(bounds.width >= 44);
   assert.ok(bounds.scrollWidth <= bounds.clientWidth + 1);
-  await page.locator("header .menu-toggle").click();
+  await page.locator("header [data-menu-toggle]").click();
   await wait();
   assert.equal(await page.locator("#site-nav").evaluate((d) => d.open), true);
   assert.equal(await page.evaluate(() => document.activeElement?.textContent?.trim()), "Startseite");
@@ -59,7 +59,7 @@ async function assertHeader(width) {
   assert.equal(await page.evaluate(() => document.activeElement?.closest("#site-nav") !== null), true);
   await page.keyboard.press("Escape");
   await wait(500);
-  assert.equal(await page.locator("header .menu-toggle").evaluate((el) => el === document.activeElement), true);
+  assert.equal(await page.locator("header [data-menu-toggle]").evaluate((el) => el === document.activeElement), true);
   await page.screenshot({ path: resolve(out, `header-${width}.png`) });
   check(`Header/menu/focus ${width} CSS px`, bounds);
 }

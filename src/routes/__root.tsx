@@ -6,6 +6,7 @@ import { AuthProvider } from "@/lib/auth/provider";
 import { NotFoundComponent } from "@/components/not-found";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { Shell } from "@/components/site-chrome";
+import { ScrollChoreography } from "@/components/scroll-choreography";
 import { site } from "@/data/site";
 import { googleSiteVerificationMeta } from "@/lib/googleSiteVerification";
 // Start collects the complete stylesheets for SSR in this cascade order.
@@ -16,6 +17,10 @@ import "../styles/luxury.css";
 import "../styles/hero-clearance.css";
 import "../styles/studio.css";
 import "../styles/forge-fidelity.css";
+// Dark Edition (Sandbox): Schrift, Kopfzeile, Buttons und Reveals. Letzte Ebene.
+import "../styles/dark-edition.css";
+// Dark Edition 1:1 aus der Vorlage (Startseite, Kopf- und Fußzeile), auf .wgt begrenzt.
+import "../styles/dark-template.css";
 import forgeDesktopCss from "../styles/forge-desktop.css?url";
 
 export const Route = createRootRoute({
@@ -24,12 +29,12 @@ export const Route = createRootRoute({
     const app = matches.some((match: AnyRouteMatch) =>
       /^\/(admin|login)(\/|$)/.test(match.routeId),
     );
-    // The public first viewport uses Cormorant 400 and Geist's UI weights.
-    // Cormorant has one regular face; Geist supplies all UI weights.
+    // Dark Edition: the public first viewport uses WG Display (Barlow Semi
+    // Condensed Light, bsc-300) for headings and Barlow 400 for copy.
     // Operational screens retain their existing Barlow family.
     const fontPreloads = (app
       ? ["barlow-400", "barlow-300"]
-      : ["cormorant-garamond-latin-400", "geist-latin-variable"]
+      : ["bsc-300", "barlow-400"]
     ).map((name) => ({
       rel: "preload",
       href: `/fonts/${name}.woff2`,
@@ -95,6 +100,7 @@ export const Route = createRootRoute({
           <AuthProvider>
             <Shell />
           </AuthProvider>
+          <ScrollChoreography />
           <DeferredScripts />
         </body>
       </html>

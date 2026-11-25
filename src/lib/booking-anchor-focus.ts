@@ -30,3 +30,10 @@ export function focusBookingHeading(event: MouseEvent<HTMLAnchorElement>) {
     syncSmoothScrollPosition();
   }
 }
+
+/**
+ * Router hash scroll for booking links: one instant jump. The global
+ * `scroll-behavior: smooth` would otherwise animate across the whole page,
+ * and lazily mounted sections on the way can cut that animation short.
+ */
+export const BOOKING_JUMP = { block: "start", behavior: "instant" } as const;

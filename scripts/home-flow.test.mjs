@@ -122,12 +122,13 @@ for (const hash of ["#buchung", "#termin", "#service", "#rundum-service", "#rund
   });
 }
 
-function evaluate(relativePath, dependencies) {
+function evaluate(relativePath, dependencies, globals = {}) {
   const module = { exports: {} };
   runInNewContext(ts.transpileModule(
     readFileSync(new URL(`../src/${relativePath}`, import.meta.url), "utf8"),
     { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX } },
   ).outputText, {
+    ...(Object.keys(globals).length ? { window: globals } : {}),
     exports: module.exports,
     require(name) {
       if (name in dependencies) return dependencies[name];
@@ -169,32 +170,69 @@ test("the planned Loßburg route has its own canonical and truthful local metada
   assert.deepEqual(Route.validateSearch({ ort: "lossburg" }), { ort: "lossburg" });
 });
 
-test("both home variants render one conversion flow and an accessible location choice", () => {
-  const { HomeBooking } = loadSection("home-booking");
-  const { HomeProcess } = loadSection("home-process");
-  const { HomePage } = evaluate("components/home-page.tsx", {
-    "@tanstack/react-router": {
-      Link: ({ to, params: _params, children, ...props }) => React.createElement("a", { ...props, href: to }, children),
+function loadDarkHome({ hash = "", hydrated = false } = {}) {
+  const router = {
+    useRouter: () => ({ history: { subscribe: () => () => {} } }),
+    Link: ({ to, params: _params, search: _search, hash: _hash, activeProps: _a, activeOptions: _o, children, ...props }) =>
+      React.createElement("a", { ...props, href: to }, children),
+  };
+  return evaluate("components/dark/dark-home.tsx", {
+    react: {
+      ...React,
+      useSyncExternalStore: (_subscribe, getSnapshot, getServerSnapshot) =>
+        hydrated ? getSnapshot() : getServerSnapshot(),
     },
-    "@/lib/json-ld": jsonLd,
-    "@/components/icons": { IconArrowRight: () => React.createElement("svg") },
-    "@/components/lazy-google-reviews": { LazyGoogleReviews: () => null },
-    "@/components/home-booking": { HomeBooking },
+    "@tanstack/react-router": router,
     "@/data/site": siteData,
+    "@/data/home-copy": homeCopy,
     "@/lib/city-copy": cityCopy,
+    "@/lib/booking-anchor-focus": { focusBookingHeading: () => {} },
+    "@/lib/dark-motion": { darkFrameSrc: (s, i) => `/media/dark/seq/${s}/${i + 1}.webp`, initDarkHome: () => () => {}, tweenNumber: () => {} },
+    "@/components/lazy-configurator": {
+      LazyConfigurator: ({ initialPackage, initialCity, eager }) => React.createElement("form", {
+        "data-test-form": "package",
+        "data-package": initialPackage,
+        "data-city": initialCity,
+        "data-eager": String(eager),
+      }),
+    },
+    "@/components/lazy-google-reviews": {
+      LazyGoogleReviews: () => React.createElement("aside", { "data-test-reviews": "google" }),
+    },
+    "@/components/lazy-rundum-inquiry": {
+      LazyRundumInquiry: () => React.createElement("form", { "data-test-form": "rundum" }),
+    },
+  }, { location: { hash } });
+}
+
+test("the dark home keeps every conversion anchor in one booking section", () => {
+  for (const hash of ["", "#buchung", "#termin", "#service", "#rundum-service", "#rundum-anfrage"]) {
+    const { DarkHome } = loadDarkHome({ hash, hydrated: Boolean(hash) });
+    const html = render(DarkHome, { initialPackage: "keramik", initialCity: "lossburg" });
+    const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]);
+    assert.equal(ids.length, new Set(ids).size, "Anchors must be unique.");
+    for (const anchor of ["buchung", "termin", "service", "rundum-service", "rundum-anfrage", "buchung-heading"]) {
+      assert.ok(ids.includes(anchor), `Missing conversion anchor #${anchor}`);
+    }
+    for (const match of html.matchAll(/aria-controls="([^"]+)"/g)) {
+      assert.ok(ids.includes(match[1]), `Unresolved form control ${match[1]}`);
+    }
+    const rundum = ["#service", "#rundum-service", "#rundum-anfrage"].includes(hash);
+    assert.equal(/<div id="paket-formular"[^>]*>/.exec(html)?.[0].includes('hidden=""'), rundum);
+    assert.equal(/<div id="rundum-formular"[^>]*>/.exec(html)?.[0].includes('hidden=""'), !rundum);
+    assert.match(html, /data-package="keramik" data-city="lossburg" data-eager="true"/);
+    assert.doesNotMatch(text(html), /\b(?:Sie|Ihr|Ihnen)\b/);
+  }
+});
+
+test("both home variants render one conversion flow and an accessible location choice", () => {
+  const { DarkHome } = loadDarkHome();
+  const { HomePage } = evaluate("components/home-page.tsx", {
+    "@/lib/json-ld": jsonLd,
     "@/lib/seo": seo,
     "@/data/home-copy": homeCopy,
-    "@/components/scroll-film-hero": {
-      ScrollFilmHero: ({ title, lead }) => React.createElement("section", null,
-        React.createElement("h1", null, title), React.createElement("p", null, lead)),
-    },
-    "@/components/home-polish": { HomePolish: () => null },
-    "@/components/package-showcase": { PackageShowcase: () => null },
-    "@/components/results-teaser": { ResultsTeaser: () => null },
-    "@/components/home-process": { HomeProcess },
-    "@/components/reveal-lines": { RevealLines: ({ lines }) => lines.join(" ") },
+    "@/components/dark/dark-home": { DarkHome },
     "@/components/website-studio-content": { WebsiteStudioContent: () => null },
-    "@/lib/studio-public": studioPublic,
     "@/data/home-location": homeLocation,
   });
   for (const location of ["horb", "lossburg"]) {

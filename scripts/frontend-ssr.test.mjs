@@ -230,13 +230,10 @@ test("Node serves compressed build assets and revalidates mutable media", async 
   }));
   assert.deepEqual(routeStyles[homePaths[0]], routeStyles[homePaths[1]],
     "Both home variants must share the same complete CSS in the same cascade order");
-  const heroStyles = routeStyles["/"].filter(({ source }) => source.includes(".scroll-film{"));
-  // A scoped visual refinement may mention the rail selector too. Identify
-  // the owner by its shared geometry contract, not any matching selector.
-  const railStyles = routeStyles["/"].filter(({ source }) => source.includes(".wg-media-rail{")
-    && source.includes("--wg-rail-gap:") && source.includes("--wg-rail-ratio:"));
+  // Dark Edition (Inhaberauftrag 25.11.2026): the cockpit sequence hero owns
+  // one route stylesheet; the former swipe rail is no longer on the homepage.
+  const heroStyles = routeStyles["/"].filter(({ source }) => source.includes(".wgt .reel{"));
   assert.equal(heroStyles.length, 1, "The shared hero must have one identifiable stylesheet");
-  assert.equal(railStyles.length, 1, "The shared swipe rail must have one identifiable stylesheet");
   const homeCssHref = heroStyles[0].href;
   for (const path of [
     "/",

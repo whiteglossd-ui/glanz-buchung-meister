@@ -189,7 +189,7 @@ try {
     assert.ok(source, `The homepage stylesheet ${href} must remain complete and inline`);
     return { href, source };
   });
-  const heroStylesheets = homeStylesheets.filter(({ source }) => source.includes(".scroll-film{"));
+  const heroStylesheets = homeStylesheets.filter(({ source }) => source.includes(".wgt .reel{"));
   assert.equal(heroStylesheets.length, 1, "Only the complete hero stylesheet receives the early style hint");
   const expectedStylePath = heroStylesheets[0].href;
   assert.match(expectedStylePath, /^\/assets\/[\w.-]+\.css$/);

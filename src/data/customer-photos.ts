@@ -46,9 +46,11 @@ const photoPositions: Record<string, string> = {
   "customer-13": "50% 61%", "customer-14": "50% 56%", "customer-15": "50% 68%",
   "customer-16": "50% 66%", "customer-17": "50% 62%", "customer-18": "50% 57%",
   "customer-19": "50% 67%",
+  "sclass-01": "50% 55%", "sclass-02": "50% 35%", "sclass-03": "50% 50%",
+  "sclass-04": "50% 55%", "sclass-05": "50% 50%", "sclass-06": "50% 45%",
 };
 
-export const featuredPhotoIds = ["customer-16", "customer-09", "customer-14", "customer-06", "customer-11", "customer-18"];
+export const featuredPhotoIds = ["sclass-01", "customer-16", "sclass-03", "customer-09", "customer-14", "customer-06"];
 
 export const customerPhotos: CustomerPhoto[] = [
   photo(
@@ -164,5 +166,43 @@ export const customerPhotos: CustomerPhoto[] = [
     "Außenaufbereitung am Heck",
     "Aufbereiteter schwarzer BMW in schräger Heckansicht",
     "Außenaufbereitung",
+  ),
+  // Kundenfahrzeug Mercedes S-Klasse Coupé (Inhaberfotos 24.11.2026). Hintergrund
+  // abgedunkelt, fremde Fahrzeuge und Kennzeichen unkenntlich gemacht.
+  photo(
+    "sclass-01",
+    "Mercedes S-Klasse Coupé: Außenaufbereitung",
+    "Silbernes Mercedes S-Klasse Coupé in schräger Frontansicht vor abgedunkeltem Hintergrund",
+    "Außenaufbereitung",
+  ),
+  photo(
+    "sclass-02",
+    "Mercedes S-Klasse Coupé: Front",
+    "Front des silbernen Mercedes S-Klasse Coupé mit Kühlergrill und Scheinwerfern",
+    "Außenaufbereitung",
+  ),
+  photo(
+    "sclass-03",
+    "Mercedes S-Klasse Coupé: Cockpit",
+    "Cockpit und heller Ledersitz des Mercedes S-Klasse Coupé durch die geöffnete Fahrertür",
+    "Innenraumaufbereitung",
+  ),
+  photo(
+    "sclass-04",
+    "Mercedes S-Klasse Coupé: Ledersitze",
+    "Gesteppte helle Ledersitze im Mercedes S-Klasse Coupé unter dem Panoramadach",
+    "Innenraumaufbereitung",
+  ),
+  photo(
+    "sclass-05",
+    "Mercedes S-Klasse Coupé: Türverkleidung",
+    "Helle Türverkleidung mit Holzleiste und gestepptem Ledersitz im Mercedes S-Klasse Coupé",
+    "Innenraumaufbereitung",
+  ),
+  photo(
+    "sclass-06",
+    "Mercedes S-Klasse Coupé: Mittelkonsole",
+    "Mittelkonsole mit Lüftungsdüsen, Klavierlack und Bedienelementen im Mercedes S-Klasse Coupé",
+    "Innenraumaufbereitung",
   ),
 ];

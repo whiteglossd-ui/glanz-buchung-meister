@@ -112,7 +112,9 @@ const APPROVED_HOME_BLOBS = Object.freeze({
   // November 24 owner request: improve the second scroll-film chapter.
   // See docs/homepage-cinematic-2026-11-24.md; all other content pins remain.
   "src/components/scroll-film-hero.tsx": "22dd7d41339d72c84788cc437e381a6bb6890665",
-  "src/components/site-chrome.tsx": "90f6319473ba916d9696c74b6bb0da1ae492a733",
+  // November 25 owner request: Dark-Edition template header, menu and footer.
+  // See docs/homepage-dark-edition-2026-11-25.md.
+  "src/components/site-chrome.tsx": "87ecd9fa6e518ba1ce6c6d892f6c65a6fa9b5ff9",
   "src/components/website-studio.tsx": "33cc6b97e51f52e72ff891778811febf2d591dde",
   "src/data/home-copy.ts": "f829b684e32560fbde054e7e4405568036b5ca82",
   "src/data/site.ts": "57be27b676924cd007d0649fc98e7af080c16c2f",
@@ -122,7 +124,8 @@ const APPROVED_HOME_BLOBS = Object.freeze({
   "src/routes/index.tsx": "7b87df2a86c7dac7b0f432e210d57f12ec64e3c2",
   "src/routes/leistungen.$slug.$city.tsx": "bb360ecb62e387d7fa8569e1259ece1ab9c19872",
   "src/lib/seo-intents.ts": "a61bd78880457eb49e9a57001386d3035021efd1",
-  "src/components/home-page.tsx": "ae0b3757e1488cd8c2657551044168909a34bc0a",
+  // November 25 owner request: homepage rebuilt on the Dark-Edition template.
+  "src/components/home-page.tsx": "d37d849ef4ab0ca90afdf2ab8bf558a3473b853e",
   "src/data/home-location.ts": "22916b03c538e31757ef9dd4e42be8119b6ea982",
   "src/components/lazy-configurator.tsx": "2e1849b66392f02c2d985a1637d4f28dc26e8dfd",
 });
