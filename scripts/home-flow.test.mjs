@@ -140,11 +140,25 @@ function evaluate(relativePath, dependencies) {
   return module.exports;
 }
 
+const pageSchema = evaluate("lib/page-schema.ts", {
+  "../data/site.ts": siteData,
+});
+
+const progressNav = evaluate("components/home-progress-nav.tsx", {});
+const inquiryDock = evaluate("components/mobile-inquiry-dock.tsx", {
+  "@tanstack/react-router": {
+    Link: ({ to, children, ...props }) => React.createElement("a", { ...props, href: to }, children),
+  },
+  "@/data/site": siteData,
+  "@/components/ui": { ctaPrimary: "btn btn-primary cta-shine" },
+});
+
 const seo = evaluate("lib/seo.ts", {
   "@/data/site": siteData,
   "@/data/media-src": mediaData,
   "@/data/google-profile": googleData,
   "@/lib/seo-policy": seoPolicy,
+  "@/lib/page-schema": pageSchema,
 });
 
 test("the planned Loßburg route has its own canonical and truthful local metadata", () => {
@@ -189,6 +203,8 @@ test("both home variants render one conversion flow and an accessible location c
         React.createElement("h1", null, title), React.createElement("p", null, lead)),
     },
     "@/components/home-polish": { HomePolish: () => null },
+    "@/components/home-progress-nav": progressNav,
+    "@/components/mobile-inquiry-dock": inquiryDock,
     "@/components/package-showcase": { PackageShowcase: () => null },
     "@/components/results-teaser": { ResultsTeaser: () => null },
     "@/components/home-process": { HomeProcess },

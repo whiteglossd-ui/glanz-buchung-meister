@@ -6,6 +6,8 @@ import { WorkshopMap } from "@/components/workshop-map";
 import { ctaGhost, ctaPrimary } from "@/components/ui";
 import { openingHours, site } from "@/data/site";
 import { pageHead } from "@/lib/seo";
+import { contactPageJsonLd } from "@/lib/page-schema";
+import { serializeJsonLd } from "@/lib/json-ld";
 
 export const Route = createFileRoute("/kontakt")({
   component: KontaktPage,
@@ -21,6 +23,10 @@ export const Route = createFileRoute("/kontakt")({
 function KontaktPage() {
   return (
     <main id="main-content" tabIndex={-1}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(contactPageJsonLd()) }}
+      />
       <PageHero
         shot="atelier"
         alt={`Werkstatt von White-Gloss Detailing in ${site.city}`}

@@ -3,6 +3,8 @@ import { PageHero } from "@/components/page-hero";
 import { ctaPrimary } from "@/components/ui";
 import { cities, cityPickupPriceText, pickupTierSummary, pickupKeramikNote, site } from "@/data/site";
 import { pageHead } from "@/lib/seo";
+import { pickupServiceJsonLd } from "@/lib/page-schema";
+import { serializeJsonLd } from "@/lib/json-ld";
 import { cityDistanceLine, citySeoCopy } from "@/lib/city-copy";
 
 export const Route = createFileRoute("/abholservice/")({
@@ -19,6 +21,10 @@ export const Route = createFileRoute("/abholservice/")({
 function AbholIndex() {
   return (
     <main id="main-content" tabIndex={-1}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(pickupServiceJsonLd()) }}
+      />
       <PageHero
         shot="atelier"
         alt={`Werkstatt von White-Gloss Detailing in ${site.city}`}
