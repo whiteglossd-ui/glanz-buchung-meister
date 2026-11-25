@@ -28,6 +28,7 @@ import { Button, Field, inputLine } from "./ui";
 import { useBookingDraft, clearBookingDraft, appliedBookingEntries } from "./booking-draft";
 import { berlinWallToUtc, defaultWorkEnd, rangesOverlap } from "@/lib/booking-time";
 import "@/styles/booking-editorial.css";
+import "@/styles/dark-booking.css";
 
 export function Configurator({
   initialPackage,

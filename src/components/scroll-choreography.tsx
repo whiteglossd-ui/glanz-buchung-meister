@@ -34,8 +34,8 @@ const EXCLUDED = [
   "form",
   ".site-header",
   "[data-wg-static]",
-  // Dark-Vorlage (.wgt) hat eigene Bewegung (src/lib/dark-motion.ts).
-  ".wgt",
+  // Startseiten-Vorlage (.wgt-root) hat eigene Bewegung (src/lib/dark-motion.ts).
+  ".wgt-root",
 ].join(",");
 
 const HIDE_AFTER_PX = 700;

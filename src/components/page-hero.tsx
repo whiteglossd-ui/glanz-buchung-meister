@@ -1,28 +1,23 @@
 import { Link } from "@tanstack/react-router";
-import { useRef, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { FluidImg, Shot, type ShotName } from "./media";
 import { cn } from "@/lib/utils";
-import { useParallaxFrames } from "@/lib/studio-motion";
 
 export function PageCrumbs({
   items,
 }: {
   items: { label: string; to?: string }[];
 }) {
+  // Dark Edition: Brotkrumen wie in der Vorlage (.crumbs).
   return (
-    <nav
-      aria-label="Brotkrumen"
-      className="text-xs uppercase tracking-[0.18em] text-subtle"
-    >
+    <nav aria-label="Brotkrumen" className="crumbs">
       {items.map((item, i) => (
-        <span key={item.label}>
-          {i > 0 ? <span className="px-2 opacity-50">/</span> : null}
+        <span key={item.label} className="contents">
+          {i > 0 ? <i aria-hidden="true">/</i> : null}
           {item.to ? (
-            <Link to={item.to as never} className="hover:text-fg">
-              {item.label}
-            </Link>
+            <Link to={item.to as never}>{item.label}</Link>
           ) : (
-            <span className="text-muted">{item.label}</span>
+            <span aria-current={i === items.length - 1 ? "page" : undefined}>{item.label}</span>
           )}
         </span>
       ))}
@@ -30,6 +25,11 @@ export function PageCrumbs({
   );
 }
 
+/**
+ * Dark Edition (Inhaberauftrag 25.11.2026, Phase 2): Seitenkopf der Unterseiten
+ * im Aufbau der Vorlage (.phero): abgedunkeltes Vollbild, Brotkrumen, Kicker,
+ * Chrom-Titel, Einleitung und Buttons.
+ */
 export function PageHero({
   kicker,
   title,
@@ -53,12 +53,9 @@ export function PageHero({
   crumbs?: { label: string; to?: string }[];
   media?: ReactNode;
 }) {
-  const section = useRef<HTMLElement>(null);
-  // Leistungsbilder (z. B. Lackkorrektur, Innenraum) gleiten im Rahmen; nur Desktop.
-  useParallaxFrames(section);
   return (
-    <section ref={section} className="film-chapter page-hero">
-      <div className="film-chapter-media" data-parallax-frame>
+    <section className="phero page-hero">
+      <div className="phero__bg">
         {media ?? (shot ? (
           <Shot
             name={shot}
@@ -78,21 +75,13 @@ export function PageHero({
           />
         ))}
       </div>
-      <div className="film-chapter-veil" />
-      <div className="film-chapter-copy" data-reveal>
+      <div className="phero__shade" aria-hidden="true" />
+      <div className="wrap phero__in">
         {crumbs ? <PageCrumbs items={crumbs} /> : null}
-        {kicker ? (
-          <p className={cn("kicker", crumbs ? "mt-5" : undefined)}>{kicker}</p>
-        ) : null}
-        <h1 className="heading-page mt-4 max-w-4xl">{title}</h1>
-        {lead ? (
-          <p className="mt-5 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
-            {lead}
-          </p>
-        ) : null}
-        {actions ? (
-          <div className="mt-8 flex flex-wrap gap-3">{actions}</div>
-        ) : null}
+        {kicker ? <p className="kicker">{kicker}</p> : null}
+        <h1 className="phero__title chrome">{title}</h1>
+        {lead ? <p className="hero__lead">{lead}</p> : null}
+        {actions ? <div className="hero__actions">{actions}</div> : null}
       </div>
     </section>
   );

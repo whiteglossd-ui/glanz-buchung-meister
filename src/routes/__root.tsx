@@ -21,6 +21,7 @@ import "../styles/forge-fidelity.css";
 import "../styles/dark-edition.css";
 // Dark Edition 1:1 aus der Vorlage (Startseite, Kopf- und Fußzeile), auf .wgt begrenzt.
 import "../styles/dark-template.css";
+import "../styles/dark-subpages.css";
 import forgeDesktopCss from "../styles/forge-desktop.css?url";
 
 export const Route = createRootRoute({

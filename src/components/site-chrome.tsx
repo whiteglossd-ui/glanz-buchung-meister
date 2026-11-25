@@ -598,6 +598,8 @@ export function SiteFooter() {
 export function Shell() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isApp = pathname.startsWith("/admin") || pathname.startsWith("/login");
+  // Startseiten rendern ihre eigene Vorlagen-Wurzel (.wgt-root, dark-home.tsx).
+  const isDarkHome = pathname === "/" || pathname.replace(/\/$/, "") === "/freudenstadt-lossburg";
 
   function trackLink(event: MouseEvent<HTMLDivElement>) {
     const link = event.target instanceof Element ? event.target.closest("a[href]") : null;
@@ -632,7 +634,14 @@ export function Shell() {
       {/* Dark Edition (Inhaberauftrag 25.11.2026): Kopf- und Fußzeile der Vorlage. */}
       <DarkHeader />
       <FilmScroll />
-      <Outlet />
+      {isDarkHome ? (
+        <Outlet />
+      ) : (
+        // Phase 2 (25.11.2026): Unterseiten tragen den Vorlagen-Look (.wgt).
+        <div className="wgt wgt-page">
+          <Outlet />
+        </div>
+      )}
       <DarkFooter />
       <WhatsAppFloat />
       <ConsentBanner />
