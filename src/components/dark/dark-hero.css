@@ -49,7 +49,7 @@ body[data-consent-banner="open"] .wgt .reel__ch--0{translate:0 calc(-.5 * var(--
 html[data-consent-initial-open="true"] .wgt .reel__bar,
 body[data-consent-banner="open"] .wgt .reel__bar{translate:0 calc(-1 * var(--consent-banner-height,0px))}
 @media (max-width:820px){html[data-consent-initial-open="true"] .wgt .reel__ch--0,
-body[data-consent-banner="open"] .wgt .reel__ch--0{translate:0;padding-bottom:calc(78px + var(--consent-banner-height,0px))}
+body[data-consent-banner="open"] .wgt .reel__ch--0{translate:0 calc(-1 * var(--consent-banner-height,0px))}
 }
 /* Flache Fenster und reduzierte Bewegung: Hero ohne Scrollbühne, Inhalt nie abgeschnitten. */
 @media (max-height:560px){.wgt .reel{height:auto}
@@ -57,4 +57,16 @@ body[data-consent-banner="open"] .wgt .reel__ch--0{translate:0;padding-bottom:ca
 }
 @media (max-height:560px),(prefers-reduced-motion:reduce){.wgt .reel__stick{position:relative;height:auto;min-height:100vh;min-height:100svh}
 .wgt .reel__ch--0{position:relative;inset:auto;min-height:100vh;min-height:100svh;opacity:1;visibility:visible}
+}
+/* Flache Querformat-Fenster: Hero kompakt von oben, Buttons direkt unter dem Titel,
+   damit sie zwischen Kopfzeile und Cookie-Hinweis frei bleiben. */
+@media (max-height:560px){.wgt .reel__ch--0{justify-content:flex-start;padding:calc(var(--hdr) + 8px) 20px 40px}
+.wgt .reel__ch--0 .kicker{margin-bottom:8px;font-size:10px}
+.wgt .reel__ch--0 .hero__title{font-size:clamp(24px,3.4vw,30px);margin-bottom:10px}
+.wgt .reel__ch--0 .hero__actions{order:1}
+.wgt .reel__ch--0 .hero__lead{order:2;margin:18px auto 0;font-size:15px}
+.wgt .reel__ch--0 .hero__trust{order:3}
+.wgt .reel__ch--0 .hero__loc{order:4}
+html[data-consent-initial-open="true"] .wgt .reel__ch--0,
+body[data-consent-banner="open"] .wgt .reel__ch--0{translate:0}
 }

@@ -133,7 +133,9 @@ try {
         const supported = PerformanceObserver.supportedEntryTypes.includes("layout-shift");
         const record = (entries) => {
           for (const entry of entries) shifts.push({ startTime: entry.startTime, value: entry.value, hadRecentInput: entry.hadRecentInput,
-            sources: (entry.sources || []).map((source) => ({ node: source.node?.nodeName ?? null, currentRect: source.currentRect.toJSON() })) });
+            sources: (entry.sources || []).map((source) => ({ node: source.node?.nodeName ?? null,
+              className: typeof source.node?.className === "string" ? source.node.className.slice(0, 80) : null,
+              previousRect: source.previousRect.toJSON(), currentRect: source.currentRect.toJSON() })) });
         };
         const observer = supported ? new PerformanceObserver((list) => record(list.getEntries())) : null;
         observer?.observe({ type: "layout-shift", buffered: true });
@@ -157,7 +159,8 @@ try {
       assert.equal(result.initial.storedConsent, null, "First-visit measurement must have no saved decision.");
       assert.equal(result.observerSupported, true, "Layout-shift observation must be supported.");
       assert.ok(result.initial.banner && result.initial.banner.height > 0, "The consent dialog must be visible on the first visit.");
-      assert.ok(result.cls <= 0.1, `${viewport.name}: hero CLS ${result.cls} must stay within 0.1.`);
+      assert.ok(result.cls <= 0.1, `${viewport.name}: hero CLS ${result.cls} must stay within 0.1: ${JSON.stringify(
+        [...result.layoutShifts].sort((a, b) => b.value - a.value).slice(0, 3))}`);
       assert.equal(result.initial.headingCount, 1, "The homepage has exactly one H1.");
       assert.ok(result.initial.headingText.length > 10, "The hero H1 carries the homepage title.");
       assert.equal(result.initial.actionCount, 2, "The hero has exactly two primary actions.");
@@ -179,7 +182,7 @@ try {
         // The image sequence becomes live and later chapters replace the introduction.
         await phase.run("sequence-live", () => page.waitForFunction(() => document.querySelector(".reel")?.classList.contains("is-live")));
         const distance = await page.evaluate(() => document.querySelector(".reel").offsetHeight - innerHeight);
-        assert.ok(distance > innerHeight, "Enabled motion must have a usable scrolling stage.");
+        assert.ok(distance > viewport.height, "Enabled motion must have a usable scrolling stage.");
         await page.evaluate((y) => window.scrollTo({ top: y, behavior: "instant" }), Math.round(distance * 0.45));
         await phase.run("chapter-two", () => page.waitForFunction(() => document.querySelector(".reel")?.dataset.ch === "1"));
         result.midway = await geometry(page);
