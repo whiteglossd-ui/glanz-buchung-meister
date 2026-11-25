@@ -170,15 +170,17 @@ export function initDarkHome(root: HTMLElement): () => void {
 
   /* ---------- Scroll-Choreografie ---------- */
   let frameJob: (() => void) | null = null;
+  // Bildaufdecker immer beobachten: wird reduzierte Bewegung später abgeschaltet,
+  // greift die verdeckende clip-path-Regel wieder und braucht ihr .is-in.
+  const cio = new IntersectionObserver(
+    (es) => es.forEach((en) => {
+      if (en.isIntersecting) { en.target.classList.add("is-in"); cio.unobserve(en.target); }
+    }),
+    { rootMargin: "0px 0px -10% 0px" },
+  );
+  observers.push(cio);
+  $$(".clip").forEach((el) => cio.observe(el));
   if (!reduce) {
-    const cio = new IntersectionObserver(
-      (es) => es.forEach((en) => {
-        if (en.isIntersecting) { en.target.classList.add("is-in"); cio.unobserve(en.target); }
-      }),
-      { rootMargin: "0px 0px -10% 0px" },
-    );
-    observers.push(cio);
-    $$(".clip").forEach((el) => cio.observe(el));
 
     const prog = document.createElement("div");
     prog.className = "progress";
