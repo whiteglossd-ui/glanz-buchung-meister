@@ -123,8 +123,10 @@ export function DarkHeader() {
     }
   };
 
+  // Im Menü ist das Logo das erste Fokusziel: kein Vorladen beim bloßen
+  // Tastaturfokus, sonst startet jeder Menü-Öffner eine Startseiten-Abfrage.
   const logo = (onClick?: () => void) => (
-    <Link to={homePath} className="hdr__logo" data-site-logo onClick={onClick} aria-label={`${site.name} – zur Startseite`}>
+    <Link to={homePath} className="hdr__logo" data-site-logo onClick={onClick} preload={onClick ? false : undefined} aria-label={`${site.name} – zur Startseite`}>
       <img src="/media/logo-280.avif" alt={site.name} width={140} height={70} />
     </Link>
   );
