@@ -40,7 +40,9 @@ export function DarkHeader() {
       if (!dialog.open) dialog.showModal();
       setUp(false);
       document.body.style.overflow = "hidden";
-      dialog.querySelector<HTMLElement>(".menu__nav a")?.focus({ preventScroll: true });
+      // Erst der Schließen-Knopf: ein fokussierter Link würde seine Zielseite
+      // schon beim Öffnen vorladen. Tab führt direkt zu den Menüpunkten.
+      dialog.querySelector<HTMLElement>(".hdr__menu")?.focus({ preventScroll: true });
       let inner = 0;
       const outer = requestAnimationFrame(() => {
         inner = requestAnimationFrame(() => setVisible(true));
