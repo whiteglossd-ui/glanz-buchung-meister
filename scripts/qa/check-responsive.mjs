@@ -186,6 +186,15 @@ async function assertBookingArrival(page, label) {
           const hit = box && document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
           return hit ? `${hit.tagName.toLowerCase()}#${hit.id}.${[...hit.classList].join(".")} in ${hit.parentElement?.className ?? ""}` : null;
         })(),
+        stack: (() => {
+          const box = heading?.getBoundingClientRect();
+          return box ? document.elementsFromPoint(box.left + box.width / 2, box.top + box.height / 2).slice(0, 6)
+            .map((el) => `${el.tagName.toLowerCase()}.${[...el.classList].join(".")}`) : [];
+        })(),
+        headingStyle: heading && (({ pointerEvents, visibility, opacity, transform, display }) =>
+          ({ pointerEvents, visibility, opacity, transform, display }))(getComputedStyle(heading)),
+        inert: !!heading?.closest("[inert]"),
+        openDialog: document.querySelector("dialog[open]")?.id ?? null,
       };
     });
     throw new Error(`${label}: booking heading must receive focus and remain fully visible below the header: ${JSON.stringify(state)}`, { cause: error });

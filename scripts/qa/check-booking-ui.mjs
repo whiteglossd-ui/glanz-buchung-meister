@@ -144,7 +144,7 @@ async function bookingLayout(page, { desktop, embedded }) {
     const price = form.querySelector(".booking-price");
     const panel = form.querySelector(".booking-step-panel:not([hidden])");
     const title = form.querySelector(".booking-step-title");
-    const home = form.closest("#buchung");
+    const home = form.closest("[data-booking-form]") ? form.closest("#buchung") : null;
     const homeForm = home?.querySelector("[data-booking-form]");
     const homeStyle = homeForm ? getComputedStyle(homeForm) : null;
     return {
