@@ -833,3 +833,6 @@ html.lenis,html.lenis body{height:auto}
 .wgt .wgt-booking .booking-editorial .booking-price{position:static;flex-direction:row;align-items:center;justify-content:space-between;flex-wrap:wrap;padding-block:1.25rem}
 .wgt .wgt-booking .booking-editorial .booking-price strong{font-size:clamp(2rem,3vw,3rem)}
 .wgt .wgt-booking .booking-editorial .booking-vehicle-options{grid-template-columns:minmax(0,1fr)}
+/* Vergleichsregler: sichtbarer Tastaturfokus (Range-Input ist transparent). */
+.wgt .compare:has(.compare__range:focus-visible){outline:2px solid var(--cream);outline-offset:3px}
+.wgt .compare:has(.compare__range:focus-visible) .compare__handle i{background:var(--cream);color:var(--on-cream);border-color:var(--cream)}
