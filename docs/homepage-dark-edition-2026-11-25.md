@@ -13,7 +13,8 @@ gemergt, weil ein Merge auf `main` automatisch auf Hostinger veröffentlicht.
   Desktop und Handy getrennt) und drei Kapiteln statt des bisherigen Films.
 - Kopfzeile, Vollbild-Menü und Fußzeile der Vorlage auf allen öffentlichen
   Seiten (`Shell` → `DarkHeader`/`DarkFooter`). Admin und Login unverändert.
-- Unterseiten behalten vorerst ihren Inhalt und Aufbau (Phase 2).
+- Phase 2 (25.11.2026, Freigabe „ja unterseiten“, „direkt live“): Unterseiten liegen in `.wgt.wgt-page` (site-chrome.tsx). Seitenkopf als Vorlagen-`.phero` (page-hero.tsx), Schrift, Buttons und Chrom-Überschriften über `src/styles/dark-subpages.css`. Inhalte und Texte unverändert.
+- Terminbuchung (Freigabe „termin buchen auch optisch anpassen“): nur Optik über `src/styles/dark-booking.css` (Auswahlkarten, Punkte, Felder, Buttons wie `.cfg` der Vorlage). Markup und Ablauf von configurator.tsx unverändert.
 
 ## Was bleibt
 

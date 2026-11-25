@@ -276,6 +276,9 @@ export async function verifyRundumIntentLoading(page, { label, base }) {
   assert.equal(await form.locator("#rundum-name").inputValue(), draft);
   await page.goForward();
   await booking.waitFor({ state: "visible" });
+  // The remounted form starts a new availability read. Let it finish before the
+  // next mode switch unmounts the form, which would abort the read on purpose.
+  await booking.locator("#slot:enabled").waitFor({ state: "attached" });
   assert.equal(await booking.locator('input[name="klasse"][value="suv"]').isChecked(), true);
   await rundumLink.click();
   await form.waitFor({ state: "visible" });

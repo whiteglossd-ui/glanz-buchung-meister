@@ -212,6 +212,9 @@ try {
           assert.equal(await page.evaluate(() => document.activeElement?.id), "main-content");
           report.checks.push(`${name} ${width}px: gallery keys/focus return, menu focus trap/Escape and skip link`);
 
+          // Let intent preloads started during the keyboard/menu checks finish first.
+          // Otherwise the next page.goto cancels the test's own request ("Load request cancelled").
+          await page.waitForLoadState("networkidle");
           phase = "booking";
           await verifyHomepageReviews(page, `${name}-${width}: before context close`, async () => {
           await page.goto(`${qaBase}/#buchung`, { waitUntil: "networkidle" });

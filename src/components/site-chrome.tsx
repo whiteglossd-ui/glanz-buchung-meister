@@ -598,6 +598,13 @@ export function SiteFooter() {
 export function Shell() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isApp = pathname.startsWith("/admin") || pathname.startsWith("/login");
+  // Startseiten rendern ihre eigene Vorlagen-Wurzel (.wgt-root, dark-home.tsx).
+  // Maßgeblich ist die gerade angezeigte Seite (resolvedLocation), nicht das Ziel einer
+  // laufenden Navigation, sonst bekäme die alte Seite kurz die Klassen der neuen.
+  const shownPath = useRouterState({
+    select: (s) => (s.resolvedLocation ?? s.location).pathname,
+  });
+  const isDarkHome = shownPath === "/" || shownPath.replace(/\/$/, "") === "/freudenstadt-lossburg";
 
   function trackLink(event: MouseEvent<HTMLDivElement>) {
     const link = event.target instanceof Element ? event.target.closest("a[href]") : null;
@@ -632,7 +639,17 @@ export function Shell() {
       {/* Dark Edition (Inhaberauftrag 25.11.2026): Kopf- und Fußzeile der Vorlage. */}
       <DarkHeader />
       <FilmScroll />
-      <Outlet />
+      {/* Phase 2 (25.11.2026): Unterseiten tragen den Vorlagen-Look (.wgt). Die Hülle
+          bleibt auf jeder Seite dieselbe, nur die Klasse wechselt. Ein wechselnder
+          Elternknoten würde React die Seite neu aufbauen lassen und dabei laufende
+          Anfragen (z. B. Terminverfügbarkeit) abbrechen. Auf der Startseite ist sie
+          mit display:contents layoutneutral. */}
+      <div
+        className={isDarkHome ? undefined : "wgt wgt-page"}
+        style={isDarkHome ? { display: "contents" } : undefined}
+      >
+        <Outlet />
+      </div>
       <DarkFooter />
       <WhatsAppFloat />
       <ConsentBanner />

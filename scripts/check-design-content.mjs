@@ -112,9 +112,11 @@ const APPROVED_HOME_BLOBS = Object.freeze({
   // November 24 owner request: improve the second scroll-film chapter.
   // See docs/homepage-cinematic-2026-11-24.md; all other content pins remain.
   "src/components/scroll-film-hero.tsx": "22dd7d41339d72c84788cc437e381a6bb6890665",
-  // November 25 owner request: Dark-Edition template header, menu and footer.
+  // November 25 owner request: Dark-Edition template header, menu and footer;
+  // phase 2 the same day wraps subpages in the template root (.wgt-page);
+  // the wrapper element stays stable across routes so pages never remount.
   // See docs/homepage-dark-edition-2026-11-25.md.
-  "src/components/site-chrome.tsx": "87ecd9fa6e518ba1ce6c6d892f6c65a6fa9b5ff9",
+  "src/components/site-chrome.tsx": "ab0d9a3684217237ba09e3db99adcc693120eaea",
   "src/components/website-studio.tsx": "33cc6b97e51f52e72ff891778811febf2d591dde",
   "src/data/home-copy.ts": "f829b684e32560fbde054e7e4405568036b5ca82",
   "src/data/site.ts": "57be27b676924cd007d0649fc98e7af080c16c2f",

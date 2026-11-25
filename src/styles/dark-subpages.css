@@ -1,0 +1,59 @@
+/* Dark Edition, Phase 2 (Inhaberauftrag 25.11.2026): Unterseiten im Vorlagen-Look.
+ *
+ * Die Unterseiten liegen in <div class="wgt wgt-page"> (site-chrome.tsx). Dadurch gelten
+ * Farben, Schriften, Buttons und Seitenkopf (.phero) der Vorlage aus dark-template.css.
+ *
+ * Die Vorlage setzt einige Element-Regeln ohne Ebene (p-Abstand, Link-Unterstreichung,
+ * Bild-Anzeige). Die Unterseiten sind mit Tailwind-Klassen gebaut, die in einer Ebene
+ * liegen und deshalb verlieren würden. revert-layer gibt diesen Klassen den Vorrang zurück,
+ * damit Abstände und Unterstreichungen der Unterseiten unverändert bleiben. */
+
+.wgt.wgt-page p,
+.wgt.wgt-page address { margin: revert-layer; font-weight: revert-layer; }
+.wgt.wgt-page a { color: revert-layer; text-decoration: revert-layer; }
+.wgt.wgt-page img,
+.wgt.wgt-page video { display: revert-layer; height: revert-layer; max-width: revert-layer; }
+.wgt.wgt-page .kicker { margin: revert-layer; }
+.wgt.wgt-page blockquote { margin: revert-layer; padding: revert-layer; border: revert-layer; font: revert-layer; color: revert-layer; }
+
+/* Seitenkopf: Abstände der Vorlage wiederherstellen (höhere Spezifität als oben). */
+.wgt.wgt-page .phero .kicker { margin: 0 0 22px; }
+.wgt.wgt-page .phero .hero__lead { margin: 0 0 14px; }
+.wgt.wgt-page .phero__bg img { display: block; width: 100%; height: 100%; max-width: none; }
+.wgt.wgt-page .phero__bg > div { width: 100%; height: 100%; }
+.wgt.wgt-page .crumbs a { color: var(--ink-2); }
+.wgt.wgt-page .crumbs a:hover { color: var(--ink); }
+
+/* Überschriften in der Display-Schrift der Vorlage, Abschnittstitel mit Chrom-Verlauf. */
+.wgt.wgt-page :is(.font-display, .heading-2, .heading-page, .heading-section, h2, h3) {
+  font-family: var(--serif);
+  font-weight: 400;
+  letter-spacing: -.005em;
+}
+.wgt.wgt-page :is(h2.heading-2, h2.font-display) {
+  background: var(--chrome);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+.wgt.wgt-page :is(h2.heading-2, h2.font-display) a { -webkit-text-fill-color: currentColor; color: var(--ink); }
+
+/* Buttons wie in der Vorlage: gefüllt (Haupt-Aktion) und Linie (Neben-Aktion). */
+.wgt.wgt-page .btn-primary {
+  background: var(--cream);
+  color: var(--on-cream);
+  border-color: var(--cream);
+}
+.wgt.wgt-page .btn-secondary {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--line-2);
+}
+@media (hover: hover) {
+  .wgt.wgt-page .btn-primary:hover { background: transparent; color: var(--cream); }
+  .wgt.wgt-page .btn-secondary:hover { background: rgba(255, 255, 255, .92); color: #0b0c0f; border-color: transparent; }
+}
+
+/* Der Seitenkopf hat eigene Bildkante und Verlauf: keine Abschnitts-Zierlinie aus styles.css. */
+.wgt.wgt-page main > section.phero::before { content: none; }
