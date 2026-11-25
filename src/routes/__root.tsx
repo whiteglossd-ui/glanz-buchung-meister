@@ -6,6 +6,7 @@ import { AuthProvider } from "@/lib/auth/provider";
 import { NotFoundComponent } from "@/components/not-found";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { Shell } from "@/components/site-chrome";
+import { ScrollChoreography } from "@/components/scroll-choreography";
 import { site } from "@/data/site";
 import { googleSiteVerificationMeta } from "@/lib/googleSiteVerification";
 // Start collects the complete stylesheets for SSR in this cascade order.
@@ -97,6 +98,7 @@ export const Route = createRootRoute({
           <AuthProvider>
             <Shell />
           </AuthProvider>
+          <ScrollChoreography />
           <DeferredScripts />
         </body>
       </html>

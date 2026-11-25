@@ -47,8 +47,13 @@ function isBelowFold(el: Element) {
   return el.getBoundingClientRect().top > window.innerHeight * 0.92;
 }
 
-function useHeaderAndProgress() {
+function isPublicShell() {
+  return Boolean(document.querySelector('[data-shell="public"]'));
+}
+
+function useHeaderAndProgress(pathname: string) {
   useEffect(() => {
+    if (!isPublicShell()) return;
     const root = document.documentElement;
     const progress = document.createElement("div");
     progress.className = "wg-progress";
@@ -89,12 +94,12 @@ function useHeaderAndProgress() {
         .querySelector('[data-shell="public"] .site-header')
         ?.removeAttribute("data-wg-hide");
     };
-  }, []);
+  }, [pathname]);
 }
 
 function useReveals(pathname: string) {
   useEffect(() => {
-    if (typeof IntersectionObserver === "undefined" || reducedMotion()) return;
+    if (typeof IntersectionObserver === "undefined" || reducedMotion() || !isPublicShell()) return;
     const root = document.documentElement;
     root.dataset.wgMotion = "on";
 
@@ -166,7 +171,7 @@ function useReveals(pathname: string) {
 
 export function ScrollChoreography() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  useHeaderAndProgress();
+  useHeaderAndProgress(pathname);
   useReveals(pathname);
   return null;
 }
