@@ -15,7 +15,7 @@ export function PageCrumbs({
         <span key={item.label} className="contents">
           {i > 0 ? <i aria-hidden="true">/</i> : null}
           {item.to ? (
-            <Link to={item.to as never}>{item.label}</Link>
+            <Link to={item.to as never} preload={false}>{item.label}</Link>
           ) : (
             <span aria-current={i === items.length - 1 ? "page" : undefined}>{item.label}</span>
           )}

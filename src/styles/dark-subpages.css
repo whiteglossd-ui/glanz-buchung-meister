@@ -12,14 +12,14 @@
 .wgt.wgt-page address { margin: revert-layer; font-weight: revert-layer; }
 .wgt.wgt-page a { color: revert-layer; text-decoration: revert-layer; }
 .wgt.wgt-page img,
-.wgt.wgt-page video { display: revert-layer; }
+.wgt.wgt-page video { display: revert-layer; height: revert-layer; max-width: revert-layer; }
 .wgt.wgt-page .kicker { margin: revert-layer; }
 .wgt.wgt-page blockquote { margin: revert-layer; padding: revert-layer; border: revert-layer; font: revert-layer; color: revert-layer; }
 
 /* Seitenkopf: Abstände der Vorlage wiederherstellen (höhere Spezifität als oben). */
 .wgt.wgt-page .phero .kicker { margin: 0 0 22px; }
 .wgt.wgt-page .phero .hero__lead { margin: 0 0 14px; }
-.wgt.wgt-page .phero__bg img { display: block; }
+.wgt.wgt-page .phero__bg img { display: block; width: 100%; height: 100%; max-width: none; }
 .wgt.wgt-page .phero__bg > div { width: 100%; height: 100%; }
 .wgt.wgt-page .crumbs a { color: var(--ink-2); }
 .wgt.wgt-page .crumbs a:hover { color: var(--ink); }
