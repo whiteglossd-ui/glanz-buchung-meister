@@ -7,13 +7,10 @@ import {
 import {
   cities,
   openingHours,
-  packageAnchor,
-  packageServiceSlug,
-  packages,
-  services,
   site,
 } from "@/data/site";
 import { googleProfile } from "@/data/google-profile";
+import { packagesOfferCatalog } from "@/lib/page-schema";
 import { seoRobots } from "@/lib/seo-policy";
 
 export function absUrl(path: string) {
@@ -141,14 +138,6 @@ export function pageHead(opts: {
 export function localBusinessJsonLd() {
   const businessId = `${site.origin}/#betrieb`;
   const websiteId = `${site.origin}/#website`;
-  const catalogServices = [
-    "innenraumreinigung",
-    "lackkorrektur",
-    "keramikversiegelung",
-    "lederpflege",
-    "lederreparatur",
-    "geruchsneutralisation",
-  ];
   return {
     "@context": "https://schema.org",
     "@graph": [
@@ -221,46 +210,7 @@ export function localBusinessJsonLd() {
             closes: openingHours.closes,
           },
         ],
-        hasOfferCatalog: {
-          "@type": "OfferCatalog",
-          name: "Fahrzeugaufbereitung",
-          itemListElement: [
-            ...packages.map((p) => ({
-              "@type": "Offer",
-              name: `${p.searchLabel} ${p.name}`,
-              itemOffered: {
-                "@type": "Service",
-                name: p.seoName,
-                alternateName: [p.name, p.searchLabel],
-                description: p.body,
-                url: absUrl(`/leistungen/${packageServiceSlug[p.id]}`),
-                areaServed: site.city,
-                provider: { "@id": businessId },
-              },
-              priceSpecification: {
-                "@type": "UnitPriceSpecification",
-                price: String(p.price),
-                priceCurrency: "EUR",
-                valueAddedTaxIncluded: true,
-              },
-              url: absUrl(`/preise#${packageAnchor(p.id)}`),
-            })),
-            ...catalogServices
-              .filter((slug) => !Object.values(packageServiceSlug).includes(slug))
-              .map((slug) => {
-                const svc = services.find((s) => s.slug === slug);
-                return {
-                  "@type": "Offer",
-                  itemOffered: {
-                    "@type": "Service",
-                    name: svc?.nav ?? slug,
-                    url: absUrl(`/leistungen/${slug}`),
-                  },
-                  url: absUrl(`/leistungen/${slug}`),
-                };
-              }),
-          ],
-        },
+        hasOfferCatalog: packagesOfferCatalog(),
       },
     ],
   };
