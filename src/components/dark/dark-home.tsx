@@ -16,7 +16,7 @@ import {
 import { homeCopy } from "@/data/home-copy";
 import { LazyConfigurator } from "@/components/lazy-configurator";
 import { LazyRundumInquiry } from "@/components/lazy-rundum-inquiry";
-import { focusBookingHeading } from "@/lib/booking-anchor-focus";
+import { BOOKING_JUMP, focusBookingHeading } from "@/lib/booking-anchor-focus";
 import { cityDistanceLine, pickupDistanceLabel } from "@/lib/city-copy";
 import { LazyGoogleReviews } from "@/components/lazy-google-reviews";
 import "./dark-hero.css";
@@ -150,7 +150,7 @@ function Packages() {
                 <Link
                   to="/"
                   search={{ paket: p.id }}
-                  hash="buchung"
+                  hash="buchung" hashScrollIntoView={BOOKING_JUMP}
                   className={`btn ${p.featured ? "btn--solid" : "btn--line"} btn--sm`}
                   onClick={focusBookingHeading}
                 >
@@ -366,7 +366,7 @@ export function DarkHome({
               <h1 className="hero__title chrome" data-hero><Lines text={heroTitle} /></h1>
               <p className="hero__lead" data-hero>{lead}</p>
               <div className="hero__actions" data-hero data-hero-actions>
-                <Link className="btn btn--solid" data-hero-cta="booking" to={regional ? "/freudenstadt-lossburg" : "/"} hash="buchung" onClick={focusBookingHeading}>
+                <Link className="btn btn--solid" data-hero-cta="booking" to={regional ? "/freudenstadt-lossburg" : "/"} hash="buchung" hashScrollIntoView={BOOKING_JUMP} onClick={focusBookingHeading}>
                   Jetzt Termin anfragen <span className="arr" aria-hidden="true">→</span>
                 </Link>
                 <a className="btn btn--line" data-hero-cta="pickup" href="#ablauf">Hol- &amp; Bringservice entdecken</a>

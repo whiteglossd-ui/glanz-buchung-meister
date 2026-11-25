@@ -2,7 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { site, services } from "@/data/site";
 import { CookieSettingsButton } from "@/components/consent-banner";
-import { focusBookingHeading } from "@/lib/booking-anchor-focus";
+import { BOOKING_JUMP, focusBookingHeading } from "@/lib/booking-anchor-focus";
 
 /** Startseite des aktuellen Standorts (Horb oder Loßburg). */
 function useHomePath() {
@@ -148,7 +148,7 @@ export function DarkHeader() {
           {/* Inhaberentscheidung 25.11.2026: Termin-Button auch am Handy sichtbar. */}
           <Link
             to={homePath}
-            hash="buchung"
+            hash="buchung" hashScrollIntoView={BOOKING_JUMP}
             className="btn btn--solid btn--sm hdr__cta"
             data-header-cta
             aria-label="Jetzt Termin anfragen"
@@ -205,7 +205,7 @@ export function DarkHeader() {
             <Link to="/galerie" onClick={close}><span aria-hidden="true">03</span>Ergebnisse</Link>
             <Link to={homePath} hash="standorte" onClick={close}><span aria-hidden="true">04</span>Standorte</Link>
             <Link to="/abholservice" onClick={close}><span aria-hidden="true">05</span>Hol- und Bringservice</Link>
-            <Link to={homePath} hash="buchung" onClick={(e) => { close(); focusBookingHeading(e); }}>
+            <Link to={homePath} hash="buchung" hashScrollIntoView={BOOKING_JUMP} onClick={(e) => { close(); focusBookingHeading(e); }}>
               <span aria-hidden="true">06</span>Jetzt Termin anfragen
             </Link>
           </nav>
@@ -284,7 +284,7 @@ export function DarkFooter() {
         <div className="wrap foot__locs">
           <Link to="/">Horb am Neckar · aktuelle Werkstatt</Link>
           <Link to="/freudenstadt-lossburg">Loßburg / Freudenstadt · in Vorbereitung</Link>
-          <Link to={homePath} hash="buchung" className="btn btn--solid btn--sm" onClick={focusBookingHeading}>
+          <Link to={homePath} hash="buchung" hashScrollIntoView={BOOKING_JUMP} className="btn btn--solid btn--sm" onClick={focusBookingHeading}>
             Jetzt Termin anfragen
           </Link>
           <a className="foot__insta" href={site.instagram} target="_blank" rel="noopener noreferrer">

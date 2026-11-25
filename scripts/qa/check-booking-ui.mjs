@@ -376,7 +376,7 @@ try {
 
     await page.goto(`${qaBase}/`, { waitUntil: "networkidle" });
 
-    const pickupLinks = page.getByRole("list", { name: "Abholorte", exact: true });
+    const pickupLinks = page.getByRole("list", { name: "Abholorte und Preise", exact: true });
     for (const [slug, name, expected] of [
       ["sulz-am-neckar", "Sulz am Neckar", "30 €"],
       ["voehringen", "Vöhringen", "30 €"],
@@ -392,18 +392,12 @@ try {
         `${name}: accessible pickup price is ${expected}`,
       );
       await chip.scrollIntoViewIfNeeded();
-      const price = chip.locator(".city-chip-status");
+      const price = chip.locator(".city__p");
       assert.ok(await price.isVisible(), `${name}: pickup price is visible`);
       assert.equal(flat(await price.innerText()), expected, `${name}: visible pickup price`);
     }
     results.push("Homepage pickup prices: city overrides, free pickup, tier and on-request agree visually and accessibly");
-    await page.locator("#pakete").scrollIntoViewIfNeeded();
-    await page.waitForTimeout(800);
-    assert.ok(
-      assets.some((path) => /\/assets\/gsap-/.test(path)),
-      "Desktop motion loads GSAP on demand",
-    );
-    results.push("Desktop loads the scroll-motion chunk on demand");
+    // Dark Edition: eigene leichte Bewegung (dark-motion), kein GSAP-Chunk nötig.
     await checkMediaCollections(page, 1280);
     await context.close();
   }
