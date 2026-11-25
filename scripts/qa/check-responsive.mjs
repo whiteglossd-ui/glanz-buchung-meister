@@ -437,7 +437,7 @@ try {
       const heroBooking = page.locator("[data-hero-cta=booking]");
       assert.equal(await page.locator(".reel").getByRole("link", { name: bookingCtaName, exact: true }).count(), 1,
         `${width}px: the hero booking link has its visible accessible name.`);
-      assert.equal(await heroBooking.getAttribute("href"), "#buchung");
+      assert.equal(await heroBooking.getAttribute("href"), "/#buchung");
       assert.equal(await page.locator('[data-hero-actions] a[href="#ablauf"]').count(), 1,
         `${width}px: the secondary hero action links to the combined pickup process.`);
       assert.equal(await page.locator("[data-hero-actions] a[href]").count(), 2,
