@@ -181,6 +181,11 @@ async function assertBookingArrival(page, label) {
         heading: heading?.getBoundingClientRect().toJSON(),
         header: document.querySelector("[data-site-header]")?.getBoundingClientRect().toJSON(),
         viewport: { width: innerWidth, height: innerHeight },
+        hit: (() => {
+          const box = heading?.getBoundingClientRect();
+          const hit = box && document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+          return hit ? `${hit.tagName.toLowerCase()}#${hit.id}.${[...hit.classList].join(".")} in ${hit.parentElement?.className ?? ""}` : null;
+        })(),
       };
     });
     throw new Error(`${label}: booking heading must receive focus and remain fully visible below the header: ${JSON.stringify(state)}`, { cause: error });

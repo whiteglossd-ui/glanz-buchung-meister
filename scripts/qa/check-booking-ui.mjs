@@ -232,6 +232,8 @@ async function checkMediaCollections(page, width) {
   await comparison.scrollIntoViewIfNeeded();
   for (const image of await resultSection.locator(".compare img").all()) {
     await image.evaluate(async (element) => {
+      // Lazy images inside the clipped comparison may stay deferred; load explicitly.
+      element.loading = "eager";
       await element.decode();
       if (!element.naturalWidth) throw new Error("Comparison image must decode");
     });
