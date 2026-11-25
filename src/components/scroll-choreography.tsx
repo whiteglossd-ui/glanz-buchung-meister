@@ -71,7 +71,8 @@ function useHeaderAndProgress(pathname: string) {
       const header = document.querySelector<HTMLElement>('[data-shell="public"] .site-header');
       if (header) {
         const menuOpen = document.body.dataset.nav === "open";
-        if (menuOpen || y < HIDE_AFTER_PX || y < lastY - DIRECTION_TOLERANCE_PX) {
+        // Reduzierte Bewegung: Kopfzeile bleibt stehen.
+        if (reducedMotion() || menuOpen || y < HIDE_AFTER_PX || y < lastY - DIRECTION_TOLERANCE_PX) {
           header.removeAttribute("data-wg-hide");
         } else if (y > lastY + DIRECTION_TOLERANCE_PX) {
           header.setAttribute("data-wg-hide", "true");
