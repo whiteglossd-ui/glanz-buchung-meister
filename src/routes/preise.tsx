@@ -53,45 +53,49 @@ function PreisePage() {
         }
       />
       <div className="section mx-auto max-w-7xl px-4 sm:px-6">
-      <ol className="mt-14 divide-y divide-line border-y border-line">
+      <ol className="mt-14 grid items-start gap-6 lg:grid-cols-3">
         {packages.map((p, i) => (
-          <li key={p.id} id={packageAnchor(p.id)} className="lift gd-pack py-10">
-            <p className="ga-num font-display text-3xl text-subtle tabular-nums">
+          <li
+            key={p.id}
+            id={packageAnchor(p.id)}
+            className={`flex scroll-mt-24 flex-col border p-6 sm:p-7 ${
+              p.includesPickup
+                ? "border-line-strong bg-[linear-gradient(180deg,rgb(191_206_224/0.07),transparent_60%)]"
+                : "border-line"
+            }`}
+          >
+            <p className="font-display text-xl text-subtle tabular-nums">
               {String(i + 1).padStart(2, "0")}
             </p>
-            <div className="ga-pack-copy">
-              <h2 className="heading-2 mt-2">{p.name}</h2>
-              <p className="mt-2 text-sm text-muted">{p.kicker}</p>
-              <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted">{p.body}</p>
-              <ul className="mt-5 space-y-2 text-sm text-muted">
-                {p.items.map((item) => (
-                  <li key={item} className="flex gap-3">
-                    <span className="mt-[0.55em] size-1 shrink-0 rounded-full bg-subtle" aria-hidden />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-              <Link
-                to="/"
-                search={{ paket: p.id }}
-                hash="buchung"
-                className={`${ctaPrimary} mt-6`}
-              >
-                Paket anfragen
-              </Link>
-            </div>
-            <p className="ga-price flex min-w-[8.5rem] flex-col items-end gap-2">
-              <span className="flex items-baseline gap-2 lg:justify-end">
-                <span className="text-xs uppercase tracking-[0.2em] text-subtle">ab </span>
-                <span className="font-display text-4xl leading-none tracking-wide tabular-nums">
-                  {money(p.price)}
-                </span>
-                <span className="text-sm text-muted"> €</span>
+            <h2 className="heading-2 mt-2 text-2xl">{p.name}</h2>
+            <p className="mt-2 text-sm text-muted">{p.kicker}</p>
+            <p className="mt-4 text-sm leading-relaxed text-muted">{p.body}</p>
+            <ul className="mt-5 space-y-2 text-sm text-muted">
+              {p.items.map((item) => (
+                <li key={item} className="flex gap-3">
+                  <span className="mt-[0.55em] size-1 shrink-0 rounded-full bg-subtle" aria-hidden />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-6 flex items-baseline gap-2">
+              <span className="text-xs uppercase tracking-[0.2em] text-subtle">ab </span>
+              <span className="font-display text-4xl leading-none tracking-wide tabular-nums">
+                {money(p.price)}
               </span>
-              <span className="block text-xs text-subtle">
-                {site.vatNote} · {p.duration}
-              </span>
+              <span className="text-sm text-muted"> €</span>
             </p>
+            <span className="mt-2 block text-xs text-subtle">
+              {site.vatNote} · {p.duration}
+            </span>
+            <Link
+              to="/"
+              search={{ paket: p.id }}
+              hash="buchung"
+              className={`${ctaPrimary} mt-6 self-start`}
+            >
+              Paket anfragen
+            </Link>
           </li>
         ))}
       </ol>

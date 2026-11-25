@@ -16,6 +16,8 @@ import { localBusinessJsonLd } from "@/lib/seo";
 import { homeCopy, homeText } from "@/data/home-copy";
 import { ScrollFilmHero } from "@/components/scroll-film-hero";
 import { HomePolish } from "@/components/home-polish";
+import { HomeProgressNav } from "@/components/home-progress-nav";
+import { MobileInquiryDock } from "@/components/mobile-inquiry-dock";
 import { PackageShowcase } from "@/components/package-showcase";
 import { ResultsTeaser } from "@/components/results-teaser";
 import { HomeProcess } from "@/components/home-process";
@@ -48,6 +50,7 @@ export function HomePage({
   return (
     <main id="main-content" tabIndex={-1} data-home="polish">
       <HomePolish key={location} />
+      <HomeProgressNav />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
@@ -252,7 +255,7 @@ export function HomePage({
         initialCity={initialCity ?? (regional ? "lossburg" : undefined)}
         serviceArea={serviceArea}
       />
-
+      <MobileInquiryDock />
     </main>
   );
 }

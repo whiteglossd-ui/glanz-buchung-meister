@@ -86,7 +86,7 @@ export const APPROVED_SEO_BLOBS = Object.freeze({
   "src/routes/leistungen.$slug.index.tsx": "76595e6f0f61385bc0589f30ebc065a48a25a5fa",
   "src/routes/leistungen.index.tsx": "0ab40acbff1cb13b2f1ea08c6448686ff717eab8",
   "src/routes/luxusfahrzeuge.tsx": "439e1687974e595e050c1a320dde5cbb771f1b5e",
-  "src/routes/preise.tsx": "8785dea1674ddfa3d34503e7d9323a48da7d8102",
+  "src/routes/preise.tsx": "b6b7840c3781dcd4350f0d74a86005ae48b60f99",
   "src/routes/qualitaet.tsx": "01553fc27ec1fc42cf046ada585d290a394ac9d5",
   "src/routes/ratgeber.$slug.tsx": "289e2b57f0f03a2ca7ea4736b969fc312035ec5e",
   "src/routes/ratgeber.index.tsx": "4fd450d03b9c7172f8b4bcecdb216ff659dbcd32",
@@ -122,7 +122,7 @@ const APPROVED_HOME_BLOBS = Object.freeze({
   "src/routes/index.tsx": "7b87df2a86c7dac7b0f432e210d57f12ec64e3c2",
   "src/routes/leistungen.$slug.$city.tsx": "bb360ecb62e387d7fa8569e1259ece1ab9c19872",
   "src/lib/seo-intents.ts": "a61bd78880457eb49e9a57001386d3035021efd1",
-  "src/components/home-page.tsx": "ae0b3757e1488cd8c2657551044168909a34bc0a",
+  "src/components/home-page.tsx": "c7f7d7e0d8ceb57bd2da58fabfda2956a2efc1f1",
   "src/data/home-location.ts": "22916b03c538e31757ef9dd4e42be8119b6ea982",
   "src/components/lazy-configurator.tsx": "2e1849b66392f02c2d985a1637d4f28dc26e8dfd",
 });
