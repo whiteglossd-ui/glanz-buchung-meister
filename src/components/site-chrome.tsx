@@ -12,6 +12,7 @@ import { InstagramBadge } from "./instagram-badge";
 import { trackCtaInteraction } from "@/lib/googleTag";
 import { useMagnetic } from "@/lib/studio-motion";
 import { SmoothScroll } from "./smooth-scroll";
+import { ScrollChoreography } from "./scroll-choreography";
 import { focusBookingHeading } from "@/lib/booking-anchor-focus";
 import forgeMenuCss from "../styles/forge-menu.css?inline";
 
@@ -628,6 +629,7 @@ export function Shell() {
       <RouteFocus />
       <SkipLink />
       <SmoothScroll />
+      <ScrollChoreography />
       <SiteHeader />
       <FilmScroll />
       <Outlet />

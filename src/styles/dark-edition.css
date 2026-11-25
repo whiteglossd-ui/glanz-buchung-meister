@@ -1,0 +1,176 @@
+/* White Gloss · Dark Edition (Sandbox)
+ * Übernimmt Schrift, Kopfzeile, Buttons, Labels und Scroll-Choreografie aus
+ * der gelieferten „White-Gloss Detailing – Dark Edition“. Farben und Layout
+ * der bestehenden Seiten bleiben, die Startseiten-Hero (Scrollfilm) bleibt
+ * unverändert. Diese Datei wird in __root.tsx als letzte Ebene geladen.
+ * Bewegung steuert src/components/scroll-choreography.tsx.
+ */
+
+/* 1. Schrift ---------------------------------------------------------------
+ * „WG Display“ = Barlow Semi Condensed (OFL 1.1, public/fonts/bsc-*.woff2).
+ * Gewichtszuordnung wie in der Vorlage um eine Stufe leichter: Überschriften
+ * mit font-weight 400 zeigen den Light-Schnitt. Fließtext: Barlow. */
+@font-face {
+  font-family: "WG Display";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("/fonts/bsc-200.woff2") format("woff2");
+}
+@font-face {
+  font-family: "WG Display";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/bsc-300.woff2") format("woff2");
+}
+@font-face {
+  font-family: "WG Display";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/bsc-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "WG Display";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/bsc-500.woff2") format("woff2");
+}
+
+:is([data-shell="public"], .film-menu, .wg-video-dialog, .customer-photo-dialog) {
+  --font-sans: "Barlow", "Barlow Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "WG Display", "Barlow Semi Condensed", "Barlow", "Barlow Fallback", sans-serif;
+  --wg-ease: cubic-bezier(.22, 1, .36, 1);
+  font-family: var(--font-sans);
+}
+[data-shell="public"] {
+  font-size: 1rem;
+  line-height: 1.55;
+}
+[data-shell="public"] :is(h1, h2, h3, .heading-page, .heading-2, .heading-3) {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -.025em;
+}
+[data-shell="public"] :is(.heading-2, h2) { line-height: 1.06; }
+[data-shell="public"] :is(h3, .heading-3) { letter-spacing: -.02em; line-height: 1.15; }
+
+/* Labels / Kicker: kleine Versalien mit weiter Laufweite. */
+[data-shell="public"] :is(.kicker, .package-eyebrow) {
+  font-family: var(--font-sans);
+  font-size: .6875rem;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+}
+
+/* 2. Buttons ---------------------------------------------------------------
+ * Kantig, 1-px-Rahmen in Creme, beim Hover invertiert. Beschriftung in der
+ * Display-Schrift ohne Versalien, wie in der Vorlage. */
+:is([data-shell="public"], .film-menu) .btn {
+  min-height: 52px;
+  padding-inline: 2.125rem;
+  gap: .875rem;
+  font-family: var(--font-display);
+  font-size: .9375rem;
+  font-weight: 400;
+  letter-spacing: .01em;
+  text-transform: none;
+  transition: background-color .5s var(--wg-ease), color .5s var(--wg-ease), border-color .5s var(--wg-ease);
+}
+:is([data-shell="public"], .film-menu) .btn-primary { border: 1px solid var(--color-fg); }
+:is([data-shell="public"], .film-menu) .btn-secondary { border: 1px solid var(--color-fg); }
+@media (hover: hover) {
+  :is([data-shell="public"], .film-menu) .btn-primary:hover { background: transparent; color: var(--color-fg); }
+  :is([data-shell="public"], .film-menu) .btn-secondary:hover { background: var(--color-fg); color: var(--color-bg); }
+  :is([data-shell="public"], .film-menu) .btn :is(svg, .arr) { transition: transform .5s var(--wg-ease); }
+  :is([data-shell="public"], .film-menu) .btn:hover :is(svg, .arr) { transform: translateX(4px); }
+}
+
+/* 3. Kopfzeile ------------------------------------------------------------
+ * Oben transparent mit leichtem Verlauf für die Lesbarkeit, nach dem ersten
+ * Scrollen Glas-Effekt, beim Herunterscrollen ausgeblendet. Höhe bleibt
+ * gleich: kein Layoutsprung, Anker bleiben stabil. */
+[data-shell="public"] .site-header {
+  background: linear-gradient(180deg, rgba(8, 8, 8, .72) 0%, rgba(8, 8, 8, 0) 100%);
+  border-bottom: 1px solid transparent;
+  transition: background-color .6s var(--wg-ease), border-color .6s var(--wg-ease), transform .6s var(--wg-ease);
+}
+[data-shell="public"] .site-header[data-scrolled="true"] {
+  background: rgba(8, 8, 8, .86);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border-bottom-color: var(--color-line);
+}
+body:not([data-nav="open"]) [data-shell="public"] .site-header[data-wg-hide="true"]:not(:focus-within) {
+  transform: translateY(-100%);
+}
+[data-shell="public"] .site-header .header-quick-nav a {
+  font-family: var(--font-sans);
+  font-size: .6875rem;
+  font-weight: 500;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+/* 4. Fortschrittslinie ----------------------------------------------------- */
+.wg-progress {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 120;
+  height: 1px;
+  transform-origin: left;
+  transform: scaleX(var(--wg-sp, 0));
+  background: linear-gradient(90deg, rgba(243, 240, 232, .2), #f3f0e8 60%, #b9c1cb);
+  pointer-events: none;
+}
+
+/* 5. Reveals ---------------------------------------------------------------
+ * Nur aktiv, solange das Script läuft (html[data-wg-motion="on"]) und das
+ * Element ausdrücklich wartet. Bewegung über translate/clip-path: keine
+ * Layoutverschiebung (CLS), keine Konflikte mit transform-Animationen. */
+html[data-wg-motion="on"] [data-wg-rise="wait"] {
+  clip-path: inset(100% -.2em 0 -.2em);
+  translate: 0 .45em;
+}
+html[data-wg-motion="on"] [data-wg-rise="in"] {
+  clip-path: inset(-.3em -.2em -.35em -.2em);
+  translate: 0 0;
+  transition: clip-path 1.15s var(--wg-ease), translate 1.15s var(--wg-ease);
+}
+html[data-wg-motion="on"] [data-wg-fade="wait"] {
+  opacity: 0;
+  translate: 0 26px;
+}
+html[data-wg-motion="on"] [data-wg-fade="in"] {
+  opacity: 1;
+  translate: 0 0;
+  transition: opacity 1.1s var(--wg-ease) .12s, translate 1.1s var(--wg-ease) .12s;
+}
+html[data-wg-motion="on"] [data-wg-curtain="wait"] {
+  clip-path: inset(0 0 100% 0);
+}
+html[data-wg-motion="on"] [data-wg-curtain="in"] {
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 1.5s var(--wg-ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-shell="public"] .site-header { transition: none; }
+  body [data-shell="public"] .site-header[data-wg-hide="true"] { transform: none; }
+  html [data-wg-rise], html [data-wg-fade], html [data-wg-curtain] {
+    clip-path: none !important;
+    opacity: 1 !important;
+    translate: none !important;
+  }
+}
+@media print {
+  .wg-progress { display: none; }
+  html [data-wg-rise], html [data-wg-fade], html [data-wg-curtain] {
+    clip-path: none !important;
+    opacity: 1 !important;
+    translate: none !important;
+  }
+}

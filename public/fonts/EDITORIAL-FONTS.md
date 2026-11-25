@@ -34,3 +34,29 @@ its variable weights. The two public font files total **52,276 bytes**, saving
 **14,764 bytes (22%)** against the original pair of variable font files.
 Fontconfig verified the regular face's complete Latin character coverage.
 Barlow files remain available for the existing application/admin design.
+
+## Dark Edition: WG Display (Barlow Semi Condensed)
+
+Added on 2026-11-25 from the supplied “White-Gloss Detailing – Dark Edition”
+package. The files are unchanged WOFF2 faces of **Barlow Semi Condensed**
+(Version 1.408, Copyright 2017 The Barlow Project Authors,
+https://github.com/jpt/barlow), licensed under SIL Open Font License 1.1
+(http://scripts.sil.org/OFL). The Latin subset covers `ÄÖÜäöüß`, `€` and
+German quotation marks (checked with fontTools).
+
+| Local file | Face | CSS weight in `dark-edition.css` | Bytes |
+| --- | --- | --- | --- |
+| `bsc-200.woff2` | ExtraLight | 300 | 22,008 |
+| `bsc-300.woff2` | Light | 400 (headings) | 22,116 |
+| `bsc-400.woff2` | Regular | 500 | 22,300 |
+| `bsc-500.woff2` | Medium | 600 | 22,428 |
+
+The CSS weights are shifted one step lighter on purpose, matching the
+supplied design: headings declared at 400 render the Light face.
+
+```text
+2ea0aa2cabeee63c7d6e6ea2268c3be3c130a07c840305089b0ffaecccaab148  bsc-200.woff2
+159d75490dba5ff4b24be2c2f18bf0ce1cc59f8df587a67d07e1801a19343f24  bsc-300.woff2
+d03a7a5f6b74534c80699289d4f6495fdb09a7596774a4ede79129d2f8bb67b1  bsc-400.woff2
+0d7513795eaf8fdab7f340144841bd2d9fac7d9303c03aa6b525a2c908e9b371  bsc-500.woff2
+```
