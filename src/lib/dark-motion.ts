@@ -120,8 +120,23 @@ export function initDarkHome(root: HTMLElement): () => void {
     if (smooth !== want) raf(tick);
     else rafOn = false;
   };
+  // Flache Fenster (Handy quer): Hero steht still wie bei reduzierter Bewegung,
+  // damit Überschrift und Buttons vollständig erreichbar bleiben.
+  const short = matchMedia("(max-height: 560px)");
   const reel = () => {
     if (!reelEl || reduce) return;
+    if (short.matches) {
+      if (chIdx !== 0) {
+        chIdx = 0;
+        reelEl.dataset.ch = "0";
+        chs.forEach((c, j) => {
+          c.classList.toggle("is-on", j === 0);
+          c.setAttribute("aria-hidden", String(j !== 0));
+          for (const a of c.querySelectorAll<HTMLElement>("a,button")) a.inert = j !== 0;
+        });
+      }
+      return;
+    }
     const r = reelEl.getBoundingClientRect();
     const total = r.height - innerHeight;
     const p = Math.min(1, Math.max(0, -r.top / (total || 1)));
@@ -301,8 +316,14 @@ export function initDarkHome(root: HTMLElement): () => void {
 
 /** Zahl weich hochzählen (Paketpreise beim Wechsel der Fahrzeugklasse). */
 export function tweenNumber(el: HTMLElement, to: number) {
-  const fmt = (n: number) => new Intl.NumberFormat("de-DE", { maximumFractionDigits: 0 }).format(Math.round(n));
-  const from = Number(el.dataset.v) || Number(String(el.textContent).replace(/\D/g, "")) || 0;
+  // Endwert exakt mit Cent (z. B. 186,25), Zwischenstände ganzzahlig.
+  const exact = (n: number) => {
+    const cents = Math.round(n * 100) / 100;
+    const whole = Number.isInteger(cents);
+    return new Intl.NumberFormat("de-DE", { minimumFractionDigits: whole ? 0 : 2, maximumFractionDigits: 2 }).format(cents);
+  };
+  const fmt = (n: number) => (n === to ? exact(n) : exact(Math.round(n)));
+  const from = Number(el.dataset.v) || Number(el.dataset.base) || 0;
   el.dataset.v = String(to);
   if (matchMedia("(prefers-reduced-motion: reduce)").matches || from === to) {
     el.textContent = fmt(to);
@@ -312,7 +333,7 @@ export function tweenNumber(el: HTMLElement, to: number) {
   const step = (t: number) => {
     const k = Math.min(1, (t - t0) / 700);
     const e = 1 - Math.pow(1 - k, 4);
-    el.textContent = fmt(from + (to - from) * e);
+    el.textContent = k < 1 ? fmt(from + (to - from) * e) : exact(to);
     if (k < 1) requestAnimationFrame(step);
   };
   requestAnimationFrame(step);

@@ -181,10 +181,12 @@ const videos = [
 
 function VideoCard({ v }: { v: (typeof videos)[number] }) {
   const [playing, setPlaying] = useState(false);
+  // Nach dem Start bekommt der Player den Tastaturfokus (der Knopf verschwindet).
+  const player = useCallback((element: HTMLVideoElement | null) => element?.focus({ preventScroll: true }), []);
   return (
     <article className="work" data-reveal>
       {playing ? (
-        <video className="vid__el" src={v.src} poster={v.poster} controls autoPlay playsInline />
+        <video ref={player} className="vid__el" src={v.src} poster={v.poster} controls autoPlay playsInline />
       ) : (
         <button className="vid" type="button" aria-label={`Video abspielen: ${v.title}`} onClick={() => setPlaying(true)}>
           <img src={v.poster} alt={v.alt} loading="lazy" />
@@ -249,12 +251,12 @@ function DarkBooking({
   const rundum = useSyncExternalStore(subscribe, isRundumRequest, () => false);
   return (
     <section className="sec" id="buchung" aria-labelledby="buchung-heading">
-      {["termin", "service", "rundum-service"].map((id) => (
+      {["termin", "service", "rundum-service", "rundum-anfrage"].map((id) => (
         <span key={id} id={id} className="anchor" aria-hidden="true" />
       ))}
       {atmo("leather-wide")}
       <div className="wrap book">
-        <div className="book__intro home-booking-promise">
+        <div className="book__intro" data-booking-promise>
           <p className="label label--rule" data-reveal>08 / Dein Rundum-Service</p>
           <h2 className="h2 h2--xl chrome" id="buchung-heading" tabIndex={-1} data-reveal>
             <Words text={"Dein Auto.\nDein Wunsch.\nWir kümmern uns."} />
@@ -286,7 +288,7 @@ function DarkBooking({
           </p>
         </div>
 
-        <div className="cfg wgt-booking home-booking-form" aria-labelledby="anfrage-heading">
+        <div className="cfg wgt-booking" data-booking-form aria-labelledby="anfrage-heading">
           <h3 className="h3 h3--lg" id="anfrage-heading">Jetzt Termin anfragen</h3>
           <nav className="cfg__mode" aria-label="Art der Anfrage">
             <a href="#buchung" aria-current={!rundum ? "location" : undefined} aria-controls="paket-formular">
@@ -294,7 +296,6 @@ function DarkBooking({
             </a>
             <a
               href="#rundum-anfrage"
-              id="rundum-anfrage"
               aria-current={rundum ? "location" : undefined}
               aria-controls="rundum-formular"
             >
@@ -364,13 +365,13 @@ export function DarkHome({
               <p className="kicker" data-hero>Hol- und Bringservice · {regional ? "Loßburg / Freudenstadt" : site.city}</p>
               <h1 className="hero__title chrome" data-hero><Lines text={heroTitle} /></h1>
               <p className="hero__lead" data-hero>{lead}</p>
-              <div className="hero__actions film-actions" data-hero>
-                <Link className="btn btn--solid scroll-film-cta" to={regional ? "/freudenstadt-lossburg" : "/"} hash="buchung" onClick={focusBookingHeading}>
+              <div className="hero__actions" data-hero data-hero-actions>
+                <Link className="btn btn--solid" data-hero-cta="booking" to={regional ? "/freudenstadt-lossburg" : "/"} hash="buchung" onClick={focusBookingHeading}>
                   Jetzt Termin anfragen <span className="arr" aria-hidden="true">→</span>
                 </Link>
-                <a className="btn btn--line scroll-film-prices" href="#ablauf">Hol- &amp; Bringservice entdecken</a>
+                <a className="btn btn--line" data-hero-cta="pickup" href="#ablauf">Hol- &amp; Bringservice entdecken</a>
               </div>
-              <div className="hero__trust scroll-film-trust" data-hero>
+              <div className="hero__trust" data-hero data-hero-trust>
                 <p><strong>Dein Fahrzeug in guten Händen</strong></p>
                 <span>Persönliche Fahrzeugannahme · Ein fester Ansprechpartner · Transparente Festpreise</span>
               </div>

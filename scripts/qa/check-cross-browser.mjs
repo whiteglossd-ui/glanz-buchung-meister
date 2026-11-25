@@ -46,7 +46,7 @@ async function revealReviews(page, state) {
   state.visibleTarget = await revealTargetWithWheel({
     measure: () => page.locator("#bewertungen").evaluate((element) => {
       const rect = element.getBoundingClientRect();
-      return { top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height, scrollY, viewportHeight: innerHeight, headerBottom: document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 0 };
+      return { top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height, scrollY, viewportHeight: innerHeight, headerBottom: document.querySelector("[data-site-header]")?.getBoundingClientRect().bottom ?? 0 };
     }),
     wheel: async (deltaY) => {
       const viewport = page.viewportSize();

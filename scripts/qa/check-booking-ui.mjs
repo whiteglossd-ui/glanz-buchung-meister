@@ -89,7 +89,7 @@ async function placeBelowHeader(page, selector) {
   let geometry;
   for (let attempt = 0; attempt < 3; attempt++) {
     await target.evaluate((element) => {
-      const headerBottom = document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 0;
+      const headerBottom = document.querySelector("[data-site-header]")?.getBoundingClientRect().bottom ?? 0;
       window.scrollTo({ top: window.scrollY + element.getBoundingClientRect().top - headerBottom - 16, behavior: "instant" });
       window.__qaBookingViewport = { top: element.getBoundingClientRect().top, headerBottom, since: performance.now() };
     });
@@ -99,7 +99,7 @@ async function placeBelowHeader(page, selector) {
       const element = document.querySelector(target);
       if (!element) return false;
       const top = element.getBoundingClientRect().top;
-      const headerBottom = document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 0;
+      const headerBottom = document.querySelector("[data-site-header]")?.getBoundingClientRect().bottom ?? 0;
       const probe = window.__qaBookingViewport;
       if (Math.abs(top - probe.top) > 0.5 || Math.abs(headerBottom - probe.headerBottom) > 0.5) {
         probe.top = top;
@@ -110,7 +110,7 @@ async function placeBelowHeader(page, selector) {
     }, selector, { timeout: 5000 });
     geometry = await target.evaluate((element) => ({
       top: element.getBoundingClientRect().top,
-      headerBottom: document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 0,
+      headerBottom: document.querySelector("[data-site-header]")?.getBoundingClientRect().bottom ?? 0,
       viewportHeight: innerHeight,
     }));
     if (Math.abs(geometry.top - geometry.headerBottom - 16) <= 2 && geometry.top < geometry.viewportHeight) return;
@@ -128,7 +128,7 @@ async function captureBookingStep(page, filename, { includeSteps = false } = {})
     return {
       title: title.textContent.replace(/\s+/g, " ").trim(),
       current: current.textContent.replace(/^\s*\d+\.\s*/, "").replace(/\s+/g, " ").trim(),
-      titleVisible: titleBox.top >= (document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 0) && titleBox.bottom < innerHeight,
+      titleVisible: titleBox.top >= (document.querySelector("[data-site-header]")?.getBoundingClientRect().bottom ?? 0) && titleBox.bottom < innerHeight,
       panelVisible: panel.getBoundingClientRect().top < innerHeight,
     };
   });
@@ -144,8 +144,8 @@ async function bookingLayout(page, { desktop, embedded }) {
     const price = form.querySelector(".booking-price");
     const panel = form.querySelector(".booking-step-panel:not([hidden])");
     const title = form.querySelector(".booking-step-title");
-    const home = form.closest(".home-booking");
-    const homeForm = home?.querySelector(".home-booking-form");
+    const home = form.closest("#buchung");
+    const homeForm = home?.querySelector("[data-booking-form]");
     const homeStyle = homeForm ? getComputedStyle(homeForm) : null;
     return {
       embedded: Boolean(home),
@@ -159,7 +159,7 @@ async function bookingLayout(page, { desktop, embedded }) {
       pricePosition: getComputedStyle(price).position,
       excess: form.scrollWidth - form.clientWidth,
       home: home ? {
-        promise: rect(home.querySelector(".home-booking-promise")),
+        promise: rect(home.querySelector("[data-booking-promise]")),
         card: rect(homeForm),
         contentWidth: homeForm.clientWidth - parseFloat(homeStyle.paddingLeft) - parseFloat(homeStyle.paddingRight),
         split: matchMedia("(min-width: 1080px)").matches,
@@ -204,202 +204,69 @@ async function bookingLayout(page, { desktop, embedded }) {
   results.push(`${embedded ? "Homepage" : "Standalone"} ${desktop ? "desktop" : "mobile"} booking layout: usable form width and non-overlapping price`);
 }
 
+// Dark Edition (Inhaberauftrag 25.11.2026): packages as rows with vehicle-class
+// tabs, results as a grid of one comparison and three inline customer videos.
 async function checkMediaCollections(page, width) {
-  const tracks = page.locator(".wg-media-rail");
-  assert.equal(await tracks.count(), 2, "Packages, comparison and videos use two shared media rails");
-  assert.equal(await page.locator("#pakete .wg-rail-card").count(), 3, "All three packages remain available");
-  assert.equal(await page.locator("#kundenergebnisse .wg-rail-card").count(), 4,
-    "The result collection contains one comparison and three video cards");
-  assert.equal(await page.locator("#kundenergebnisse .wg-video-trigger").count(), 3,
-    "The comparison card is not counted as a video");
-  await page.locator("#vorher-nachher").scrollIntoViewIfNeeded();
-  await page.locator('#vorher-nachher [role="slider"]').waitFor({ state: "visible" });
-  const frames = await page.locator(".wg-media-rail .wg-rail-frame").evaluateAll((elements) =>
-    elements.map((frame) => {
-      const { width, height } = frame.getBoundingClientRect();
-      const card = frame.closest(".wg-rail-card");
-      const cardStyle = getComputedStyle(card);
-      const frameStyle = getComputedStyle(frame);
-      return {
-        width, height,
-        radius: cardStyle.borderRadius,
-        border: cardStyle.border,
-        shadow: cardStyle.boxShadow,
-        frameBorder: frameStyle.borderBottom,
-        captionMinHeight: getComputedStyle(card.querySelector(".wg-rail-copy")).minBlockSize,
-        gap: getComputedStyle(card.parentElement).columnGap,
-        snap: getComputedStyle(card.parentElement).scrollSnapType,
-      };
-    }),
-  );
-  assert.equal(frames.length, 7);
-  assert.ok(frames.every((frame) =>
-    frame.width > 0 && Math.abs(frame.width - frames[0].width) <= 2 &&
-    Math.abs(frame.height - frames[0].height) <= 2 &&
-    Math.abs(frame.width / frame.height - 4 / 3) <= 0.02),
-    `Packages, comparison and videos @${width}: all seven media windows have matching 4:3 sizes`);
-  for (const property of ["radius", "border", "shadow", "frameBorder", "captionMinHeight", "gap", "snap"]) {
-    assert.ok(frames.every((frame) => frame[property] === frames[0][property]),
-      `Packages, comparison and videos @${width}: shared ${property}`);
+  const packages = page.locator("#preise");
+  assert.equal(await page.locator("#pakete").count(), 1, "The package anchor remains available");
+  assert.equal(await packages.locator(".prow").count(), 3, "All three packages remain available");
+  for (const image of await packages.locator(".prow__img img").all()) {
+    await image.scrollIntoViewIfNeeded();
+    await image.evaluate(async (element) => {
+      await element.decode();
+      if (!element.currentSrc || !element.naturalWidth) throw new Error("Package image must decode from a real source");
+    });
   }
-  assert.equal(frames[0].snap, "x mandatory", "All rails retain native horizontal scroll snapping");
+  const firstPrice = packages.locator(".prow__price .num").first();
+  await packages.getByRole("radio", { name: "SUV / Limousine", exact: true }).click();
+  await page.waitForFunction(() => document.querySelector("#preise .prow__price .num")?.textContent?.trim() === "186,25");
+  await packages.getByRole("radio", { name: "Kompaktklasse", exact: true }).click();
+  await page.waitForFunction(() => document.querySelector("#preise .prow__price .num")?.textContent?.trim() === "149");
+  assert.equal(flat(await firstPrice.textContent()), "149");
 
-  const packages = page.locator("#pakete");
-  await packages.getByRole("button", { name: "SUV / Limousine" }).click();
-  assert.match(await packages.locator(".wg-rail-price").first().innerText(), /186,25/);
-  await packages.getByRole("button", { name: "Kompaktklasse" }).click();
-  assert.match(await packages.locator(".wg-rail-price").first().innerText(), /149/);
-  for (const selector of ["#pakete", "#kundenergebnisse"]) {
-    const section = page.locator(selector);
-    const track = section.locator(".wg-media-rail");
-    const nav = section.locator(".wg-rail-nav");
-    // Package sources are mounted only near the viewport. Traverse the stable
-    // frames first so deferred previews cannot make an empty image loop pass.
-    for (const frame of await track.locator(".wg-rail-frame").all()) {
-      const initialSize = await frame.evaluate((element) => ({
-        width: element.getBoundingClientRect().width,
-        height: element.getBoundingClientRect().height,
-      }));
-      await frame.scrollIntoViewIfNeeded();
-      // Ignore the no-JavaScript fallback: this test must observe the live preview.
-      const images = frame.locator("img:not(noscript img)");
-      await images.first().waitFor({ state: "visible" });
-      const expectedImages = await frame.evaluate((element) =>
-        element.classList.contains("wg-rail-comparison") ? 2 : 1);
-      assert.equal(await images.count(), expectedImages,
-        `${selector} @${width}: every media frame mounts its actual preview images`);
-      for (const image of await images.all()) {
-        await image.evaluate(async (element) => {
-          await element.decode();
-          if (!element.currentSrc || !element.naturalWidth || !element.naturalHeight)
-            throw new Error("Preview image must decode from a real source");
-        });
-      }
-      const loadedSize = await frame.evaluate((element) => ({
-        width: element.getBoundingClientRect().width,
-        height: element.getBoundingClientRect().height,
-      }));
-      assert.ok(Math.abs(initialSize.width - loadedSize.width) <= 1 &&
-        Math.abs(initialSize.height - loadedSize.height) <= 1,
-      `${selector} @${width}: loading a preview must preserve the reserved frame size`);
-    }
-    const overflowing = await track.evaluate((list) => list.scrollWidth > list.clientWidth + 1);
-    if (overflowing) {
-      await nav.waitFor({ state: "visible" });
-      assert.equal(await nav.getByRole("button").count(), 2, "Every rail uses the same two navigation arrows");
-      assert.equal(flat(await nav.locator(".wg-rail-hint").textContent()), "Wischen oder mit den Pfeilen entdecken");
-      await track.evaluate((list) => list.scrollTo({ left: 0, behavior: "instant" }));
-      await page.waitForFunction((selector) =>
-        document.querySelector(`${selector} .wg-rail-nav button[aria-label="Vorherige Karte"]`)?.disabled === true,
-      selector);
-      const next = nav.getByRole("button", { name: "Nächste Karte", exact: true });
-      assert.equal(await next.isDisabled(), false);
-      await next.focus();
-      await page.keyboard.press("Enter");
-      await page.waitForFunction((selector) => {
-        const list = document.querySelector(`${selector} .wg-media-rail`);
-        const card = list.children[1];
-        const viewport = list.getBoundingClientRect();
-        const rect = card.getBoundingClientRect();
-        return list.scrollLeft > 1 && rect.left >= viewport.left - 2 && rect.right <= viewport.right + 2;
-      }, selector);
-      results.push(`${selector} @${width}: next arrow brings the second card fully into view`);
-
-      // Native list keyboard navigation must work independently of its child controls.
-      await track.focus();
-      await page.keyboard.press("End");
-      await page.waitForFunction((selector) => {
-        const list = document.querySelector(`${selector} .wg-media-rail`);
-        const next = document.querySelector(`${selector} .wg-rail-nav button[aria-label="Nächste Karte"]`);
-        return list.scrollLeft + list.clientWidth >= list.scrollWidth - 2 && next?.disabled === true;
-      }, selector);
-      const lastVisible = await track.locator(".wg-rail-card").last().evaluate((card) => {
-        const viewport = card.parentElement.getBoundingClientRect();
-        const rect = card.getBoundingClientRect();
-        return rect.left >= viewport.left - 2 && rect.right <= viewport.right + 2;
-      });
-      assert.ok(lastVisible, `${selector} @${width}: End reaches the last card without clipping`);
-      await page.waitForFunction((selector) => {
-        const section = document.querySelector(selector);
-        const list = section.querySelector(".wg-media-rail");
-        const bounds = list.getBoundingClientRect();
-        const shown = [...list.children].flatMap((card, index) => {
-          const rect = card.getBoundingClientRect();
-          return Math.min(rect.right, bounds.right) - Math.max(rect.left, bounds.left) >= rect.width / 2
-            ? [index + 1] : [];
-        });
-        if (!shown.length) return false;
-        const first = shown[0];
-        const last = shown[shown.length - 1];
-        const expected = `${first}${last > first ? `–${last}` : ""} / ${list.children.length}`;
-        return section.querySelector(".wg-rail-position").textContent.replace(/\s+/g, " ").includes(expected);
-      }, selector);
-      await page.keyboard.press("Home");
-      await page.waitForFunction((selector) => {
-        const list = document.querySelector(`${selector} .wg-media-rail`);
-        return list.scrollLeft <= 1 &&
-          document.querySelector(`${selector} .wg-rail-nav button[aria-label="Vorherige Karte"]`)?.disabled === true;
-      }, selector);
-    } else {
-      assert.equal(await nav.count(), 0, "No scroll controls when every card fits");
-      assert.equal(await track.evaluate((list) => list.scrollWidth <= list.clientWidth + 1), true);
-    }
-  }
-  const comparison = page.locator('#vorher-nachher [role="slider"]');
+  const resultSection = page.locator("#ergebnisse");
+  assert.equal(await resultSection.locator(".work").count(), 4, "One comparison and three video cards");
+  const triggers = resultSection.getByRole("button", { name: /^Video abspielen: / });
+  assert.equal(await triggers.count(), 3, "The comparison card is not counted as a video");
+  const comparison = resultSection.getByRole("slider", { name: "Vorher-Nachher-Vergleich verschieben", exact: true });
   await comparison.scrollIntoViewIfNeeded();
+  for (const image of await resultSection.locator(".compare img").all()) {
+    await image.evaluate(async (element) => {
+      await element.decode();
+      if (!element.naturalWidth) throw new Error("Comparison image must decode");
+    });
+  }
   await comparison.focus();
-  const beforeComparison = Number(await comparison.getAttribute("aria-valuenow"));
-  const resultRail = page.locator("#kundenergebnisse .wg-media-rail");
-  const beforeRail = await resultRail.evaluate((list) => list.scrollLeft);
+  const before = Number(await comparison.inputValue());
+  const scrollBefore = await page.evaluate(() => scrollY);
   await page.keyboard.press("ArrowRight");
-  await page.waitForFunction((expected) =>
-    Number(document.querySelector('#vorher-nachher [role="slider"]')?.getAttribute("aria-valuenow")) === expected,
-  Math.min(100, beforeComparison + 5));
-  assert.ok(Math.abs(await resultRail.evaluate((list) => list.scrollLeft) - beforeRail) <= 1,
-    "Comparison keyboard input adjusts the image without scrolling the enclosing rail");
+  assert.equal(Number(await comparison.inputValue()), Math.min(100, before + 1), "The comparison reacts to the keyboard");
+  assert.ok(Math.abs(await page.evaluate(() => scrollY) - scrollBefore) <= 1, "Comparison keyboard input must not scroll the page");
 
-  const dialog = page.locator("#kundenergebnisse dialog");
   const videoResponse = await observeReadDuringAction(page, (response) => {
     const url = new URL(response.url());
     return response.request().method() === "GET" && response.request().resourceType() === "media" &&
       url.origin === new URL(qaBase).origin && /^\/media\/customer-beading\.(webm|mp4)$/.test(url.pathname);
   }, async () => {
-    await page.locator("#kundenergebnisse .wg-video-trigger").first().click();
-    await dialog.waitFor({ state: "visible" });
+    await resultSection.getByRole("button", { name: "Video abspielen: Hydrophober Lackschutz", exact: true }).click();
+    await resultSection.locator('video[src="/media/customer-beading.mp4"]').waitFor({ state: "visible" });
   });
-  assert.equal(await dialog.locator("video[controls] source").count(), 2);
   if (videoResponse.status() === 206) {
     const range = /^bytes (\d+)-(\d+)\/(\d+)$/.exec(await videoResponse.headerValue("content-range") ?? "");
     assert.ok(range && Number(range[1]) <= Number(range[2]) && Number(range[2]) < Number(range[3]),
       "Partial video responses must declare a valid byte range");
   }
+  const player = resultSection.locator('video[src="/media/customer-beading.mp4"]');
+  assert.equal(await player.evaluate((video) => video.controls && video === document.activeElement), true,
+    "The started video has controls and keyboard focus");
   await page.waitForFunction(() => {
-    const video = document.querySelector("#kundenergebnisse dialog video");
+    const video = document.querySelector('#ergebnisse video[src="/media/customer-beading.mp4"]');
     if (video?.error) throw new Error(`Customer video decoding failed: ${video.error.message}`);
-    return video && video.readyState >= 3 && video.videoWidth > 0 && video.videoHeight > 0 &&
-      !video.paused && video.currentTime > 0;
+    return video && video.readyState >= 3 && video.videoWidth > 0 && !video.paused && video.currentTime > 0;
   }, null, { timeout: 15000 });
-  const decodedFrame = await dialog.locator("video").evaluate((video) => new Promise((resolve, reject) => {
-    let callback;
-    const timer = setTimeout(() => {
-      video.cancelVideoFrameCallback(callback);
-      reject(new Error("Customer video did not present a decoded frame"));
-    }, 15000);
-    callback = video.requestVideoFrameCallback((_now, frame) => {
-      clearTimeout(timer);
-      resolve({ width: frame.width, height: frame.height, presentedFrames: frame.presentedFrames });
-    });
-  }));
-  assert.ok(decodedFrame.width > 0 && decodedFrame.height > 0 && decodedFrame.presentedFrames > 0,
-    "The real customer video must decode and present a frame before closing");
-  // Closing an autoplay dialog removes its media element. Finish its real read
-  // first so the test itself cannot create a premature request cancellation.
   await completeSuccessfulRead(videoResponse, { expectedStatuses: [200, 206] });
-  await page.keyboard.press("Escape");
-  await dialog.waitFor({ state: "hidden" });
-  assert.equal(await page.locator("#kundenergebnisse .wg-video-trigger").first().evaluate((button) =>
-    button === document.activeElement), true, "Closing the video returns focus to its thumbnail");
-  results.push(`Packages, comparison and videos @${width}: shared geometry, arrows, keyboard, visible range, pricing and video dialog`);
+  await player.evaluate((video) => video.pause());
+  results.push(`Packages, comparison and videos @${width}: images, exact class prices, keyboard comparison and inline video`);
 }
 
 try {

@@ -804,3 +804,24 @@ html.lenis,html.lenis body{height:auto}
 .wgt .hero__trust p{margin:0}
 .wgt .sec--packs{position:relative}
 .wgt .menu{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+/* Menü als natives Modal (<dialog>) */
+.wgt dialog.menu{margin:0;padding:0;border:0;width:100%;height:100%;max-width:none;max-height:none;color:var(--ink)}
+.wgt dialog.menu:not([open]){display:none}
+.wgt dialog.menu::backdrop{background:transparent}
+.wgt .hdr--menu{position:absolute;transform:none}
+/* Termin-Button im Kopf: lang ab 821px, kurz am Handy (Inhaberentscheidung 25.11.2026) */
+.wgt .hdr__cta-short{display:none}
+@media (max-width:1100px){.wgt .hdr{grid-template-columns:1fr auto 1fr}
+.wgt .hdr__logo{grid-column:2;justify-self:center}
+.wgt .hdr__right{grid-column:3}
+}
+@media (max-width:820px){.wgt .hdr__right{display:contents}
+.wgt .hdr__right .btn.hdr__cta{display:inline-flex;grid-column:1;grid-row:1;justify-self:start;min-height:44px;padding:0 14px}
+.wgt .hdr__cta-long{display:none}
+.wgt .hdr__cta-short{display:inline}
+.wgt .hdr__menu{grid-column:3;grid-row:1;justify-self:end;min-height:44px;min-width:44px;justify-content:flex-end}
+.wgt .hdr__menu-label{display:none}
+.wgt .hdr__logo{grid-row:1}
+}
+.wgt .hdr__links a{display:inline-flex;align-items:center;min-height:44px}
+.wgt .hdr__links a::after{bottom:10px}

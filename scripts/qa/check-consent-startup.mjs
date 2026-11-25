@@ -38,7 +38,7 @@ try {
         await context.addInitScript((intent) => {
           document.addEventListener("readystatechange", () => {
             if (document.readyState !== "interactive") return;
-            const link = document.querySelector(".scroll-film-cta");
+            const link = document.querySelector("[data-hero-cta=booking]");
             if (!link) return;
             const selector = 'head script[type="module"][src]';
             const before = document.querySelectorAll(selector).length;
@@ -90,7 +90,7 @@ try {
       assert.equal(await initial.locator("button:disabled").count(), 2, scenario + ": controls wait for their handlers");
       assert.equal(external.length, 0, scenario + ": startup hint never loads a third party");
       if (!returning) {
-        const geometry = await page.locator(".scroll-film-cta").evaluate((element) => ({
+        const geometry = await page.locator("[data-hero-cta=booking]").evaluate((element) => ({
           link: element.getBoundingClientRect().toJSON(),
           banner: document.querySelector(".consent-banner").getBoundingClientRect().toJSON(),
         }));

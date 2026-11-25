@@ -16,29 +16,29 @@ export function DarkHeader() {
   const hash = useRouterState({ select: (s) => s.location.hash });
   const homePath = useHomePath();
   const [open, setOpen] = useState(false);
-  const [shown, setShown] = useState(false);
   const [visible, setVisible] = useState(false);
   const [solid, setSolid] = useState(false);
   const [up, setUp] = useState(false);
   const openRef = useRef(false);
   const toggleRef = useRef<HTMLButtonElement>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDialogElement>(null);
   openRef.current = open;
 
   useEffect(() => setOpen(false), [pathname, hash]);
 
-  // Menü: erst einblenden, dann mit Klasse öffnen; beim Schließen ausblenden.
+  // Natives Modal (showModal): Hintergrund ist inert, Escape schließt, der
+  // Fokus bleibt im Menü und kehrt danach zum Menü-Knopf zurück.
   useEffect(() => {
+    const dialog = menuRef.current;
+    if (!dialog) return;
     if (open) {
-      setShown(true);
+      if (!dialog.open) dialog.showModal();
       setUp(false);
       document.body.style.overflow = "hidden";
+      dialog.querySelector<HTMLElement>(".menu__nav a")?.focus({ preventScroll: true });
       let inner = 0;
       const outer = requestAnimationFrame(() => {
-        inner = requestAnimationFrame(() => {
-          setVisible(true);
-          menuRef.current?.querySelector<HTMLElement>(".menu__nav a")?.focus({ preventScroll: true });
-        });
+        inner = requestAnimationFrame(() => setVisible(true));
       });
       return () => {
         cancelAnimationFrame(outer);
@@ -47,19 +47,18 @@ export function DarkHeader() {
     }
     setVisible(false);
     document.body.style.overflow = "";
-    const t = window.setTimeout(() => setShown(false), 500);
-    return () => window.clearTimeout(t);
-  }, [open]);
-
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key !== "Escape") return;
-      setOpen(false);
-      toggleRef.current?.focus();
+    if (!dialog.open) return;
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const finish = () => {
+      if (dialog.open) dialog.close();
+      toggleRef.current?.focus({ preventScroll: true });
     };
-    addEventListener("keydown", onKey);
-    return () => removeEventListener("keydown", onKey);
+    if (reduce) {
+      finish();
+      return;
+    }
+    const t = window.setTimeout(finish, 450);
+    return () => window.clearTimeout(t);
   }, [open]);
 
   useEffect(() => () => void (document.body.style.overflow = ""), []);
@@ -90,8 +89,8 @@ export function DarkHeader() {
   }, []);
 
   const close = () => setOpen(false);
-  // Tastatur bleibt im offenen Menü (wie im bisherigen Menü-Dialog).
-  const trapFocus = (event: ReactKeyboardEvent<HTMLDivElement>) => {
+  // Tab-Schleife innerhalb des Menüs (wie im bisherigen Menü-Dialog).
+  const trapFocus = (event: ReactKeyboardEvent<HTMLDialogElement>) => {
     if (event.key !== "Tab") return;
     const controls = event.currentTarget.querySelectorAll<HTMLElement>("a[href], button:not([disabled])");
     const first = controls[0];
@@ -105,10 +104,17 @@ export function DarkHeader() {
     }
   };
 
+  const logo = (onClick?: () => void) => (
+    <Link to={homePath} className="hdr__logo" data-site-logo onClick={onClick} aria-label={`${site.name} – zur Startseite`}>
+      <img src="/media/logo-280.avif" alt={site.name} width={140} height={70} />
+    </Link>
+  );
+
   return (
     <div className="wgt wgt-chrome">
       <header
         className={`hdr${solid ? " is-solid" : ""}${up ? " is-up" : ""}`}
+        data-site-header
         onFocusCapture={() => setUp(false)}
       >
         <nav className="hdr__links" aria-label="Hauptnavigation">
@@ -118,51 +124,70 @@ export function DarkHeader() {
           <Link to={homePath} hash="standorte" activeOptions={{ includeHash: true }}>Standorte</Link>
           <Link to="/abholservice" activeProps={{ className: "is-active" }}>Abholservice</Link>
         </nav>
-        <Link to={homePath} className="hdr__logo" aria-label={`${site.name} – zur Startseite`}>
-          <img src="/media/logo-280.avif" alt={site.name} width={140} height={70} />
-        </Link>
+        {logo()}
         <div className="hdr__right">
-          <Link to={homePath} hash="buchung" className="btn btn--solid btn--sm" onClick={focusBookingHeading}>
-            Jetzt Termin anfragen
+          {/* Inhaberentscheidung 25.11.2026: Termin-Button auch am Handy sichtbar. */}
+          <Link
+            to={homePath}
+            hash="buchung"
+            className="btn btn--solid btn--sm hdr__cta"
+            data-header-cta
+            aria-label="Jetzt Termin anfragen"
+            onClick={focusBookingHeading}
+          >
+            <span className="hdr__cta-long">Jetzt Termin anfragen</span>
+            <span className="hdr__cta-short" aria-hidden="true">Termin</span>
           </Link>
           <button
             ref={toggleRef}
             className="hdr__menu"
+            data-menu-toggle
             type="button"
             aria-expanded={open}
             aria-controls="wgt-menu"
             aria-haspopup="dialog"
-            aria-label={open ? "Menü schließen" : "Menü öffnen"}
-            onClick={() => setOpen((v) => !v)}
+            aria-label="Menü öffnen"
+            onClick={() => setOpen(true)}
           >
-            <span className="hdr__menu-label">{open ? "Schließen" : "Menü"}</span>
+            <span className="hdr__menu-label">Menü</span>
             <span className="hdr__menu-icon" aria-hidden="true"><i /><i /><i /></span>
           </button>
         </div>
       </header>
 
-      <div
+      <dialog
         ref={menuRef}
         className={`menu${visible ? " is-open" : ""}`}
         id="wgt-menu"
-        role="dialog"
-        aria-modal="true"
         aria-label="Hauptnavigation"
-        hidden={!shown}
         onKeyDown={trapFocus}
+        onCancel={(event) => {
+          event.preventDefault();
+          close();
+        }}
       >
+        <div className="hdr hdr--menu is-solid">
+          <span className="hdr__links" aria-hidden="true" />
+          {logo(close)}
+          <div className="hdr__right">
+            <button className="hdr__menu" type="button" aria-expanded="true" aria-label="Menü schließen" onClick={close}>
+              <span className="hdr__menu-label">Schließen</span>
+              <span className="hdr__menu-icon" aria-hidden="true"><i /><i /><i /></span>
+            </button>
+          </div>
+        </div>
         <figure className="menu__fig" aria-hidden="true">
           <img src="/media/dark/gen/profile-wide-1600.webp" alt="" loading="lazy" />
         </figure>
         <div className="menu__inner">
           <nav className="menu__nav" aria-label="Menü">
-            <Link to="/leistungen" onClick={close}><span>01</span>Leistungen</Link>
-            <Link to="/preise" onClick={close}><span>02</span>Preise</Link>
-            <Link to="/galerie" onClick={close}><span>03</span>Ergebnisse</Link>
-            <Link to={homePath} hash="standorte" onClick={close}><span>04</span>Standorte</Link>
-            <Link to="/abholservice" onClick={close}><span>05</span>Abholservice</Link>
+            <Link to="/leistungen" onClick={close}><span aria-hidden="true">01</span>Leistungen</Link>
+            <Link to="/preise" onClick={close}><span aria-hidden="true">02</span>Preise</Link>
+            <Link to="/galerie" onClick={close}><span aria-hidden="true">03</span>Ergebnisse</Link>
+            <Link to={homePath} hash="standorte" onClick={close}><span aria-hidden="true">04</span>Standorte</Link>
+            <Link to="/abholservice" onClick={close}><span aria-hidden="true">05</span>Hol- und Bringservice</Link>
             <Link to={homePath} hash="buchung" onClick={(e) => { close(); focusBookingHeading(e); }}>
-              <span>06</span>Jetzt Termin anfragen
+              <span aria-hidden="true">06</span>Jetzt Termin anfragen
             </Link>
           </nav>
           <div className="menu__aside">
@@ -190,7 +215,7 @@ export function DarkHeader() {
             </p>
           </div>
         </div>
-      </div>
+      </dialog>
     </div>
   );
 }
