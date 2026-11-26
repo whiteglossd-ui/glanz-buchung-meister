@@ -227,9 +227,11 @@ try {
             ["Autohäuser & Fahrzeughandel", "autohaeuser", "Autohäuser & Fahrzeughandel"],
             ["Leasingrückläufer", "leasingruecklaeufer", "Leasingrückläufer"],
           ]) {
-            await menu.focus();
-            await page.keyboard.press("Enter");
-            await dialog.getByRole("link", { name: label, exact: true }).click();
+            // Keyboard activation and the focus trap were verified above.
+            // Use the pointer for this separate link-navigation scenario.
+            await menu.click();
+            const businessNav = dialog.getByRole("navigation", { name: "Business · Geschäftskunden", exact: true });
+            await businessNav.getByRole("link", { name: label, exact: true }).click();
             await page.waitForURL((url) => url.pathname === "/b2b" && url.hash === `#${id}`);
             await dialog.waitFor({ state: "hidden" });
             const section = page.locator(`section#${id}`);

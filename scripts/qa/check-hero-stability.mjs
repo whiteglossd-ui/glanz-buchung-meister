@@ -179,10 +179,15 @@ try {
 
       const shortScreen = viewport.height <= 560;
       if (!shortScreen) {
-        // The image sequence becomes live and later chapters replace the introduction.
-        await phase.run("sequence-live", () => page.waitForFunction(() => document.querySelector(".reel")?.classList.contains("is-live")));
+        // The first visit uses the decoded poster; scrolling activates the
+        // canvas sequence without downloading the whole film before input.
+        assert.equal(result.afterRejection.live, false, "Keep the static poster at the top before scrolling.");
         const distance = await page.evaluate(() => document.querySelector(".reel").offsetHeight - innerHeight);
         assert.ok(distance > viewport.height, "Enabled motion must have a usable scrolling stage.");
+        await phase.run("sequence-live", async () => {
+          await page.evaluate((y) => window.scrollTo({ top: y, behavior: "instant" }), Math.round(distance * 0.1));
+          await page.waitForFunction(() => document.querySelector(".reel")?.classList.contains("is-live"));
+        });
         await page.evaluate((y) => window.scrollTo({ top: y, behavior: "instant" }), Math.round(distance * 0.45));
         await phase.run("chapter-two", () => page.waitForFunction(() => document.querySelector(".reel")?.dataset.ch === "1"));
         result.midway = await geometry(page);
