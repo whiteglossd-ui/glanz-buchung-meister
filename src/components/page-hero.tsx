@@ -26,9 +26,8 @@ export function PageCrumbs({
 }
 
 /**
- * Dark Edition (Inhaberauftrag 25.11.2026, Phase 2): Seitenkopf der Unterseiten
- * im Aufbau der Vorlage (.phero): abgedunkeltes Vollbild, Brotkrumen, Kicker,
- * Chrom-Titel, Einleitung und Buttons.
+ * Shared Dark Edition opening. Keep the artwork in normal reading order,
+ * below the copy, so links and long headings stay usable on mobile.
  */
 export function PageHero({
   kicker,
@@ -55,33 +54,37 @@ export function PageHero({
 }) {
   return (
     <section className="phero page-hero">
-      <div className="phero__bg">
-        {media ?? (shot ? (
-          <Shot
-            name={shot}
-            alt={alt}
-            priority={priority}
-            framed={false}
-            className="size-full"
-            sizes="100vw"
-          />
-        ) : (
-          <FluidImg
-            src={src ?? "/media/hero.webp"}
-            alt={alt}
-            priority={priority}
-            className="size-full object-cover"
-            sizes="100vw"
-          />
-        ))}
-      </div>
       <div className="phero__shade" aria-hidden="true" />
-      <div className="wrap phero__in">
-        {crumbs ? <PageCrumbs items={crumbs} /> : null}
-        {kicker ? <p className="kicker">{kicker}</p> : null}
-        <h1 className="phero__title chrome">{title}</h1>
-        {lead ? <p className="hero__lead">{lead}</p> : null}
-        {actions ? <div className="hero__actions">{actions}</div> : null}
+      <div className="wrap phero__in phero__in--fig">
+        <div className="phero__copy">
+          {crumbs ? <PageCrumbs items={crumbs} /> : null}
+          {kicker ? <p className="kicker">{kicker}</p> : null}
+          <h1 className="phero__title chrome">{title}</h1>
+          {lead ? <p className="hero__lead">{lead}</p> : null}
+          {actions ? <div className="hero__actions">{actions}</div> : null}
+        </div>
+        <figure className="phero__fig">
+          <div className="phero__frame">
+            {media ?? (shot ? (
+              <Shot
+                name={shot}
+                alt={alt}
+                priority={priority}
+                framed={false}
+                className="size-full"
+                sizes={priority ? "100vw" : "(min-width: 821px) 40vw, 90vw"}
+              />
+            ) : (
+              <FluidImg
+                src={src ?? "/media/hero.webp"}
+                alt={alt}
+                priority={priority}
+                className="size-full object-cover"
+                sizes="(min-width: 821px) 40vw, 90vw"
+              />
+            ))}
+          </div>
+        </figure>
       </div>
     </section>
   );
@@ -128,4 +131,3 @@ export function MediaTile({
     </div>
   );
 }
-

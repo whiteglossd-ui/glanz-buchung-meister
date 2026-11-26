@@ -202,19 +202,17 @@ function VideoCard({ v }: { v: (typeof videos)[number] }) {
   );
 }
 
-// Laufband: Hochformat-Kundenfotos (S-Klasse Coupé, Inhaber 24.11.2026) im Wechsel mit Atelier-Motiven.
-const CP = "/media/customer-photos";
-const gallery: { src: string; srcSet: string; sizes: string; shape: "t" | "w" }[] = [
-  ...[
-    "sclass-01:t", "hood-wide:w", "sclass-03:t", "taillight:w", "sclass-04:t",
-    "cockpit-wide:w", "sclass-05:t", "foamwash:w", "sclass-06:t", "profile-wide:w", "sclass-02:t",
-  ].map((entry) => {
-    const [name, shape] = entry.split(":") as [string, "t" | "w"];
-    return name.startsWith("sclass-")
-      ? { src: `${CP}/${name}-1400.webp`, srcSet: `${CP}/${name}-480.webp 480w, ${CP}/${name}-900.webp 900w, ${CP}/${name}-1400.webp 1200w`, sizes: "(max-width:820px) 80vw, 34vw", shape }
-      : { src: `${IMG}/${name}-1600.webp`, srcSet: `${IMG}/${name}-800.webp 800w, ${IMG}/${name}-1600.webp 1600w`, sizes: "(max-width:820px) 80vw, 50vw", shape };
-  }),
-];
+// Nur die freigegebene, kennzeichenfreie Auswahl der Dark-Edition-Vorschau.
+const gallery = [
+  ["t", 999], ["w", 960], ["t", 1148], ["w", 1148], ["t", 1148],
+  ["w", 960], ["t", 1148], ["w", 1082], ["t", 1148], ["t", 1148],
+].map(([shape, width], i) => {
+  const base = `/media/dark/customer-selection/own-${String(i + 1).padStart(2, "0")}`;
+  const sizes = shape === "w"
+    ? "(max-width: 820px) 86vw, (max-height: 969px) 108vh, 1024px"
+    : "(max-width: 820px) 68vw, (max-height: 969px) 51vh, 480px";
+  return { src: `${base}-800.webp`, srcSet: `${base}-480.webp 480w, ${base}-800.webp 800w, ${base}-full.webp ${width}w`, sizes, shape };
+});
 
 const steps = [
   ["Persönliche Beratung & Festpreis", "Du schickst uns deine Anfrage. Wir besprechen den Zustand deines Autos und klären Pflegeumfang, Preis und Termin verbindlich. Erst wenn du zusagst, ist der Termin fest."],
