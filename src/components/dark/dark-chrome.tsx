@@ -205,7 +205,7 @@ export function DarkHeader() {
         <div className="menu__inner">
           <nav className="menu__nav" aria-label="Menü">
             <Link to="/leistungen" onClick={close}><span aria-hidden="true">01</span>Leistungen</Link>
-            <Link to="/preise" onClick={close}><span aria-hidden="true">02</span>Preise</Link>
+            <Link to="/preise" onClick={close}><span aria-hidden="true">02</span>Preise &amp; Pakete</Link>
             <Link to="/galerie" onClick={close}><span aria-hidden="true">03</span>Ergebnisse</Link>
             <Link to={homePath} hash="standorte" onClick={close}><span aria-hidden="true">04</span>Standorte</Link>
             <Link to="/abholservice" onClick={close}><span aria-hidden="true">05</span>Hol- und Bringservice</Link>
@@ -225,9 +225,17 @@ export function DarkHeader() {
               ))}
               <Link to="/dellen-hagelschaden" onClick={close}>Dellen- und Hagelschäden</Link>
               <Link to="/luxusfahrzeuge" onClick={close}>Luxusfahrzeuge</Link>
-              <Link to="/b2b" onClick={close}>Firmen, Flotten und Autohäuser</Link>
-              <Link to="/ratgeber" onClick={close}>Ratgeber</Link>
+              <Link to="/b2b" onClick={close}>Geschäftskunden</Link>
             </div>
+            <p className="label menu__gap" id="wgt-menu-info">Informationen</p>
+            <nav className="menu__svc" aria-labelledby="wgt-menu-info">
+              <Link to="/qualitaet" onClick={close}>Arbeitsweise</Link>
+              <Link to="/fahrzeug-zustand" onClick={close}>Individuelles Angebot</Link>
+              <Link to={homePath} hash="bewertungen" onClick={close}>Google-Bewertungen</Link>
+              <Link to="/ratgeber" onClick={close}>Ratgeber</Link>
+              <Link to="/faq" onClick={close}>Häufige Fragen</Link>
+              <Link to="/kontakt" onClick={close}>Kontakt</Link>
+            </nav>
             <p className="label menu__gap">Kontakt</p>
             <a href={site.phoneHref}>{site.phoneDisplay}</a>
             <a href={`mailto:${site.email}`}>{site.email}</a>
@@ -312,6 +320,7 @@ export function DarkFooter() {
             <Link to="/abholservice">Hol- und Bringservice</Link>
             <Link to="/freudenstadt-lossburg">Fahrzeugaufbereitung Loßburg</Link>
             <Link to="/abholservice/$city" params={{ city: "freudenstadt" }}>Abholservice Freudenstadt</Link>
+            <Link to="/fahrzeug-zustand">Individuelles Angebot</Link>
             <Link to="/ratgeber">Ratgeber</Link>
             <Link to="/galerie">Ergebnisse</Link>
             <Link to="/kontakt">Kontakt</Link>
