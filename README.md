@@ -2,14 +2,14 @@
 
 Website und Buchungssystem für White Gloss Detailing, gebaut mit TanStack Start,
 React, TypeScript, Tailwind CSS und Nitro. Die Produktionsarchitektur ist eine
-Node-/SSR-Anwendung auf IONOS.
+Node-/SSR-Anwendung auf dem Hostinger-VPS.
 
 ## Verbindlich: kein lokales Hosting
 
 Der Betreiber untersagt den Start der Website auf lokalen Rechnern, auch für
 Vorschauen oder Tests. Entwicklungs-, Preview- und QA-Startbefehle brechen ab.
 Vite blockiert auch direkte Dev-/Preview-Aufrufe. Der erzeugte Node-Build prüft
-vor dem Laden der Anwendung seinen Ausführungskontext: nur das aktive IONOS-
+vor dem Laden der Anwendung seinen Ausführungskontext: nur das aktive Hostinger-
 Release oder der vorhandene isolierte Linux-GitHub-CI-Job darf starten.
 Es gibt keinen lokalen Freigabeschalter. Auch `CI=true` oder
 `NODE_ENV=production` allein heben die Sperre nicht auf.
@@ -26,7 +26,7 @@ ausdrückliche Betreiberanweisung.
 Benötigt werden Git, npm und Node.js `24` (wie in CI).
 
 ```sh
-git clone https://github.com/White-Gloss/glanz-buchung-meister.git
+git clone https://github.com/whiteglossd-ui/glanz-buchung-meister.git
 cd glanz-buchung-meister
 npm ci
 npm run typecheck
@@ -89,7 +89,7 @@ und mit `npm run check:release` lesend geprüft sein. Beide Befehle laufen im
 geschützten Serverkontext; Secretwerte niemals in Befehlszeilen oder Chat kopieren.
 
 Den Produktionsstart übernimmt ausschließlich die vorhandene systemd-Unit auf
-IONOS aus dem aktiven Release. Der direkte lokale Aufruf des Node-Builds ist
+Hostinger aus dem aktiven Release. Der direkte lokale Aufruf des Node-Builds ist
 gesperrt. `npm run test:release` bleibt dem Linux-GitHub-CI-Job vorbehalten.
 
 Zusätzliche Produktions- und SEO-Prüfungen:
@@ -103,17 +103,15 @@ npm run lighthouse:desktop
 
 ## Deployment
 
-Die Zielarchitektur für IONOS sowie Build-, Start-, Secret- und Rollback-Regeln
-stehen in [`docs/deployment.md`](docs/deployment.md). Ein GitHub→IONOS-Workflow ist
-bereits vorhanden. Die Freigabebedingungen für diesen Stand, einschließlich des
-noch zu bestätigenden Produktions-Datenbankziels, stehen in
-[`docs/release-readiness-2026-09-06.md`](docs/release-readiness-2026-09-06.md).
+Nach erfolgreicher Pflicht-CI für `main` veröffentlicht GitHub Actions
+automatisch auf Hostinger und prüft die Live-Website. Build, Start,
+Zugangsdaten und Rückfall sind in [`docs/deployment.md`](docs/deployment.md) dokumentiert.
 
 Die technischen Quality Gates sind in
 [`docs/quality-gates.md`](docs/quality-gates.md) dokumentiert.
 
 Der neue Ablauf mit persönlicher Inhaberbestätigung, Abgabeplätzen, Audit,
-dauerhaftem Nachrichtenversand und IONOS-Timer steht in
+dauerhaftem Nachrichtenversand und dem Timer auf Hostinger steht in
 [`docs/booking-workflow-operations.md`](docs/booking-workflow-operations.md).
 Die vorhandene Meta Cloud API wird anhand von
 [`docs/whatsapp-setup.md`](docs/whatsapp-setup.md) verbunden; `.env.example`

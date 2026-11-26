@@ -65,7 +65,7 @@ Reihenfolge einhalten. Schritt 1 und 2 sind unabhängig voneinander, Schritt
 2. _Property hinzufügen_ → linke Spalte **Domain** → `white-gloss.de`
    eintragen (ohne `https://`, ohne `www`).
 3. Google zeigt einen TXT-Wert `google-site-verification=…`.
-4. Bei **IONOS** unter _Domains → white-gloss.de → DNS_ einen
+4. Im **Hostinger hPanel** unter _Domains → DNS → white-gloss.de_ einen
    **zusätzlichen** TXT-Eintrag anlegen, Hostname leer bzw. `@`.
 
    > **Den vorhandenen SPF-Eintrag nicht überschreiben.** Eine Domain darf

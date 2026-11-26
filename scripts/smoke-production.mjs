@@ -30,7 +30,7 @@ const pageChecks = [
   { path: "/kontakt", markers: ["Kontakt", "Arnistal"] },
   { path: "/galerie", markers: ["Werkstatt"] },
   { path: "/impressum", markers: ["Angaben gemäß", "White-Gloss Detailing"] },
-  { path: "/datenschutz", markers: ["Verantwortlicher", "IONOS"] },
+  { path: "/datenschutz", markers: ["Verantwortlicher", "Hosting und Server-Protokolle"] },
   { path: "/agb", markers: ["Allgemeine Geschäftsbedingungen"] },
   { path: "/widerruf", markers: ["Widerrufsbelehrung"] },
   { path: "/login", markers: ["Betrieb"] },

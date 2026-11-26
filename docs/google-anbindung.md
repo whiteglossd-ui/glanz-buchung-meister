@@ -62,22 +62,22 @@ Cookies – sie braucht deshalb auch keine Einwilligung.
 2. „Property hinzufügen" wählen. Es gibt zwei Varianten:
    - **Domain** (empfohlen): `white-gloss.de` eingeben. Deckt automatisch
      `www`, `https` und alle Unterseiten ab. Der Nachweis läuft über einen
-     DNS-TXT-Eintrag bei IONOS.
+     DNS-TXT-Eintrag bei Hostinger.
    - **URL-Präfix**: `https://white-gloss.de` eingeben. Der Nachweis läuft
      über ein `meta`-Tag im Quelltext – dafür ist die Variable
      `VITE_GOOGLE_SITE_VERIFICATION` vorgesehen.
 3. Je nach Variante:
    - **Domain-Variante:** Google zeigt einen TXT-Wert
-     (`google-site-verification=…`). Diesen bei IONOS unter
-     _Domains → white-gloss.de → DNS_ als **TXT-Eintrag** anlegen, Feld
+     (`google-site-verification=…`). Diesen im Hostinger hPanel unter
+     _Domains → DNS → white-gloss.de_ als **TXT-Eintrag** anlegen, Feld
      „Hostname" leer lassen bzw. `@`. Achtung: Der bereits vorhandene
-     SPF-TXT-Eintrag für Resend darf dabei **nicht** überschrieben werden –
+     SPF-TXT-Eintrag für Hostinger Mail darf dabei **nicht** überschrieben werden –
      eine Domain darf mehrere TXT-Einträge haben, aber nur einen SPF-Eintrag.
      Also einen **zusätzlichen** Eintrag anlegen, keinen bestehenden ändern.
    - **URL-Präfix-Variante:** Google zeigt ein fertiges `meta`-Tag. Nur den
      Wert aus `content="…"` kopieren und in `.env` als
      `VITE_GOOGLE_SITE_VERIFICATION` eintragen, dann deployen.
-4. In der Search Console auf „Bestätigen" klicken. DNS-Änderungen bei IONOS
+4. In der Search Console auf „Bestätigen" klicken. DNS-Änderungen bei Hostinger
    brauchen erfahrungsgemäß wenige Minuten bis zu einer Stunde.
 5. Danach unter _Sitemaps_ die Adresse `sitemap.xml` eintragen und absenden.
    `/sitemap.xml` enthält die 183 bestehenden Einträge aus
@@ -150,7 +150,7 @@ Die öffentliche Website lädt kein Google-Login. Nur `/login` (noindex) bietet
 
 - Native Google-OAuth (nicht der Grok-Vorschau-Broker) über Better Auth.
 - Client-ID/Secret: GitHub-Secrets `GOOGLE_CLIENT_ID` und `GOOGLE_CLIENT_SECRET`.
-  Der IONOS-Build bettet sie ein. Ohne Secrets bleibt die Taste sichtbar,
+  Im Hostinger-Workflow kommen die Google-OAuth-Werte je nach Einstellung aus dem laufenden Dienst oder aus dem Produktionsbuild. Ohne Secrets bleibt die Taste sichtbar,
   die Anmeldung fällt auf E-Mail/Passwort zurück.
 - Redirect-URI in der Google-Cloud-Konsole: `https://white-gloss.de/api/auth/callback/google`
 - JavaScript-Ursprung: `https://white-gloss.de`

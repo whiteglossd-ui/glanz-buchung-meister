@@ -1,5 +1,8 @@
 # IONOS-VPS für White Gloss
 
+> Archiv zum früheren Betrieb. Der aktive Releaseweg ist in
+> [GitHub und Hostinger](deployment.md#github-und-hostinger) dokumentiert.
+
 ## Abgleich des Deployment-Helfers am 27. September 2026
 
 Der bereits installierte root-eigene Helfer wurde über den vorhandenen

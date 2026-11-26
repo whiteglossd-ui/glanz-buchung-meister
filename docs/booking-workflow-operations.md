@@ -102,7 +102,7 @@ Vorlage. Den vollständigen Variablen- und Vorlagenvertrag beschreibt
 [whatsapp-setup.md](whatsapp-setup.md). `.env.example` enthält ausschließlich
 leere Konfigurationsfelder. Keine realen Tokens im Chat oder im Repository.
 
-## Einmalige Einrichtung auf IONOS
+## Einmalige Einrichtung auf dem Hostinger-VPS
 
 Diese Schritte wurden nicht auf dem Produktivserver ausgeführt. Zuerst den
 tatsächlich verwendeten `DATABASE_URL` und `_migrations` lesend prüfen und eine

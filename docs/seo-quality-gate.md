@@ -111,8 +111,8 @@ Zuordnung und Wortlaut, nicht Rankings. Auswertung und Änderungsprotokoll:
   Robots, Title, Description, H1, JSON-LD, Sitemap, Eingangslinks und Ortsangaben.
 - Ähnlichkeit: 5-Wort-Shingle-Jaccard als Diagnose, kein angeblicher Rankingwert.
   Nicht indexierbare Matrixduplikate bleiben bewusst sichtbar im Bericht.
-- Nur nach erfolgreicher CI und Diff-Prüfung nach main. Das vorhandene
-  `Deploy IONOS`-Workflow veröffentlicht nach erfolgreicher Main-CI mit
+- Nur nach erfolgreicher CI und Diff-Prüfung nach main. Der automatische
+  Hostinger-Workflow veröffentlicht nach erfolgreicher Prüfung von `main` mit
   bestehendem Smoke-Test/Rollback. Keine alternativen Deploy-Wege.
 - Nach Deployment: `node scripts/qa/check-seo.mjs --live` ist ein rein lesender
   HTTPS-Crawl der veröffentlichten Domain, kein lokaler Server. Niemals echte

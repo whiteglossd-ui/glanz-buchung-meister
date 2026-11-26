@@ -133,9 +133,9 @@ Datenschutzerklärung sollte einen entsprechenden Absatz bekommen, sobald
 die Anbindung scharf geschaltet ist. Solange die Zugangsdaten fehlen, wird
 nichts übertragen.
 
-Telegram ist ein Anbieter außerhalb der EU. Wer das vermeiden will, hat mit
-der E-Mail-Benachrichtigung bereits einen Weg, der vollständig über den
-eigenen Server und IONOS läuft — sie bleibt ohnehin aktiv.
+Die bestehende E-Mail-Benachrichtigung ist unabhängig von Telegram. Welche
+Dienste den Versand und Empfang übernehmen, steht in der
+[Veröffentlichungsdokumentation](deployment.md#e-mail-versand-mit-resend).
 
 ## Beide Wege nebeneinander
 

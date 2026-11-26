@@ -1,6 +1,6 @@
 {
   "commit": "333487b4f12a01727ace6ec2f36d22c849551b00",
-  "authorization": "Rundum-Service und Kundenzugang, Betreiberauftrag 15.11.2026; anschließend öffentliche Du-Ansprache, Hero, Paketdarstellung und Markenname White-Gloss Detailing. Keine pauschale Dateiausnahme.",
+  "authorization": "Rundum-Service und Kundenzugang, Betreiberauftrag 15.11.2026; anschließend öffentliche Du-Ansprache, Hero, Paketdarstellung und Markenname White-Gloss Detailing. Anpassung der Datenschutzerklärung an Hostinger und Foto-Nachreichung im Kundenbereich, Betreiberauftrag 26.11.2026. Keine pauschale Dateiausnahme.",
   "files": {
     "src/components/booking-media-picker.tsx": {
       "beforeBlob": "c1e5f0f4705a5b7bfaef48f34725dda6f21859fa",
@@ -697,6 +697,14 @@
           {
             "value": "Hosting: IONOS SE, Deutschland. Anfragen und Termine werden von White Gloss bearbeitet. Die optional nachgereichten Fahrzeugaufnahmen werden bei Supabase in einem privaten Speicherbereich abgelegt. Wenn der E-Mail-Versand eingerichtet ist, werden Benachrichtigungen über Resend versendet; dabei werden Empfängeradresse, Betreff und Nachrichteninhalt an den Versanddienst übermittelt. Wenn die WhatsApp-Anbindung im Betrieb aktiviert ist, erhält Meta zusätzlich die in Abschnitt 5 beschriebenen Buchungshinweise zur Zustellung an den Inhaber.",
             "count": 1
+          },
+          {
+            "value": "Die Website wird im Produktivbetrieb auf Servern der IONOS SE (Elgendorfer Straße 57, 56410 Montabaur, Deutschland) bereitgestellt. Beim Aufruf können technisch erforderliche Angaben wie IP-Adresse, Datum und Uhrzeit, aufgerufene Adresse, übertragene Datenmenge, Referrer sowie Browser- und Betriebssystemangaben in Server-Protokollen verarbeitet werden. Die Verarbeitung dient der sicheren, stabilen und fehlerfreien Bereitstellung der Website.",
+            "count": 1
+          },
+          {
+            "value": "Stand: 25. September 2026",
+            "count": 1
           }
         ]
       },
@@ -723,7 +731,15 @@
             "count": 1
           },
           {
-            "value": "Hosting: IONOS SE, Deutschland. Anfragen und Termine werden von White-Gloss Detailing bearbeitet. Die optional nachgereichten Fahrzeugaufnahmen werden bei Supabase in einem privaten Speicherbereich abgelegt. Wenn der E-Mail-Versand eingerichtet ist, werden Benachrichtigungen über Resend versendet; dabei werden Empfängeradresse, Betreff und Nachrichteninhalt an den Versanddienst übermittelt. Wenn die WhatsApp-Anbindung im Betrieb aktiviert ist, erhält Meta zusätzlich die in Abschnitt 5 beschriebenen Buchungshinweise zur Zustellung an den Inhaber.",
+            "value": "Die Website wird von Hostinger International Limited (61 Lordou Vironos Street, 6023 Larnaca, Zypern) bereitgestellt. Beim Aufruf können technisch erforderliche Angaben wie IP-Adresse, Datum und Uhrzeit, aufgerufene Adresse, übertragene Datenmenge, Referrer sowie Browser- und Betriebssystemangaben in Server-Protokollen verarbeitet werden. Die Verarbeitung dient der sicheren, stabilen und fehlerfreien Bereitstellung der Website.",
+            "count": 1
+          },
+          {
+            "value": "Hostinger International Limited stellt das Hosting bereit. Anfragen und Termine werden von White-Gloss Detailing bearbeitet. Nachgereichte Fahrzeugaufnahmen werden im geschützten White-Gloss-Kundenbereich gespeichert. Soweit ältere Fahrzeugfotos noch aus dem früheren Website-Upload gespeichert sind, können sie im damaligen privaten Supabase-Speicher liegen. Wenn der E-Mail-Versand eingerichtet ist, werden Benachrichtigungen über Resend versendet; dabei werden Empfängeradresse, Betreff und Nachrichteninhalt an den Versanddienst übermittelt. Wenn die WhatsApp-Anbindung im Betrieb aktiviert ist, erhält Meta zusätzlich die in Abschnitt 5 beschriebenen Buchungshinweise zur Zustellung an den Inhaber.",
+            "count": 1
+          },
+          {
+            "value": "Stand: 26. November 2026",
             "count": 1
           }
         ]

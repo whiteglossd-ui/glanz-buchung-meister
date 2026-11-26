@@ -2,7 +2,7 @@
 
 Der QR-Code verweist dauerhaft auf `https://white-gloss.de/visitenkarte.html`.
 Die dort sichtbaren Angaben können mit einer normalen, freigegebenen
-IONOS-Veröffentlichung geändert werden. Der gedruckte Code bleibt unverändert,
+Hostinger-Veröffentlichung geändert werden. Der gedruckte Code bleibt unverändert,
 solange dieser Pfad bestehen bleibt.
 
 ## Angaben ändern
@@ -32,7 +32,7 @@ automatisch. Nach einer Änderung muss die neue vCard erneut übernommen werden.
 
 Offline-Erzeugung: `node scripts/write-contact-card.mjs`.
 Es gelten weiterhin die vorhandenen CI-Prüfungen und ausschließlich der
-bestehende IONOS-Veröffentlichungsweg. Keinen lokalen Webserver starten.
+bestehende Hostinger-Veröffentlichungsweg. Keinen lokalen Webserver starten.
 Vor dem Druck muss die tatsächliche öffentliche URL die erwartete Karte
 und der Download die aktuelle vCard liefern. Mobil- und Desktopansicht
 auf der veröffentlichten Seite prüfen.

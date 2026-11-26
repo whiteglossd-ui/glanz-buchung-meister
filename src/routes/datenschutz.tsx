@@ -49,8 +49,8 @@ function PrivacyPage() {
         <section>
           <h2>2. Hosting und Server-Protokolle</h2>
           <p>
-            Die Website wird im Produktivbetrieb auf Servern der IONOS SE (Elgendorfer Straße 57,
-            56410 Montabaur, Deutschland) bereitgestellt. Beim Aufruf können technisch erforderliche
+            Die Website wird von Hostinger International Limited (61 Lordou Vironos Street,
+            6023 Larnaca, Zypern) bereitgestellt. Beim Aufruf können technisch erforderliche
             Angaben wie IP-Adresse, Datum und Uhrzeit, aufgerufene Adresse, übertragene Datenmenge,
             Referrer sowie Browser- und Betriebssystemangaben in Server-Protokollen verarbeitet
             werden. Die Verarbeitung dient der sicheren, stabilen und fehlerfreien Bereitstellung
@@ -242,9 +242,11 @@ function PrivacyPage() {
             Rezensionstext und Veröffentlichungsdatum; Profilbilder werden nicht geladen.
           </p>
           <p>
-            Hosting: IONOS SE, Deutschland. Anfragen und Termine werden von White-Gloss Detailing bearbeitet.
-            Die optional nachgereichten Fahrzeugaufnahmen werden bei Supabase in einem privaten
-            Speicherbereich abgelegt. Wenn der E-Mail-Versand eingerichtet ist, werden
+            Hostinger International Limited stellt das Hosting bereit. Anfragen und Termine werden
+            von White-Gloss Detailing bearbeitet. Nachgereichte Fahrzeugaufnahmen werden im
+            geschützten White-Gloss-Kundenbereich gespeichert. Soweit ältere Fahrzeugfotos noch
+            aus dem früheren Website-Upload gespeichert sind, können sie im damaligen privaten
+            Supabase-Speicher liegen. Wenn der E-Mail-Versand eingerichtet ist, werden
             Benachrichtigungen über Resend versendet; dabei werden Empfängeradresse, Betreff und
             Nachrichteninhalt an den Versanddienst übermittelt. Wenn die WhatsApp-Anbindung im
             Betrieb aktiviert ist, erhält Meta zusätzlich die in Abschnitt 5 beschriebenen
@@ -298,7 +300,7 @@ function PrivacyPage() {
         <p>
           <CookieSettingsButton />
         </p>
-        <p className="text-xs text-subtle">Stand: 25. September 2026</p>
+        <p className="text-xs text-subtle">Stand: 26. November 2026</p>
       </article>
     </main>
   );

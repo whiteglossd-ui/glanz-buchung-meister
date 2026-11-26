@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 
 export const HOSTING_BLOCK_MESSAGE =
   "WG_LOCAL_HOSTING_BLOCKED: Lokales Hosting ist vom Betreiber gesperrt. " +
-  "White-Gloss ausschließlich über den freigegebenen IONOS-Weg betreiben. " +
+  "White-Gloss ausschließlich über den freigegebenen Hostinger-Weg betreiben. " +
   "Build, Lint und Typprüfung starten keinen Webserver und bleiben erlaubt.";
 
 export function blockLocalHosting() {
