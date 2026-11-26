@@ -70,7 +70,8 @@ export const APPROVED_SEO_BLOBS = Object.freeze({
   "src/routes/abholservice.index.tsx": "0462d3e7bfce1efdbf0e76047edd54b185d91ada",
   "src/routes/agb.tsx": "bc262cad82a4b9fcb0e34e8b529313f51682cf90",
   "src/routes/auftragsstatus.tsx": "46547b111173ab04dc974a66a0c91efcb21a54f5",
-  "src/routes/b2b.tsx": "d65e40720d4e19202dc4decdf9a09ce330a38924",
+  // Navigation targets and section labels only; wording and pageHead unchanged.
+  "src/routes/b2b.tsx": "8ede9874eb4d01ad04f479faad865f7533884f17",
   "src/routes/barrierefreiheit.tsx": "730949864ab50a20eab5c8ba82b76495d3e51898",
   "src/routes/danke.tsx": "4c9357017fed3ded9576661cca066e3816fbe29e",
   "src/routes/datenloeschung.tsx": "42a6a8ed8c5fe3fa81c8c4c687d30f7f33d482b3",

@@ -48,13 +48,13 @@ function B2bPage() {
       </p>
       <div className="mt-10 grid gap-4">
         {[
-          ["Leasingrückläufer", "Vor der Leasingrückgabe behandeln wir relevante Gebrauchsspuren im vereinbarten Umfang."],
-          ["Flotten- & Fuhrparkreinigung", "Einmal oder in einem Rhythmus, der zu deinem Betrieb passt."],
-          ["Autohäuser & Fahrzeughandel", "Aufbereitung für Verkauf, Standfläche und Auslieferung."],
-          ["Firmen- & Poolfahrzeuge", "Reinigung und Pflege von Innenraum und Außenflächen für den täglichen Einsatz."],
-        ].map(([t, d]) => (
-          <section key={t} className="border border-line bg-surface p-6">
-            <h2 className="font-display text-2xl tracking-tight">{t}</h2>
+          ["Leasingrückläufer", "Vor der Leasingrückgabe behandeln wir relevante Gebrauchsspuren im vereinbarten Umfang.", "leasingruecklaeufer"],
+          ["Flotten- & Fuhrparkreinigung", "Einmal oder in einem Rhythmus, der zu deinem Betrieb passt.", "fuhrpark"],
+          ["Autohäuser & Fahrzeughandel", "Aufbereitung für Verkauf, Standfläche und Auslieferung.", "autohaeuser"],
+          ["Firmen- & Poolfahrzeuge", "Reinigung und Pflege von Innenraum und Außenflächen für den täglichen Einsatz.", "firmenfahrzeuge"],
+        ].map(([t, d, id]) => (
+          <section key={t} id={id} className="scroll-mt-28 border border-line bg-surface p-6" aria-labelledby={`${id}-heading`}>
+            <h2 id={`${id}-heading`} className="font-display text-2xl tracking-tight">{t}</h2>
             <p className="mt-2 text-sm leading-relaxed text-muted">{d}</p>
           </section>
         ))}

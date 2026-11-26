@@ -23,7 +23,7 @@ const report = {
 };
 const diagnostics = [];
 const engineNames = ["firefox", "webkit"], viewportWidths = [390, 1440];
-const expectedChecksPerScenario = 8; // four pages, initial Rundum CTA, Rundum form, gallery/navigation, booking
+const expectedChecksPerScenario = 9; // four pages, initial Rundum CTA, Rundum form, navigation, business links, booking
 
 async function rejectConsent(page) {
   const reject = page.getByRole("button", { name: "Ablehnen", exact: true });
@@ -215,6 +215,30 @@ try {
           // Let intent preloads started during the keyboard/menu checks finish first.
           // Otherwise the next page.goto cancels the test's own request ("Load request cancelled").
           await page.waitForLoadState("networkidle");
+          phase = "business-menu";
+          await page.goto(`${qaBase}/b2b`, { waitUntil: "networkidle" });
+          for (const [label, id, heading] of [
+            ["Firmen- & Poolfahrzeuge", "firmenfahrzeuge", "Firmen- & Poolfahrzeuge"],
+            ["Flotten & Fuhrpark", "fuhrpark", "Flotten- & Fuhrparkreinigung"],
+            ["Autohäuser & Fahrzeughandel", "autohaeuser", "Autohäuser & Fahrzeughandel"],
+            ["Leasingrückläufer", "leasingruecklaeufer", "Leasingrückläufer"],
+          ]) {
+            await menu.focus();
+            await page.keyboard.press("Enter");
+            await dialog.getByRole("link", { name: label, exact: true }).click();
+            await page.waitForURL((url) => url.pathname === "/b2b" && url.hash === `#${id}`);
+            await dialog.waitFor({ state: "hidden" });
+            const section = page.locator(`section#${id}`);
+            assert.equal(await section.getByRole("heading", { level: 2, name: heading, exact: true }).count(), 1);
+            await page.waitForFunction((target) => {
+              const section = document.getElementById(target);
+              const header = document.querySelector("[data-site-header]");
+              if (!section || !header) return false;
+              const top = section.getBoundingClientRect().top;
+              return top >= Math.max(0, header.getBoundingClientRect().bottom) - 2 && top < innerHeight * 0.8;
+            }, id);
+          }
+          report.checks.push(`${name} ${width}px: all four business menu links land below the header`);
           phase = "booking";
           await verifyHomepageReviews(page, `${name}-${width}: before context close`, async () => {
           await page.goto(`${qaBase}/#buchung`, { waitUntil: "networkidle" });
@@ -263,4 +287,3 @@ try {
 }
 console.log(JSON.stringify(report, null, 2));
 console.log("Cross-browser read evidence: " + JSON.stringify({ status: report.status, failures: report.failures, lastLayout: report.lastLayout, actions: report.reviewActions, reads: report.reviewRequests, gallery: report.galleryImages, errors: report.diagnostics.flatMap((item) => item.errors) }));
-

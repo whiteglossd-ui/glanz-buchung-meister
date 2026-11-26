@@ -7,7 +7,7 @@
 @font-face{font-family:Barlow;src:url(/fonts/barlow-400.woff2) format("woff2");font-weight:400;font-display:swap}
 @font-face{font-family:Barlow;src:url(/fonts/barlow-500.woff2) format("woff2");font-weight:500;font-display:swap}
 @font-face{font-family:Barlow;src:url(/fonts/barlow-600.woff2) format("woff2");font-weight:600;font-display:swap}
-.wgt{--bg:#090a0d; --bg-2:#0e0f12; --card:#101114; --ink:#f3f0e8; --ink-2:rgba(243,240,232,.66); --ink-3:rgba(243,240,232,.42);
+.wgt{--bg:#090a0d; --bg-2:#0e0f12; --card:#101114; --ink:#f3f0e8; --ink-2:rgba(243,240,232,.66); --ink-3:#999ba1;
   --line:rgba(243,240,232,.12); --line-2:rgba(243,240,232,.24);
   --cream:#f3f0e8; --on-cream:#080808;
   --serif:"WG Display","Barlow Semi Condensed",Barlow,sans-serif; --sans:Barlow,ui-sans-serif,system-ui,sans-serif; --ui:Barlow,ui-sans-serif,system-ui,sans-serif;
@@ -50,7 +50,7 @@ html.lenis,html.lenis body{height:auto}
 .wgt .tlink:hover{border-color:var(--ink)}
 .wgt .hdr{position:fixed;inset:0 0 auto;z-index:50;height:var(--hdr);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 27px;border-bottom:1px solid transparent;transition:background .6s var(--ease),border-color .6s,transform .6s var(--ease)}
 .wgt .hdr.is-solid{background:rgba(9,10,13,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-color:var(--line)}
-.wgt .hdr.is-up{transform:translateY(-100%)}
+@media (min-width:821px){.wgt .hdr.is-up{transform:translateY(-100%)}}
 .wgt .hdr__links{display:flex;gap:21px}
 .wgt .hdr__links a{font:500 11px/1 var(--ui);letter-spacing:.14em;text-transform:uppercase;padding:6px 0;position:relative;color:var(--ink)}
 .wgt .hdr__links a::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:currentColor;transform:scaleX(0);transform-origin:right;transition:transform .5s var(--ease)}
@@ -594,7 +594,7 @@ html.lenis,html.lenis body{height:auto}
 .wgt .golink{display:inline-flex;gap:8px;align-items:center;color:var(--ink);font-size:14px;padding-bottom:4px;border-bottom:1px solid var(--line);margin-top:10px}
 .wgt .golink:hover{border-color:var(--ink)}
 .wgt{--bg:#05060a; --bg-2:#0a0b0f; --card:#0e1014; --card-2:#121419;
-  --ink:#eef0f3; --ink-2:rgba(226,230,236,.66); --ink-3:rgba(226,230,236,.4);
+  --ink:#eef0f3; --ink-2:rgba(226,230,236,.66); --ink-3:#999ba1;
   --line:rgba(255,255,255,.08); --line-2:rgba(255,255,255,.18);
   --cream:#eef0f3; --on-cream:#0b0c0f;
   --chrome:linear-gradient(180deg,#ffffff 0%,#f1f3f6 30%,#a9b0b9 52%,#e6e9ed 70%,#c3c8cf 100%);
@@ -812,6 +812,8 @@ html.lenis,html.lenis body{height:auto}
 .wgt dialog.menu:not([open]){display:none}
 .wgt dialog.menu::backdrop{background:transparent}
 .wgt .hdr--menu{position:absolute;transform:none}
+.wgt .menu__svc a{display:inline-flex;align-items:center;min-height:32px}
+.wgt .menu :is(a,button):focus-visible{outline:2px solid var(--cream);outline-offset:3px}
 /* Termin-Button im Kopf: lang ab 821px, kurz am Handy (Inhaberentscheidung 25.11.2026) */
 .wgt .hdr__cta-short{display:none}
 @media (max-width:1100px){.wgt .hdr{grid-template-columns:1fr auto 1fr}
