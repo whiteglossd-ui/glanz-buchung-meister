@@ -101,6 +101,26 @@ export const seoIntents: Record<string, SearchIntent> = {
     intent: "informational",
     purpose: "Antworten nach Pflegethema auswählen",
   },
+  "/ratgeber/fahrzeugaufbereitung-kosten": {
+    cluster: "fahrzeugaufbereitung kostenfaktoren",
+    intent: "informational",
+    purpose: "Verstehen, wie Zustand, Fahrzeuggröße und Arbeitsaufwand den Preis beeinflussen",
+  },
+  "/ratgeber/hundehaare-aus-dem-auto-entfernen": {
+    cluster: "hundehaare auto entfernen",
+    intent: "informational",
+    purpose: "Hundehaare passend zu Polster und Teppich aus dem Auto entfernen",
+  },
+  "/ratgeber/auto-vor-dem-verkauf-aufbereiten": {
+    cluster: "autoaufbereitung vor privatverkauf",
+    intent: "informational",
+    purpose: "Sinnvolle Pflegearbeiten vor Verkauf, Fotos und Besichtigung auswählen",
+  },
+  "/ratgeber/auto-im-winter-waschen": {
+    cluster: "autowäsche im winter streusalz",
+    intent: "informational",
+    purpose: "Streusalz bei winterlichen Temperaturen möglichst schonend vom Fahrzeug entfernen",
+  },
   ...Object.fromEntries(
     services
       .filter((s) => !s.pendingApproval)

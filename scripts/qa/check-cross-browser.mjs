@@ -34,6 +34,8 @@ async function screenshot(page, name) {
   report.screenshots.push(name);
 }
 const isReviewsRequest = (request) => request.method() === "GET" && request.url() === `${qaBase}/api/google-reviews`;
+const reviewHeading = (page) => page.locator("#bewertungen")
+  .getByRole("heading", { name: "Erfahrungen unserer Kunden.", exact: true });
 async function revealReviews(page, state) {
   state.scrollEnvironment = await page.evaluate(() => ({
     reducedMotion: matchMedia("(prefers-reduced-motion: reduce)").matches,
@@ -44,7 +46,9 @@ async function revealReviews(page, state) {
   assert.equal(state.scrollEnvironment.reducedMotion, true, "The cross-browser scenario must keep reduced motion enabled");
   state.scrollAttempts = [];
   state.visibleTarget = await revealTargetWithWheel({
-    measure: () => page.locator("#bewertungen").evaluate((element) => {
+    // Measure the heading a visitor needs to see, not the whole card deck:
+    // on mobile the section is taller than the usable viewport.
+    measure: () => reviewHeading(page).evaluate((element) => {
       const rect = element.getBoundingClientRect();
       return { top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height, scrollY, viewportHeight: innerHeight, headerBottom: document.querySelector("[data-site-header]")?.getBoundingClientRect().bottom ?? 0 };
     }),
@@ -75,7 +79,7 @@ async function verifyHomepageReviews(page, label, action) {
       state.stage = "scroll-to-reviews";
       await revealReviews(page, state);
       state.stage = "visible-reviews";
-      await page.getByRole("complementary", { name: "Google-Kundenbewertungen", exact: true }).waitFor();
+      await reviewHeading(page).waitFor({ state: "visible" });
       state.stage = "response";
     });
     const completion = await completeSuccessfulRead(response);
