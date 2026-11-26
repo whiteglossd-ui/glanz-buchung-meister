@@ -229,15 +229,19 @@ export function initDarkHome(root: HTMLElement): () => void {
       addEventListener("load", hgSize, on);
       $$<HTMLImageElement>("img", hg).forEach((img) => img.addEventListener("load", hgSize, on));
     }
+    const galleryFrames = hg ? $$(".hg__f", hg) : [];
     const hgFrame = () => {
-      if (!hg || !wide()) return;
+      if (!hg || !wide() || reduceMq.matches) return;
       const r = hg.getBoundingClientRect();
       if (r.bottom < 0 || r.top > innerHeight) return;
       const t = Math.min(1, Math.max(0, -r.top / Math.max(1, r.height - innerHeight)));
       hg.style.setProperty("--hx", (t * hgMax).toFixed(1));
       hg.style.setProperty("--hp", t.toFixed(4));
-      $$(".hg__f", hg).forEach((f) => {
-        const b = f.getBoundingClientRect();
+      // Read all slide bounds before writing transforms, rather than
+      // forcing another style/layout pass between each of the ten slides.
+      const bounds = galleryFrames.map((f) => f.getBoundingClientRect());
+      galleryFrames.forEach((f, i) => {
+        const b = bounds[i];
         const c = (b.left + b.width / 2 - innerWidth / 2) / innerWidth;
         f.style.setProperty("--ix", (-c * 60 - b.width * 0.07).toFixed(1));
       });

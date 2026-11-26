@@ -882,3 +882,27 @@ html.lenis,html.lenis body{height:auto}
 .wgt #rundum-formular .rundum-services label:has(input:checked){border-color:var(--ink);background:rgba(243,240,232,.03)}
 @media (hover:hover){.wgt #rundum-formular .rundum-services label:hover{border-color:var(--line-2)}}
 @media (prefers-reduced-motion:reduce){.wgt :is(#buchung,.booking-flow) .input-line,.wgt #rundum-formular input[type=checkbox],.wgt #rundum-formular .rundum-services label{transition:none}}
+
+/* At the booking destination, show the choice immediately, without a reveal delay. */
+.wgt #buchung{padding-block:clamp(36px,5vw,80px) clamp(76px,8vw,120px)}
+.wgt .book__title{margin-block:14px 16px;color:var(--ink);font-size:clamp(44px,4.7vw,74px);line-height:1.01}
+.wgt .book__lead{max-width:43ch;margin:0;color:var(--ink);line-height:1.55;text-wrap:pretty}
+.wgt .book__note{max-width:44ch;margin:14px 0 0;padding:0;border:0;color:var(--ink-2)}
+.wgt .book__details{margin-top:18px;border-block:1px solid var(--line);max-width:44ch}
+.wgt .book__details summary{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:46px;cursor:pointer;color:var(--ink);font:500 14px/1.4 var(--ui);list-style:none}
+.wgt .book__details summary::-webkit-details-marker{display:none}
+.wgt .book__details summary::after{content:"";width:8px;height:8px;border:solid currentColor;border-width:0 1px 1px 0;transform:rotate(45deg);margin-inline-end:4px}
+.wgt .book__details[open] summary::after{transform:rotate(225deg)}
+.wgt .book__details .book__facts{margin:0;padding:8px 0 20px;border:0;gap:14px}
+.wgt .book__print{position:relative;margin:26px 0 0;max-width:44ch;overflow:hidden}
+.wgt .book__print img{display:block;width:100%;height:clamp(150px,14vw,210px);object-fit:cover;object-position:50% 55%}
+.wgt .book__print figcaption{margin-top:8px;color:var(--ink-2);font:400 12px/1.45 var(--ui)}
+.wgt .book__modes{border:0;border-radius:0;gap:8px;margin:18px 0;padding:0}
+.wgt .book__modes a{position:relative;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:6px;min-width:0;min-height:78px;border:1px solid var(--line-2);border-radius:4px;padding:11px 13px;letter-spacing:normal;text-align:start;color:var(--ink);transition:background-color .18s,color .18s,border-color .18s}
+.wgt .book__modes a[aria-current]{border-color:var(--cream)}
+.wgt .book__modes strong{font:500 clamp(16px,1.3vw,21px)/1.12 var(--serif)}
+.wgt .book__modes span{font:400 13px/1.35 var(--ui)}
+.wgt :is(.book__details summary,.book__modes a):focus-visible{outline:2px solid var(--cream);outline-offset:3px}
+@media(hover:hover){.wgt .book__modes a:not([aria-current]):hover{border-color:var(--cream)}}
+@media(max-width:1079px){.wgt .book{gap:20px}.wgt .book__print{display:none}.wgt .book__details{margin-top:10px}.wgt .wgt-booking{padding:clamp(14px,4vw,28px)}}
+@media(prefers-reduced-motion:no-preference){.wgt .book__details summary::after{transition:transform .18s ease-out}.wgt .book__modes a[aria-current]::after{content:"";position:absolute;left:13px;bottom:6px;width:18px;height:1px;background:currentColor;transform-origin:left;animation:book-selection .22s ease-out both}@keyframes book-selection{from{transform:scaleX(0)}to{transform:scaleX(1)}}}
