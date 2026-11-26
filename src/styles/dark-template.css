@@ -272,6 +272,7 @@ html.lenis,html.lenis body{height:auto}
 .wgt.js.is-ready [data-hero]:nth-child(3){transition-delay:.22s}
 .wgt.js.is-ready [data-hero]:nth-child(4){transition-delay:.34s}
 .wgt.js.is-ready [data-hero]:nth-child(5){transition-delay:.46s}
+.wgt.js .reel [data-hero]{opacity:1;transform:none;transition:none}
 .wgt.js .hero__video{transition:transform 2.6s var(--ease)}
 .wgt.js:not(.is-ready) .hero__video{transform:scale(1.12)}
 @media (max-width:1100px){.wgt .hdr__links{display:none}
@@ -451,7 +452,7 @@ html.lenis,html.lenis body{height:auto}
 .wgt .steps2{list-style:none;padding:0;margin:26px 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:0;border-top:1px solid var(--line)}
 .wgt .steps2 > li{padding:30px 26px 30px 0;border-bottom:1px solid var(--line);position:relative}
 .wgt .steps2 > li + li{padding-left:26px;border-left:1px solid var(--line)}
-.wgt .step__n{display:block;font:400 12px/1 var(--ui);letter-spacing:.14em;color:var(--ink-3);margin-bottom:22px}
+.wgt .step__n{display:block;font:400 12px/1 var(--ui);letter-spacing:.14em;color:var(--ink-2);margin-bottom:22px}
 .wgt .steps2 .h2,.wgt .steps2 .h3{font:400 clamp(24px,2vw,28px)/1.15 var(--serif);margin:0 0 12px;background:none;-webkit-text-fill-color:var(--ink);color:var(--ink)}
 .wgt .steps2 p{color:var(--ink-2);margin:0}
 .wgt .cards{list-style:none;padding:0;margin:26px 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:20px}
@@ -668,6 +669,7 @@ html.lenis,html.lenis body{height:auto}
 .wgt.js .w > span{transform:translateY(108%);transition:transform 1.15s var(--ease);transition-delay:calc(var(--i,0) * 55ms)}
 .wgt .chrome .w > span{background:var(--chrome);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
 .wgt .is-in .w > span,.wgt.js.is-ready [data-hero] .w > span,.wgt .split-done.is-in .w > span{transform:none}
+.wgt.js .reel [data-hero] .w > span{transform:none;transition:none}
 .wgt.js [data-reveal].split-done{opacity:1;transform:none}
 .wgt.js .clip{clip-path:inset(0 0 100% 0 round var(--r));transition:clip-path 1.5s var(--ease)}
 .wgt.js .clip.is-in{clip-path:inset(0 0 0 0 round var(--r))}

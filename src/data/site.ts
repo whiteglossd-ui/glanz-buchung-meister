@@ -934,11 +934,11 @@ export const services: ServicePage[] = [
     nav: "Dellenentfernung",
     metaTitle: "Dellenentfernung & Hagelschaden Horb | White-Gloss Detailing",
     description:
-      "Parkdellen, Karosseriedellen und Hagelschäden lackschadenfrei ausbeulen – sofern technisch möglich. Preis nach Begutachtung.",
-    teaser: "Lackschadenfreie Dellenentfernung, sofern technisch möglich.",
+      "Dellenziehen und Lackierarbeiten mit Meister-Partnern in der Region Horb. Lackfreies Ausbeulen, wenn der Schaden es zulässt. Preis nach Begutachtung.",
+    teaser: "Dellenentfernung mit Meister-Partnern, wenn möglich ohne Neulackierung.",
     group: "finish",
     image: "/media/dellen.webp",
-    imageAlt: "Parkdelle unter Streiflicht, bevor wir ausbeulen",
+    imageAlt: "Parkdelle unter Streiflicht vor der Begutachtung",
     bullets: [
       "Lackschadenfreie Dellenentfernung bei geeignetem Schadensbild",
       "Begutachtung und verbindliches Angebot vor der Reparatur",
@@ -946,7 +946,7 @@ export const services: ServicePage[] = [
       "Oft sinnvoll vor Verkauf oder Leasingrückgabe",
     ],
     body: [
-      "Wir entfernen Parkdellen, kleinere Karosseriedellen und Hagelschäden ohne Neulackierung, sofern der Schaden und der Lackzustand dies zulassen.",
+      "Unsere Meister-Partner können Parkdellen, kleinere Karosseriedellen und Hagelschäden ohne Neulackierung entfernen, sofern der Schaden und der Lackzustand das zulassen. Wenn Lackierarbeiten nötig sind, stimmen wir sie mit einem Meisterbetrieb ab.",
       "Einen Preis und eine Zusage gibt es erst, wenn wir den Schaden gesehen haben und du zustimmst. Bei kleinen Stellen reicht oft ein Foto zur ersten Einschätzung.",
     ],
   },
@@ -1085,7 +1085,7 @@ export const services: ServicePage[] = [
       "Schleifen, Polieren und Versiegeln können die Genehmigung und Betriebserlaubnis betreffen",
       "Keine Zusage einer zulässigen Instandsetzung ohne fahrzeug- und verfahrensbezogenen Nachweis",
     ],
-    honestNote: "Wir bieten diese Bearbeitung derzeit nicht als Standardleistung an. Bei matten oder beschädigten Scheinwerfern lass die zulässigen Möglichkeiten durch eine Fachwerkstatt oder Prüforganisation klären.",
+    honestNote: "Bei matten oder beschädigten Scheinwerfern beziehen wir auf Wunsch einen Meister-Partner ein. Er prüft die zulässigen Möglichkeiten am Fahrzeug, zum Beispiel den Austausch eines beschädigten Bauteils. Schleifen, Polieren oder Versiegeln der bauartgenehmigten Abdeckscheibe bieten wir nicht als buchbare Aufbereitung an.",
     body: [
       "Eine optische Verbesserung allein belegt weder eine zulässige Reparatur noch die vorgeschriebene Lichtverteilung. Auch eine Materialprüfung ersetzt keinen Genehmigungsnachweis.",
       "Bis Verfahren und gegebenenfalls erforderliche Genehmigung fachlich geklärt sind, ist die Scheinwerferaufbereitung aus der Preisauswahl und dem Anfragerechner ausgesetzt. Diese Informationsseite bleibt erreichbar.",

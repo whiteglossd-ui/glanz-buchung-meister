@@ -17,7 +17,7 @@ import { homeCopy } from "@/data/home-copy";
 import { LazyConfigurator } from "@/components/lazy-configurator";
 import { LazyRundumInquiry } from "@/components/lazy-rundum-inquiry";
 import { BOOKING_JUMP, focusBookingHeading } from "@/lib/booking-anchor-focus";
-import { cityDistanceLine, pickupDistanceLabel } from "@/lib/city-copy";
+import { pickupDistanceLabel } from "@/lib/city-copy";
 import { LazyGoogleReviews } from "@/components/lazy-google-reviews";
 import "./dark-hero.css";
 import { darkFrameSrc, initDarkHome, tweenNumber } from "@/lib/dark-motion";
@@ -91,9 +91,11 @@ function Packages() {
     });
   }, [cls]);
   const onKey = (e: React.KeyboardEvent) => {
-    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+    if (!["ArrowRight", "ArrowLeft", "ArrowDown", "ArrowUp", "Home", "End"].includes(e.key)) return;
+    e.preventDefault();
     const i = vehicleClasses.indexOf(cls);
-    const n = (i + (e.key === "ArrowRight" ? 1 : vehicleClasses.length - 1)) % vehicleClasses.length;
+    const n = e.key === "Home" ? 0 : e.key === "End" ? vehicleClasses.length - 1
+      : (i + (["ArrowRight", "ArrowDown"].includes(e.key) ? 1 : vehicleClasses.length - 1)) % vehicleClasses.length;
     setCls(vehicleClasses[n]);
     tabsRef.current?.querySelectorAll("button")[n]?.focus();
   };
@@ -188,8 +190,8 @@ function VideoCard({ v }: { v: (typeof videos)[number] }) {
       {playing ? (
         <video ref={player} className="vid__el" src={v.src} poster={v.poster} controls autoPlay playsInline />
       ) : (
-        <button className="vid" type="button" aria-label={`Video abspielen: ${v.title}`} onClick={() => setPlaying(true)}>
-          <img src={v.poster} alt={v.alt} loading="lazy" />
+        <button className="vid" type="button" aria-label={`${v.tag} ${v.len}: ${v.title} abspielen`} onClick={() => setPlaying(true)}>
+          <img src={v.poster} alt="" loading="lazy" />
           <span className="vid__meta"><span>{v.tag}</span><span>{v.len}</span></span>
           <span className="vid__play" aria-hidden="true" />
         </button>
@@ -204,14 +206,22 @@ function VideoCard({ v }: { v: (typeof videos)[number] }) {
 
 // Nur die freigegebene, kennzeichenfreie Auswahl der Dark-Edition-Vorschau.
 const gallery = [
-  ["t", 999], ["w", 960], ["t", 1148], ["w", 1148], ["t", 1148],
-  ["w", 960], ["t", 1148], ["w", 1082], ["t", 1148], ["t", 1148],
-].map(([shape, width], i) => {
+  ["t", 999, "Schwarzes Kundenfahrzeug schräg von vorn in der Werkstatt"],
+  ["w", 960, "Scheinwerfer, Kotflügel und Vorderrad eines schwarzen Fahrzeugs"],
+  ["t", 1148, "Heller Fahrersitz, Lenkrad und Fußraum bei geöffneter Tür"],
+  ["w", 1148, "Lichtreflexe auf dem schwarzen Lack entlang der Beifahrerseite"],
+  ["t", 1148, "Hinterrad und dunkel glänzender Radlauf"],
+  ["w", 960, "Schwarze Mittelkonsole und Ledersitze mit roten Nähten"],
+  ["t", 1148, "Heller gesteppter Ledersitz und Türverkleidung"],
+  ["w", 1082, "Seitliche Heckansicht eines dunklen Fahrzeugs vor einer Baumkulisse"],
+  ["t", 1148, "Front eines schwarzen BMW mit Spiegelungen auf der Motorhaube"],
+  ["t", 1148, "Helle Mittelkonsole unter vier runden Lüftungsdüsen"],
+].map(([shape, width, alt], i) => {
   const base = `/media/dark/customer-selection/own-${String(i + 1).padStart(2, "0")}`;
   const sizes = shape === "w"
     ? "(max-width: 820px) 86vw, (max-height: 969px) 108vh, 1024px"
     : "(max-width: 820px) 68vw, (max-height: 969px) 51vh, 480px";
-  return { src: `${base}-800.webp`, srcSet: `${base}-480.webp 480w, ${base}-800.webp 800w, ${base}-full.webp ${width}w`, sizes, shape };
+  return { src: `${base}-800.webp`, srcSet: `${base}-480.webp 480w, ${base}-800.webp 800w, ${base}-full.webp ${width}w`, sizes, shape, alt: String(alt) };
 });
 
 const steps = [
@@ -268,8 +278,8 @@ function DarkBooking({
               <strong>Pflege und Reparatur aus einer Hand</strong>
               <p className="muted small">
                 Detailing, Lackaufbereitung und Keramikversiegelung in unserer Werkstatt.
-                Dellenentfernung, Felgen- oder Sitzreparaturen stimmen wir mit unserem
-                Partnerbetrieb ab.
+                Dellenziehen, Lackierarbeiten sowie Felgen- oder Sitzreparaturen stimmen wir
+                bei Bedarf mit unseren Meister-Partnern ab.
               </p>
             </div>
             <div>
@@ -356,7 +366,10 @@ export function DarkHome({
         <section className="reel" id="top" data-ch="0" aria-label={site.name}>
           <div className="reel__stick">
             <canvas className="reel__canvas" aria-hidden="true" />
-            <img className="reel__poster" src={darkFrameSrc("d", 0)} alt="" aria-hidden="true" fetchPriority="high" />
+            <picture aria-hidden="true">
+              <source media="(max-width: 767px)" srcSet={darkFrameSrc("m", 0)} />
+              <img className="reel__poster" src={darkFrameSrc("d", 0)} alt="" fetchPriority="high" />
+            </picture>
             <div className="reel__shade" aria-hidden="true" />
 
             <div className="reel__ch reel__ch--0 is-on" data-ch="0">
@@ -457,17 +470,17 @@ export function DarkHome({
         </section>
 
         {/* Horizontale Atelier-Galerie */}
-        <section className="hg" aria-hidden="true">
+        <section className="hg" aria-label="Ausgewählte Kundenfahrzeuge">
           <div className="hg__stick">
             <div className="hg__track">
-              {gallery.map(({ src, srcSet, sizes, shape }, i) => (
+              {gallery.map(({ src, srcSet, sizes, shape, alt }, i) => (
                 <figure key={src} className={`hg__f hg__f--${shape}`}>
-                  <img src={src} srcSet={srcSet} sizes={sizes} alt="" loading="lazy" decoding="async" />
-                  <span className="hg__n">{String(i + 1).padStart(2, "0")}</span>
+                  <img src={src} srcSet={srcSet} sizes={sizes} alt={alt} loading="lazy" decoding="async" />
+                  <span className="hg__n" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
                 </figure>
               ))}
             </div>
-            <div className="hg__bar"><span className="hg__fill" /></div>
+            <div className="hg__bar" aria-hidden="true"><span className="hg__fill" /></div>
           </div>
         </section>
 
@@ -522,8 +535,8 @@ export function DarkHome({
               </div>
               <p className="muted lead-r" data-reveal>
                 Autopflege passend zu deinem Fahrzeug: von der Innenraumreinigung über Lackaufbereitung
-                und Keramikversiegelung bis zur Dellenentfernung mit unserem Partnerbetrieb. Vor jeder
-                Politur prüfen wir den Lack mit einer Lackdickenmessung.
+                und Keramikversiegelung. Dellenziehen und Lackierarbeiten koordinieren wir mit
+                Meister-Partnern. Vor jeder Politur prüfen wir den Lack mit einer Lackdickenmessung.
               </p>
             </div>
             <ul className="svc svc--wide" data-reveal>
@@ -599,14 +612,9 @@ export function DarkHome({
                     className={`city${c.km === 0 ? " city--home" : ""}`}
                     to="/abholservice/$city"
                     params={{ city: c.slug }}
-                    aria-label={
-                      c.km === 0
-                        ? `${c.name}, Werkstattstandort, direkte Fahrzeugabgabe möglich, Abholung ${cityPickupPriceText(c)}`
-                        : `${c.name}, ${cityDistanceLine(c)}, Abholung ${cityPickupPriceText(c)}`
-                    }
                   >
                     <span className="city__name">{c.name}</span>
-                    <span className="city__row" aria-hidden="true">
+                    <span className="city__row">
                       <span>{pickupDistanceLabel(c)}</span>
                       <span className="city__p">{cityPickupPriceText(c)}</span>
                     </span>

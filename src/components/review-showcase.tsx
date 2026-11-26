@@ -114,6 +114,7 @@ export function ReviewShowcase({ data }: { data?: GoogleReviewsData | null }) {
       )}
       <p className="wg-reviews__caption">
         {featured ? "Auswahl aus den zuletzt aktualisierten schriftlichen Rezensionen." : "Ausgewählte Originalrezensionen. Die Texte öffnen sich direkt auf Google Maps."}
+        {" "}Wir prüfen nicht eigenständig, ob jede bewertende Person einen Auftrag bei uns hatte.
       </p>
       <ReviewSource href={googleProfile.url} label="Alle Bewertungen auf Google ansehen" />
     </div>

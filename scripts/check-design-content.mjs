@@ -62,9 +62,9 @@ export const APPROVED_SEO_BLOBS = Object.freeze({
   "src/components/site-chrome.tsx": "c9128bb53eb7ea6021e6af722d1083aa26a71c8e",
   "src/components/website-studio.tsx": "59c0b604d6f7b38c97208f9c36afe56cf0a69544",
   "src/components/whatsapp-photo-cta.tsx": "94655d4dfcb8e6db7b60611b73fa3ece7bc0c9f5",
-  "src/components/workshop-map.tsx": "a6d39f7b40dedf89e2a9e557d4042458b8e5ee9c",
-  // November 26: explicitly requested FAQ and editorial additions.
-  "src/data/editorial-guides.json": "30f61f784fd85fe265cd16beea701a7a222ea55f",
+  "src/components/workshop-map.tsx": "7f2ecb4c0d7ccb3c6acfcc916125642ad84f5d9f",
+  // November 26: FAQ/editorial additions and owner-requested panel/partner explanations.
+  "src/data/editorial-guides.json": "d08011c3cdb2659537f420f924323ce9d4f1c3d3",
   "src/data/review-links.json": "07399789ba5aac7f36e52ae45293fb83f7bfe2e7",
   "src/data/ratgeber.ts": "8980c307cc8d0792cc72732c815a53f66b9a4739",
   "src/data/site.ts": "41d7b3adb10ed87d80af37bd9d9456707df3c6f5",
@@ -81,8 +81,8 @@ export const APPROVED_SEO_BLOBS = Object.freeze({
   "src/routes/barrierefreiheit.tsx": "730949864ab50a20eab5c8ba82b76495d3e51898",
   "src/routes/danke.tsx": "4c9357017fed3ded9576661cca066e3816fbe29e",
   "src/routes/datenloeschung.tsx": "42a6a8ed8c5fe3fa81c8c4c687d30f7f33d482b3",
-  "src/routes/datenschutz.tsx": "f5358b7fc8dccc6fcbe1846b2651395127c49341",
-  "src/routes/dellen-hagelschaden.tsx": "f20c2020b35a78290de753c0e4356cf0b2041659",
+  // Hostinger/privacy update inherited unchanged from origin/main (88b70c3).
+  "src/routes/datenschutz.tsx": "ac3087fa1b214f6cd6f364ea63f7e9056b516b80",
   "src/routes/fahrzeug-zustand.tsx": "cbc29dfb619210f8c0d7ff27fe384bf3ee084bee",
   "src/routes/faq.tsx": "58da9f3e2849b7f0d10b790a3c31fc7090b0b7dd",
   "src/routes/galerie.tsx": "1b67b8ba645ed55b3f3af380c947fa0235678cbc",
@@ -116,7 +116,7 @@ const APPROVED_HOME_BLOBS = Object.freeze({
   "src/components/media-rail.tsx": "eea74893c74a9e60c4704df77d6eec2ee1ca0b3e",
   "src/components/package-showcase.tsx": "53b5f78114e8de746613fad8cfa1151ffb276384",
   "src/components/results-teaser.tsx": "9cfc89347decf120486ca49e69f854a7563b6850",
-  "src/components/review-showcase.tsx": "c68462140835c252be85af4948c821aec2d5f391",
+  "src/components/review-showcase.tsx": "4a328ab03630dde77c4ef8ca1b11b0ae39cb7588",
   // November 24 owner request: improve the second scroll-film chapter.
   // See docs/homepage-cinematic-2026-11-24.md; all other content pins remain.
   "src/components/scroll-film-hero.tsx": "22dd7d41339d72c84788cc437e381a6bb6890665",
@@ -127,7 +127,7 @@ const APPROVED_HOME_BLOBS = Object.freeze({
   "src/components/site-chrome.tsx": "7952699100e8d1ee6b8eaef1efdc273dd42ff2d8",
   "src/components/website-studio.tsx": "33cc6b97e51f52e72ff891778811febf2d591dde",
   "src/data/home-copy.ts": "f829b684e32560fbde054e7e4405568036b5ca82",
-  "src/data/site.ts": "04f74c3cf2d482bcdc2e4b55e018243362fb2579",
+  "src/data/site.ts": "ceb058c938f7b805e2b5c3f86492ec003ddde865",
   "src/data/sitemap-static.xml": "1bccc405c21b6dcc79a9e5639a7ba1f33bf8ff97",
   "src/lib/city-copy.ts": "98f164cc518d27ce7cfdfff66eef96d62e842369",
   "src/lib/city-logistics.ts": "9f964c2dfb0d0822b583c761fce7550556219e0c",

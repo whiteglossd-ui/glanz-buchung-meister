@@ -52,6 +52,8 @@ export function initDarkHome(root: HTMLElement): () => void {
   const mobile = matchMedia("(max-width: 767px)");
   let set: "" | "d" | "m" = "";
   let images: (HTMLImageElement | undefined)[] = [];
+  let pending = new Set<number>();
+  let failed = new Set<number>();
   let cur = -1;
   let want = 0;
   let smooth = 0;
@@ -75,6 +77,7 @@ export function initDarkHome(root: HTMLElement): () => void {
     const w = img.naturalWidth * sc;
     const h = img.naturalHeight * sc;
     ctx.drawImage(img, (cw - w) / 2, (ch - h) / 2, w, h);
+    if (want > 0) reelEl?.classList.add("is-live");
   };
   const loadSet = () => {
     if (!reelEl || !poster || reduce) return;
@@ -82,29 +85,42 @@ export function initDarkHome(root: HTMLElement): () => void {
     if (s === set) return;
     set = s;
     images = new Array(FRAMES);
+    pending = new Set();
+    failed = new Set();
     cur = -1;
-    poster.src = darkFrameSrc(s, 0);
-    // Grob nach fein laden, damit das Scrubben früh funktioniert.
-    const order: number[] = [];
-    const seen = new Set<number>();
-    for (const step of [16, 8, 4, 2, 1])
-      for (let i = 0; i < FRAMES; i += step) if (!seen.has(i)) { seen.add(i); order.push(i); }
-    let k = 0;
-    const next = () => {
-      if (ac.signal.aborted || set !== s || k >= order.length) return;
-      const i = order[k++];
+    reelEl.classList.remove("is-live");
+  };
+  const requestFrames = () => {
+    if (!reelEl || !set || want <= 0 || ac.signal.aborted) return;
+    const s = set;
+    const queue = pending;
+    const target = Math.round(want);
+    for (const offset of [0, 2, -2, 5, -5]) {
+      if (queue.size >= 2) break;
+      const i = target + offset;
+      if (i < 0 || i >= FRAMES || images[i] || queue.has(i) || failed.has(i)) continue;
+      queue.add(i);
       const img = new Image();
       img.decoding = "async";
+      img.fetchPriority = "low";
       img.onload = () => {
-        if (ac.signal.aborted || set !== s) return;
+        if (ac.signal.aborted || queue !== pending) return;
+        queue.delete(i);
         images[i] = img;
-        if (i === 0) { reelEl.classList.add("is-live"); draw(true); }
-        next();
+        if (want > 0 && !reduceMq.matches && !short.matches) {
+          draw(true);
+          reelEl.classList.add("is-live");
+          requestFrames();
+        }
       };
-      img.onerror = next;
+      img.onerror = () => {
+        if (queue !== pending) return;
+        queue.delete(i);
+        failed.add(i);
+        if (!reduceMq.matches && !short.matches) requestFrames();
+      };
       img.src = darkFrameSrc(s, i);
-    };
-    for (let c = 0; c < 4; c++) next();
+    }
   };
   const size = () => {
     if (!canvas) return;
@@ -129,6 +145,8 @@ export function initDarkHome(root: HTMLElement): () => void {
     // Reduzierte Bewegung (auch nachträglich eingeschaltet) und flache Fenster:
     // statische Einleitung, ihre Links müssen bedienbar sein.
     if (reduceMq.matches || short.matches) {
+      reelEl.classList.remove("is-live");
+      want = 0;
       if (chIdx !== 0) {
         chIdx = 0;
         reelEl.dataset.ch = "0";
@@ -144,6 +162,8 @@ export function initDarkHome(root: HTMLElement): () => void {
     const total = r.height - innerHeight;
     const p = Math.min(1, Math.max(0, -r.top / (total || 1)));
     want = p * (FRAMES - 1);
+    if (p === 0) { reelEl.classList.remove("is-live"); cur = -1; }
+    else if (r.bottom > 0) requestFrames();
     if (!rafOn) { rafOn = true; raf(tick); }
     if (fill) fill.style.transform = `scaleX(${p})`;
     const idx = p < 0.24 ? 0 : p < 0.6 ? 1 : 2;

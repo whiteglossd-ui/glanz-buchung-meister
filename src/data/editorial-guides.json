@@ -1,7 +1,7 @@
 {
   "faq": {
     "title": "FAQ zur Fahrzeugaufbereitung in Horb | White-Gloss",
-    "description": "Was kostet eine Fahrzeugaufbereitung, wie lange dauert sie und holt ihr mein Auto ab? Klare Antworten zu Paketen, Pflege und Leasing in Horb am Neckar.",
+    "description": "Antworten zu Preisen, Pflege und Abholung in Horb am Neckar. So funktionieren unser digitales Kundenportal, die Unterschrift und die Fahrzeugübergabe.",
     "lead": "Was passt zu meinem Auto, wie lange bleibt es bei euch und muss ich es vorher ausräumen? Hier findest du die Antworten, bevor du einen Termin anfragst.",
     "groups": [
       {
@@ -20,7 +20,7 @@
           { "q": "Muss ich mein Auto vorher waschen oder ausräumen?", "a": "Waschen oder saugen musst du nicht, das ist unser Job. Hilfreich ist, wenn du Wertsachen und lose Gegenstände aus den Bereichen nimmst, die wir reinigen sollen. Wenn wir unter dem Kindersitz arbeiten sollen, nimm ihn nach Möglichkeit vorher raus. Falls etwas im Auto bleiben muss, sag uns einfach Bescheid." },
           { "q": "Bekommt ihr Hundehaare aus dem Kofferraum?", "a": "Ja, die Tierhaarentfernung gibt es zusätzlich zur Reinigung. Haare in Teppichfasern oder Sitznähten brauchen mehr Handarbeit als lose Haare auf einer Gummimatte. Ein Foto vom Kofferraum oder von der Rückbank hilft uns, den Aufwand einzuschätzen. Ob einzelne fest sitzende Haare zurückbleiben können, sagen wir dir nach Sichtung.", "link": { "path": "/ratgeber/hundehaare-aus-dem-auto-entfernen", "label": "Ratgeber: Hundehaare im Auto" } },
           { "q": "Gehen Kaffee- oder Getränkeflecken aus den Sitzen heraus?", "a": "Oft lässt sich der Fleck deutlich verbessern. Ob er ganz verschwindet, hängt vom Bezug, vom Alter des Flecks und davon ab, wie tief das Getränk eingezogen ist. Sag uns, was verschüttet wurde und ob du schon ein Mittel benutzt hast. Bei frischen Flecken lieber trocken abtupfen, statt kräftig zu reiben.", "link": { "path": "/leistungen/innenraumreinigung", "label": "Innenraumreinigung ansehen" } },
-          { "q": "Kann ich Scheinwerfer, Felgen oder Leder auch einzeln anfragen?", "a": "Ja. Wenn es dir nur um eine einzelne Stelle oder Leistung geht, beschreib uns genau diese. Ob Reinigen, Pflegen oder eine Reparatur sinnvoll ist, hängt vom Material und vom Zustand ab. Bei einem beschädigten Bauteil sagen wir dir, wenn Aufbereitung allein nicht reicht.", "link": { "path": "/fahrzeug-zustand", "label": "Individuelles Angebot anfragen" } }
+          { "q": "Kann ich Felgen oder Leder auch einzeln anfragen?", "a": "Ja. Wenn es dir nur um eine einzelne Stelle geht, beschreib uns genau diese. Ob Reinigen, Pflegen oder eine Reparatur sinnvoll ist, hängt vom Material und vom Zustand ab. Bei einem beschädigten Bauteil sagen wir dir, wenn Aufbereitung allein nicht reicht.", "link": { "path": "/fahrzeug-zustand", "label": "Individuelles Angebot anfragen" } }
         ]
       },
       {
@@ -28,8 +28,19 @@
         "title": "Lack, Leasingrückgabe und Verkauf",
         "items": [
           { "q": "Könnt ihr Kratzer im Lack wegpolieren?", "a": "Feine Waschspuren und oberflächliche Kratzer lassen sich oft deutlich verbessern. Reicht der Kratzer unter den Klarlack, polieren wir ihn nicht um jeden Preis heraus. Vor einer Lackkorrektur schauen wir uns die Stelle bei gutem Licht an und prüfen die Lackstärke. Dann sagen wir dir, was möglich ist und was sichtbar bleiben kann.", "link": { "path": "/leistungen/lackkorrektur", "label": "Lackkorrektur und ihre Grenzen" } },
+          { "q": "Organisiert ihr Dellenziehen oder Lackierarbeiten?", "a": "Ja. Für Dellenziehen, Hagelschäden und Lackierarbeiten arbeiten wir mit Meisterbetrieben zusammen. Wir klären zuerst, ob eine Aufbereitung reicht oder ob ein Partnerbetrieb ranmuss. Wenn lackfreies Ausbeulen möglich ist, sagen wir dir das. Wer den Auftrag ausführt und was er kostet, klären wir vor deiner Zusage.", "link": { "path": "/dellen-hagelschaden", "label": "Dellen- und Hagelschaden einschätzen lassen" } },
+          { "q": "Was macht ihr bei matten oder beschädigten Scheinwerfern?", "a": "Du kannst uns den Zustand zeigen. Bei Bedarf beziehen wir einen Meister-Partner ein, der die zulässigen Möglichkeiten am Fahrzeug prüft, zum Beispiel den Austausch eines beschädigten Bauteils. Schleifen, Polieren oder Versiegeln bauartgenehmigter Scheinwerfer-Abdeckscheiben bieten wir nicht als buchbare Aufbereitung an.", "link": { "path": "/leistungen/scheinwerferaufbereitung", "label": "Hinweise zu matten Scheinwerfern" } },
           { "q": "Muss mein Leasingauto zur Rückgabe wie neu aussehen?", "a": "Nein. Normale, alters- und laufleistungsgerechte Gebrauchsspuren sind nicht dasselbe wie ein Schaden. Entscheidend sind dein Vertrag und der Rückgabekatalog. Zeig uns die Stellen, die dir Sorgen machen. Wir trennen Reinigung und mögliche optische Korrektur von Schäden, für die eine andere Werkstatt oder ein Gutachten sinnvoll ist. Nachzahlungen können wir nicht ausschließen.", "link": { "path": "/ratgeber/leasingrueckgabe-checkliste", "label": "Checkliste für die Leasingrückgabe" } },
           { "q": "Welches Paket lohnt sich vor dem Autoverkauf?", "a": "Bei einem gepflegten Alltagsauto reicht oft eine gründliche Reinigung für Besichtigung und Fotos. Sind die Sitze fleckig oder wirkt der Lack matt, lohnt es sich, genau diese Stellen prüfen zu lassen. Für ein älteres Auto würden wir nicht automatisch eine Keramikversiegelung einplanen. Und bekannte Schäden bleiben natürlich Teil der Fahrzeugbeschreibung.", "link": { "path": "/ratgeber/auto-vor-dem-verkauf-aufbereiten", "label": "Ratgeber: Auto vor dem Verkauf aufbereiten" } }
+        ]
+      },
+      {
+        "id": "faq-kundenportal",
+        "title": "Kundenportal, Unterschrift und Übergabe",
+        "items": [
+          { "q": "Was ist das White-Gloss-Panel?", "a": "Das White-Gloss-Panel ist unsere eigene Web-App für deinen Auftrag. Du öffnest deinen persönlichen Kundenbereich im Browser. Dort findest du die Informationen zu deinem Auftrag, kannst uns Nachrichten schreiben und hast den Verlauf an einem Ort. Du musst dafür keine App installieren." },
+          { "q": "Wie bestätige ich Angebot und Termin digital?", "a": "Die Anfrage über die Website ist unverbindlich. Wenn das Angebot fertig ist, bekommst du einen persönlichen Link. Im Kundenportal prüfst du Leistungen und Preis, stimmst den Termin ab und unterschreibst das Angebot digital. Lies dir vor der Unterschrift in Ruhe durch, was vereinbart ist." },
+          { "q": "Was steht im Annahme- und Abgabeprotokoll?", "a": "Bei der Fahrzeugannahme halten wir den Zustand und erkennbare Vorschäden fest. Bei der Rückgabe gehen wir die vereinbarten Arbeiten durch und dokumentieren die Übergabe. Fotos und Unterschriften können direkt zum jeweiligen Protokoll gehören. So lässt sich auch später nachvollziehen, was bei Annahme und Rückgabe festgehalten wurde." }
         ]
       },
       {

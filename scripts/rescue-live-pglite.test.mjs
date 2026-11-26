@@ -242,7 +242,7 @@ test("cleanup failure is explicit and retains the original failure code", async 
   await assert.rejects(runRescue({ mode: "inspect", pid }, failure.deps), /target_evaluation_failed; inspector_cleanup_unconfirmed_process_preserved/);
 });
 
-test("actual Node inspector evaluates the exact expressions against real PGlite and closes; filesystem paths are projected into a temporary sandbox", { timeout: 20_000 }, async () => {
+test("actual Node inspector evaluates the exact expressions against real PGlite and closes; filesystem paths are projected into a temporary sandbox", { timeout: 60_000 }, async () => {
   const sandbox = fs.mkdtempSync(path.join(tmpdir(), "white-gloss-rescue-transport-"));
   const localDirectory = path.join(sandbox, ".recovery", path.posix.basename(directory));
   fs.mkdirSync(localDirectory, { recursive: true, mode: 0o700 });
@@ -278,7 +278,9 @@ test("actual Node inspector evaluates the exact expressions against real PGlite 
   try {
     const ready = new Promise((resolve, reject) => {
       let stdout = "", stderr = "";
-      const timer = setTimeout(() => reject(new Error("child inspector not ready")), 10_000);
+      // Cold WASM initialization can take more than 10 s alongside the database
+      // suites. Bound readiness separately from the backup/restore assertions.
+      const timer = setTimeout(() => reject(new Error("child inspector and PGlite not ready after 30 s")), 30_000);
       const check = () => {
         const url = /ws:\/\/127\.0\.0\.1:\d+\/[0-9a-f-]{36}/.exec(stderr)?.[0];
         if (url && stdout.includes("READY")) { clearTimeout(timer); resolve(url); }
@@ -286,6 +288,7 @@ test("actual Node inspector evaluates the exact expressions against real PGlite 
       child.stdout.on("data", data => { stdout += data; check(); });
       child.stderr.on("data", data => { stderr += data; check(); });
       child.once("exit", () => { clearTimeout(timer); reject(new Error("child exited before ready")); });
+      child.once("error", error => { clearTimeout(timer); reject(error); });
     });
     const inspectorUrl = await ready;
     client = await connectInspector(inspectorUrl);
