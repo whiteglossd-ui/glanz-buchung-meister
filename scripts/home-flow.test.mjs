@@ -190,6 +190,7 @@ function loadDarkHome({ hash = "", hydrated = false } = {}) {
     "@tanstack/react-router": router,
     "@/data/site": siteData,
     "@/data/home-copy": homeCopy,
+    "@/data/scroll-film": scrollFilm,
     "@/lib/city-copy": cityCopy,
     "@/lib/booking-anchor-focus": { focusBookingHeading: () => {} },
     "@/lib/dark-motion": { darkFrameSrc: (s, i) => `/media/dark/seq/${s}/${i + 1}.webp`, initDarkHome: () => () => {}, tweenNumber: () => {} },

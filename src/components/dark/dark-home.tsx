@@ -14,6 +14,7 @@ import {
   type VehicleClass,
 } from "@/data/site";
 import { homeCopy } from "@/data/home-copy";
+import { darkMobilePoster } from "@/data/scroll-film";
 import { LazyConfigurator } from "@/components/lazy-configurator";
 import { LazyRundumInquiry } from "@/components/lazy-rundum-inquiry";
 import { BOOKING_JUMP, focusBookingHeading } from "@/lib/booking-anchor-focus";
@@ -392,6 +393,7 @@ export function DarkHome({
           <div className="reel__stick">
             <canvas className="reel__canvas" aria-hidden="true" />
             <picture aria-hidden="true">
+              <source media="(max-width: 767px)" type="image/avif" srcSet={darkMobilePoster} />
               <source media="(max-width: 767px)" srcSet={darkFrameSrc("m", 0)} />
               <img className="reel__poster" src={darkFrameSrc("d", 0)} alt="" fetchPriority="high" />
             </picture>
