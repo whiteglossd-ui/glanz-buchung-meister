@@ -33,7 +33,7 @@ Das CAPI-Token erstellst du im Meta Events Manager unter **Einstellungen → Con
 1. Gehe zu https://search.google.com/search-console
 2. Eigenschaft **"whitegloss.de"** (Domain-Property) hinzufügen
 3. Als Verifikationsmethode **"DNS-Eintrag"** wählen
-4. Den TXT-Record im IONOS-DNS-Manager eintragen
+4. Den TXT-Record im DNS-Bereich des Hostinger hPanels eintragen
 
 Alternativ: Meta-Tag-Verifikation. Dafür müsste in den `<head>`-Bereich der Seite ein Tag eingefügt werden. Bei Bedarf den Code-Ort nennen.
 

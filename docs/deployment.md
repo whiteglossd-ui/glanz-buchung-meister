@@ -2,11 +2,11 @@
 
 ## GitHub und Hostinger
 
-Im privaten Website-Repository startet ein Push auf `main` die fünf Pflichtprüfungen `schema`, `unit`, `verify`, `studio` und `cross-browser`. Die automatische Veröffentlichung übernimmt ausschließlich einen erfolgreichen Lauf aus demselben Repository, solange dessen Commit noch die Spitze von `main` ist. Alle fünf Jobs müssen für genau diesen Commit erfolgreich abgeschlossen sein.
+Im Website-Repository `whiteglossd-ui/glanz-buchung-meister` startet ein Push auf `main` die fünf Pflichtprüfungen `schema`, `unit`, `verify`, `studio` und `cross-browser`. Die automatische Veröffentlichung übernimmt ausschließlich einen erfolgreichen Lauf aus demselben Repository, solange dessen Commit noch die Spitze von `main` ist. Alle fünf Jobs müssen für genau diesen Commit erfolgreich abgeschlossen sein.
 
 `unit` führt das unveränderte `npm test` mit zwei parallelen Testprozessen auf einem eigenen Ubuntu-Runner aus. So warten Build und Browserprüfungen nicht auf die Unit-Tests und teilen deren CPU-/Speicherlast nicht. Der Job startet keinen Website-Server. Ein fehlender, übersprungener oder fehlgeschlagener `unit`-Job sperrt die Veröffentlichung ebenso wie jeder andere Pflichtjob.
 
-Für den Umzug die alten automatischen Veröffentlichungen deaktivieren. Den öffentlichen Teil eines eigenen Website-Schlüssels auf dem VPS mit `ops/install-gitlab-release-gateway.py` an den bestehenden Releasebefehl des Kontos `white-gloss-ci` binden. Das Skript installiert denselben eingeschränkten Befehl für GitLab und GitHub. Im neuen GitHub-Repository die Actions-Secrets `HOSTINGER_SSH_HOST`, `HOSTINGER_SSH_USER`, `HOSTINGER_SSH_PRIVATE_KEY`, `HOSTINGER_SSH_KNOWN_HOSTS` und bei abweichendem Port `HOSTINGER_SSH_PORT` setzen.
+Bei einer Neueinrichtung die automatischen Veröffentlichungen älterer Repositorys deaktiviert lassen. Den öffentlichen Teil eines eigenen Website-Schlüssels auf dem VPS mit `ops/install-gitlab-release-gateway.py` an den bestehenden Releasebefehl des Kontos `white-gloss-ci` binden. Das Skript installiert denselben eingeschränkten Befehl für GitLab und GitHub. Im neuen GitHub-Repository die Actions-Secrets `HOSTINGER_SSH_HOST`, `HOSTINGER_SSH_USER`, `HOSTINGER_SSH_PRIVATE_KEY`, `HOSTINGER_SSH_KNOWN_HOSTS` und bei abweichendem Port `HOSTINGER_SSH_PORT` setzen.
 
 Sind beide Google-OAuth-Werte im Website-Dienst auf dem VPS hinterlegt und geprüft, die Repository-Variable `HOSTINGER_GOOGLE_OAUTH_SOURCE=runtime` setzen. Dann verwendet die Veröffentlichung das Build-Archiv aus dem erfolgreichen CI-Lauf. Benötigt die Website das eingebettete OAuth-Paar, beide Werte als Repository-Secrets `GOOGLE_CLIENT_ID` und `GOOGLE_CLIENT_SECRET` hinterlegen. Der geschützte Build entsteht dann im Produktionsjob.
 
@@ -14,7 +14,7 @@ Wird kein eingebettetes Google-OAuth-Paar benötigt und ist die vorhandene Anmel
 
 Zur Aktivierung `HOSTINGER_AUTO_DEPLOY_REPOSITORY_ID` auf die numerische GitHub-ID des neuen Website-Repositorys setzen und `HOSTINGER_DEPLOY_ENABLED=true` einschalten. Der nächste erfolgreiche Push auf `main` veröffentlicht automatisch. Der Job prüft die Dateiprüfsummen, den aktiven Vorgänger und die öffentliche Website. Scheitert die Liveprüfung, stellt er den kompatiblen Vorgänger wieder her und prüft ihn erneut.
 
-## GitLab und Hostinger
+## Früherer Weg über GitLab und Hostinger
 
 Ein Push auf den geschützten Standardbranch `main` startet fünf Prüfungen auf dem Website-Runner. Sobald Datenbank, Build, Buchungsablauf, Studio und Browser bestanden haben, veröffentlicht `hostinger-production` den geprüften Commit automatisch. Ein Merge Request durchläuft die Website-Prüfungen bereits vor dem Merge.
 
@@ -45,9 +45,7 @@ Vor dem Wechsel prüft GitLab das Ziel, die Prüfsumme und den aktuellen Produkt
   bereitstellen. Erst nach Freigabe `HOSTINGER_DEPLOY_ENABLED=true` setzen.
   Der alte GitHub-Releaseweg bleibt im Lesearchiv dokumentiert.
 
-Die Website wird auf `white-gloss.de` betrieben. Dieses Projekt ist **keine rein statische Website**, sondern eine Node-/SSR-Anwendung (TanStack Start + Nitro). Der versionierte IONOS-Workflow und die Grok-Anbindungen bestehen parallel. Vor Freigabe muss feststehen, welcher Betrieb und welche Datenbank tatsächlich verwendet werden; siehe [Releasevorbereitung vom 6. September 2026](release-readiness-2026-09-06.md).
-
-Die hier dokumentierten technischen Anforderungen gelten unabhängig davon, ob IONOS später eine native Git-Anbindung, einen VPS/Cloud-Server oder eine andere Node-fähige Laufzeit bereitstellt.
+Unter `https://white-gloss.de` läuft eine Node-/SSR-Anwendung (TanStack Start und Nitro) auf dem Hostinger-VPS. Der aktive Releaseweg startet in GitHub Actions. GitLab und Forgejo sind als frühere Releasewege dokumentiert.
 
 ## Deployment-Vertrag
 
@@ -64,9 +62,9 @@ Die hier dokumentierten technischen Anforderungen gelten unabhängig davon, ob I
 
 `vite.config.ts` baut im Produktionsmodus mit Nitro als `node-server`. Eine Hosting-Variante, die nur statische HTML-/JS-Dateien ausliefert, reicht daher für die vollständige Anwendung nicht aus.
 
-## Mindestanforderungen an den IONOS-Tarif
+## Anforderungen an den Hostinger-VPS
 
-Der endgültige Tarif muss für die bestehende Architektur mindestens Folgendes ermöglichen:
+Die Produktionsarchitektur benötigt:
 
 - einen dauerhaft laufenden Node-Prozess oder eine gleichwertige Node-Server-Laufzeit,
 - geschützte serverseitige Umgebungsvariablen,
@@ -75,26 +73,18 @@ Der endgültige Tarif muss für die bestehende Architektur mindestens Folgendes 
 - HTTPS für `white-gloss.de`,
 - reproduzierbares Rollback auf einen vorherigen Git-Stand.
 
-Der aktive IONOS-Tarif wurde am 10. August 2026 als Ubuntu-24.04-VPS mit
-Root-/SSH-Zugang bestätigt. Er ist für die Node-/SSR-Anwendung geeignet; das
-Deployment erfolgt deshalb über GitHub Actions, den separaten Benutzer
-`white-gloss-ci` und einen root-eigenen, streng validierenden
-Aktivierungshelfer. Der bereits laufende Caddy-/systemd-Aufbau und die
-Servervorbereitung stehen in
-[`docs/ionos-vps-bootstrap.md`](ionos-vps-bootstrap.md).
+GitHub Actions verwendet den eingeschränkten SSH-Zugang `white-gloss-ci` und den root-eigenen Aktivierungshelfer. Caddy terminiert HTTPS und die Anwendung läuft als systemd-Dienst. Die Einrichtung des eingeschränkten Zugangs ist in [`ops/install-gitlab-release-gateway.py`](../ops/install-gitlab-release-gateway.py) hinterlegt.
 
 ## Zielablauf eines Deployments
 
 1. Änderung über Pull Request prüfen.
 2. CI muss erfolgreich sein (`npm audit`, ESLint, Quality-Skripte, Produktions-Build).
 3. Bei der erstmaligen Migration `0007` das unten beschriebene Wartungsfenster verwenden: automatische Deployments pausieren, alte Schreibzugriffe anhalten, richtige Datenbank sichern, den neuen Helfer installieren, Root-Migrationen ausführen und `npm run check:release` bestehen lassen. Das UUID-Altschema aus `supabase/migrations` ist kein kompatibles Ziel.
-4. Änderung nach ausdrücklicher Veröffentlichungsfreigabe nach `main` mergen.
-5. GitHub Actions reproduziert genau diesen Build und überträgt `.output/` auf IONOS. Der Build selbst führt keine Migrationen mehr aus.
-6. Erst nach erfolgreichem Build wird der neue Node-Stand aktiviert.
+4. Die beauftragte Änderung nach bestandener PR-Prüfung nach `main` mergen.
+5. Die Pflichtprüfungen laufen für den resultierenden Commit auf `main`. Nach erfolgreicher CI überträgt der GitHub-Workflow den geprüften Build an Hostinger. Der Build führt keine Migrationen aus.
+6. Der Hostinger-Dienst aktiviert den Release nach Prüfung von Archiv und Vorgänger.
 7. Direkt danach läuft `npm run smoke:production` gegen die Live-Domain.
 8. Bei einem fehlgeschlagenen Build erfolgt keine Aktivierung. Ein Rückfall nach Start-/Smoke-Fehler ist ausschließlich auf einen Stand mit dem benötigten Buchungsworkflow-Vertrag zulässig; das Verhalten ohne kompatibles Rückfallziel steht unten.
-
-Damit ist das gewünschte Ziel klar: **Merge nach `main` → automatisch zu IONOS → Build → Neustart → Smoke-Test**.
 
 ## Umgebungsvariablen
 
@@ -117,7 +107,7 @@ Die eingecheckte `.env` enthält nur Werte, die im Browser ohnehin öffentlich s
 ### Geheimnisse nur im Produktionshosting
 
 Folgende Werte gehören ausschließlich in die root-eigene Datei
-`/etc/white-gloss/environment` auf dem IONOS-VPS und **niemals** ins Repository:
+`/etc/white-gloss/environment` auf dem Hostinger-VPS und **niemals** ins Repository:
 
 | Variable                    | Zweck                                                              |
 | --------------------------- | ------------------------------------------------------------------ |
@@ -128,9 +118,6 @@ Folgende Werte gehören ausschließlich in die root-eigene Datei
 | `MAIL_TO_OWNER`             | Zieladresse interner Benachrichtigungen                            |
 | `SUPABASE_SERVICE_ROLE_KEY` | **Pflicht** — Foto-Upload der Kundschaft                           |
 | `ANTHROPIC_API_KEY`         | KI-Assistent im Adminbereich                                       |
-| `IMAP_HOST`                 | Posteingang im Adminbereich                                        |
-| `IMAP_USER`                 | Postfachname für den Posteingang                                   |
-| `IMAP_PASSWORD`             | Postfachpasswort für den Posteingang                               |
 | `DATABASE_URL`              | direkte Datenbankverbindung; nur dieser Variablenname wird gelesen |
 | `BETTER_AUTH_SECRET`        | dauerhafter Signaturschlüssel, mindestens 32 Zeichen               |
 
@@ -193,42 +180,15 @@ Videos und Dateien über rund 3,7 MB werden übersprungen und im Ergebnis
 benannt. Die Datenschutzerklärung führt diese Übermittlung in Abschnitt 7
 auf — wird der Assistent abgeschaltet, gehört dieser Abschnitt entfernt.
 
-## Posteingang im Adminbereich
+## Posteingang
 
-Der Adminbereich kann das bestehende Postfach unter `/admin/posteingang`
-anzeigen. Dafür sind drei Werte nötig; optional kommen zwei weitere hinzu:
-
-| Variable        | Pflicht | Bedeutung                                                  | IONOS-Vorgabe   |
-| --------------- | ------- | ---------------------------------------------------------- | --------------- |
-| `IMAP_HOST`     | ja      | Adresse des Mailservers                                    | `imap.ionos.de` |
-| `IMAP_USER`     | ja      | vollständige Mailadresse, z. B. `info@white-gloss.de`      | –               |
-| `IMAP_PASSWORD` | ja      | Passwort dieses Postfachs                                  | –               |
-| `IMAP_PORT`     | nein    | Port des Mailservers                                       | `993`           |
-| `IMAP_SECURE`   | nein    | direkte Verschlüsselung; leiten sich sonst aus dem Port ab | `true`          |
-
-`IMAP_PASSWORD` ist das Passwort des echten Firmenpostfachs und damit eines der
-empfindlichsten Geheimnisse überhaupt. Es gehört ausschließlich in
-`/etc/white-gloss/environment`, niemals ins Repository, niemals mit
-`VITE_`-Präfix und niemals in einen Chatverlauf.
-
-Fehlt einer der drei Pflichtwerte, zeigt die Seite einen Einrichtungshinweis
-statt einer Fehlermeldung; der übrige Adminbereich bleibt unberührt.
-
-Die Verbindung öffnet das Postfach **schreibgeschützt**. Nachrichten werden
-weder als gelesen markiert noch verschoben, gelöscht oder in der Datenbank
-gespeichert; Anhänge werden nur mit Namen und Größe aufgeführt und nicht zum
-Herunterladen angeboten.
+Die Firmenpostfächer liegen bei Hostinger Mail. Für DNS und Postfacheinstellungen ist das Hostinger hPanel maßgeblich. Der frühere Website-Pfad `/admin/posteingang` leitet weiter.
 
 ## E-Mail-Versand mit Resend
 
 Ohne `RESEND_API_KEY` und `MAIL_FROM` wird keine Kundenmail versendet. Buchungen können trotzdem gespeichert werden; der Mailversand meldet dann die fehlende Konfiguration. Die Variablennamen sind auf dem VPS vorhanden; ihre geheimen Werte werden beim Deployment weder gelesen noch übertragen.
 
-Im geprüften Resend-Konto ist `white-gloss.de` in der Region `eu-west-1`
-vollständig verifiziert. DKIM, SPF-MX und SPF-TXT wurden am 10. August 2026
-über die IONOS-DNS-Verwaltung bestätigt; eine reale Produktionstestmail von
-`buchung@white-gloss.de` wurde anschließend erfolgreich zugestellt. Die
-Deployment-Automation überträgt weiterhin weder Resend-Schlüssel noch andere
-Produktionsgeheimnisse.
+Resend ist der separate Versanddienst. Den Verifizierungsstatus und die erforderlichen Einträge im Resend-Konto abgleichen. Die DNS-Zone wird im Hostinger hPanel gepflegt. Der GitHub-Workflow überträgt keinen Resend-Schlüssel.
 
 Empfohlene Produktionswerte:
 

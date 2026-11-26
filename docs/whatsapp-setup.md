@@ -16,7 +16,7 @@ Die Reihenfolge für Migration, Release und Timer steht in
 ## Vorhandenes Meta-Konto verbinden
 
 Die bestehende Meta-Cloud-API-Einrichtung wird weiterverwendet. Alle Werte gehören
-in die geschützte Serverumgebung, beim aktuellen IONOS-Betrieb in
+in die geschützte Serverumgebung, beim Betrieb auf dem Hostinger-VPS in
 `/etc/white-gloss/environment`. `.env.example` enthält nur leere Felder. Keine
 Zugangsdaten in Git, Browservariablen (`VITE_*`), Nachrichten oder Logs ablegen.
 
