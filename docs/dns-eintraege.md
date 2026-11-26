@@ -10,6 +10,8 @@ beschreibt die Einträge und den Zonenexport.
 | Eintrag | Öffentliche DNS-Antwort |
 | --- | --- |
 | Nameserver | `byte.dns-parking.com`, `pixel.dns-parking.com` |
+| Website und Panel, A für `@` und `panel` | `187.126.4.225` |
+| Website, CNAME für `www` | `white-gloss.de` |
 | Hostinger Mail, MX an `@` | Priorität 5 `mx1.hostinger.com`, Priorität 10 `mx2.hostinger.com` |
 | Hostinger Mail, SPF-TXT an `@` | `v=spf1 include:_spf.mail.hostinger.com ~all` |
 | Hostinger Mail, DKIM | Drei CNAMEs `hostingermail-a/b/c._domainkey` auf die jeweiligen Ziele unter `dkim.mail.hostinger.com` |

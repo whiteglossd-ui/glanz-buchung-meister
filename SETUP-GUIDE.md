@@ -1,95 +1,40 @@
-# Setup-Guide: Meta Pixel, Google Search Console & Git-Deployment
+# Meta Pixel, Google Search Console und Veröffentlichung
 
-## 1️⃣ Meta Pixel & Conversions API aktivieren
+## Meta Pixel und Conversions API
 
-Damit das Meta Pixel und die Conversions API live gehen, müssen folgende Umgebungsvariablen gesetzt werden:
+`VITE_META_PIXEL_ID` ist eine öffentliche Build-Variable. Die Pixel-ID steht
+im Meta Events Manager unter **Datenquellen → Web → Pixel**.
 
-### Client-Seite (in `.env` im Repo – öffentlich, daher unbedenklich):
-```env
-VITE_META_PIXEL_ID="DEINE_PIXEL_ID"
-```
+Für die serverseitige Conversions API gehören `META_PIXEL_ID` und
+`META_CAPI_ACCESS_TOKEN` ausschließlich in die geschützte Laufzeitkonfiguration
+des Website-Diensts auf dem Hostinger-VPS. Das Token wird im Meta Events Manager
+unter **Einstellungen → Conversions API** ausgestellt.
 
-Die Pixel-ID ist öffentlich – sie steht ohnehin im Quelltext jeder Seite. Du findest sie im Meta Events Manager unter **Datenquellen → Web → Pixel**.
+Nach erfolgreichem Release kann der Meta Events Manager den Status der
+Browser- und Serveranbindung anzeigen. Die Website lädt die Messung nach
+Einwilligung. Keine echten Buchungen oder Kundenanfragen zu Testzwecken auslösen.
 
-### Server-Seite (in den geschützten Umgebungsvariablen der Deployment-Plattform – GEHEIM!):
-In **hPanel → Hermes Agent → Dashboard → Environment**:
-```env
-META_PIXEL_ID=DEINE_PIXEL_ID
-META_CAPI_ACCESS_TOKEN=DEIN_TOKEN
-```
+## Google Search Console
 
-Das CAPI-Token erstellst du im Meta Events Manager unter **Einstellungen → Conversions API → Zugriffstoken generieren**.
+1. In der [Search Console](https://search.google.com/search-console) die
+   Domain-Property `white-gloss.de` öffnen.
+2. Bei Einrichtung einer DNS-Verifizierung den von Google vorgegebenen TXT-Eintrag
+   im Hostinger hPanel für `white-gloss.de` ergänzen.
+3. Unter **Sitemaps** die Adresse `https://white-gloss.de/sitemap.xml` verwenden.
 
-### Nach dem Setzen:
-1. Im Repo die `.env` aktualisieren
-2. Nach `main` pushen
-3. Git-Deployment auslösen
+[DNS-Einträge bei Hostinger](docs/dns-eintraege.md)
 
-> **Testen**: Nach dem Deployment auf https://whitegloss.de gehen, im Cookie-Banner "Akzeptieren" klicken und in der Browser-Console prüfen, ob `fbq` geladen wird. Im Meta Events Manager sollten "Aktiv (Browser)" und "Aktiv (Server)" erscheinen.
+## GitHub und Hostinger
 
-## 2️⃣ Google Search Console & Local SEO
+Quellcode und Pull Requests liegen im
+[aktuellen GitHub-Repository](https://github.com/whiteglossd-ui/glanz-buchung-meister).
+Nach bestandenen Pflichtprüfungen veröffentlicht GitHub Actions den aktuellen
+Commit auf `main` automatisch auf dem Hostinger-VPS. Den erfolgreichen Run
+und den aktiven Stand auf `https://white-gloss.de` prüfen.
 
-### Google Search Console:
-1. Gehe zu https://search.google.com/search-console
-2. Eigenschaft **"whitegloss.de"** (Domain-Property) hinzufügen
-3. Als Verifikationsmethode **"DNS-Eintrag"** wählen
-4. Den TXT-Record im DNS-Bereich des Hostinger hPanels eintragen
+[Veröffentlichung und Serverkonfiguration](docs/deployment.md)
 
-Alternativ: Meta-Tag-Verifikation. Dafür müsste in den `<head>`-Bereich der Seite ein Tag eingefügt werden. Bei Bedarf den Code-Ort nennen.
+## Ratgeber
 
-### Sitemap einreichen:
-Nach der Verifikation unter **Sitemaps** eintragen:
-```
-https://whitegloss.de/sitemap.xml
-```
-
-### Aktueller SEO-Status (bereits implementiert):
-- ✅ Sitemap mit 29 URLs
-- ✅ robots.txt korrekt
-- ✅ 13 regionale Abholservice-Seiten mit unique content
-- ✅ JSON-LD Structured Data (LocalBusiness, Service, FAQ, BlogPosting)
-- ✅ SEO-Meta-Tags pro Seite
-- ✅ Bild-Optimierung (AVIF, WebP, JPG)
-
-### Noch offen:
-- ❌ Google Search Console Verifikation
-- ❌ Sitemap einreichen
-- ❌ Sitemap zu Bing Webmaster Tools hinzufügen
-
-## 3️⃣ Git & Deployment
-
-### Für Push-Zugriff auf GitHub:
-1. Gehe zu https://github.com/White-Gloss/glanz-buchung-meister/settings/keys
-2. **Deploy keys** → **Add deploy key**
-3. Name: `hermes-agent-deploy`
-4. Public Key:
-   ```
-   ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEbpXqR4PJyACN7kRDegt52kYTRf3byizP1I8u87cbUn hermes-agent-deploy@whitegloss
-   ```
-5. **Allow write access** aktivieren ✅
-6. **Add key**
-
-Danach kann ich per SSH pushen:
-```bash
-git remote set-url origin git@github.com:White-Gloss/glanz-buchung-meister.git
-git push origin main
-```
-
-### Deployment-Automatisierung (optional):
-Im hPanel bei der Git-Bereitstellung die **Webhook-URL** kopieren und in GitHub unter **Settings → Webhooks → Add webhook** einfügen. Dann löst jeder Push auf `main` automatisch ein Deployment aus.
-
-## 4️⃣ Blog-Artikel importieren
-
-Die 6 vorbereiteten Artikel liegen in:
-- **Lokal**: `blog-articles/` im Repository
-- **Server**: `/home/u556297683/domains/whitegloss.de/hbuilds/last-source/blog-articles/`
-
-**Import**: Über das Admin-Panel unter https://whitegloss.de/auth anmelden → Beiträge verwalten → Neuen Beitrag → Metadaten + Markdown-Content aus den Dateien übernehmen.
-
-## Prioritäten-Empfehlung
-
-1. **Heute**: GitHub Deploy Key hinzufügen → ich pushe die Blog-Artikel
-2. **Heute**: Meta Pixel-ID mitteilen → ich aktualisiere die `.env`
-3. **Diese Woche**: Google Search Console Verifikation
-4. **Diese Woche**: CAPI-Token generieren
-5. **Später**: Webhook für automatisches Deployment
+Vorbereitete Artikel liegen in `blog-articles/`. Inhalte im bestehenden
+Website-Studio des CMS bearbeiten und vor der Freigabe prüfen.

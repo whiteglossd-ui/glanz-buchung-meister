@@ -30,7 +30,7 @@ The repo is its own plugin marketplace (`.claude-plugin/marketplace.json`), and
 install it when you trust the project folder. Manually:
 
 ```
-/plugin marketplace add White-Gloss/glanz-buchung-meister
+/plugin marketplace add whiteglossd-ui/glanz-buchung-meister
 /plugin install verify@white-gloss
 ```
 

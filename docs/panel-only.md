@@ -16,9 +16,15 @@ Die Adapter bleiben als historische Implementierungen erhalten. Sie können nur 
 
 ## Veröffentlichung über GitHub und Hostinger
 
-Ein neuer Code-Stand allein schaltet einen bereits mit `BOOKING_OPERATIONS=roapp` gestarteten Prozess nicht um. Aktuell gemessener Produktionsstand vor Veröffentlichung: Release `8e900aa082fa2f502290a85a6036fcc9a0b3a95a`, Backend `roapp`, Sync aktiviert.
+Der aktive Releaseweg steht in [GitHub und Hostinger](deployment.md#github-und-hostinger).
 
-1. Root-Zugang über die bestehende Hostinger-VPS-Verwaltung verwenden. Aktiven Website-Release und Timerzustände erneut prüfen. Keine sudo-Berechtigung erweitern und den Website-Deploymenthelfer nicht für das Panel verwenden.
+## Historische Umstellung vom 5. Oktober 2026
+
+Die folgende Anleitung dokumentiert den damaligen Wechsel. Ein neuer Code-Stand
+allein schaltete einen bereits mit `BOOKING_OPERATIONS=roapp` gestarteten Prozess
+nicht um. Damals vor Veröffentlichung gemessener Produktionsstand: Release `8e900aa082fa2f502290a85a6036fcc9a0b3a95a`, Backend `roapp`, Sync aktiviert.
+
+1. Root-Zugang über die damalige Serververwaltung verwenden. Aktiven Website-Release und Timerzustände erneut prüfen. Keine sudo-Berechtigung erweitern und den Website-Deploymenthelfer nicht für das Panel verwenden.
 2. Die vorhandenen Website- und Panel-Sicherungen ausführen und überprüfen. Die Serverkonfiguration als root-private Kopie sichern. Den Website-Automationstimer `white-gloss-reminder.timer` und den zugehörigen Lauf für die Umstellung anhalten.
 3. Mit `scripts/stage-panel-environment.mjs --source=/etc/white-gloss/environment --output=<neue-root-private-Datei>` eine getrennte Konfiguration vorbereiten. Das Skript ersetzt ausschließlich `BOOKING_OPERATIONS`; es aktiviert nichts, gibt keine Geheimnisse aus und überschreibt keine vorhandene Datei. Die unveränderte Quelle und alle übrigen Einstellungen werden geprüft.
 4. Das geprüfte Website-Archiv mit dem bestehenden `/usr/local/sbin/white-gloss-deploy activate` unter Angabe des erwarteten bisherigen Releases und der Archivprüfsumme aktivieren. Der Helper kann keine Umgebungsvariablen ändern. Beide Schritte müssen deshalb durch den bestehenden Serveradministrator zusammen ausgeführt werden.
