@@ -1,5 +1,5 @@
 import { Link, useRouter } from "@tanstack/react-router";
-import { Fragment, useCallback, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState, useSyncExternalStore, type MouseEvent, type ReactNode } from "react";
 import {
   cities,
   cityPickupPriceText,
@@ -14,6 +14,7 @@ import {
   type VehicleClass,
 } from "@/data/site";
 import { homeCopy } from "@/data/home-copy";
+import { darkMobilePoster } from "@/data/scroll-film";
 import { LazyConfigurator } from "@/components/lazy-configurator";
 import { LazyRundumInquiry } from "@/components/lazy-rundum-inquiry";
 import { BOOKING_JUMP, focusBookingHeading } from "@/lib/booking-anchor-focus";
@@ -257,6 +258,16 @@ function DarkBooking({
     [router],
   );
   const rundum = useSyncExternalStore(subscribe, isRundumRequest, () => false);
+  // The mode picker is already at the form. Preserve its viewport and focus;
+  // incoming links from elsewhere still jump to the section's real anchors.
+  function selectMode(event: MouseEvent<HTMLAnchorElement>) {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
+    event.preventDefault();
+    const hash = event.currentTarget.hash.slice(1);
+    if (window.location.hash.slice(1) !== hash) {
+      void router.navigate({ to: ".", search: true, hash, resetScroll: false, hashScrollIntoView: false });
+    }
+  }
   return (
     <section className="sec" id="buchung" aria-labelledby="buchung-heading">
       {["termin", "service", "rundum-service", "rundum-anfrage"].map((id) => (
@@ -265,15 +276,20 @@ function DarkBooking({
       {atmo("leather-wide")}
       <div className="wrap book">
         <div className="book__intro" data-booking-promise>
-          <p className="label label--rule" data-reveal>08 / Dein Rundum-Service</p>
-          <h2 className="h2 h2--xl chrome" id="buchung-heading" tabIndex={-1} data-reveal>
-            <Words text={"Dein Auto.\nDein Wunsch.\nWir kümmern uns."} />
+          <p className="label label--rule">08 / Termin &amp; Rundum-Service</p>
+          <h2 className="h2 h2--xl book__title" id="buchung-heading" tabIndex={-1}>
+            Was braucht<br /> dein Auto?
           </h2>
-          <p className="muted" data-reveal>
-            Ob regelmäßige Autopflege, gründliche Innenraumreinigung oder Vorbereitung auf die
-            Leasingrückgabe: Sag uns, was dein Auto braucht.
+          <p className="book__lead">
+            Schon ein Paket im Blick? Dann wähle deinen Wunschtermin.
+            Noch unsicher oder mehrere Wünsche? Lars berät dich persönlich.
           </p>
-          <div className="book__facts" data-reveal>
+          <p className="small book__note">
+            Deine Anfrage ist unverbindlich. Deinen Termin bestätigen wir persönlich.
+          </p>
+          <details className="book__details">
+            <summary>So laufen Angebot und Abholung ab</summary>
+            <div className="book__facts">
             <div>
               <strong>Pflege und Reparatur aus einer Hand</strong>
               <p className="muted small">
@@ -290,29 +306,39 @@ function DarkBooking({
               <strong>Abholung passend zu deinem Alltag</strong>
               <p className="muted small">Dein Servicegebiet: {serviceArea}.</p>
             </div>
-          </div>
-          <p className="small book__note" data-reveal>
-            Deine Anfrage ist unverbindlich. Deinen Termin bestätigen wir persönlich.
-          </p>
+            </div>
+          </details>
+          <figure className="book__print">
+            <picture>
+              <source media="(min-width:1080px)" srcSet="/media/dark/customer-selection/own-04-480.webp" />
+              <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='300'/%3E" alt="" width="480" height="300" loading="lazy" decoding="async" />
+            </picture>
+            <figcaption>Lackfinish an einem Kundenfahrzeug</figcaption>
+          </figure>
         </div>
 
         <div className="cfg wgt-booking" data-booking-form aria-labelledby="anfrage-heading">
           <h3 className="h3 h3--lg" id="anfrage-heading">Jetzt Termin anfragen</h3>
-          <nav className="cfg__mode" aria-label="Art der Anfrage">
-            <a href="#buchung" aria-current={!rundum ? "location" : undefined} aria-controls="paket-formular">
-              Paket wählen
+          <nav className="cfg__mode book__modes" aria-label="Art der Anfrage">
+            <a href="#buchung" onClick={selectMode} aria-labelledby="book-mode-package" aria-describedby="book-mode-package-help" aria-current={!rundum ? "location" : undefined} aria-controls="paket-formular">
+              <strong id="book-mode-package">Paket wählen</strong>
+              <span id="book-mode-package-help">Preis sehen, Termin wünschen</span>
             </a>
             <a
               href="#rundum-anfrage"
+              onClick={selectMode}
               aria-current={rundum ? "location" : undefined}
               aria-controls="rundum-formular"
+              aria-labelledby="book-mode-service"
+              aria-describedby="book-mode-service-help"
             >
-              Rundum-Service
+              <strong id="book-mode-service">Rundum-Service</strong>
+              <span id="book-mode-service-help">Wünsche kombinieren</span>
             </a>
           </nav>
           <div id="paket-formular" hidden={rundum}>
             <p className="muted small cfg__intro">
-              Wähle dein Paket und deinen Wunschtermin. Alle weiteren Details klären wir direkt mit dir.
+              Wähle zuerst deine Fahrzeugklasse. Du siehst direkt, was dein Paket kostet.
             </p>
             <LazyConfigurator
               eager={Boolean(initialPackage || initialCity)}
@@ -322,7 +348,7 @@ function DarkBooking({
           </div>
           <div id="rundum-formular" hidden={!rundum}>
             <p className="muted small cfg__intro">
-              Sag uns, was dein Auto braucht. Alle weiteren Details klären wir direkt mit dir.
+              Wähle aus, wobei wir helfen dürfen. Du bekommst ein persönliches Angebot, bevor du zusagst.
             </p>
             <LazyRundumInquiry />
           </div>
@@ -367,6 +393,7 @@ export function DarkHome({
           <div className="reel__stick">
             <canvas className="reel__canvas" aria-hidden="true" />
             <picture aria-hidden="true">
+              <source media="(max-width: 767px)" type="image/avif" srcSet={darkMobilePoster} />
               <source media="(max-width: 767px)" srcSet={darkFrameSrc("m", 0)} />
               <img className="reel__poster" src={darkFrameSrc("d", 0)} alt="" fetchPriority="high" />
             </picture>

@@ -168,11 +168,18 @@ export async function verifyRundumUi(page, { label, screenshot }) {
   await intro.scrollIntoViewIfNeeded();
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 2));
   await screenshot(`${label}-rundum-intro.png`, intro);
+  await request.scrollIntoViewIfNeeded();
+  await request.focus();
+  const modeTop = (await request.boundingBox()).y;
   await request.click();
   await page.waitForFunction(() => location.hash === "#rundum-anfrage");
   const form = page.getByRole("form", { name: "Rundum-Service anfragen", exact: true });
   await form.waitFor({ state: "visible", timeout: 5000 });
-  await assertStableRundumArrival(page, `${label}: combined section mode link`, reads);
+  await reads.complete(`${label}: in-place switch`);
+  assert.equal(await request.getAttribute("aria-current"), "location");
+  assert.ok(Math.abs((await request.boundingBox()).y - modeTop) <= 3,
+    `${label}: switching the already-visible picker must not return to the section heading`);
+  assert.equal(await request.evaluate((link) => link === document.activeElement), true);
   assert.deepEqual(await form.locator('input[name="services"]').evaluateAll((inputs) => inputs.map((input) => input.value)), [...RUNDUM_SERVICES]);
   for (const [id, required] of [["name", true], ["email", true], ["phone", false], ["vehicleMake", true], ["vehicleModel", true], ["text", true], ["date", false]]) {
     const input = form.locator("#rundum-" + id);

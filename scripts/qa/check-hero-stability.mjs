@@ -87,7 +87,12 @@ async function geometry(page) {
       actionTargets: actions.map((link) => new URL(link.href).pathname + new URL(link.href).hash).sort(),
       actions: actions.map((link) => ({ ...rect(link), inert: Boolean(link.closest("[inert]")) || link.inert,
         unobscured: link.contains(document.elementFromPoint(rect(link).left + rect(link).width / 2, rect(link).top + rect(link).height / 2)) })),
-      poster: poster ? { complete: poster.complete, width: poster.naturalWidth } : null,
+      poster: poster ? {
+        complete: poster.complete, width: poster.naturalWidth,
+        preloaded: [...document.querySelectorAll('link[rel="preload"][as="image"]')].some(
+          (link) => (!link.media || matchMedia(link.media).matches) && link.href === poster.currentSrc,
+        ),
+      } : null,
       live: reel?.classList.contains("is-live") ?? false,
       chapter: reel?.dataset.ch ?? "0",
       reelHeight: reel?.getBoundingClientRect().height ?? 0,
@@ -166,6 +171,7 @@ try {
       assert.equal(result.initial.actionCount, 2, "The hero has exactly two primary actions.");
       assert.deepEqual(result.initial.actionTargets, ["/#ablauf", "/#buchung"], "Hero actions lead to pickup process and request.");
       assert.ok(result.initial.poster?.complete && result.initial.poster.width > 0, "The first hero frame is decoded.");
+      assert.ok(result.initial.poster.preloaded, "Preload the displayed hero frame rather than an unused poster.");
       assert.ok(result.initial.overflow <= 2, "The hero must not introduce horizontal overflow.");
       actionsReachable(result.initial, `${viewport.name} first visit`);
 

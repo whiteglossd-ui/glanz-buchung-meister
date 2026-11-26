@@ -589,6 +589,11 @@ try {
         const header = document.querySelector("[data-site-header]")?.getBoundingClientRect();
         return heading && header && heading.top >= header.bottom - 1 && heading.top < innerHeight;
       }, undefined, { timeout: 5000 });
+      const picker = page.getByRole("navigation", { name: "Art der Anfrage" });
+      const choice = await picker.boundingBox();
+      assert.ok(choice && choice.y >= 0 && choice.y + choice.height <= (width === 390 ? 844 : 1000),
+        `${width}px ${path}: both booking paths must fit inside the arrival viewport: ${JSON.stringify(choice)}`);
+      assert.equal(await picker.getByRole("link").count(), 2);
       await page.locator("#buchung").screenshot({ path: `.qa-output/review-request-${path === "/" ? "" : "lossburg-"}${width}.png` });
       await page.locator("#ergebnisse").scrollIntoViewIfNeeded();
       // Customer videos play inline; the started player receives keyboard focus.

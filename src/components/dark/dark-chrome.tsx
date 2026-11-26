@@ -129,7 +129,7 @@ export function DarkHeader() {
   // Tastaturfokus, sonst startet jeder Menü-Öffner eine Startseiten-Abfrage.
   const logo = (onClick?: () => void) => (
     <Link to={homePath} className="hdr__logo" data-site-logo onClick={onClick} preload={onClick ? false : undefined} aria-label={`${site.name} – zur Startseite`}>
-      <img src="/media/logo-280.avif" alt={site.name} width={140} height={70} />
+      <img src="/media/logo-280.avif" alt={site.name} width={280} height={161} />
     </Link>
   );
 
@@ -269,7 +269,7 @@ export function DarkFooter() {
         </div>
         <div className="wrap foot__top">
           <div className="foot__brand">
-            <img src="/media/logo-280.avif" alt={site.name} width={140} height={70} loading="lazy" />
+            <img src="/media/logo-280.avif" alt={site.name} width={280} height={161} loading="lazy" />
             <p className="muted small">
               Innenraumreinigung, Lackkorrektur und Keramikversiegelung in {site.city}. Auf Wunsch hole
               ich dein Auto ab und bringe es dir frisch aufbereitet zurück.

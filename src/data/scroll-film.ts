@@ -10,16 +10,17 @@ export const scrollFilm = {
   mobilePosters: `${base}/poster-mobile-540-v2.webp 540w, ${base}/poster-mobile-720-v2.webp 720w`,
 };
 
+// The current public hero is the cockpit sequence, not the classic film.
+// Keep the media-qualified head hint and its visible picture in agreement.
+export const darkMobilePoster = "/media/dark/seq/m/poster-720.avif";
 export const scrollFilmPreloads = [
   {
     rel: "preload" as const,
     as: "image",
-    type: "image/webp",
+    type: "image/avif",
     fetchPriority: "high" as const,
     media: scrollFilm.mobileQuery,
-    href: scrollFilm.mobilePoster,
-    imageSrcSet: scrollFilm.mobilePosters,
-    imageSizes: "100vw",
+    href: darkMobilePoster,
   },
   {
     rel: "preload" as const,
@@ -27,8 +28,6 @@ export const scrollFilmPreloads = [
     type: "image/webp",
     fetchPriority: "high" as const,
     media: "(min-width: 768px)",
-    href: scrollFilm.desktopPoster,
-    imageSrcSet: scrollFilm.desktopPosters,
-    imageSizes: "100vw",
+    href: "/media/dark/seq/d/001.webp",
   },
 ];
