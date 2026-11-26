@@ -1,28 +1,12 @@
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
-import { googleProfile } from "@/data/google-profile";
+import { ReviewShowcase } from "./review-showcase";
 
 const GoogleReviews = lazy(() =>
   import("@/components/google-reviews").then((m) => ({ default: m.GoogleReviews })),
 );
 
 function CompactSkeleton() {
-  return (
-    <div
-      role="status"
-      aria-label="Google-Kundenbewertungen werden geladen"
-      className="mt-8 border-y border-line py-5"
-    >
-      <div className="h-6 w-64 max-w-full animate-pulse rounded-sm bg-line" />
-      <a
-        className="mt-3 inline-flex min-h-11 items-center text-sm text-muted underline"
-        href={googleProfile.url}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Alle Bewertungen auf Google ansehen
-      </a>
-    </div>
-  );
+  return <ReviewShowcase />;
 }
 
 /**

@@ -6,6 +6,8 @@ import {
   parseGoogleReviews,
 } from "./google-reviews.server.ts";
 import { googleProfile } from "../data/google-profile.ts";
+import reviewLinks from "../data/review-links.json" with { type: "json" };
+import { originalReviewText, selectReviewHighlights } from "./review-highlights.ts";
 
 // Fictional transport fixtures, never displayed in the website.
 const profile = {
@@ -47,6 +49,27 @@ test("uses Google's aggregate without recomputing it from the displayed sample; 
   assert.equal(parsed.reviews[0].rating, 3);
   assert.equal(parsed.reviews[0].text, payload.reviews[0].comment);
   assert.throws(() => parseGoogleReviews({ ...payload, averageRating: 6 }));
+});
+test("selects a substantive highlight, ignores textless reviews and keeps the other written reviews in arrival order", () => {
+  const item = (id: string, text: string) => ({ id, text, author: "Test", rating: 5, date: "2026-09-01" });
+  const short = item("short", "War gut.");
+  const long = item("long", "Die Aufbereitung war gut organisiert. Die Preis-Leistung war für mich nachvollziehbar.");
+  const third = item("third", "Gerne wieder.");
+  const items = [item("textless", " "), short, long, third];
+  assert.deepEqual(selectReviewHighlights(items), { featured: long, more: [short, third] });
+  assert.deepEqual(selectReviewHighlights(items.slice(0, 1)), { featured: undefined, more: [] });
+  assert.equal(originalReviewText("Erste Zeile.\nZweite Zeile.\n\n(Translated by Google)\nThe translation."), "Erste Zeile.\nZweite Zeile.");
+  assert.equal(originalReviewText("Original.\n\n(Von Google übersetzt)\nÜbersetzung."), "Original.");
+});
+test("fallback uses distinct official Google Maps share links, not stored reviews", () => {
+  const links = [reviewLinks.featured, ...reviewLinks.more];
+  assert.equal(links.length, 5);
+  assert.equal(new Set(links.map(({ url }) => url)).size, links.length);
+  assert.equal(new Set(links.map(({ title }) => title)).size, links.length);
+  for (const link of links) {
+    assert.match(link.url, /^https:\/\/maps\.app\.goo\.gl\/[A-Za-z0-9]+$/);
+    assert.deepEqual(Object.keys(link).sort(), ["title", "url"]);
+  }
 });
 test("disabled or incomplete configuration never calls Google", async () => {
   const fetcher: typeof fetch = async () => {

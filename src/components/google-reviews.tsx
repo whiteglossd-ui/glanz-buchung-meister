@@ -1,4 +1,5 @@
 import { ReviewsSpotlight } from "./reviews-spotlight";
+import { ReviewShowcase } from "./review-showcase";
 import { QueryClient, useQuery } from "@tanstack/react-query";
 import { googleProfile, type GoogleReviewsData } from "@/data/google-profile";
 
@@ -67,7 +68,8 @@ export function GoogleReviews({ compact = false }: { compact?: boolean }) {
     </div>
   );
 
-  if (!current || compact) return <ReviewsSpotlight data={current} />;
+  if (compact) return <ReviewShowcase data={current} />;
+  if (!current) return <ReviewsSpotlight />;
 
   return (
     <section
@@ -93,7 +95,7 @@ export function GoogleReviews({ compact = false }: { compact?: boolean }) {
         {new Date(current.fetchedAt).toLocaleDateString("de-DE", { timeZone: "Europe/Berlin" })}.
       </p>
       <div className="mt-8 grid gap-6 md:grid-cols-3">
-        {current.reviews.map((review) => (
+        {current.reviews.slice(0, 3).map((review) => (
           <article key={review.id} className="min-w-0 border border-line bg-surface p-5">
             <div className="flex items-center justify-between gap-2">
               <h3 className="text-lg font-medium">{review.author}</h3>
@@ -137,4 +139,3 @@ export function GoogleReviews({ compact = false }: { compact?: boolean }) {
     </section>
   );
 }
-

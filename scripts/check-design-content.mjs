@@ -51,6 +51,9 @@ export const APPROVED_SEO_BLOBS = Object.freeze({
   "src/components/configurator.tsx": "e7793430f41caf5fa9813841b96a8ab5e0da6601",
   "src/components/consent-banner.tsx": "b955cd31f63130fb4cff7d5722e179920be24c2e",
   "src/components/customer-video-gallery.tsx": "cff3e9c9ca3d4414bc8655ae4e119d72256eb291",
+  // November 26: owner-requested Google customer stories, with official share links.
+  "src/components/google-reviews.tsx": "9a9d378e93ae53f4cc726aa1fe61e46ffdfccece",
+  "src/components/lazy-google-reviews.tsx": "4985026e22a5c7bf81e5b9e196c0beed4b43cb06",
   "src/components/lazy-configurator.tsx": "cd9f22ef8f391c6ff116c17d1d342d47941a2b8d",
   "src/components/not-found.tsx": "aace3720e8a41a7ac61f6ae598cb26d2470243c5",
   "src/components/package-showcase.tsx": "570509fd2ee371cd498e838c4873b5b52bc82377",
@@ -62,6 +65,7 @@ export const APPROVED_SEO_BLOBS = Object.freeze({
   "src/components/workshop-map.tsx": "a6d39f7b40dedf89e2a9e557d4042458b8e5ee9c",
   // November 26: explicitly requested FAQ and editorial additions.
   "src/data/editorial-guides.json": "30f61f784fd85fe265cd16beea701a7a222ea55f",
+  "src/data/review-links.json": "07399789ba5aac7f36e52ae45293fb83f7bfe2e7",
   "src/data/ratgeber.ts": "8980c307cc8d0792cc72732c815a53f66b9a4739",
   "src/data/site.ts": "41d7b3adb10ed87d80af37bd9d9456707df3c6f5",
   "src/lib/article-navigation.ts": "fdce84a10deab3ca061662ae973905cf7b76d802",
@@ -112,6 +116,7 @@ const APPROVED_HOME_BLOBS = Object.freeze({
   "src/components/media-rail.tsx": "eea74893c74a9e60c4704df77d6eec2ee1ca0b3e",
   "src/components/package-showcase.tsx": "53b5f78114e8de746613fad8cfa1151ffb276384",
   "src/components/results-teaser.tsx": "9cfc89347decf120486ca49e69f854a7563b6850",
+  "src/components/review-showcase.tsx": "c68462140835c252be85af4948c821aec2d5f391",
   // November 24 owner request: improve the second scroll-film chapter.
   // See docs/homepage-cinematic-2026-11-24.md; all other content pins remain.
   "src/components/scroll-film-hero.tsx": "22dd7d41339d72c84788cc437e381a6bb6890665",
@@ -152,7 +157,7 @@ const cosmeticComponents = /^(Fragment|RevealLines|Icon[A-Z]|[A-Z].*Icon$)/;
 
 export const protectedFiles = [
   "src/data/site.ts", "src/data/ratgeber.ts", "src/data/editorial-guides.json", "src/data/local-proof.ts",
-  "src/data/google-profile.ts", "src/data/search-watchlist.ts", "src/data/sitemap-static.xml",
+  "src/data/google-profile.ts", "src/data/review-links.json", "src/data/search-watchlist.ts", "src/data/sitemap-static.xml",
   "src/lib/seo.ts", "src/lib/seo-policy.ts", "src/lib/seo-intents.ts", "src/lib/city-seo.ts",
   "src/lib/city-copy.ts", "src/lib/city-logistics.ts", "src/lib/article-navigation.ts",
   "src/lib/sitemap.ts", "src/lib/sitemap.server.ts", "src/lib/local-proof.ts",
@@ -428,7 +433,7 @@ export function inspectDesignContent({
     };
   }
   const protectedPresent = protectedFiles.filter((name) => names.includes(name)
-    || (commit === DESIGN_BASE && name === "src/data/editorial-guides.json"));
+    || (commit === DESIGN_BASE && ["src/data/editorial-guides.json", "src/data/review-links.json"].includes(name)));
   const seoBlobs = approvedSeoBlobs ?? (commit === DESIGN_BASE ? APPROVED_SEO_BLOBS : {});
   for (const [name, blobId] of Object.entries(seoBlobs)) {
     if ((!sources.includes(name) && !protectedPresent.includes(name)) || !/^[a-f0-9]{40}$/.test(blobId)) {

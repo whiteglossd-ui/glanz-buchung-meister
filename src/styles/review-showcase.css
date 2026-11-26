@@ -1,0 +1,33 @@
+.wg-reviews{--review-line:rgba(243,240,232,.2);--review-muted:#bfbcb5;--review-accent:#e6d3b2;min-width:0}
+.wg-reviews .wg-reviews__heading{margin:0 0 clamp(24px,4vw,50px);text-wrap:balance}
+.wg-reviews .wg-reviews__deck{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);min-height:310px;border:1px solid var(--review-line);background:#111216}
+.wg-reviews .wg-reviews__focus{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:clamp(24px,4vw,60px);min-width:0}
+.wg-reviews .wg-reviews__eyebrow{margin:0 0 16px;color:var(--review-accent);font:600 11px/1.4 var(--ui,Barlow,sans-serif);letter-spacing:.17em;text-transform:uppercase}
+.wg-reviews .wg-reviews__quote{margin:0;color:var(--ink,#f3f0e8);font:400 clamp(23px,3vw,43px)/1.17 var(--serif,Barlow,sans-serif);overflow-wrap:anywhere}
+.wg-reviews .wg-reviews__quote p{margin:0;white-space:pre-line}
+.wg-reviews .wg-reviews__focus h3{margin:0;color:var(--ink,#f3f0e8);font:400 clamp(25px,3vw,42px)/1.12 var(--serif,Barlow,sans-serif)}
+.wg-reviews .wg-reviews__meta{margin:18px 0 0;display:flex;flex-wrap:wrap;gap:5px 10px;align-items:baseline;color:var(--review-muted);font-size:14px;overflow-wrap:anywhere}
+.wg-reviews .wg-reviews__meta strong{color:var(--ink,#f3f0e8);font-weight:600}
+.wg-reviews .wg-reviews__stars{color:var(--review-accent);font-size:15px;letter-spacing:.14em;white-space:nowrap}
+.wg-reviews .wg-reviews__source{margin-top:22px;display:inline-flex;align-items:center;gap:14px;min-height:44px;border-bottom:1px solid var(--review-line);line-height:1.2}
+.wg-reviews .wg-reviews__source:hover{border-color:currentColor}
+.wg-reviews .wg-reviews__source span{font-size:19px}
+.wg-reviews .wg-reviews__art{position:relative;min-height:210px;overflow:hidden;margin:0;background:#17181c}
+.wg-reviews .wg-reviews__art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:58% center}
+.wg-reviews .wg-reviews__art::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(9,10,13,.35),transparent 58%)}
+.wg-reviews .wg-reviews__caption{margin:12px 0 0;color:var(--review-muted);font-size:13px}
+.wg-reviews .wg-reviews__bar{display:flex;justify-content:space-between;align-items:center;gap:14px;margin:28px 0 12px}
+.wg-reviews .wg-reviews__bar h3{margin:0;font:400 clamp(21px,2.4vw,30px)/1.14 var(--serif,Barlow,sans-serif)}
+.wg-reviews .wg-reviews__actions{display:flex;gap:6px;align-items:center;flex:none}
+.wg-reviews .wg-reviews__actions[hidden]{display:none}
+.wg-reviews .wg-reviews__actions button{display:grid;place-items:center;width:44px;height:44px;border:1px solid var(--review-line);background:none;color:var(--ink,#f3f0e8);font-size:21px;line-height:1;cursor:pointer;transition:background-color .2s,color .2s}
+.wg-reviews .wg-reviews__actions button:not([aria-disabled=true]):hover{background:var(--cream,#f3f0e8);color:var(--on-cream,#090a0d)}
+.wg-reviews .wg-reviews__actions button[aria-disabled=true]{opacity:.46;cursor:default}
+.wg-reviews .wg-reviews__track{--review-card:calc((100% - 28px) / 3);display:grid;grid-auto-flow:column;grid-auto-columns:var(--review-card);gap:14px;position:relative;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;margin:0;padding:0 0 10px;list-style:none;scrollbar-width:thin;scrollbar-color:#66635d #1b1c20}
+.wg-reviews .wg-reviews__item{padding:clamp(15px,2.15vw,29px);display:flex;flex-direction:column;justify-content:space-between;min-width:0;scroll-snap-align:start;background:#111216;border:1px solid var(--review-line)}
+.wg-reviews .wg-reviews__item .wg-reviews__quote{margin:8px 0 0;font-size:clamp(19px,1.7vw,24px);line-height:1.3}
+.wg-reviews .wg-reviews__item h4{margin:0;font:400 24px/1.13 var(--serif,Barlow,sans-serif)}
+.wg-reviews .wg-reviews__item .wg-reviews__source{align-self:flex-start;margin-top:8px}
+@media(max-width:920px){.wg-reviews .wg-reviews__track{--review-card:calc((100% - 14px) / 2)}}
+@media(max-width:650px){.wg-reviews .wg-reviews__deck{grid-template-columns:minmax(0,1fr);min-height:0}.wg-reviews .wg-reviews__art{min-height:0;aspect-ratio:2.05}.wg-reviews .wg-reviews__track{--review-card:84%;gap:10px}.wg-reviews .wg-reviews__bar{margin-top:20px}}
+@media(prefers-reduced-motion:reduce){.wg-reviews .wg-reviews__actions button{transition:none}}

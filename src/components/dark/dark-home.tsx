@@ -471,10 +471,8 @@ export function DarkHome({
           </div>
         </section>
 
-        {/* Google-Bewertungen: Überschrift kommt aus der echten Bewertungskomponente. */}
-        <section className="sec sec--tight" id="bewertungen">
+        <section className="sec sec--tight" id="bewertungen" aria-label="Google-Kundenbewertungen">
           <div className="wrap">
-            <p className="label label--rule" data-reveal>03 / Google</p>
             <div className="review__live">
               <LazyGoogleReviews compact />
             </div>
