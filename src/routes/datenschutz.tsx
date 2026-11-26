@@ -244,8 +244,9 @@ function PrivacyPage() {
           <p>
             Hostinger International Limited stellt das Hosting bereit. Anfragen und Termine werden
             von White-Gloss Detailing bearbeitet. Nachgereichte Fahrzeugaufnahmen werden im
-            geschützten White-Gloss-Kundenbereich gespeichert. Wenn der E-Mail-Versand
-            eingerichtet ist, werden
+            geschützten White-Gloss-Kundenbereich gespeichert. Soweit ältere Fahrzeugfotos noch
+            aus dem früheren Website-Upload gespeichert sind, können sie im damaligen privaten
+            Supabase-Speicher liegen. Wenn der E-Mail-Versand eingerichtet ist, werden
             Benachrichtigungen über Resend versendet; dabei werden Empfängeradresse, Betreff und
             Nachrichteninhalt an den Versanddienst übermittelt. Wenn die WhatsApp-Anbindung im
             Betrieb aktiviert ist, erhält Meta zusätzlich die in Abschnitt 5 beschriebenen
