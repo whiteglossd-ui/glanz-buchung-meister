@@ -592,7 +592,9 @@ try {
       await page.locator("#buchung").screenshot({ path: `.qa-output/review-request-${path === "/" ? "" : "lossburg-"}${width}.png` });
       await page.locator("#ergebnisse").scrollIntoViewIfNeeded();
       // Customer videos play inline; the started player receives keyboard focus.
-      const video = page.getByRole("button", { name: "Video abspielen: Hydrophober Lackschutz", exact: true });
+      const video = page.locator("#ergebnisse").getByRole("button", {
+        name: "White-Gloss Ceramic 0:11 Min.: Hydrophober Lackschutz abspielen", exact: true,
+      });
       await video.focus();
       await video.press("Enter");
       const player = page.locator('#ergebnisse video[src="/media/customer-beading.mp4"]');
@@ -653,4 +655,3 @@ try {
 }
 assert.equal(failures.length, 0, failures.join("\n"));
 console.log(`${results.length} responsive checks passed; no form or upload submitted.`);
-

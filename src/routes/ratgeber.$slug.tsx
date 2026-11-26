@@ -48,8 +48,8 @@ export const Route = createFileRoute("/ratgeber/$slug")({
   loader: async ({ params }) => loadArticle(params.slug),
   head: ({ loaderData }) =>
     pageHead({
-      title: articleNavigation[loaderData?.slug ?? ""]?.title ?? `${loaderData?.title ?? "Ratgeber"} | ${site.name}`,
-      description: loaderData?.excerpt ?? "",
+      title: loaderData?.seoTitle ?? articleNavigation[loaderData?.slug ?? ""]?.title ?? `${loaderData?.title ?? "Ratgeber"} | ${site.name}`,
+      description: (loaderData?.seoTitle ? loaderData.seoExcerpt : loaderData?.excerpt) ?? "",
       path: `/ratgeber/${loaderData?.slug ?? ""}`,
       image: loaderData?.image,
     }),
@@ -61,7 +61,8 @@ function ArticlePage() {
   const guide = articleNavigation[a.slug];
   const request = articleBookingSelection(a.slug);
   const service = services.find((s) => s.slug === guide?.service);
-  const others = guide ? guide.related.flatMap((slug) => articles.filter((x) => x.slug === slug)) : articles.filter((x) => x.slug !== a.slug).slice(0, 3);
+  const related = a.related ?? guide?.related;
+  const others = related ? related.flatMap((slug) => articles.filter((x) => x.slug === slug)) : articles.filter((x) => x.slug !== a.slug).slice(0, 3);
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -76,6 +77,8 @@ function ArticlePage() {
         publisher: { "@id": `${site.origin}/#betrieb` },
         image: `${site.origin}${a.image}`,
         description: a.excerpt,
+        ...(a.category ? { articleSection: a.category } : {}),
+        ...(a.sources?.length ? { citation: a.sources.map((source) => source.url) } : {}),
       },
       {
         "@type": "Organization",
@@ -103,8 +106,8 @@ function ArticlePage() {
       />
       <PageHero
         src={a.image}
-        alt={a.title}
-        kicker="Ratgeber"
+        alt={a.imageAlt ?? a.title}
+        kicker={a.category ? `Ratgeber · ${a.category}` : "Ratgeber"}
         title={a.title}
         lead={a.excerpt}
         crumbs={[
@@ -120,7 +123,13 @@ function ArticlePage() {
       />
       <article className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
         {guide ? <p className="mb-6 text-lg text-fg">{guide.question}</p> : null}
-        <p className="text-sm text-muted">Alle genannten Einstiegspreise gelten für die Kompaktklasse und verstehen sich {site.vatNote} Fahrzeuggröße und Zustand bestimmen den Aufwand; den verbindlichen Preis stimmen wir vor Beginn mit dir ab.</p>
+        {a.category && a.date ? (
+          <p className="kicker">
+            White-Gloss Detailing · <time dateTime={a.date}>{new Date(a.date).toLocaleDateString("de-DE", { dateStyle: "long", timeZone: "UTC" })}</time> · {a.minutes} Min.
+          </p>
+        ) : (
+          <p className="text-sm text-muted">Alle genannten Einstiegspreise gelten für die Kompaktklasse und verstehen sich {site.vatNote} Fahrzeuggröße und Zustand bestimmen den Aufwand; den verbindlichen Preis stimmen wir vor Beginn mit dir ab.</p>
+        )}
         {a.sections.map((s) => (
           <section key={s.heading} className="mt-10">
             <h2 className="font-display text-2xl">{s.heading}</h2>
@@ -131,6 +140,18 @@ function ArticlePage() {
             ))}
           </section>
         ))}
+        {a.sources?.length ? (
+          <aside aria-label="Weiterführende Quellen" className="mt-8 border-l border-line pl-4 text-sm text-muted">
+            {a.sources.map((source) => <a key={source.url} className="inline-flex min-h-11 items-center underline underline-offset-4" href={source.url}>{source.label}</a>)}
+          </aside>
+        ) : null}
+        {a.link ? (
+          <p className="mt-8 flex flex-wrap gap-x-6 text-sm">
+            <Link to={a.link.path as never} className="inline-flex min-h-11 items-center underline underline-offset-4">{a.link.label}</Link>
+            <Link to="/faq" className="inline-flex min-h-11 items-center underline underline-offset-4">Häufige Fragen</Link>
+            <Link to="/ratgeber" className="inline-flex min-h-11 items-center underline underline-offset-4">Alle Beiträge</Link>
+          </p>
+        ) : null}
         {service ? <p className="mt-8 leading-relaxed text-muted">
           Leistungsumfang und Grenzen findest du unter <Link to="/leistungen/$slug" params={{ slug: service.slug }} className="underline underline-offset-4">{service.nav}</Link>.
           {" "}{request.paket || request.leistung ? "Die Anfrage übernimmt das zugehörige Paket oder dein Interesse an dieser individuellen Leistung." : "Wähle in der Anfrage das passende Paket und deinen Abholort aus."}

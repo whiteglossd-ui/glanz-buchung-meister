@@ -2,6 +2,7 @@ import { z } from "zod";
 import { googleProfile, type GoogleReviewsData } from "../data/google-profile.ts";
 
 const stars = { ONE: 1, TWO: 2, THREE: 3, FOUR: 4, FIVE: 5 } as const;
+const REVIEW_WINDOW = 20;
 const reviewSchema = z.object({
   reviewId: z.string().min(1),
   reviewer: z.object({ displayName: z.string().optional(), isAnonymous: z.boolean().optional() }),
@@ -23,7 +24,7 @@ export function parseGoogleReviews(raw: unknown, now = Date.now()): GoogleReview
     averageRating: data.averageRating,
     totalReviewCount: data.totalReviewCount,
     // Preserve the API's updateTime-descending order, including textless reviews.
-    reviews: data.reviews.slice(0, 3).map((review) => ({
+    reviews: data.reviews.slice(0, REVIEW_WINDOW).map((review) => ({
       id: review.reviewId,
       author: review.reviewer.isAnonymous
         ? "Anonym"
@@ -120,7 +121,7 @@ export function createGoogleReviewsReader(
         if (!profileResponse.ok || !matchesGoogleProfile(await profileResponse.json()))
           throw new Error("Google profile mismatch");
         const reviewsResponse = await fetcher(
-          `https://mybusiness.googleapis.com/v4/${config.location}/reviews?pageSize=3&orderBy=updateTime%20desc`,
+          `https://mybusiness.googleapis.com/v4/${config.location}/reviews?pageSize=${REVIEW_WINDOW}&orderBy=updateTime%20desc`,
           { headers, signal: AbortSignal.timeout(5000) },
         );
         if (!reviewsResponse.ok) throw new Error("Google reviews unavailable");

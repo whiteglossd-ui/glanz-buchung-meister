@@ -1,6 +1,6 @@
 {
   "commit": "333487b4f12a01727ace6ec2f36d22c849551b00",
-  "authorization": "Rundum-Service und Kundenzugang, Betreiberauftrag 15.11.2026; anschließend öffentliche Du-Ansprache, Hero, Paketdarstellung und Markenname White-Gloss Detailing. Anpassung der Datenschutzerklärung an Hostinger und Foto-Nachreichung im Kundenbereich, Betreiberauftrag 26.11.2026. Keine pauschale Dateiausnahme.",
+  "authorization": "Rundum-Service und Kundenzugang, Betreiberauftrag 15.11.2026; anschließend öffentliche Du-Ansprache, Hero, Paketdarstellung und Markenname White-Gloss Detailing. Hostinger-Datenschutz, Foto-Nachreichung und Meister-Partner für Dellen und Lackierarbeiten, Betreiberaufträge 26.11.2026. Keine pauschale Dateiausnahme.",
   "files": {
     "src/components/booking-media-picker.tsx": {
       "beforeBlob": "c1e5f0f4705a5b7bfaef48f34725dda6f21859fa",
@@ -760,6 +760,16 @@
           {
             "value": "Einen Preis gibt es erst, wenn wir den Schaden gesehen haben. Wir beginnen erst mit Ihrer Zustimmung. Bei kleinen Stellen reicht oft ein Foto zur ersten Einschätzung.",
             "count": 1
+          },
+          {
+            "value": "Wir entfernen Dellen ohne Neulackierung, sofern der Schaden und der Lackzustand es zulassen.",
+            "count": 1
+          }
+        ],
+        "seo": [
+          {
+            "value": "pageHead({ title: `Dellen & Hagelschaden: Foto-Begutachtung | ${site.name}`, description: \"Parkdellen, Karosseriedellen und Hagelschäden lackschadenfrei ausbeulen, sofern technisch möglich. Foto-Begutachtung, Preis nach Prüfung.\", path: \"/dellen-hagelschaden\", preloadShot: \"dellen\", })",
+            "count": 1
           }
         ]
       },
@@ -770,11 +780,21 @@
             "count": 1
           },
           {
-            "value": "Einen Preis gibt es erst, wenn wir den Schaden gesehen haben. Wir beginnen erst mit deiner Zustimmung. Bei kleinen Stellen reicht oft ein Foto zur ersten Einschätzung.",
+            "value": "Bei kleinen Stellen reicht oft ein Foto für eine erste Einschätzung. Wir besprechen mit dir, welcher Meisterbetrieb die Arbeit ausführt und ob lackfreies Ausbeulen reicht oder Lackierarbeiten nötig sind. Du erfährst Umfang und Preis, bevor du zusagst.",
+            "count": 1
+          },
+          {
+            "value": "Wir koordinieren Dellenziehen und Lackierarbeiten mit Meister-Partnern. Lackfreies Ausbeulen ist möglich, wenn Schaden und Lackzustand es zulassen.",
             "count": 1
           },
           {
             "value": "Beschreib kurz den Schaden. Fotos ergänzt du nach der Anfrage in deinem Kundenbereich.",
+            "count": 1
+          }
+        ],
+        "seo": [
+          {
+            "value": "pageHead({ title: `Dellen & Hagelschaden: Foto-Begutachtung | ${site.name}`, description: \"Dellenziehen, Hagelschaden und Lackierarbeiten mit Meister-Partnern. Erste Einschätzung per Foto, verbindlicher Preis nach Prüfung.\", path: \"/dellen-hagelschaden\", preloadShot: \"dellen\", })",
             "count": 1
           }
         ]

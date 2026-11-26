@@ -226,7 +226,7 @@ async function checkMediaCollections(page, width) {
 
   const resultSection = page.locator("#ergebnisse");
   assert.equal(await resultSection.locator(".work").count(), 4, "One comparison and three video cards");
-  const triggers = resultSection.getByRole("button", { name: /^Video abspielen: / });
+  const triggers = resultSection.getByRole("button", { name: / abspielen$/ });
   assert.equal(await triggers.count(), 3, "The comparison card is not counted as a video");
   const comparison = resultSection.getByRole("slider", { name: "Vorher-Nachher-Vergleich verschieben", exact: true });
   await comparison.scrollIntoViewIfNeeded();
@@ -250,7 +250,9 @@ async function checkMediaCollections(page, width) {
     return response.request().method() === "GET" && response.request().resourceType() === "media" &&
       url.origin === new URL(qaBase).origin && /^\/media\/customer-beading\.(webm|mp4)$/.test(url.pathname);
   }, async () => {
-    await resultSection.getByRole("button", { name: "Video abspielen: Hydrophober Lackschutz", exact: true }).click();
+    await resultSection.getByRole("button", {
+      name: "White-Gloss Ceramic 0:11 Min.: Hydrophober Lackschutz abspielen", exact: true,
+    }).click();
     await resultSection.locator('video[src="/media/customer-beading.mp4"]').waitFor({ state: "visible" });
   });
   if (videoResponse.status() === 206) {
@@ -389,8 +391,10 @@ try {
     ]) {
       const chip = pickupLinks.locator(`a[href="/abholservice/${slug}"]`);
       assert.equal(await chip.count(), 1, `${name}: one pickup link`);
-      assert.ok(
-        flat(await chip.getAttribute("aria-label")).endsWith(`Abholung ${expected}`),
+      const accessibleName = new RegExp(`^${RegExp.escape(name)}(?: .+)? ${RegExp.escape(expected)}$`);
+      assert.equal(
+        await chip.and(pickupLinks.getByRole("link", { name: accessibleName })).count(),
+        1,
         `${name}: accessible pickup price is ${expected}`,
       );
       await chip.scrollIntoViewIfNeeded();
@@ -569,4 +573,3 @@ try {
   await browser.close();
 }
 console.log(JSON.stringify({ passed: results.length, results }, null, 2));
-

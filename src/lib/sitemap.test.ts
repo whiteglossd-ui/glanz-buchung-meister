@@ -4,6 +4,8 @@ import { describe, it } from "node:test";
 import { appendBlogSitemap, blogSitemapUrl, type SitemapBlogRow } from "./sitemap.ts";
 import { createSitemapResponder, loadPublishedSitemapBlogs, loadPublishedSitemapPages } from "./sitemap.server.ts";
 import { responseCacheControl } from "../../server/cache-policy.ts";
+import editorial from "../data/editorial-guides.json" with { type: "json" };
+import { filterIndexableSitemap } from "./seo-policy.ts";
 import type { Sql } from "./db.ts";
 
 const origin = "https://white-gloss.de";
@@ -18,6 +20,32 @@ const locations = (xml: string) => [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map
 const inventoryUrls = locations(staticXml);
 
 describe("CMS sitemap XML", () => {
+  it("lists each workshop article exactly once, with distinct headlines, descriptions and working related targets", () => {
+    const blog = editorial.blog.articles;
+    const urls = locations(filterIndexableSitemap(staticXml));
+    for (const field of ["slug", "title", "seoTitle", "seoExcerpt"] as const) {
+      assert.equal(new Set(blog.map((article) => article[field])).size, blog.length, field);
+    }
+    for (const article of blog) {
+      assert.equal(urls.filter((url) => url === `${origin}/ratgeber/${article.slug}`).length, 1);
+      assert.ok(article.sections.length >= 3);
+      assert.ok(readFileSync(new URL(`../../public${article.image}`, import.meta.url)).length > 0);
+      assert.ok(readFileSync(new URL(`../../public${article.image.replace(/-full\.webp$/, "-800.webp")}`, import.meta.url)).length > 0);
+      for (const slug of article.related) {
+        assert.notEqual(slug, article.slug);
+        assert.ok(urls.includes(`${origin}/ratgeber/${slug}`), slug);
+      }
+    }
+    for (const { id, items } of editorial.faq.groups) {
+      assert.match(id, /^faq-[a-z-]+$/);
+      for (const item of items) {
+        if ("link" in item && item.link?.path.startsWith("/ratgeber/")) {
+          assert.ok(urls.includes(origin + item.link.path));
+        }
+      }
+    }
+  });
+
   it("retains every inventory URL and its original metadata", () => {
     assert.ok(inventoryUrls.includes(origin + "/"));
     assert.equal(new Set(inventoryUrls).size, inventoryUrls.length);
@@ -239,4 +267,3 @@ describe("CMS sitemap responses", () => {
     }
   });
 });
-

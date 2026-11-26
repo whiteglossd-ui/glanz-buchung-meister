@@ -205,29 +205,44 @@ export function DarkHeader() {
         <div className="menu__inner">
           <nav className="menu__nav" aria-label="Menü">
             <Link to="/leistungen" onClick={close}><span aria-hidden="true">01</span>Leistungen</Link>
-            <Link to="/preise" onClick={close}><span aria-hidden="true">02</span>Preise</Link>
+            <Link to="/preise" onClick={close}><span aria-hidden="true">02</span>Preise &amp; Pakete</Link>
             <Link to="/galerie" onClick={close}><span aria-hidden="true">03</span>Ergebnisse</Link>
             <Link to={homePath} hash="standorte" onClick={close}><span aria-hidden="true">04</span>Standorte</Link>
             <Link to="/abholservice" onClick={close}><span aria-hidden="true">05</span>Hol- und Bringservice</Link>
             <Link to={homePath} hash="buchung" hashScrollIntoView={BOOKING_JUMP} onClick={(e) => { close(); focusBookingHeading(e); }}>
               <span aria-hidden="true">06</span>Jetzt Termin anfragen
             </Link>
+            <Link to="/luxusfahrzeuge" onClick={close}><span aria-hidden="true">07</span>Luxusfahrzeuge</Link>
           </nav>
           <div className="menu__aside">
             <p className="label">Dein Standort</p>
             <Link to="/" onClick={close}>Horb am Neckar</Link>
             <Link to="/freudenstadt-lossburg" onClick={close}>Loßburg / Freudenstadt</Link>
             <p className="muted small">Werkstatt in Vorbereitung</p>
+            <p className="label menu__gap" id="wgt-menu-business">Business · Geschäftskunden</p>
+            <nav className="menu__svc" aria-labelledby="wgt-menu-business">
+              <Link to="/b2b" onClick={close}>B2B im Überblick</Link>
+              <Link to="/b2b" hash="firmenfahrzeuge" onClick={close}>Firmen- &amp; Poolfahrzeuge</Link>
+              <Link to="/b2b" hash="fuhrpark" onClick={close}>Flotten &amp; Fuhrpark</Link>
+              <Link to="/b2b" hash="autohaeuser" onClick={close}>Autohäuser &amp; Fahrzeughandel</Link>
+              <Link to="/b2b" hash="leasingruecklaeufer" onClick={close}>Leasingrückläufer</Link>
+            </nav>
             <p className="label menu__gap">Detailing</p>
             <div className="menu__svc">
               {services.map((s) => (
                 <Link key={s.slug} to="/leistungen/$slug" params={{ slug: s.slug }} onClick={close}>{s.nav}</Link>
               ))}
               <Link to="/dellen-hagelschaden" onClick={close}>Dellen- und Hagelschäden</Link>
-              <Link to="/luxusfahrzeuge" onClick={close}>Luxusfahrzeuge</Link>
-              <Link to="/b2b" onClick={close}>Firmen, Flotten und Autohäuser</Link>
-              <Link to="/ratgeber" onClick={close}>Ratgeber</Link>
             </div>
+            <p className="label menu__gap" id="wgt-menu-info">Informationen</p>
+            <nav className="menu__svc" aria-labelledby="wgt-menu-info">
+              <Link to="/qualitaet" onClick={close}>Arbeitsweise</Link>
+              <Link to="/fahrzeug-zustand" onClick={close}>Individuelles Angebot</Link>
+              <Link to={homePath} hash="bewertungen" onClick={close}>Google-Bewertungen</Link>
+              <Link to="/ratgeber" onClick={close}>Blog &amp; Ratgeber</Link>
+              <Link to="/faq" onClick={close}>FAQ · Häufige Fragen</Link>
+              <Link to="/kontakt" onClick={close}>Kontakt</Link>
+            </nav>
             <p className="label menu__gap">Kontakt</p>
             <a href={site.phoneHref}>{site.phoneDisplay}</a>
             <a href={`mailto:${site.email}`}>{site.email}</a>
@@ -312,6 +327,7 @@ export function DarkFooter() {
             <Link to="/abholservice">Hol- und Bringservice</Link>
             <Link to="/freudenstadt-lossburg">Fahrzeugaufbereitung Loßburg</Link>
             <Link to="/abholservice/$city" params={{ city: "freudenstadt" }}>Abholservice Freudenstadt</Link>
+            <Link to="/fahrzeug-zustand">Individuelles Angebot</Link>
             <Link to="/ratgeber">Ratgeber</Link>
             <Link to="/galerie">Ergebnisse</Link>
             <Link to="/kontakt">Kontakt</Link>

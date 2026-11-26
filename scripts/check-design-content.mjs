@@ -51,6 +51,9 @@ export const APPROVED_SEO_BLOBS = Object.freeze({
   "src/components/configurator.tsx": "e7793430f41caf5fa9813841b96a8ab5e0da6601",
   "src/components/consent-banner.tsx": "b955cd31f63130fb4cff7d5722e179920be24c2e",
   "src/components/customer-video-gallery.tsx": "cff3e9c9ca3d4414bc8655ae4e119d72256eb291",
+  // November 26: owner-requested Google customer stories, with official share links.
+  "src/components/google-reviews.tsx": "9a9d378e93ae53f4cc726aa1fe61e46ffdfccece",
+  "src/components/lazy-google-reviews.tsx": "4985026e22a5c7bf81e5b9e196c0beed4b43cb06",
   "src/components/lazy-configurator.tsx": "cd9f22ef8f391c6ff116c17d1d342d47941a2b8d",
   "src/components/not-found.tsx": "aace3720e8a41a7ac61f6ae598cb26d2470243c5",
   "src/components/package-showcase.tsx": "570509fd2ee371cd498e838c4873b5b52bc82377",
@@ -59,8 +62,11 @@ export const APPROVED_SEO_BLOBS = Object.freeze({
   "src/components/site-chrome.tsx": "c9128bb53eb7ea6021e6af722d1083aa26a71c8e",
   "src/components/website-studio.tsx": "59c0b604d6f7b38c97208f9c36afe56cf0a69544",
   "src/components/whatsapp-photo-cta.tsx": "94655d4dfcb8e6db7b60611b73fa3ece7bc0c9f5",
-  "src/components/workshop-map.tsx": "a6d39f7b40dedf89e2a9e557d4042458b8e5ee9c",
-  "src/data/ratgeber.ts": "aa5946bc79739f96987c110fa6e3daadfec74cfe",
+  "src/components/workshop-map.tsx": "7f2ecb4c0d7ccb3c6acfcc916125642ad84f5d9f",
+  // November 26: FAQ/editorial additions and owner-requested panel/partner explanations.
+  "src/data/editorial-guides.json": "d08011c3cdb2659537f420f924323ce9d4f1c3d3",
+  "src/data/review-links.json": "07399789ba5aac7f36e52ae45293fb83f7bfe2e7",
+  "src/data/ratgeber.ts": "8980c307cc8d0792cc72732c815a53f66b9a4739",
   "src/data/site.ts": "41d7b3adb10ed87d80af37bd9d9456707df3c6f5",
   "src/lib/article-navigation.ts": "fdce84a10deab3ca061662ae973905cf7b76d802",
   "src/lib/city-copy.ts": "7ab598c838722794401309656ea80bcc62898aae",
@@ -70,14 +76,15 @@ export const APPROVED_SEO_BLOBS = Object.freeze({
   "src/routes/abholservice.index.tsx": "0462d3e7bfce1efdbf0e76047edd54b185d91ada",
   "src/routes/agb.tsx": "bc262cad82a4b9fcb0e34e8b529313f51682cf90",
   "src/routes/auftragsstatus.tsx": "46547b111173ab04dc974a66a0c91efcb21a54f5",
-  "src/routes/b2b.tsx": "d65e40720d4e19202dc4decdf9a09ce330a38924",
+  // Navigation targets and section labels only; wording and pageHead unchanged.
+  "src/routes/b2b.tsx": "8ede9874eb4d01ad04f479faad865f7533884f17",
   "src/routes/barrierefreiheit.tsx": "730949864ab50a20eab5c8ba82b76495d3e51898",
   "src/routes/danke.tsx": "4c9357017fed3ded9576661cca066e3816fbe29e",
   "src/routes/datenloeschung.tsx": "42a6a8ed8c5fe3fa81c8c4c687d30f7f33d482b3",
-  "src/routes/datenschutz.tsx": "f5358b7fc8dccc6fcbe1846b2651395127c49341",
-  "src/routes/dellen-hagelschaden.tsx": "f20c2020b35a78290de753c0e4356cf0b2041659",
+  // Hostinger/privacy update inherited unchanged from origin/main (88b70c3).
+  "src/routes/datenschutz.tsx": "ac3087fa1b214f6cd6f364ea63f7e9056b516b80",
   "src/routes/fahrzeug-zustand.tsx": "cbc29dfb619210f8c0d7ff27fe384bf3ee084bee",
-  "src/routes/faq.tsx": "89062de77abbb698b91dd9d097547e1dec0bf079",
+  "src/routes/faq.tsx": "58da9f3e2849b7f0d10b790a3c31fc7090b0b7dd",
   "src/routes/galerie.tsx": "1b67b8ba645ed55b3f3af380c947fa0235678cbc",
   "src/routes/impressum.tsx": "e4a69b268521caadf36475145f6aeb065fa0c0cc",
   "src/routes/index.tsx": "ad6cecf8fd54ec042b3c61b2085a7067f51671b7",
@@ -88,8 +95,8 @@ export const APPROVED_SEO_BLOBS = Object.freeze({
   "src/routes/luxusfahrzeuge.tsx": "439e1687974e595e050c1a320dde5cbb771f1b5e",
   "src/routes/preise.tsx": "8785dea1674ddfa3d34503e7d9323a48da7d8102",
   "src/routes/qualitaet.tsx": "01553fc27ec1fc42cf046ada585d290a394ac9d5",
-  "src/routes/ratgeber.$slug.tsx": "289e2b57f0f03a2ca7ea4736b969fc312035ec5e",
-  "src/routes/ratgeber.index.tsx": "4fd450d03b9c7172f8b4bcecdb216ff659dbcd32",
+  "src/routes/ratgeber.$slug.tsx": "ab0b578498d59e1de75e20c02ad835f96acceaf9",
+  "src/routes/ratgeber.index.tsx": "437d528a6b58028e9ebc85c15362cf4633eb16c8",
   "src/routes/ueber-uns.tsx": "40f39f636a0b89f47ef66b140ad30f322f76d91f",
   "src/routes/widerruf.tsx": "58c36a01a2b121baebe7ef0bc72885e2d883a92b",
 });
@@ -109,6 +116,7 @@ const APPROVED_HOME_BLOBS = Object.freeze({
   "src/components/media-rail.tsx": "eea74893c74a9e60c4704df77d6eec2ee1ca0b3e",
   "src/components/package-showcase.tsx": "53b5f78114e8de746613fad8cfa1151ffb276384",
   "src/components/results-teaser.tsx": "9cfc89347decf120486ca49e69f854a7563b6850",
+  "src/components/review-showcase.tsx": "4a328ab03630dde77c4ef8ca1b11b0ae39cb7588",
   // November 24 owner request: improve the second scroll-film chapter.
   // See docs/homepage-cinematic-2026-11-24.md; all other content pins remain.
   "src/components/scroll-film-hero.tsx": "22dd7d41339d72c84788cc437e381a6bb6890665",
@@ -116,16 +124,16 @@ const APPROVED_HOME_BLOBS = Object.freeze({
   // phase 2 the same day wraps subpages in the template root (.wgt-page);
   // the wrapper element stays stable across routes so pages never remount.
   // See docs/homepage-dark-edition-2026-11-25.md.
-  "src/components/site-chrome.tsx": "ab0d9a3684217237ba09e3db99adcc693120eaea",
+  "src/components/site-chrome.tsx": "7952699100e8d1ee6b8eaef1efdc273dd42ff2d8",
   "src/components/website-studio.tsx": "33cc6b97e51f52e72ff891778811febf2d591dde",
   "src/data/home-copy.ts": "f829b684e32560fbde054e7e4405568036b5ca82",
-  "src/data/site.ts": "57be27b676924cd007d0649fc98e7af080c16c2f",
-  "src/data/sitemap-static.xml": "a572c20315d05306ee42de41c5f11f3dc6cf5f24",
+  "src/data/site.ts": "ceb058c938f7b805e2b5c3f86492ec003ddde865",
+  "src/data/sitemap-static.xml": "1bccc405c21b6dcc79a9e5639a7ba1f33bf8ff97",
   "src/lib/city-copy.ts": "98f164cc518d27ce7cfdfff66eef96d62e842369",
   "src/lib/city-logistics.ts": "9f964c2dfb0d0822b583c761fce7550556219e0c",
   "src/routes/index.tsx": "7b87df2a86c7dac7b0f432e210d57f12ec64e3c2",
   "src/routes/leistungen.$slug.$city.tsx": "bb360ecb62e387d7fa8569e1259ece1ab9c19872",
-  "src/lib/seo-intents.ts": "a61bd78880457eb49e9a57001386d3035021efd1",
+  "src/lib/seo-intents.ts": "73799123a06bb026e009a30a40896ca35b3e3495",
   // November 25 owner request: homepage rebuilt on the Dark-Edition template.
   "src/components/home-page.tsx": "d37d849ef4ab0ca90afdf2ab8bf558a3473b853e",
   "src/data/home-location.ts": "22916b03c538e31757ef9dd4e42be8119b6ea982",
@@ -148,8 +156,8 @@ const cosmeticProps = /^(className|style|ref|key|src|srcSet|sizes|width|height|l
 const cosmeticComponents = /^(Fragment|RevealLines|Icon[A-Z]|[A-Z].*Icon$)/;
 
 export const protectedFiles = [
-  "src/data/site.ts", "src/data/ratgeber.ts", "src/data/local-proof.ts",
-  "src/data/google-profile.ts", "src/data/search-watchlist.ts", "src/data/sitemap-static.xml",
+  "src/data/site.ts", "src/data/ratgeber.ts", "src/data/editorial-guides.json", "src/data/local-proof.ts",
+  "src/data/google-profile.ts", "src/data/review-links.json", "src/data/search-watchlist.ts", "src/data/sitemap-static.xml",
   "src/lib/seo.ts", "src/lib/seo-policy.ts", "src/lib/seo-intents.ts", "src/lib/city-seo.ts",
   "src/lib/city-copy.ts", "src/lib/city-logistics.ts", "src/lib/article-navigation.ts",
   "src/lib/sitemap.ts", "src/lib/sitemap.server.ts", "src/lib/local-proof.ts",
@@ -424,7 +432,8 @@ export function inspectDesignContent({
       ...(baseline.pullRequestUrl === undefined ? {} : { pullRequestUrl: baseline.pullRequestUrl }),
     };
   }
-  const protectedPresent = protectedFiles.filter((name) => names.includes(name));
+  const protectedPresent = protectedFiles.filter((name) => names.includes(name)
+    || (commit === DESIGN_BASE && ["src/data/editorial-guides.json", "src/data/review-links.json"].includes(name)));
   const seoBlobs = approvedSeoBlobs ?? (commit === DESIGN_BASE ? APPROVED_SEO_BLOBS : {});
   for (const [name, blobId] of Object.entries(seoBlobs)) {
     if ((!sources.includes(name) && !protectedPresent.includes(name)) || !/^[a-f0-9]{40}$/.test(blobId)) {

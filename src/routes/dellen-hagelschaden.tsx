@@ -12,7 +12,7 @@ export const Route = createFileRoute("/dellen-hagelschaden")({
     pageHead({
       title: `Dellen & Hagelschaden: Foto-Begutachtung | ${site.name}`,
       description:
-        "Parkdellen, Karosseriedellen und Hagelschäden lackschadenfrei ausbeulen, sofern technisch möglich. Foto-Begutachtung, Preis nach Prüfung.",
+        "Dellenziehen, Hagelschaden und Lackierarbeiten mit Meister-Partnern. Erste Einschätzung per Foto, verbindlicher Preis nach Prüfung.",
       path: "/dellen-hagelschaden",
       preloadShot: "dellen",
     }),
@@ -23,10 +23,10 @@ function DellenPage() {
     <main id="main-content" tabIndex={-1}>
       <PageHero
         shot="dellen"
-        alt="Parkdelle unter Streiflicht, bevor wir ausbeulen"
+        alt="Parkdelle unter Streiflicht vor der Begutachtung"
         kicker="Smart Repair"
         title="Dellen und Hagelschäden prüfen lassen."
-        lead="Wir entfernen Dellen ohne Neulackierung, sofern der Schaden und der Lackzustand es zulassen."
+        lead="Wir koordinieren Dellenziehen und Lackierarbeiten mit Meister-Partnern. Lackfreies Ausbeulen ist möglich, wenn Schaden und Lackzustand es zulassen."
         crumbs={[
           { label: "Startseite", to: "/" },
           { label: "Leistungen", to: "/leistungen" },
@@ -45,14 +45,16 @@ function DellenPage() {
       />
       <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
         <p className="text-sm text-muted leading-relaxed">
-          Einen Preis gibt es erst, wenn wir den Schaden gesehen haben. Wir beginnen erst mit deiner
-          Zustimmung. Bei kleinen Stellen reicht oft ein Foto zur ersten Einschätzung.
+          Bei kleinen Stellen reicht oft ein Foto für eine erste Einschätzung. Wir besprechen mit
+          dir, welcher Meisterbetrieb die Arbeit ausführt und ob lackfreies Ausbeulen reicht oder
+          Lackierarbeiten nötig sind. Du erfährst Umfang und Preis, bevor du zusagst.
         </p>
         <ul className="mt-10 grid gap-3 sm:grid-cols-2">
           {[
             ["Parkdellen", "Dellen durch Türen und enge Parkplätze"],
             ["Karosseriedellen", "Kleinere Verformungen an zugänglichen Bauteilen"],
             ["Hagelschäden", "Einzelne oder zahlreiche Hageldellen"],
+            ["Lackierarbeiten", "Bei beschädigtem Lack prüft ein Meister-Partner die passende Reparatur"],
             ["Foto-Begutachtung", "Bei kleinen Schäden häufig ohne ersten Vor-Ort-Termin möglich"],
           ].map(([t, d]) => (
             <li key={t} className="border border-line bg-surface p-5">
