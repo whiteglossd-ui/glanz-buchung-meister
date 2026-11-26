@@ -1,11 +1,14 @@
 import { extras, pickupKeramikNote, pickupTierSummary } from "./site";
 import { eur } from "@/lib/utils";
+import editorial from "./editorial-guides.json";
 
 function extraEuro(id: string) {
   const extra = extras.find((item) => item.id === id);
   if (!extra) throw new Error(`Zusatzleistung ${id} fehlt im Katalog.`);
   return eur(extra.price);
 }
+
+export type EditorialArticle = (typeof editorial.blog.articles)[number];
 
 export type Article = {
   slug: string;
@@ -17,9 +20,10 @@ export type Article = {
   image: string;
   minutes: number;
   sections: { heading: string; paragraphs: string[] }[];
-};
+} & Partial<Pick<EditorialArticle, "seoTitle" | "imageAlt" | "category" | "link" | "related" | "sources">>;
 
 export const articles: Article[] = [
+  ...editorial.blog.articles,
   {
     slug: "keramikversiegelung-langzeitschutz",
     seoExcerpt:

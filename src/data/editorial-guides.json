@@ -1,0 +1,132 @@
+{
+  "faq": {
+    "title": "FAQ zur Fahrzeugaufbereitung in Horb | White-Gloss",
+    "description": "Was kostet eine Fahrzeugaufbereitung, wie lange dauert sie und holt ihr mein Auto ab? Klare Antworten zu Paketen, Pflege und Leasing in Horb am Neckar.",
+    "lead": "Was passt zu meinem Auto, wie lange bleibt es bei euch und muss ich es vorher ausräumen? Hier findest du die Antworten, bevor du einen Termin anfragst.",
+    "groups": [
+      {
+        "id": "faq-pakete",
+        "title": "Preis, Paket und Termin",
+        "items": [
+          { "q": "Was kostet eine Fahrzeugaufbereitung bei euch?", "a": "Für die Kompaktklasse starten unsere Pakete bei 149 € für Classic, 349 € für Signature und 899 € für Ceramic, jeweils inklusive MwSt. Ein größerer Wagen, hartnäckige Flecken oder zusätzliche Arbeiten können den Aufwand verändern. Den verbindlichen Preis stimmen wir mit dir ab, bevor wir anfangen.", "link": { "path": "/preise", "label": "Preise und Paketdetails" } },
+          { "q": "Welches Paket passt zu meinem Auto?", "a": "Wenn du innen und außen wieder ein gepflegtes Auto möchtest, ist Classic ein guter Ausgangspunkt. Wenn die Polster eine Tiefenreinigung brauchen und der Lack wieder mehr Glanz bekommen soll, schau dir Signature an. Ceramic ist für dich interessant, wenn dir Lackkorrektur und längerfristiger Lackschutz wichtig sind. Für eine einzelne Stelle musst du kein ganzes Paket wählen: Zeig sie uns zuerst.", "link": { "path": "/preise", "label": "Pakete vergleichen" } },
+          { "q": "Was soll ich euch für eine erste Einschätzung schicken?", "a": "Modell, Foto und ein Satz dazu, was dich stört, reichen für den Anfang. Mach bei einem Fleck oder Kratzer am besten ein Bild der ganzen Fläche und eins aus der Nähe, möglichst bei Tageslicht. Dein Kennzeichen brauchen wir dafür nicht. Schreib einen festen Rückgabe- oder Verkaufstermin gleich dazu.", "link": { "path": "/fahrzeug-zustand", "label": "Fahrzeugzustand einschätzen lassen" } }
+        ]
+      },
+      {
+        "id": "faq-innenraum",
+        "title": "Flecken, Hundehaare und Innenraum",
+        "items": [
+          { "q": "Muss ich mein Auto vorher waschen oder ausräumen?", "a": "Waschen oder saugen musst du nicht, das ist unser Job. Hilfreich ist, wenn du Wertsachen und lose Gegenstände aus den Bereichen nimmst, die wir reinigen sollen. Wenn wir unter dem Kindersitz arbeiten sollen, nimm ihn nach Möglichkeit vorher raus. Falls etwas im Auto bleiben muss, sag uns einfach Bescheid." },
+          { "q": "Bekommt ihr Hundehaare aus dem Kofferraum?", "a": "Ja, die Tierhaarentfernung gibt es zusätzlich zur Reinigung. Haare in Teppichfasern oder Sitznähten brauchen mehr Handarbeit als lose Haare auf einer Gummimatte. Ein Foto vom Kofferraum oder von der Rückbank hilft uns, den Aufwand einzuschätzen. Ob einzelne fest sitzende Haare zurückbleiben können, sagen wir dir nach Sichtung.", "link": { "path": "/ratgeber/hundehaare-aus-dem-auto-entfernen", "label": "Ratgeber: Hundehaare im Auto" } },
+          { "q": "Gehen Kaffee- oder Getränkeflecken aus den Sitzen heraus?", "a": "Oft lässt sich der Fleck deutlich verbessern. Ob er ganz verschwindet, hängt vom Bezug, vom Alter des Flecks und davon ab, wie tief das Getränk eingezogen ist. Sag uns, was verschüttet wurde und ob du schon ein Mittel benutzt hast. Bei frischen Flecken lieber trocken abtupfen, statt kräftig zu reiben.", "link": { "path": "/leistungen/innenraumreinigung", "label": "Innenraumreinigung ansehen" } },
+          { "q": "Kann ich Scheinwerfer, Felgen oder Leder auch einzeln anfragen?", "a": "Ja. Wenn es dir nur um eine einzelne Stelle oder Leistung geht, beschreib uns genau diese. Ob Reinigen, Pflegen oder eine Reparatur sinnvoll ist, hängt vom Material und vom Zustand ab. Bei einem beschädigten Bauteil sagen wir dir, wenn Aufbereitung allein nicht reicht.", "link": { "path": "/fahrzeug-zustand", "label": "Individuelles Angebot anfragen" } }
+        ]
+      },
+      {
+        "id": "faq-lack-leasing",
+        "title": "Lack, Leasingrückgabe und Verkauf",
+        "items": [
+          { "q": "Könnt ihr Kratzer im Lack wegpolieren?", "a": "Feine Waschspuren und oberflächliche Kratzer lassen sich oft deutlich verbessern. Reicht der Kratzer unter den Klarlack, polieren wir ihn nicht um jeden Preis heraus. Vor einer Lackkorrektur schauen wir uns die Stelle bei gutem Licht an und prüfen die Lackstärke. Dann sagen wir dir, was möglich ist und was sichtbar bleiben kann.", "link": { "path": "/leistungen/lackkorrektur", "label": "Lackkorrektur und ihre Grenzen" } },
+          { "q": "Muss mein Leasingauto zur Rückgabe wie neu aussehen?", "a": "Nein. Normale, alters- und laufleistungsgerechte Gebrauchsspuren sind nicht dasselbe wie ein Schaden. Entscheidend sind dein Vertrag und der Rückgabekatalog. Zeig uns die Stellen, die dir Sorgen machen. Wir trennen Reinigung und mögliche optische Korrektur von Schäden, für die eine andere Werkstatt oder ein Gutachten sinnvoll ist. Nachzahlungen können wir nicht ausschließen.", "link": { "path": "/ratgeber/leasingrueckgabe-checkliste", "label": "Checkliste für die Leasingrückgabe" } },
+          { "q": "Welches Paket lohnt sich vor dem Autoverkauf?", "a": "Bei einem gepflegten Alltagsauto reicht oft eine gründliche Reinigung für Besichtigung und Fotos. Sind die Sitze fleckig oder wirkt der Lack matt, lohnt es sich, genau diese Stellen prüfen zu lassen. Für ein älteres Auto würden wir nicht automatisch eine Keramikversiegelung einplanen. Und bekannte Schäden bleiben natürlich Teil der Fahrzeugbeschreibung.", "link": { "path": "/ratgeber/auto-vor-dem-verkauf-aufbereiten", "label": "Ratgeber: Auto vor dem Verkauf aufbereiten" } }
+        ]
+      },
+      {
+        "id": "faq-abholung-firma",
+        "title": "Abholung, Standort und Firmenfahrzeuge",
+        "items": [
+          { "q": "Holt ihr mein Auto in Freudenstadt oder Loßburg ab?", "a": "Ja, nach Absprache. Wir klären Adresse, Kosten und Übergabezeit mit dir. Die Aufbereitung findet derzeit in unserer Werkstatt in Horb am Neckar statt; der Standort Loßburg ist in Vorbereitung. Die jeweils geltenden Abholbedingungen findest du in der Abholübersicht.", "link": { "path": "/abholservice", "label": "Abholorte und Preise" } },
+          { "q": "Bereitet ihr auch mehrere Firmenfahrzeuge oder Leasingrückläufer auf?", "a": "Ja. Ob Poolfahrzeug, kleiner Fuhrpark, Autohaus oder mehrere Leasingrückläufer: Sag uns, wie viele Fahrzeuge es sind, was gemacht werden soll und wann sie wieder gebraucht werden. Dann können wir Umfang und Termine so abstimmen, dass nicht alle Wagen gleichzeitig fehlen.", "link": { "path": "/b2b", "label": "Angebot für Geschäftskunden" } }
+        ]
+      }
+    ]
+  },
+  "blog": {
+    "title": "Blog & Ratgeber für Fahrzeugpflege | White-Gloss",
+    "description": "Werkstattwissen zur Fahrzeugpflege: Kosten vergleichen, Hundehaare entfernen, das Auto für den Verkauf vorbereiten und den Lack im Winter richtig pflegen.",
+    "lead": "Was kannst du selbst machen, wann lohnt sich ein Termin und welche Arbeit kannst du dir sparen? Hier findest du unsere Ratgeber zur Fahrzeugpflege.",
+    "articles": [
+      {
+        "slug": "fahrzeugaufbereitung-kosten",
+        "title": "Fahrzeugaufbereitung: Was kostet welches Paket?",
+        "seoTitle": "Fahrzeugaufbereitung: Kosten und Pakete in Horb | White-Gloss",
+        "excerpt": "149, 349 oder 899 Euro: Was steckt in den drei Paketen, und woran erkennst du, welches für dein Auto reicht?",
+        "seoExcerpt": "Was kostet eine Fahrzeugaufbereitung in Horb? Vergleiche Classic, Signature und Ceramic und erfahre, wie Fahrzeuggröße und Zustand den Preis beeinflussen.",
+        "date": "2026-11-26",
+        "image": "/media/dark/customer-selection/own-04-full.webp",
+        "imageAlt": "Schwarzes Kundenfahrzeug mit spiegelndem Lack in der Werkstatt",
+        "minutes": 3,
+        "category": "Preise & Pakete",
+        "link": { "path": "/preise", "label": "Preise und Pakete vergleichen" },
+        "related": ["fahrzeugaufbereitung-horb-am-neckar", "keramikversiegelung-kosten", "hundehaare-aus-dem-auto-entfernen"],
+        "sources": [],
+        "sections": [
+          { "heading": "Wovon die Kosten einer Fahrzeugaufbereitung abhängen", "paragraphs": ["Eine Fahrzeugaufbereitung kostet bei uns in Horb am Neckar ab 149 € inklusive MwSt. für die Kompaktklasse. Welches Paket passt, hängt nicht nur von der Größe ab: Ein kleiner Wagen mit Kaffee im Sitz und Hundehaaren im Kofferraum kann mehr Arbeit machen als ein gepflegter Kombi.", "Schau dir deshalb zuerst an, was dich tatsächlich stört. Wenn du jeden Morgen auf denselben Fleck schaust, ist die Frage nicht, welche Versiegelung am längsten hält. Die Frage ist, was dein Sitz braucht."] },
+          { "heading": "Classic, Signature oder Ceramic?", "paragraphs": ["Classic kostet ab 149 € und dauert ca. drei Stunden. Es ist die Wahl für eine regelmäßige Innen- und Außenreinigung: etwa wenn sich im Fußraum Sand gesammelt hat und der Wagen außen wieder sauber sein soll.", "Signature kostet ab 349 € und dauert ca. sechs Stunden. Zum Classic-Umfang kommen unter anderem textile Tiefenreinigung, eine einstufige Lackpolitur und Wachs. Wenn die Polster mehr als den Staubsauger brauchen und dir der Lack zu matt geworden ist, ist das der sinnvollere Vergleich.", "Ceramic kostet ab 899 € und dauert ca. zwei Tage. Hier geht es um gründlichere Lackvorbereitung, mehrstufige Lackkorrektur und Keramikversiegelung. Bei diesem Paket ist der Hol- und Bringservice bis 60 km enthalten. Keramik macht die Pflege leichter, schützt aber nicht verlässlich vor Steinschlägen oder Kratzern."] },
+          { "heading": "So bekommst du einen brauchbaren Preis statt einer groben Zahl", "paragraphs": ["Sag uns Modell, Ziel und die Stellen, die dich stören. Mach bei Bedarf zwei Fotos: eins mit Überblick, eins näher dran. Wenn es nur um den Kofferraum oder eine Lackstelle geht, sag das ausdrücklich. Vielleicht reicht eine gezielte Leistung.", "Alle genannten Preise sind Einstiegspreise für die Kompaktklasse inklusive MwSt. Den genauen Umfang und den verbindlichen Preis stimmen wir vor Beginn mit dir ab. Abholung außerhalb der enthaltenen Leistungen und Extras wie Tierhaarentfernung können den Gesamtpreis verändern."] }
+        ]
+      },
+      {
+        "slug": "hundehaare-aus-dem-auto-entfernen",
+        "title": "Hundehaare aus dem Auto entfernen: Was wirklich hilft",
+        "seoTitle": "Hundehaare aus dem Auto entfernen | White-Gloss Detailing",
+        "excerpt": "Der Kofferraum ist gesaugt, aber die Haare sitzen noch im Teppich. So gehst du vor, ohne die Fasern zu beschädigen.",
+        "seoExcerpt": "Hundehaare aus dem Auto entfernen: Tipps für Kofferraum, Polster und Sitznähte. Erfahre, wann Bürste und Sauger reichen und wann Handarbeit hilft.",
+        "date": "2026-11-26",
+        "image": "/media/dark/customer-selection/own-07-full.webp",
+        "imageAlt": "Heller Fahrzeuginnenraum mit gestepptem Sitzbezug",
+        "minutes": 3,
+        "category": "Innenraum",
+        "link": { "path": "/leistungen/innenraumreinigung", "label": "Innenraumreinigung ansehen" },
+        "related": ["innenraumreinigung-gerueche", "innenraumreinigung-komplettguide-auto", "fahrzeugaufbereitung-kosten"],
+        "sources": [],
+        "sections": [
+          { "heading": "Warum Hundehaare im Auto nach dem Saugen bleiben", "paragraphs": ["Auf einer Gummimatte ist das Problem schnell gelöst. Im Kofferraumteppich sieht es anders aus: Kurze Haare können quer in den Fasern sitzen. Der Sauger nimmt dann nur die losen Haare mit. Schau vor allem an den Seitenwänden, in den Nähten und rund um die Rückbank nach. Da fällt der Unterschied am ehesten auf.", "Mach den Versuch auf einer kleinen Fläche statt gleich im ganzen Kofferraum. Wenn du nach zwei kurzen Durchgängen merklich weniger Haare siehst, lohnt es sich weiterzumachen. Wenn sich kaum etwas tut, bringt mehr Druck selten etwas."] },
+          { "heading": "Hundehaare aus dem Auto entfernen, ohne am Stoff zu zerren", "paragraphs": ["Nimm zuerst Decke und lose Matten heraus und sauge Sand sowie lose Haare ab. Auf einem robusten Teppich kann eine weiche Gummibürste helfen, Haare mit kurzen Zügen zu sammeln. Erst an einer unauffälligen Ecke testen, dann die gelösten Haare direkt absaugen. Am Rand einer Naht lieber langsam arbeiten als kräftig ziehen.", "Bei Alcantara, perforiertem Leder oder empfindlichen Sitzstoffen bitte keine harte Bürste und keinen scharfkantigen Schaber verwenden. Auch Wasser ist keine Abkürzung. Wenn du nicht sicher bist, welches Material du vor dir hast, schick ein Foto, bevor du mit einem Reiniger loslegst."] },
+          { "heading": "Wann sich professionelle Tierhaarentfernung lohnt", "paragraphs": ["Wenn der Hund regelmäßig mitfährt, sitzen Haare oft auch hinter der Rückbank und im seitlichen Teppich. Das kann deutlich länger dauern als eine normale Reinigung. Bei uns ist Tierhaarentfernung deshalb eine Zusatzleistung. Ein Foto vom Kofferraum und von der Rückbank hilft uns, den Aufwand einzuordnen.", "Wenn das Auto zusätzlich riecht, sag das früh dazu. Haare zu entfernen und eine Geruchsquelle zu finden sind zwei verschiedene Arbeiten. Für den nächsten Ausflug macht eine passende, waschbare Unterlage die Pflege meist leichter als jede neue Bürste."] }
+        ]
+      },
+      {
+        "slug": "auto-vor-dem-verkauf-aufbereiten",
+        "title": "Auto vor dem Verkauf aufbereiten: Was sich lohnt",
+        "seoTitle": "Auto vor dem Verkauf aufbereiten: Tipps | White-Gloss",
+        "excerpt": "Ein sauberes Auto lässt sich ehrlicher zeigen. Welche Arbeiten vor den Inseratfotos sinnvoll sind und wo du dir Geld sparen kannst.",
+        "seoExcerpt": "Auto vor dem Verkauf aufbereiten: So setzt du Innenraum, Lack und Fotos sinnvoll in Szene, ohne Geld für Arbeiten auszugeben, die dein Auto nicht braucht.",
+        "date": "2026-11-26",
+        "image": "/media/dark/customer-selection/own-08-full.webp",
+        "imageAlt": "Schwarzes Kundenfahrzeug schräg von hinten bei natürlichem Licht",
+        "minutes": 3,
+        "category": "Verkauf & Übergabe",
+        "link": { "path": "/fahrzeug-zustand", "label": "Fahrzeugzustand einschätzen lassen" },
+        "related": ["fahrzeugaufbereitung-kosten", "leasingrueckgabe-checkliste", "lackkorrektur-swirls"],
+        "sources": [{ "label": "ADAC: Checkliste für den privaten Autoverkauf", "url": "https://www.adac.de/rund-ums-fahrzeug/auto-kaufen-verkaufen/verkaufen-tipps/checkliste/" }],
+        "sections": [
+          { "heading": "Auto vor dem Verkauf aufbereiten: Nimm zuerst die Käuferperspektive ein", "paragraphs": ["Öffne die Fahrertür und setz dich kurz hinein, als würdest du das Auto zum ersten Mal sehen. Was fällt zuerst auf? Ein fleckiger Fahrersitz, trübe Scheiben oder ein voller Kofferraum beeinflussen den Eindruck meist stärker als ein feiner Kratzer, den man erst nach längerem Suchen entdeckt.", "Ist der Wagen ansonsten gepflegt, fang mit Ausräumen, sauberem Glas, Fußräumen, Kofferraum und einer gründlichen Außenwäsche an. Schau ihn dir danach noch einmal im Tageslicht an. Erst dann entscheidest du, ob mehr Arbeit überhaupt einen sichtbaren Unterschied machen würde."] },
+          { "heading": "Welche Arbeit lohnt sich, und welche nicht?", "paragraphs": ["Bei einem älteren Alltagsauto mit gepflegtem Lack würden wir nicht automatisch Keramik empfehlen. Sitzt ein sichtbarer Fleck auf der Rückbank oder liegt viel Tierhaar im Teppich, ist die Zeit eher dort gut eingesetzt. Bei einem jüngeren, dunklen Wagen mit deutlichen Waschspuren kann eine gezielte Lackpflege mehr ausmachen. Das ist eine Entscheidung am Fahrzeug, kein Versprechen für einen höheren Verkaufspreis.", "Tiefe Kratzer, Dellen oder beschädigte Polster gehören nicht unter eine Schicht Glanz. Eine Reinigung hilft, den Zustand zu beurteilen. Eine notwendige Reparatur ersetzt sie nicht."] },
+          { "heading": "Inseratfotos machen, die auch bei der Besichtigung überzeugen", "paragraphs": ["Mach nach der Reinigung Fotos bei gleichmäßigem Tageslicht: vier Außenansichten, Armaturen, Vorder- und Rücksitze sowie Kofferraum. Mach zu jeder auffälligen Stelle ein ehrliches Detailbild. Das hilft Interessenten, die nicht direkt aus Horb oder der Umgebung kommen, vor der Anfahrt zu entscheiden.", "Zeig das Fahrzeug, wie es tatsächlich aussieht. Ein ruhiger Hintergrund und saubere Scheiben ergeben bessere Fotos als ein starker Filter. Bekannte Mängel gehören in die Beschreibung; der ADAC empfiehlt, sie auch zu fotografieren."] }
+        ]
+      },
+      {
+        "slug": "auto-im-winter-waschen",
+        "title": "Auto im Winter waschen: Salz, Frost und Lackpflege",
+        "seoTitle": "Auto im Winter waschen: Salz und Frost | White-Gloss",
+        "excerpt": "Muss der weiße Salzfilm sofort runter? Wann eine Wäsche sinnvoll ist und worauf du bei kaltem Wetter achten solltest.",
+        "seoExcerpt": "Auto im Winter waschen: Wann Salz und Schmutz runter sollten, warum die Vorwäsche zählt und wann du die Wäsche wegen Frost lieber verschiebst.",
+        "date": "2026-11-26",
+        "image": "/media/dark/customer-selection/own-02-full.webp",
+        "imageAlt": "Dunkler Kotflügel mit Scheinwerfer und Felge in Nahaufnahme",
+        "minutes": 3,
+        "category": "Lackpflege",
+        "link": { "path": "/leistungen/fahrzeugaufbereitung", "label": "Fahrzeugpflege ansehen" },
+        "related": ["keramikversiegelung-pflege", "lackkorrektur-swirls", "fahrzeugaufbereitung-kosten"],
+        "sources": [{ "label": "ADAC: Autowäsche bei Frost und Streusalz", "url": "https://www.adac.de/rund-ums-fahrzeug/reparatur-pflege-wartung/pflege/autowaesche-winter/" }],
+        "sections": [
+          { "heading": "Auto im Winter waschen: Braucht es nach jeder Salzfahrt eine Wäsche?", "paragraphs": ["Nein. Ein weißer Salzfilm nach der Fahrt sieht auf dunklem Lack schnell schlimm aus, aber intakter Lack braucht nicht nach jeder Fahrt eine Wäsche. Bei Steinschlägen oder abgeplatztem Lack lohnt sich ein genauerer Blick. Der ADAC unterscheidet hier zwischen intakten und vorgeschädigten Oberflächen. Das ist wichtiger als eine starre Regel wie „jeden Samstag waschen“.", "Wenn das Auto stark verschmutzt ist, wähle einen milderen Tag. Scheiben, Leuchten, Spiegel und die nach Herstellervorgaben zugänglichen Kameras oder Sensoren sauber zu halten ist im Alltag dringender als ein glänzender Kotflügel."] },
+          { "heading": "Erst vorwaschen, dann an den Lack gehen", "paragraphs": ["Wenn die Schweller noch mit körnigem Straßenschmutz bedeckt sind, geh nicht direkt mit dem Waschhandschuh darüber. Löse grobe Partikel zuerst mit der Vorwäsche. Beseitige Schnee und Eis vor der Einfahrt in eine Anlage, ohne mit einem Eiskratzer über lackierte Flächen zu gehen. Achte an der Anlage auf die Hinweise zum Fahrzeug und zum Regensensor.", "Bei extremer Kälte um −10 °C oder darunter verschiebe die Wäsche lieber. Der ADAC warnt hier vor dem Temperaturunterschied zwischen kalten Teilen am Fahrzeug und dem Waschwasser. Wenn du an einem kühlen Tag wäschst, trockne nach Möglichkeit Türfalze und Dichtungen, damit sie nicht anfrieren."] },
+          { "heading": "Nach dem Winter: Ist es nur Schmutz oder schon ein Lackschaden?", "paragraphs": ["Sieh dir Front, Schweller und Radlaufkanten nach einer gründlichen Reinigung bei Tageslicht an. Ein oberflächlicher Rückstand sieht anders aus als ein Steinschlag oder eine Lackabplatzung. Reib auf Verdacht nicht trocken darüber und versuche nicht, beschädigte Stellen einfach zuzupolieren.", "Wenn du für den Alltag weniger Aufwand beim Waschen möchtest, kann eine zum Fahrzeug passende Versiegelung helfen. Sie ist kein Ersatz für eine Reparatur und auch keine Pflicht für den Winter. Wenn du dir bei einer Stelle unsicher bist, ist ein Foto bei Tageslicht der bessere erste Schritt."] }
+        ]
+      }
+    ]
+  }
+}

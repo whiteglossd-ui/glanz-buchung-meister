@@ -4,6 +4,7 @@ import { IconArrowRight } from "@/components/icons";
 import { MediaTile, PageHero } from "@/components/page-hero";
 import { ctaPrimary } from "@/components/ui";
 import { articles } from "@/data/ratgeber";
+import editorial from "@/data/editorial-guides.json";
 import { listPublishedCms } from "@/lib/cms.functions";
 import { site } from "@/data/site";
 import { pageHead } from "@/lib/seo";
@@ -19,9 +20,8 @@ export const Route = createFileRoute("/ratgeber/")({
   component: RatgeberIndex,
   head: () =>
     pageHead({
-      title: `Ratgeber Fahrzeugpflege & Detailing | ${site.name}`,
-      description:
-        "Fachbeiträge zu Keramikversiegelung, Lackkorrektur, Innenraumreinigung und Hol- und Bringservice – aus der Werkstatt in Horb am Neckar.",
+      title: editorial.blog.title,
+      description: editorial.blog.description,
       path: "/ratgeber",
       preloadShot: "keramik",
     }),
@@ -29,6 +29,12 @@ export const Route = createFileRoute("/ratgeber/")({
 
 function RatgeberIndex() {
   const { extra } = Route.useLoaderData();
+  const slugs = new Set(articles.map((article) => article.slug));
+  const cmsOnly = extra.filter((row) => {
+    if (!row.slug || slugs.has(row.slug)) return false;
+    slugs.add(row.slug);
+    return true;
+  });
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -38,8 +44,7 @@ function RatgeberIndex() {
         url: `${site.origin}/ratgeber`,
         blogPost: [
           ...articles.map((article) => ({ "@id": `${site.origin}/ratgeber/${article.slug}#article` })),
-          ...extra
-            .filter((row) => row.slug)
+          ...cmsOnly
             .map((row) => ({ "@id": `${site.origin}/ratgeber/${row.slug}#article` })),
         ],
       },
@@ -63,8 +68,8 @@ function RatgeberIndex() {
         shot="keramik"
         alt="Keramikversiegelung von Hand auf dem Lack"
         kicker="Wissen aus der Werkstatt"
-        title="Ratgeber Fahrzeugpflege."
-        lead="Tipps und Erläuterungen zu Reinigung, Lackpflege und Versiegelung."
+        title="Blog & Ratgeber zur Fahrzeugpflege"
+        lead={editorial.blog.lead}
         crumbs={[
           { label: "Startseite", to: "/" },
           { label: "Ratgeber" },
@@ -82,13 +87,15 @@ function RatgeberIndex() {
               key={a.slug}
               className="group relative block border-b border-line lg:odd:border-r"
             >
-              <MediaTile src={a.image} alt={`Titelbild: ${a.title}`}>
+              <MediaTile src={a.category ? a.image.replace(/-full\.webp$/, "-800.webp") : a.image} alt={a.imageAlt ?? `Titelbild: ${a.title}`}>
                 <p className="kicker">
-                  {new Date(a.date).toLocaleDateString("de-DE", {
+                  {a.category ? `${a.category} · ` : null}
+                  <time dateTime={a.date}>{new Date(a.date).toLocaleDateString("de-DE", {
                     day: "2-digit",
                     month: "long",
                     year: "numeric",
-                  })}{" "}
+                    timeZone: "UTC",
+                  })}</time>{" "}
                   · {a.minutes} Min.
                 </p>
                 <h2 className="heading-2 mt-3 max-w-md">
@@ -108,9 +115,7 @@ function RatgeberIndex() {
               </MediaTile>
             </article>
           ))}
-          {extra
-            .filter((r) => r.slug)
-            .map((r) => {
+          {cmsOnly.map((r) => {
               let excerpt = r.body.slice(0, 160);
               try {
                 excerpt = (JSON.parse(r.extra) as { note?: string }).note || excerpt;
@@ -138,6 +143,10 @@ function RatgeberIndex() {
             })}
         </div>
       </section>
+      <p className="mx-auto max-w-3xl px-4 py-10 text-sm text-muted sm:px-6">
+        Du suchst eine schnelle Antwort zu Preis, Dauer oder Abholung? Schau in unsere{" "}
+        <Link to="/faq" className="underline underline-offset-4 hover:text-fg">häufigen Fragen zur Fahrzeugaufbereitung</Link>.
+      </p>
     </main>
   );
 }

@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/page-hero";
 import { ctaGhost, ctaPrimary } from "@/components/ui";
 import { faqs, site } from "@/data/site";
+import editorial from "@/data/editorial-guides.json";
 import { listPublishedCms } from "@/lib/cms.functions";
 import { pageHead } from "@/lib/seo";
 
@@ -17,9 +18,8 @@ export const Route = createFileRoute("/faq")({
   component: FaqPage,
   head: () =>
     pageHead({
-      title: `Häufige Fragen zur Fahrzeugaufbereitung | ${site.name}`,
-      description:
-        "Antworten zu Keramikversiegelung, Innenraumreinigung, Lackkorrektur, Kosten und Dauer der Fahrzeugaufbereitung in Horb am Neckar.",
+      title: editorial.faq.title,
+      description: editorial.faq.description,
       path: "/faq",
       preloadShot: "atelier",
     }),
@@ -36,12 +36,27 @@ function FaqPage() {
     }
     return { group, q: row.title, a: row.body };
   });
-  const all = [...faqs, ...extraFaqs];
-  const groups = [...new Set(all.map((f) => f.group))];
+  type Question = { q: string; a: string; link?: { path: string; label: string } };
+  const seen = new Set<string>();
+  const dedupe = (items: Question[]) => items.filter(({ q }) => {
+    const key = q.toLocaleLowerCase("de-DE").normalize("NFKC").trim().replace(/\s+/g, " ").replace(/[?.!]+$/, "");
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  const base = [...faqs, ...extraFaqs];
+  const groups = [
+    ...editorial.faq.groups.map((group) => ({ ...group, items: dedupe(group.items) })),
+    ...[...new Set(base.map((f) => f.group))].map((title, i) => ({
+      id: title === "Dauer" ? "faq-dauer" : `faq-basis-${i}`,
+      title,
+      items: dedupe(base.filter((f) => f.group === title)),
+    })),
+  ].filter((group) => group.items.length > 0);
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: all.map((f) => ({
+    mainEntity: groups.flatMap((group) => group.items).map((f) => ({
       "@type": "Question",
       name: f.q,
       acceptedAnswer: { "@type": "Answer", text: f.a },
@@ -59,7 +74,7 @@ function FaqPage() {
         alt="Werkstatt von White-Gloss Detailing in Horb am Neckar"
         kicker="Antworten vorab"
         title="Häufige Fragen zur Fahrzeugaufbereitung"
-        lead="Kosten, Dauer, Keramik, Innenraum – kurz beantwortet."
+        lead={editorial.faq.lead}
         crumbs={[
           { label: "Startseite", to: "/" },
           { label: "Häufige Fragen" },
@@ -75,14 +90,21 @@ function FaqPage() {
           </>
         }
       />
-      <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+      <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
+        <nav aria-label="FAQ-Themen" className="mb-12 border-y border-line py-5">
+          <p className="kicker">Direkt zur Antwort</p>
+          <ul className="mt-2 flex flex-wrap gap-x-5">
+            {editorial.faq.groups.map((group) => (
+              <li key={group.id}><a className="inline-flex min-h-11 items-center text-sm underline underline-offset-4" href={`#${group.id}`}>{group.title}</a></li>
+            ))}
+            <li><a className="inline-flex min-h-11 items-center text-sm underline underline-offset-4" href="#faq-dauer">Dauer</a></li>
+          </ul>
+        </nav>
         {groups.map((g) => (
-          <section key={g} className="mt-4 first:mt-0">
-            <h2 className="kicker">{g}</h2>
+          <section key={g.id} id={g.id} className="mt-10 scroll-mt-28">
+            <h2 className="font-display text-2xl">{g.title}</h2>
             <div className="mt-5 divide-y divide-line border-y border-line">
-              {all
-                .filter((f) => f.group === g)
-                .map((f) => (
+              {g.items.map((f) => (
                   <details key={f.q} className="group py-5">
                     <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-6 text-left font-display text-xl tracking-tight">
                       {f.q}
@@ -96,11 +118,15 @@ function FaqPage() {
                     <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted">
                       {f.a}
                     </p>
+                    {f.link ? <Link to={f.link.path as never} className="mt-1 inline-flex min-h-11 items-center text-sm underline underline-offset-4">{f.link.label}</Link> : null}
                   </details>
                 ))}
             </div>
           </section>
         ))}
+        <p className="mt-12 text-sm text-muted">
+          Du möchtest genauer nachlesen? Im <Link to="/ratgeber" className="underline underline-offset-4 hover:text-fg">Blog &amp; Ratgeber</Link> erklären wir, was du selbst machen kannst und wann sich Aufbereitung lohnt.
+        </p>
         <p className="mt-12 text-sm text-muted">
           Deine Frage war nicht dabei? Persönlich:{" "}
           <a href={site.phoneHref} className="underline hover:text-fg">

@@ -60,7 +60,9 @@ export const APPROVED_SEO_BLOBS = Object.freeze({
   "src/components/website-studio.tsx": "59c0b604d6f7b38c97208f9c36afe56cf0a69544",
   "src/components/whatsapp-photo-cta.tsx": "94655d4dfcb8e6db7b60611b73fa3ece7bc0c9f5",
   "src/components/workshop-map.tsx": "a6d39f7b40dedf89e2a9e557d4042458b8e5ee9c",
-  "src/data/ratgeber.ts": "aa5946bc79739f96987c110fa6e3daadfec74cfe",
+  // November 26: explicitly requested FAQ and editorial additions.
+  "src/data/editorial-guides.json": "30f61f784fd85fe265cd16beea701a7a222ea55f",
+  "src/data/ratgeber.ts": "8980c307cc8d0792cc72732c815a53f66b9a4739",
   "src/data/site.ts": "41d7b3adb10ed87d80af37bd9d9456707df3c6f5",
   "src/lib/article-navigation.ts": "fdce84a10deab3ca061662ae973905cf7b76d802",
   "src/lib/city-copy.ts": "7ab598c838722794401309656ea80bcc62898aae",
@@ -78,7 +80,7 @@ export const APPROVED_SEO_BLOBS = Object.freeze({
   "src/routes/datenschutz.tsx": "f5358b7fc8dccc6fcbe1846b2651395127c49341",
   "src/routes/dellen-hagelschaden.tsx": "f20c2020b35a78290de753c0e4356cf0b2041659",
   "src/routes/fahrzeug-zustand.tsx": "cbc29dfb619210f8c0d7ff27fe384bf3ee084bee",
-  "src/routes/faq.tsx": "89062de77abbb698b91dd9d097547e1dec0bf079",
+  "src/routes/faq.tsx": "58da9f3e2849b7f0d10b790a3c31fc7090b0b7dd",
   "src/routes/galerie.tsx": "1b67b8ba645ed55b3f3af380c947fa0235678cbc",
   "src/routes/impressum.tsx": "e4a69b268521caadf36475145f6aeb065fa0c0cc",
   "src/routes/index.tsx": "ad6cecf8fd54ec042b3c61b2085a7067f51671b7",
@@ -89,8 +91,8 @@ export const APPROVED_SEO_BLOBS = Object.freeze({
   "src/routes/luxusfahrzeuge.tsx": "439e1687974e595e050c1a320dde5cbb771f1b5e",
   "src/routes/preise.tsx": "8785dea1674ddfa3d34503e7d9323a48da7d8102",
   "src/routes/qualitaet.tsx": "01553fc27ec1fc42cf046ada585d290a394ac9d5",
-  "src/routes/ratgeber.$slug.tsx": "289e2b57f0f03a2ca7ea4736b969fc312035ec5e",
-  "src/routes/ratgeber.index.tsx": "4fd450d03b9c7172f8b4bcecdb216ff659dbcd32",
+  "src/routes/ratgeber.$slug.tsx": "ab0b578498d59e1de75e20c02ad835f96acceaf9",
+  "src/routes/ratgeber.index.tsx": "437d528a6b58028e9ebc85c15362cf4633eb16c8",
   "src/routes/ueber-uns.tsx": "40f39f636a0b89f47ef66b140ad30f322f76d91f",
   "src/routes/widerruf.tsx": "58c36a01a2b121baebe7ef0bc72885e2d883a92b",
 });
@@ -117,11 +119,11 @@ const APPROVED_HOME_BLOBS = Object.freeze({
   // phase 2 the same day wraps subpages in the template root (.wgt-page);
   // the wrapper element stays stable across routes so pages never remount.
   // See docs/homepage-dark-edition-2026-11-25.md.
-  "src/components/site-chrome.tsx": "ab0d9a3684217237ba09e3db99adcc693120eaea",
+  "src/components/site-chrome.tsx": "7952699100e8d1ee6b8eaef1efdc273dd42ff2d8",
   "src/components/website-studio.tsx": "33cc6b97e51f52e72ff891778811febf2d591dde",
   "src/data/home-copy.ts": "f829b684e32560fbde054e7e4405568036b5ca82",
-  "src/data/site.ts": "57be27b676924cd007d0649fc98e7af080c16c2f",
-  "src/data/sitemap-static.xml": "a572c20315d05306ee42de41c5f11f3dc6cf5f24",
+  "src/data/site.ts": "04f74c3cf2d482bcdc2e4b55e018243362fb2579",
+  "src/data/sitemap-static.xml": "1bccc405c21b6dcc79a9e5639a7ba1f33bf8ff97",
   "src/lib/city-copy.ts": "98f164cc518d27ce7cfdfff66eef96d62e842369",
   "src/lib/city-logistics.ts": "9f964c2dfb0d0822b583c761fce7550556219e0c",
   "src/routes/index.tsx": "7b87df2a86c7dac7b0f432e210d57f12ec64e3c2",
@@ -149,7 +151,7 @@ const cosmeticProps = /^(className|style|ref|key|src|srcSet|sizes|width|height|l
 const cosmeticComponents = /^(Fragment|RevealLines|Icon[A-Z]|[A-Z].*Icon$)/;
 
 export const protectedFiles = [
-  "src/data/site.ts", "src/data/ratgeber.ts", "src/data/local-proof.ts",
+  "src/data/site.ts", "src/data/ratgeber.ts", "src/data/editorial-guides.json", "src/data/local-proof.ts",
   "src/data/google-profile.ts", "src/data/search-watchlist.ts", "src/data/sitemap-static.xml",
   "src/lib/seo.ts", "src/lib/seo-policy.ts", "src/lib/seo-intents.ts", "src/lib/city-seo.ts",
   "src/lib/city-copy.ts", "src/lib/city-logistics.ts", "src/lib/article-navigation.ts",
@@ -425,7 +427,8 @@ export function inspectDesignContent({
       ...(baseline.pullRequestUrl === undefined ? {} : { pullRequestUrl: baseline.pullRequestUrl }),
     };
   }
-  const protectedPresent = protectedFiles.filter((name) => names.includes(name));
+  const protectedPresent = protectedFiles.filter((name) => names.includes(name)
+    || (commit === DESIGN_BASE && name === "src/data/editorial-guides.json"));
   const seoBlobs = approvedSeoBlobs ?? (commit === DESIGN_BASE ? APPROVED_SEO_BLOBS : {});
   for (const [name, blobId] of Object.entries(seoBlobs)) {
     if ((!sources.includes(name) && !protectedPresent.includes(name)) || !/^[a-f0-9]{40}$/.test(blobId)) {

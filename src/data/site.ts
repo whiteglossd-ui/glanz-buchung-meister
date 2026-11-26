@@ -1206,8 +1206,8 @@ export const nav = [
   { to: "/preise", label: "Preise & Pakete" },
   { to: "/qualitaet", label: "Arbeitsweise" },
   { to: "/", label: "Google-Bewertungen", hash: "bewertungen" },
-  { to: "/ratgeber", label: "Ratgeber" },
-  { to: "/faq", label: "Häufige Fragen" },
+  { to: "/ratgeber", label: "Blog & Ratgeber" },
+  { to: "/faq", label: "FAQ · Häufige Fragen" },
   { to: "/galerie", label: "Ergebnisse" },
   { to: "/kontakt", label: "Kontakt" },
   { to: "/b2b", label: "Geschäftskunden" },
@@ -1220,8 +1220,8 @@ export const sheetPrimary = [
 ] as const;
 
 export const sheetSecondary = [
-  { to: "/ratgeber", label: "Ratgeber" },
-  { to: "/faq", label: "Häufige Fragen" },
+  { to: "/ratgeber", label: "Blog & Ratgeber" },
+  { to: "/faq", label: "FAQ · Häufige Fragen" },
   { to: "/galerie", label: "Ergebnisse" },
   { to: "/kontakt", label: "Kontakt" },
   { to: "/b2b", label: "Geschäftskunden" },
