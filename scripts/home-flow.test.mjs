@@ -4,6 +4,7 @@ import { runInNewContext } from "node:vm";
 import test from "node:test";
 import ts from "typescript";
 import * as React from "react";
+import * as lucide from "lucide-react";
 import * as jsxRuntime from "react/jsx-runtime";
 import { renderToStaticMarkup } from "react-dom/server";
 import * as siteData from "../src/data/site.ts";
@@ -241,6 +242,14 @@ test("both home variants render one conversion flow and an accessible location c
     },
     "@/data/site": siteData,
   });
+  const { FullService } = evaluate("components/full-service.tsx", {
+    "@tanstack/react-router": {
+      Link: ({ to, hash, hashScrollIntoView: _scroll, children, ...props }) =>
+        React.createElement("a", { ...props, href: `${to}#${hash}` }, children),
+    },
+    "lucide-react": lucide,
+    "@/lib/booking-anchor-focus": { BOOKING_JUMP: {}, focusBookingHeading: () => {} },
+  });
   const { HomePage } = evaluate("components/home-page.tsx", {
     "@/lib/json-ld": jsonLd,
     "@/lib/seo": seo,
@@ -248,6 +257,7 @@ test("both home variants render one conversion flow and an accessible location c
     "@/components/dark/dark-home": { DarkHome },
     "@/components/website-studio-content": { WebsiteStudioContent: () => null },
     "@/components/regional-home-details": { RegionalHomeDetails },
+    "@/components/full-service": { FullService },
     "@/data/home-location": homeLocation,
   });
   for (const location of ["horb", "lossburg"]) {
@@ -255,6 +265,14 @@ test("both home variants render one conversion flow and an accessible location c
     assert.equal((html.match(/<h1(?:\s|>)/g) ?? []).length, 1);
     assert.equal((html.match(/id="buchung"/g) ?? []).length, 1);
     assert.equal((html.match(/id="ablauf"/g) ?? []).length, 1);
+    if (location === "horb") {
+      assert.match(html, /<\/section><section class="sec" id="full-service"/);
+      assert.ok(html.indexOf('id="top"') < html.indexOf('id="full-service"'));
+      assert.ok(html.indexOf('id="full-service"') < html.indexOf('id="preise"'));
+      assert.match(html, /href="\/#rundum-anfrage"/);
+    } else {
+      assert.doesNotMatch(html, /id="full-service"/);
+    }
     const switcher = /<nav[^>]*aria-label="Standort wählen"[^>]*>([\s\S]*?)<\/nav>/.exec(html)?.[1];
     assert.ok(switcher);
     assert.match(switcher, /href="\/"/);
