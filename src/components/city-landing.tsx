@@ -1,7 +1,7 @@
 import { serializeJsonLd } from "@/lib/json-ld";
 import { Link } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { HeroMedia, Shot } from "@/components/media";
+import { HeroMedia } from "@/components/media";
 import { PageCrumbs } from "@/components/page-hero";
 import { ctaGhost, ctaPrimary } from "@/components/ui";
 import { cityJsonLd, whatsappForCity } from "@/lib/city-seo";
@@ -25,29 +25,6 @@ import { CityRegionalService } from "@/components/city-regional-service";
 import { CityLocalProofSection } from "@/components/city-local-proof";
 import { WebsiteStudioContent } from "@/components/website-studio-content";
 import { studioHero, type PublishedStudioDocument } from "@/lib/studio-public";
-
-function citySteps(city: City) {
-  return [
-    {
-      n: "01",
-      title: "Zustand zeigen",
-      text: "Beschreib dein Anliegen im Formular oder per WhatsApp. Fotos ergänzt du nach deiner Website-Anfrage im geschützten Kundenbereich. Wir geben dir eine erste Einschätzung.",
-    },
-    {
-      n: "02",
-      title: "Abholen oder bringen",
-      text:
-        city.slug === "horb-am-neckar"
-          ? "Bring dein Fahrzeug nach Termin selbst vorbei oder nutze die kostenlose Abholung in Horb."
-          : "Nutze den Hol- und Bringservice zu den angegebenen Preisen oder bring dein Fahrzeug selbst in unsere Werkstatt in Horb.",
-    },
-    {
-      n: "03",
-      title: "Kontrolle und Übergabe",
-      text: "Nach den vereinbarten Arbeiten kontrollieren wir das Ergebnis unter Werkstattlicht und übergeben dir das Fahrzeug.",
-    },
-  ];
-}
 
 export function CityLanding({ city, serviceSlug, editorial }: { city: City; serviceSlug?: string; editorial?: PublishedStudioDocument | null }) {
   const regional = city.slug === "lossburg" || city.slug === "freudenstadt";
@@ -134,57 +111,6 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
       {proof ? <CityLocalProofSection city={city} proof={proof} /> : null}
 
       {regional ? <CityRegionalService city={city} body={editorial?.content.body.trim()} faqs={proof?.faqs} /> : <>
-      <section className="cv-auto section mx-auto max-w-7xl px-4 sm:px-6">
-        <p className="kicker">Blick in die Arbeit</p>
-        <h2 className="heading-2 mt-4 max-w-2xl">Einblicke in die Aufbereitung</h2>
-        <p className="mt-4 max-w-xl text-muted">
-          Lackpflege und Dellenbearbeitung: zwei getrennte Einblicke. Die Aufbereitung erfolgt in
-          unserer Werkstatt in Horb.
-        </p>
-        <div className="mt-10 grid gap-6 sm:grid-cols-2">
-          <figure>
-            <Shot
-              name="lack"
-              alt="Frontpartie und Felge eines schwarzen BMW nach der Lackpflege"
-              className="aspect-[3/2]"
-            />
-            <figcaption className="mt-3 text-sm text-muted">Lackpolitur</figcaption>
-          </figure>
-          <figure>
-            <Shot name="dellen" alt="Delle unter Streiflicht" className="aspect-[3/2]" />
-            <figcaption className="mt-3 text-sm text-muted">Dellen unter Prüflicht</figcaption>
-          </figure>
-        </div>
-      </section>
-
-      <section className="cv-auto border-t border-line">
-        <div className="section mx-auto max-w-7xl px-4 sm:px-6">
-          <p className="kicker">Leasing & Verkauf</p>
-          <h2 className="heading-2 mt-4 max-w-3xl">Leasingrückgabe oder Verkauf in {city.name}</h2>
-          <p className="mt-5 max-w-2xl text-muted leading-relaxed">
-            Vor der Leasingrückgabe prüfen wir Innenraum, Felgen und Lack. Wir besprechen, welche
-            Gebrauchsspuren behandelt werden können und welche bleiben. Umfang und Preis richten
-            sich nach dem Fahrzeugzustand.
-          </p>
-          <ul className="mt-8 max-w-2xl space-y-3 text-sm text-muted">
-            <li className="border-l border-line pl-4">
-              Vor dem Verkauf: Reinigung und Lackpflege für ein gepflegtes Erscheinungsbild. Ob eine
-              Versiegelung sinnvoll ist, besprechen wir mit dir.
-            </li>
-            <li className="border-l border-line pl-4">
-              Langfristige Pflege: Eine Keramikversiegelung ist vor allem bei weiterer Nutzung des
-              Fahrzeugs sinnvoll. Die Haltbarkeit richtet sich nach dem Produkt.
-            </li>
-          </ul>
-          <Link
-            {...serviceAreaLink("leasingrueckgabe", city.slug)}
-            className="mt-8 inline-flex min-h-11 items-center text-sm hover:underline"
-          >
-            Leasingrückgabe mit Abholung in {city.name}
-          </Link>
-        </div>
-      </section>
-
       <section className="cv-auto border-t border-line bg-surface">
         <div className="section mx-auto max-w-7xl px-4 sm:px-6">
           <h2 className="heading-2">Pakete für {city.name}</h2>
@@ -225,7 +151,7 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
       <section className="cv-auto border-t border-line">
         <div className="section mx-auto max-w-7xl px-4 sm:px-6">
           <h2 className="heading-2">
-            {city.km === 0 ? "Direkt am Standort" : "Warum die Fahrt nach Horb"}
+            {city.km === 0 ? "Direkt am Standort Horb" : `Abholung in ${city.name}: Strecke und Übergabe`}
           </h2>
           <p className="mt-5 max-w-2xl text-muted leading-relaxed">
             {editorial?.content.body.trim() || cityPlanningText(city)}
@@ -282,21 +208,6 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
         </div>
       </section>
 
-      <section className="cv-auto border-t border-line bg-surface">
-        <div className="section mx-auto max-w-7xl px-4 sm:px-6">
-          <h2 className="heading-2">In drei Schritten</h2>
-          <ol className="gd-tiles gd-tiles-3 mt-12">
-            {citySteps(city).map((s) => (
-              <li key={s.n} className="border-t border-line pt-5">
-                <p className="font-display text-3xl text-subtle/80">{s.n}</p>
-                <h3 className="heading-3 mt-3">{s.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted">{s.text}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
       <section className="cv-auto border-t border-line">
         <div className="section mx-auto max-w-7xl px-4 sm:px-6">
           <h2 className="heading-2">Leistungen mit Abholung in {city.name}</h2>
@@ -326,62 +237,38 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
             <Link to="/abholservice" className={ctaGhost}>
               Alle Abholorte
             </Link>
+            <Link to="/galerie" className={ctaGhost}>
+              Ergebnisse ansehen
+            </Link>
           </div>
+          <p className="mt-5 max-w-2xl text-sm leading-relaxed text-muted">
+            Nenne bei der Anfrage deine Übergabeadresse in {city.name}, den Fahrzeugzustand und
+            deinen Wunschtermin. Abholung, Preis und Rückgabezeit stimmen wir vor dem Termin mit dir ab.
+          </p>
         </div>
       </section>
 
-      <section className="cv-auto border-t border-line bg-surface">
-        <div className="section mx-auto max-w-7xl px-4 sm:px-6">
-          <h2 className="heading-2">Fragen zur Autoaufbereitung für {city.name}</h2>
-          <dl className="mt-8 max-w-3xl space-y-8">
-            <div>
-              <dt className="heading-3">Wo wird mein Fahrzeug aufbereitet?</dt>
-              <dd className="mt-3 text-muted">
-                In unserer Werkstatt am {site.street}, {site.postalCode} {site.city}.
-                {city.slug === "horb-am-neckar"
-                  ? " Du kannst dein Fahrzeug nach Terminvereinbarung auch selbst bringen."
-                  : ` In ${city.name} bieten wir die Abholung und Rückgabe an, keine mobile Aufbereitung oder weitere Werkstatt.`}
-              </dd>
-            </div>
-            <div>
-              <dt className="heading-3">Was kostet die Aufbereitung mit Abholung?</dt>
-              <dd className="mt-3 text-muted">
-                Die Aufbereitungspakete beginnen bei {money(packages[0].price)} €. Umfang und
-                Endpreis richten sich nach Fahrzeug und Zustand. Für den Hol- und Bringservice aus{" "}
-                {city.name} gilt: {pickup}. {pickupKeramikNote()}. Alle Preise {site.vatNote}
-              </dd>
-            </div>
-            <div>
-              <dt className="heading-3">Wie vereinbare ich Abholung und Rückgabe?</dt>
-              <dd className="mt-3 text-muted">
-                Wähle bei der Terminanfrage {city.name} als Abholort aus. Übergabeadresse,
-                Leistungsumfang, Preis und Rückgabezeit stimmen wir persönlich mit dir ab. Fotos
-                helfen bei der ersten Einschätzung des Fahrzeugzustands.
-              </dd>
-            </div>
-            {logisticsFaq ? (
-              <div>
-                <dt className="heading-3">{logisticsFaq.question}</dt>
-                <dd className="mt-3 text-muted">{logisticsFaq.answer}</dd>
-              </div>
-            ) : null}
-            {proof?.faqs?.map((faq) => (
-              <div key={faq.question}>
-                <dt className="heading-3">{faq.question}</dt>
-                <dd className="mt-3 text-muted">{faq.answer}</dd>
-              </div>
-            ))}
-          </dl>
-        </div>
-      </section>
-
-      <Shot
-        name="atelier"
-        alt={`Werkstatt in ${site.city} – Ausführung für Fahrzeuge aus ${city.name}`}
-        className="h-48 w-full sm:h-64"
-        sizes="100vw"
-        framed={false}
-      />
+      {(logisticsFaq || proof?.faqs?.length) && (
+        <section className="cv-auto border-t border-line bg-surface">
+          <div className="section mx-auto max-w-7xl px-4 sm:px-6">
+            <h2 className="heading-2">Fragen zur Abholung in {city.name}</h2>
+            <dl className="mt-8 max-w-3xl space-y-8">
+              {logisticsFaq ? (
+                <div>
+                  <dt className="heading-3">{logisticsFaq.question}</dt>
+                  <dd className="mt-3 text-muted">{logisticsFaq.answer}</dd>
+                </div>
+              ) : null}
+              {proof?.faqs?.map((faq) => (
+                <div key={faq.question}>
+                  <dt className="heading-3">{faq.question}</dt>
+                  <dd className="mt-3 text-muted">{faq.answer}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </section>
+      )}
       </>}
 
       <a

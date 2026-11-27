@@ -140,6 +140,21 @@ const APPROVED_HOME_BLOBS = Object.freeze({
   "src/components/lazy-configurator.tsx": "2e1849b66392f02c2d985a1637d4f28dc26e8dfd",
 });
 
+// November 27: the operator requested corrections after a crawl of all public
+// pages. The reviewed changes and evidence are documented in
+// docs/site-audit-remediation-2026-11-27.md. Exact blobs keep the content guard
+// active for these sources; every unrelated source retains its previous pin.
+const APPROVED_SITE_AUDIT_BLOBS = Object.freeze({
+  "src/components/city-landing.tsx": "f32c2d1da052313c9884ef99180aeda44192c0f3",
+  "src/components/dark/dark-home.tsx": "d98f831481e6a19fbf2ce83ed93086ec6cbb667b",
+  "src/components/home-page.tsx": "ff043387442e349d2450bfdaea481116f0c35c36",
+  "src/components/regional-home-details.tsx": "9b09886729c0dd428e7398833b34198da08e29d9",
+  "src/components/review-showcase.tsx": "26d2417351e911084682ed0132eb84756b7d735a",
+  "src/components/reviews-spotlight.tsx": "6e09e3867ae99a35a7899a4de18686f00aaa66f9",
+  "src/data/home-location.ts": "417224b91126a97fcf4018aacf536eeebee3c323",
+  "src/data/site.ts": "8652484143fab7f221392573416f41f0ba23a98e",
+});
+
 function sourceBlobId(source) {
   const bytes = Buffer.from(source.replace(/\r\n/g, "\n"), "utf8");
   return createHash("sha1").update(`blob ${bytes.length}\0`).update(bytes).digest("hex");
@@ -449,10 +464,12 @@ export function inspectDesignContent({
     if (!protectedPresent.includes(name) || !/^[a-f0-9]{40}$/.test(rundum.commit ?? ""))
       throw new Error(`Invalid approved protected Rundum source: ${name}`);
   }
-  const homeBlobs = approvedHomeBlobs ?? (commit === DESIGN_BASE ? APPROVED_HOME_BLOBS : {});
+  const homeBlobs = approvedHomeBlobs ?? (commit === DESIGN_BASE
+    ? { ...APPROVED_HOME_BLOBS, ...APPROVED_SITE_AUDIT_BLOBS }
+    : {});
   const failures = [];
   for (const [name, blobId] of Object.entries(homeBlobs)) {
-    const publicContent = /^(?:src\/components\/[\w-]+\.tsx|src\/data\/[\w-]+\.ts)$/.test(name);
+    const publicContent = /^(?:src\/components\/(?:dark\/)?[\w-]+\.tsx|src\/data\/[\w-]+\.ts)$/.test(name);
     if ((!sources.includes(name) && !protectedPresent.includes(name) && !publicContent)
       || rundum.files?.[name]?.deleted || !/^[a-f0-9]{40}$/.test(blobId))
       throw new Error(`Invalid approved homepage source: ${name}`);

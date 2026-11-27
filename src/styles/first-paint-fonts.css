@@ -1,5 +1,5 @@
-/* Public-only families. Missing glyphs fall through to the original face;
-   the operator's shell and its font metrics are completely untouched. */
+/* Public-only subsets. Uncommon glyphs use the system fallback, avoiding
+   another download of each full Barlow face on every public page. */
 @font-face{font-family:"WG Public Text";font-weight:300;font-display:swap;src:url("/fonts/de-v1/barlow-300.woff2") format("woff2")}
 @font-face{font-family:"WG Public Text";font-weight:400;font-display:swap;src:url("/fonts/de-v1/barlow-400.woff2") format("woff2")}
 @font-face{font-family:"WG Public Text";font-weight:500;font-display:swap;src:url("/fonts/de-v1/barlow-500.woff2") format("woff2")}
@@ -10,12 +10,17 @@
 @font-face{font-family:"WG Public Display";font-weight:600;font-display:swap;src:url("/fonts/de-v1/bsc-500.woff2") format("woff2")}
 
 [data-shell="public"] {
-  --font-sans: "WG Public Text", Barlow, "Barlow Fallback", system-ui, sans-serif;
+  --font-sans: "WG Public Text", system-ui, sans-serif;
   --font-display: var(--font-sans);
   font-family: var(--font-sans);
 }
 [data-shell="public"] .wgt {
-  --serif: "WG Public Display", "WG Display", "Barlow Semi Condensed", Barlow, sans-serif;
-  --sans: "WG Public Text", Barlow, ui-sans-serif, system-ui, sans-serif;
+  --serif: "WG Public Display", system-ui, sans-serif;
+  --sans: "WG Public Text", system-ui, sans-serif;
   --ui: var(--sans);
+}
+/* Dialogs are portaled outside the public shell. */
+:is(.film-menu, .wg-video-dialog, .customer-photo-dialog) {
+  --font-sans: "WG Public Text", system-ui, sans-serif;
+  --font-display: "WG Public Display", system-ui, sans-serif;
 }

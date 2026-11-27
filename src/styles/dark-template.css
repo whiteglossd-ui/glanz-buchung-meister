@@ -1,12 +1,4 @@
 /* White-Gloss Dark Edition – aus der Vorlage übernommen, auf .wgt (öffentliche Seiten) begrenzt. */
-@font-face{font-family:"WG Display";src:url(/fonts/bsc-200.woff2) format("woff2");font-weight:300;font-display:swap}
-@font-face{font-family:"WG Display";src:url(/fonts/bsc-300.woff2) format("woff2");font-weight:400;font-display:swap}
-@font-face{font-family:"WG Display";src:url(/fonts/bsc-400.woff2) format("woff2");font-weight:500;font-display:swap}
-@font-face{font-family:"WG Display";src:url(/fonts/bsc-500.woff2) format("woff2");font-weight:600;font-display:swap}
-@font-face{font-family:Barlow;src:url(/fonts/barlow-300.woff2) format("woff2");font-weight:300;font-display:swap}
-@font-face{font-family:Barlow;src:url(/fonts/barlow-400.woff2) format("woff2");font-weight:400;font-display:swap}
-@font-face{font-family:Barlow;src:url(/fonts/barlow-500.woff2) format("woff2");font-weight:500;font-display:swap}
-@font-face{font-family:Barlow;src:url(/fonts/barlow-600.woff2) format("woff2");font-weight:600;font-display:swap}
 .wgt{--bg:#090a0d; --bg-2:#0e0f12; --card:#101114; --ink:#f3f0e8; --ink-2:rgba(243,240,232,.66); --ink-3:#999ba1;
   --line:rgba(243,240,232,.12); --line-2:rgba(243,240,232,.24);
   --cream:#f3f0e8; --on-cream:#080808;

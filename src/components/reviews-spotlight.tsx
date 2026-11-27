@@ -53,7 +53,7 @@ export function ReviewsSpotlight({ data }: { data?: GoogleReviewsData | null }) 
             <IconArrowRight aria-hidden />
           </span>
         </a>
-        <p className="reviews-source-note">Externer Link zu Google Maps.</p>
+        <p className="reviews-source-note">Aktuelle Sterne, Rezensionstexte und Gesamtzahl findest du direkt bei Google Maps.</p>
       </div>
     </aside>
   );

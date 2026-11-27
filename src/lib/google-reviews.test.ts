@@ -61,6 +61,15 @@ test("selects a substantive highlight, ignores textless reviews and keeps the ot
   assert.equal(originalReviewText("Erste Zeile.\nZweite Zeile.\n\n(Translated by Google)\nThe translation."), "Erste Zeile.\nZweite Zeile.");
   assert.equal(originalReviewText("Original.\n\n(Von Google übersetzt)\nÜbersetzung."), "Original.");
 });
+test("preserves Google's aggregate when recent reviews have no written text", () => {
+  const parsed = parseGoogleReviews({
+    ...payload,
+    reviews: [{ ...payload.reviews[0], comment: undefined }],
+  });
+  assert.equal(parsed.averageRating, 4.2);
+  assert.equal(parsed.totalReviewCount, 25);
+  assert.deepEqual(selectReviewHighlights(parsed.reviews), { featured: undefined, more: [] });
+});
 test("fallback uses distinct official Google Maps share links, not stored reviews", () => {
   const links = [reviewLinks.featured, ...reviewLinks.more];
   assert.equal(links.length, 5);

@@ -6,6 +6,7 @@
 .wg-reviews .wg-reviews__quote{margin:0;color:var(--ink,#f3f0e8);font:400 clamp(23px,3vw,43px)/1.17 var(--serif,Barlow,sans-serif);overflow-wrap:anywhere}
 .wg-reviews .wg-reviews__quote p{margin:0;white-space:pre-line}
 .wg-reviews .wg-reviews__focus h3{margin:0;color:var(--ink,#f3f0e8);font:400 clamp(25px,3vw,42px)/1.12 var(--serif,Barlow,sans-serif)}
+.wg-reviews .wg-reviews__fallback-copy{margin:18px 0 0;max-width:38ch;color:var(--review-muted);font-size:clamp(15px,1.4vw,18px);line-height:1.5}
 .wg-reviews .wg-reviews__meta{margin:18px 0 0;display:flex;flex-wrap:wrap;gap:5px 10px;align-items:baseline;color:var(--review-muted);font-size:14px;overflow-wrap:anywhere}
 .wg-reviews .wg-reviews__meta strong{color:var(--ink,#f3f0e8);font-weight:600}
 .wg-reviews .wg-reviews__stars{color:var(--review-accent);font-size:15px;letter-spacing:.14em;white-space:nowrap}

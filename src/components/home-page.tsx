@@ -6,6 +6,7 @@ import { WebsiteStudioContent } from "@/components/website-studio-content";
 import type { PublishedStudioDocument } from "@/lib/studio-public";
 import type { PackageId } from "@/data/site";
 import { lossburgHome } from "@/data/home-location";
+import { RegionalHomeDetails } from "@/components/regional-home-details";
 
 /**
  * Startseite (Horb und Loßburg) im Look der Dark-Edition-Vorlage.
@@ -40,13 +41,15 @@ export function HomePage({
     <DarkHome
       location={location}
       aboutPublished={aboutPublished}
-      title={regional ? homeCopy.title : homeText("title", document?.content.title.trim() || undefined)}
+      title={regional ? lossburgHome.heading : homeText("title", document?.content.title.trim() || undefined)}
       lead={regional ? lossburgHome.lead : homeText("lead", document?.content.lead.trim() || undefined)}
       initialPackage={initialPackage}
       initialCity={initialCity ?? (regional ? "lossburg" : undefined)}
       jsonLd={<script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }} />}
       studio={
-        studio ? (
+        regional ? (
+          <RegionalHomeDetails />
+        ) : studio ? (
           <section className="sec wgt-studio" aria-label="Aus unserer Werkstatt">
             <div className="wrap">
               <WebsiteStudioContent
