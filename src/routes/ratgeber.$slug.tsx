@@ -1,3 +1,4 @@
+import { EditorialLayout } from "@/components/editorial-layout";
 import { serializeJsonLd } from "@/lib/json-ld";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { PageHero } from "@/components/page-hero";
@@ -121,7 +122,11 @@ function ArticlePage() {
           </Link>
         }
       />
-      <article className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+      <EditorialLayout links={[
+        ...a.sections.map((section, i) => ({ id: `abschnitt-${i + 1}`, label: section.heading })),
+        { id: "weitere-beitraege", label: "Weitere Beiträge" },
+      ]}>
+        <article>
         {guide ? <p className="mb-6 text-lg text-fg">{guide.question}</p> : null}
         {a.category && a.date ? (
           <p className="kicker">
@@ -130,8 +135,8 @@ function ArticlePage() {
         ) : (
           <p className="text-sm text-muted">Alle genannten Einstiegspreise gelten für die Kompaktklasse und verstehen sich {site.vatNote} Fahrzeuggröße und Zustand bestimmen den Aufwand; den verbindlichen Preis stimmen wir vor Beginn mit dir ab.</p>
         )}
-        {a.sections.map((s) => (
-          <section key={s.heading} className="mt-10">
+        {a.sections.map((s, i) => (
+          <section id={`abschnitt-${i + 1}`} key={i} className="mt-9 border-t border-line pt-7">
             <h2 className="font-display text-2xl">{s.heading}</h2>
             {s.paragraphs.map((p) => (
               <p key={p} className="mt-3 leading-relaxed text-muted">
@@ -169,25 +174,26 @@ function ArticlePage() {
           to={request.leistung ? "/fahrzeug-zustand" : "/"}
           search={request}
           hash="buchung"
-          className="mt-12 inline-flex min-h-11 items-center rounded-sm bg-accent px-5 text-sm font-medium text-accent-fg"
+          className={`${ctaPrimary} mt-12`}
         >
           Termin anfragen
         </Link>
-        <h2 className="mt-16 font-display text-2xl">Weitere Beiträge</h2>
+        <h2 id="weitere-beitraege" className="mt-16 font-display text-2xl">Weitere Beiträge</h2>
         <ul className="mt-4 space-y-2">
           {others.map((o) => (
             <li key={o.slug}>
               <Link
                 to="/ratgeber/$slug"
                 params={{ slug: o.slug }}
-                className="text-sm text-muted hover:text-fg"
+                className="inline-flex min-h-11 items-center text-sm text-muted underline-offset-4 hover:text-fg hover:underline"
               >
                 {o.title}
               </Link>
             </li>
           ))}
         </ul>
-      </article>
+        </article>
+      </EditorialLayout>
     </main>
   );
 }

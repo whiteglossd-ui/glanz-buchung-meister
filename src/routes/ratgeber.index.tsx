@@ -81,13 +81,13 @@ function RatgeberIndex() {
         }
       />
       <section className="border-t border-line">
-        <div className="gd-split gd-split--duo">
+        <div className="wrap my-12 grid gap-x-10 gap-y-12 md:my-20 md:grid-cols-2">
           {articles.map((a) => (
             <article
               key={a.slug}
-              className="group relative block border-b border-line lg:odd:border-r"
+              className="group relative min-w-0 border-b border-line pb-4"
             >
-              <MediaTile src={a.category ? a.image.replace(/-full\.webp$/, "-800.webp") : a.image} alt={a.imageAlt ?? `Titelbild: ${a.title}`}>
+              <MediaTile src={a.image} alt={a.imageAlt ?? `Titelbild: ${a.title}`}>
                 <p className="kicker">
                   {a.category ? `${a.category} · ` : null}
                   <time dateTime={a.date}>{new Date(a.date).toLocaleDateString("de-DE", {
@@ -125,7 +125,7 @@ function RatgeberIndex() {
               return (
                 <article
                   key={r.id}
-                  className="group relative block border-b border-line p-8 lg:odd:border-r"
+                  className="group relative min-w-0 border-b border-line bg-surface p-6 sm:p-8"
                 >
                   <p className="kicker">Aktuell</p>
                   <h2 className="heading-2 mt-3">
