@@ -330,10 +330,12 @@ export function DarkFooter() {
         <div className="wrap foot__grid">
           <nav aria-label="Leistungen">
             <p className="label">Leistungen</p>
+            <Link to="/leistungen" activeOptions={{ exact: true }}>Alle Leistungen</Link>
             <Link to="/leistungen/$slug" params={{ slug: "keramikversiegelung" }}>Keramikversiegelung</Link>
             <Link to="/leistungen/$slug" params={{ slug: "lackkorrektur" }}>Lackkorrektur</Link>
             <Link to="/leistungen/$slug" params={{ slug: "innenraumreinigung" }}>Innenraumreinigung</Link>
             <Link to="/leistungen/$slug" params={{ slug: "lederreparatur" }}>Lederreparatur</Link>
+            <Link to="/dellen-hagelschaden">Dellen und Hagelschäden</Link>
             <Link to="/preise">Preise</Link>
             <Link to="/luxusfahrzeuge">Luxusfahrzeuge</Link>
             <Link to="/b2b">Geschäftskunden</Link>
@@ -344,9 +346,11 @@ export function DarkFooter() {
             <Link to="/freudenstadt-lossburg">Fahrzeugaufbereitung Loßburg</Link>
             <Link to="/abholservice/$city" params={{ city: "freudenstadt" }}>Abholservice Freudenstadt</Link>
             <Link to="/fahrzeug-zustand">Individuelles Angebot</Link>
+            <Link to="/qualitaet">Arbeitsweise</Link>
             <Link to="/ratgeber">Ratgeber</Link>
             <Link to="/galerie">Ergebnisse</Link>
             <Link to="/kontakt">Kontakt</Link>
+            <a href="/visitenkarte.html">Digitale Visitenkarte</a>
             <Link to="/faq">Häufige Fragen</Link>
           </nav>
           <nav aria-label="Rechtliches">
@@ -354,6 +358,7 @@ export function DarkFooter() {
             <CookieSettingsButton />
             <Link to="/impressum">Impressum</Link>
             <Link to="/datenschutz">Datenschutz</Link>
+            <Link to="/datenloeschung">Datenlöschung</Link>
             <Link to="/agb">AGB</Link>
             <Link to="/widerruf">Widerruf</Link>
             <Link to="/barrierefreiheit">Barrierefreiheit</Link>
