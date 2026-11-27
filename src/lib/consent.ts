@@ -12,13 +12,14 @@ export type ConsentChoice = "accepted" | "rejected";
 export const CONSENT_STORAGE_KEY = "wg-consent";
 
 /**
- * Read-only first-paint hint. The SSR dialog is hidden only for a valid existing
- * choice; React still reads the authoritative storage value after hydration.
+ * Read-only first-paint hint. Mark an undecided visit in the head, before the
+ * hero can paint; the dialog's later body script only measures its height.
+ * React still reads the authoritative storage value after hydration.
  */
 export const CONSENT_INITIAL_STATE_SCRIPT =
-  '(function(){try{var c=window.localStorage.getItem("wg-consent");' +
-  'if(c==="accepted"||c==="rejected")document.documentElement.setAttribute("data-consent-stored","true")' +
-  '}catch{}})();';
+  '(function(){var r=document.documentElement;try{var c=window.localStorage.getItem("wg-consent");' +
+  'if(c==="accepted"||c==="rejected"){r.setAttribute("data-consent-stored","true");return}' +
+  '}catch{}r.setAttribute("data-consent-initial-open","true")})();';
 
 /**
  * ResizeObserver delivers border-box sizes after layout and before paint. An

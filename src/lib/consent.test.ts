@@ -128,6 +128,7 @@ describe("first-paint consent hint", () => {
       );
       assert.equal(reads, 1);
       assert.equal(attributes.get("data-consent-stored"), ["accepted", "rejected"].includes(choice ?? "") ? "true" : undefined);
+      assert.equal(attributes.get("data-consent-initial-open"), ["accepted", "rejected"].includes(choice ?? "") ? undefined : "true");
     });
   }
 
@@ -137,7 +138,8 @@ describe("first-paint consent hint", () => {
       { get localStorage() { throw new Error("blocked"); } },
       { documentElement: { setAttribute: (key: string, value: string) => attributes.set(key, value) } },
     ));
-    assert.equal(attributes.size, 0);
+    assert.equal(attributes.get("data-consent-stored"), undefined);
+    assert.equal(attributes.get("data-consent-initial-open"), "true");
   });
 });
 
