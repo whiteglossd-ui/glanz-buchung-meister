@@ -19,7 +19,7 @@ await mkdir(output, { recursive: true });
 const report = {
   status: "running",
   scope: "Playwright Firefox and WebKit on Linux, 390px and 1440px viewports. WebKit is not a real Safari/iOS test; no physical device or native Windows/macOS browser claim.",
-  checks: [], diagnostics: [], failures: [], screenshots: [], reviews: [], reviewRequests: [], reviewActions: [], galleryImages: [],
+  checks: [], diagnostics: [], failures: [], screenshots: [], reviews: [], reviewRequests: [], reviewActions: [], galleryImages: [], galleryTransitions: [],
 };
 const diagnostics = [];
 const engineNames = ["firefox", "webkit"], viewportWidths = [390, 1440];
@@ -255,6 +255,40 @@ try {
           assert.equal(await page.evaluate(() => document.activeElement?.id), "main-content");
           report.checks.push(`${name} ${width}px: gallery keys/focus return, menu focus trap/Escape and skip link`);
 
+          // Scroll the lazy comparison into view and wait for the exact selected
+          // image bytes before this client-side transition can remove the gallery.
+          const comparison = page.getByRole("slider", { name: "Vorher-Nachher-Vergleich der Lackaufbereitung" });
+          await comparison.scrollIntoViewIfNeeded();
+          const pictureSelector = ".gallery-cover img, .gallery-comparison [role=slider] img";
+          const galleryPictures = page.locator(pictureSelector);
+          assert.equal(await galleryPictures.count(), 3, "Cover and both comparison images must be present");
+          await page.waitForFunction((selector) =>
+            [...document.querySelectorAll(selector)].every((image) => image.complete && image.naturalWidth > 0),
+            pictureSelector,
+          );
+          const transition = { label: `${name}-${width}`, decoded: [], requests: [] };
+          report.galleryTransitions.push(transition);
+          for (const picture of await galleryPictures.all()) {
+            const expected = await picture.evaluate((image) => {
+              const sources = [...image.parentElement.querySelectorAll("source"), image];
+              return {
+                src: image.src,
+                candidates: sources.flatMap((source) => source.srcset.split(",").filter(Boolean).map((value) =>
+                  new URL(value.trim().split(/\s+/)[0], image.baseURI).href)),
+              };
+            });
+            transition.decoded.push(await picture.evaluate(decodedGalleryImage, expected));
+          }
+          const recordGalleryImage = (event) => (request) => {
+            const path = new URL(request.url()).pathname;
+            if (request.resourceType() === "image" && /^\/media\/(compare-before|compare-after|atelier)-/.test(path)) {
+              transition.requests.push({ event, path, phase, page: new URL(page.url()).pathname });
+            }
+          };
+          page.on("request", recordGalleryImage("start"));
+          page.on("requestfinished", recordGalleryImage("finished"));
+          page.on("requestfailed", recordGalleryImage("failed"));
+          await page.evaluate(() => window.scrollTo(0, 0));
           // Let intent preloads started during the keyboard/menu checks finish first.
           // Otherwise the next page.goto cancels the test's own request ("Load request cancelled").
           await pageReads.complete(`${name}-${width}: gallery and keyboard navigation`);
@@ -268,6 +302,8 @@ try {
           // Start from the hydrated gallery with the real link, rather than
           // replacing the document (and its preloads) with page.goto().
           await openBusinessMenu();
+          await pageReads.complete(`${name}-${width}: decoded gallery pictures and business menu ready`);
+          phase = "gallery-to-business-link";
           await businessNav.getByRole("link", { name: "B2B im Überblick", exact: true }).click();
           await page.waitForURL((url) => url.pathname === "/b2b" && !url.hash);
           await dialog.waitFor({ state: "hidden" });
@@ -346,4 +382,4 @@ try {
   await writeFile(resolve(output, "results.json"), JSON.stringify(report, null, 2));
 }
 console.log(JSON.stringify(report, null, 2));
-console.log("Cross-browser read evidence: " + JSON.stringify({ status: report.status, failures: report.failures, lastLayout: report.lastLayout, actions: report.reviewActions, reads: report.reviewRequests, gallery: report.galleryImages, errors: report.diagnostics.flatMap((item) => item.errors) }));
+console.log("Cross-browser read evidence: " + JSON.stringify({ status: report.status, failures: report.failures, lastLayout: report.lastLayout, actions: report.reviewActions, reads: report.reviewRequests, gallery: report.galleryImages, galleryTransitions: report.galleryTransitions, errors: report.diagnostics.flatMap((item) => item.errors) }));
