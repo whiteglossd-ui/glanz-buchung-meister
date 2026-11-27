@@ -152,8 +152,9 @@ export function renderContactCard(contact) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="dark">
-  <meta name="theme-color" content="#0e1218">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#05060a">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f2f3f5">
   <meta name="description" content="${h(description)}">
   <title>${h(c.name)} · Digitale Visitenkarte</title>
   <link rel="canonical" href="${h(c.cardUrl)}">
@@ -161,53 +162,98 @@ export function renderContactCard(contact) {
   <style>
     @font-face{font-family:Barlow;font-style:normal;font-weight:400;font-display:swap;src:url('/fonts/barlow-400.woff2') format('woff2')}
     @font-face{font-family:Barlow;font-style:normal;font-weight:500;font-display:swap;src:url('/fonts/barlow-500.woff2') format('woff2')}
-    @font-face{font-family:Barlow;font-style:normal;font-weight:600;font-display:swap;src:url('/fonts/barlow-600.woff2') format('woff2')}
-    :root{color-scheme:dark;font-family:Barlow,Arial,ui-sans-serif,system-ui,sans-serif;color:#f4f3ed;background:#0e1218;--muted:#bbc5d1;--line:#bfd1e533;--accent:#bfcee0}
+    @font-face{font-family:"WG Display";font-style:normal;font-weight:400;font-display:swap;src:url('/fonts/bsc-300.woff2') format('woff2')}
+    @font-face{font-family:"WG Display";font-style:normal;font-weight:500;font-display:swap;src:url('/fonts/bsc-400.woff2') format('woff2')}
+    :root{
+      color-scheme:dark;
+      --bg:#05060a;--surface:#0e1014;--raised:#121419;
+      --ink:#eef0f3;--muted:#a9b0b9;--line:#ffffff1f;--line-strong:#ffffff38;
+      --accent:#eef0f3;--on-accent:#14171b;--accent-detail:#303843;
+      --steel:linear-gradient(100deg,#f6f7f9,#d5dae0 28%,#fff 46%,#bcc3cb 68%,#eceef1);
+      --sheen:linear-gradient(180deg,#ffffff0b,#ffffff04);
+      --glow:#8c9baf20;--shadow:#00000070;--radius:14px;
+      --display:"WG Display",Barlow,system-ui,sans-serif;
+      font-family:Barlow,ui-sans-serif,system-ui,sans-serif;
+      color:var(--ink);background:var(--bg)
+    }
+    @supports (color:light-dark(white,black)){
+      :root{
+        color-scheme:dark light;
+        --bg:light-dark(#f2f3f5,#05060a);--surface:light-dark(#fff,#0e1014);--raised:light-dark(#e8ebef,#121419);
+        --ink:light-dark(#14171b,#eef0f3);--muted:light-dark(#4b5563,#a9b0b9);
+        --line:light-dark(#14181d1f,#ffffff1f);--line-strong:light-dark(#14181d38,#ffffff38);
+        --accent:light-dark(#242931,#eef0f3);--on-accent:light-dark(#f6f7f9,#14171b);
+        --accent-detail:light-dark(#edf0f4,#303843);
+        --steel:linear-gradient(100deg,light-dark(#323a44,#f6f7f9),light-dark(#222730,#d5dae0) 28%,light-dark(#353e49,#fff) 46%,light-dark(#20252d,#bcc3cb) 68%,light-dark(#222730,#eceef1));
+        --sheen:linear-gradient(180deg,light-dark(#4d566400,#ffffff0b),light-dark(#4d566406,#ffffff04));
+        --glow:light-dark(#c6ced45c,#8c9baf20);--shadow:light-dark(#14181d1a,#00000070)
+      }
+      @media(prefers-color-scheme:light){:root{--brand-filter:brightness(.22)}}
+      :root:has(#card-theme-light:checked){color-scheme:light;--brand-filter:brightness(.22)}
+      :root:has(#card-theme-dark:checked){color-scheme:dark;--brand-filter:none}
+      @supports selector(:has(*)){:root{--theme-controls:flex}}
+    }
     *{box-sizing:border-box}
-    body{margin:0;min-width:320px;min-height:100vh;min-height:100svh;font-size:16px;line-height:1.5;-webkit-text-size-adjust:100%;text-size-adjust:100%}
-    a{color:inherit;text-decoration:none;-webkit-tap-highlight-color:#bfcee033}
-    a:focus-visible{outline:3px solid #e2eeff;outline-offset:5px}
-    .skip-link{position:absolute;z-index:2;left:16px;top:12px;transform:translateY(-200%);padding:12px 16px;color:#0e1218;background:#f4f3ed}
+    body{margin:0;min-height:100vh;min-height:100svh;font-size:16px;line-height:1.55;background:radial-gradient(110% 62% at 80% 0,var(--glow),transparent 70%),var(--bg);-webkit-text-size-adjust:100%;text-size-adjust:100%}
+    a{color:inherit;text-decoration:none;-webkit-tap-highlight-color:var(--line-strong)}
+    a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+    .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+    .skip-link{position:absolute;z-index:2;left:16px;top:12px;transform:translateY(-200%);padding:12px 16px;color:var(--on-accent);background:var(--accent)}
     .skip-link:focus{transform:translateY(0)}
-    .card{width:min(100%,560px);margin:0 auto;padding:32px 24px 20px;padding-top:max(32px,env(safe-area-inset-top));padding-bottom:max(20px,env(safe-area-inset-bottom))}
-    .identity{padding:0 0 24px}
-    .brand{display:block;width:160px;height:auto;margin:0 0 28px;object-fit:contain}
-    .eyebrow{margin:0 0 12px;font-size:12px;font-weight:500;line-height:1.4;letter-spacing:.17em;text-transform:uppercase;color:var(--muted)}
-    h1{margin:0;font-size:clamp(30px,7.8vw,42px);font-weight:400;letter-spacing:-.035em;line-height:1.06;overflow-wrap:anywhere;text-wrap:balance}
-    .tagline{max-width:34ch;margin:14px 0 0;font-size:17px;line-height:1.5;color:var(--muted);overflow-wrap:anywhere}
-    .owner{margin:12px 0 0;font-size:15px;color:#f4f3ed;overflow-wrap:anywhere}
+    .card{width:min(100%,600px);margin:0 auto;padding:28px 20px 20px;padding-top:max(28px,env(safe-area-inset-top));padding-bottom:max(20px,env(safe-area-inset-bottom))}
+    .identity{padding:0 0 24px;border-bottom:1px solid var(--line);margin-bottom:20px}
+    .identity-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:24px}
+    .brand{display:block;width:clamp(96px,31vw,132px);height:auto;object-fit:contain;filter:var(--brand-filter,none)}
+    .theme-choice{display:var(--theme-controls,none);align-items:center;margin:0;padding:2px;border:1px solid var(--line-strong);border-radius:var(--radius);min-width:0;color:var(--muted);background:var(--surface)}
+    .theme-option{position:relative;display:grid;place-items:center;min-height:44px;padding:0 9px;border-radius:10px;cursor:pointer;font-size:13px;white-space:nowrap}
+    .theme-option:has(input:checked){background:var(--raised);color:var(--ink)}
+    .theme-option:has(input:focus-visible){outline:2px solid var(--ink);outline-offset:3px}
+    .eyebrow{margin:0 0 8px;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+    h1{margin:0;font:400 clamp(36px,9vw,52px)/1.05 var(--display);letter-spacing:-.005em;overflow-wrap:anywhere;text-wrap:balance}
+    .tagline{max-width:38ch;margin:10px 0 0;font-size:17px;line-height:1.5;color:var(--muted);overflow-wrap:anywhere}
+    .owner{margin:8px 0 0;font-size:15px;color:var(--ink);overflow-wrap:anywhere}
     .actions{display:grid;gap:12px}
-    .action{display:flex;align-items:center;gap:14px;min-height:68px;padding:15px 18px;border:1px solid var(--line);border-radius:4px;background:#151d27}
-    .action--primary{min-height:76px;background:var(--accent);border-color:var(--accent);color:#0e1218}
+    .action{display:flex;align-items:center;gap:14px;min-height:66px;padding:13px 16px;border:1px solid var(--line);border-radius:var(--radius);background:var(--sheen),var(--surface);transition:background-position .24s ease,border-color .16s ease}
+    .action--primary{min-height:76px;background:var(--steel),var(--accent);background-size:160% 100%;border-color:var(--accent);color:var(--on-accent)}
     .icon{display:block;width:24px;height:24px;flex:0 0 24px}
     .action-copy{display:block;flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
-    .action-label{display:block;font-size:17px;font-weight:500;line-height:1.3}
+    .action-label{display:block;font:500 19px/1.2 var(--display)}
     .action-detail{display:block;margin-top:3px;font-size:13px;line-height:1.35;color:var(--muted)}
-    .action--primary .action-detail{color:#293849}
+    .action--primary .action-label{font-size:22px}
+    .action--primary .action-detail{color:var(--accent-detail)}
     .action-arrow{width:18px;height:18px;flex:0 0 18px;color:var(--muted)}
-    .action--primary .action-arrow{color:#0e1218}
+    .action--primary .action-arrow{color:var(--on-accent)}
     .direct-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
     .direct-actions .action{min-height:74px;gap:10px;padding:14px}
     .direct-actions .action-arrow{display:none}
-    .direct-actions .action-label{font-size:16px}
+    .direct-actions .action-label{font-size:18px}
     .direct-actions .action-detail{font-size:12px}
     .profiles{display:grid;gap:10px;margin-top:8px}
     .details{margin:28px 0 0;padding-top:22px;border-top:1px solid var(--line);font-style:normal;color:var(--muted);font-size:15px}
-    .email{display:inline-flex;align-items:center;min-height:44px;max-width:100%;padding:8px 0;color:#f4f3ed;overflow-wrap:anywhere;text-decoration:underline;text-decoration-color:#bfcee066;text-underline-offset:4px}
+    .email{display:inline-flex;align-items:center;min-height:44px;max-width:100%;padding:8px 0;color:var(--ink);overflow-wrap:anywhere;text-decoration:underline;text-decoration-color:var(--line-strong);text-underline-offset:4px}
     .address{margin:8px 0 0;overflow-wrap:anywhere}
     .footer{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:20px;border-top:1px solid var(--line);padding-top:8px;font-size:13px;color:var(--muted)}
     .footer a{display:inline-flex;align-items:center;min-height:44px;text-decoration:underline;text-decoration-color:transparent;text-underline-offset:4px}
-    @media(hover:hover){.action:hover{background:#202c3a;border-color:#bfcee077}.action--primary:hover{background:#d3deeb;border-color:#d3deeb}.email:hover,.footer a:hover{color:#fff;text-decoration-color:currentColor}}
-    @media(min-width:700px){.card{margin-top:36px;margin-bottom:36px;padding:40px;border:1px solid var(--line);border-radius:4px}.brand{width:174px}.identity{padding-bottom:28px}}
-    @media(max-width:359px){.card{padding-right:20px;padding-left:20px}.direct-actions{grid-template-columns:1fr}.direct-actions .action{min-height:68px;padding:15px 18px;gap:14px}.direct-actions .action-label{font-size:17px}.direct-actions .action-detail{font-size:13px}.direct-actions .action-arrow{display:block}}
-    @media(forced-colors:active){.action,.card{border:1px solid ButtonText}.action--primary{background:Canvas;color:CanvasText}.action-detail,.action-arrow{color:CanvasText}}
+    @media(hover:hover){.action:hover{border-color:var(--line-strong)}.action--primary:hover{background-position:right;border-color:var(--accent)}.email:hover,.footer a:hover{color:var(--ink);text-decoration-color:currentColor}}
+    @media(min-width:700px){.card{margin:40px auto;padding:34px;border:1px solid var(--line);border-radius:var(--radius);background:var(--sheen),var(--surface);box-shadow:0 26px 70px -36px var(--shadow)}.identity{padding-bottom:28px}}
+    @media(max-width:359px){.card{padding-inline:16px}.theme-option{padding-inline:7px}.direct-actions{grid-template-columns:1fr}.direct-actions .action{min-height:66px;padding:13px 16px;gap:14px}.direct-actions .action-detail{font-size:13px}.direct-actions .action-arrow{display:block}}
+    @media(prefers-reduced-motion:reduce){.action{transition:none}}
+    @media(forced-colors:active){.action,.card,.theme-choice{border:1px solid ButtonText}.theme-option:has(input:checked){outline:1px solid Highlight;outline-offset:-2px}.action--primary{background:Canvas;color:CanvasText}.action-detail,.action-arrow{color:CanvasText}}
   </style>
 </head>
 <body>
   <a class="skip-link" href="#kontakt">Zu den Kontaktmöglichkeiten</a>
   <main class="card">
     <header class="identity">
-      <img class="brand" src="/media/logo-280.webp" alt="${h(c.name)}" width="280" height="161" decoding="async">
+      <div class="identity-top">
+        <img class="brand" src="/media/logo-280.webp" alt="" width="280" height="161" decoding="async">
+        <fieldset class="theme-choice">
+          <legend class="visually-hidden">Darstellung</legend>
+          <label class="theme-option"><input class="visually-hidden" type="radio" name="card-theme" id="card-theme-auto" checked>System</label>
+          <label class="theme-option"><input class="visually-hidden" type="radio" name="card-theme" id="card-theme-light">Hell</label>
+          <label class="theme-option"><input class="visually-hidden" type="radio" name="card-theme" id="card-theme-dark">Dunkel</label>
+        </fieldset>
+      </div>
       <p class="eyebrow">Digitale Visitenkarte</p>
       <h1>${h(c.name)}</h1>
       ${c.tagline ? `<p class="tagline">${h(c.tagline)}</p>` : ""}
