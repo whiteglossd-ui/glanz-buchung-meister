@@ -48,10 +48,17 @@ async function revealReviews(page, state) {
   state.visibleTarget = await revealTargetWithWheel({
     // Measure the heading a visitor needs to see, not the whole card deck:
     // on mobile the section is taller than the usable viewport.
-    measure: () => reviewHeading(page).evaluate((element) => {
-      const rect = element.getBoundingClientRect();
-      return { top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height, scrollY, viewportHeight: innerHeight, headerBottom: document.querySelector("[data-site-header]")?.getBoundingClientRect().bottom ?? 0 };
-    }),
+    measure: async (timeout) => {
+      // Suspense replaces the placeholder H2 when the reviews module mounts.
+      // Resolve its current DOM node and measure it in the same animation frame.
+      const geometry = await page.waitForFunction(() => {
+        const rect = document.querySelector("#bewertungen .wg-reviews__heading")?.getBoundingClientRect();
+        if (!rect?.width || !rect.height) return false;
+        return { top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height, scrollY, viewportHeight: innerHeight, headerBottom: document.querySelector("[data-site-header]")?.getBoundingClientRect().bottom ?? 0 };
+      }, undefined, { timeout });
+      try { return await geometry.jsonValue(); }
+      finally { await geometry.dispose(); }
+    },
     wheel: async (deltaY) => {
       const viewport = page.viewportSize();
       await page.mouse.move(viewport.width / 2, viewport.height / 2);

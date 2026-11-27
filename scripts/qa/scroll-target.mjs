@@ -10,8 +10,7 @@ export async function revealTargetWithWheel(adapter, { maxAttempts, timeoutMs = 
   let attemptLimit = maxAttempts;
   let stalledAttempts = 0;
   for (let index = 0; ; index++) {
-    remaining();
-    geometry = await adapter.measure();
+    geometry = await adapter.measure(remaining());
     if (!geometry || ![geometry.top, geometry.bottom, geometry.width, geometry.height, geometry.headerBottom, geometry.viewportHeight, geometry.scrollY].every(Number.isFinite) || geometry.width <= 0 || geometry.height <= 0)
       throw new Error("Scroll target has no measurable bounds");
     const upper = Math.max(0, geometry.headerBottom) + 8;
@@ -29,7 +28,7 @@ export async function revealTargetWithWheel(adapter, { maxAttempts, timeoutMs = 
     onAttempt(attempt);
     await adapter.wheel(attempt.deltaY);
     await adapter.settle(remaining());
-    attempt.after = await adapter.measure();
+    attempt.after = await adapter.measure(remaining());
     stalledAttempts = Math.abs(attempt.after.scrollY - geometry.scrollY) <= 0.5 ? stalledAttempts + 1 : 0;
     if (stalledAttempts >= 3) throw new Error("Scroll target is not visible: no scroll progress after three consecutive wheel attempts");
   }
