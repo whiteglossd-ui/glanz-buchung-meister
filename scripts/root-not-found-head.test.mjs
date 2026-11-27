@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import test from "node:test";
 import { site } from "../src/data/site.ts";
+import { BOOKING_JUMP } from "../src/lib/booking-anchor-focus.ts";
 
 const require = createRequire(import.meta.url);
 const ts = require("typescript");
@@ -54,6 +55,7 @@ new Function("require", "exports", notFoundCompiled.outputText)((specifier) => {
   if (specifier === "@tanstack/react-router") return routerApi;
   if (specifier === "@/components/ui") return { ctaPrimary: "primary", ctaGhost: "secondary" };
   if (specifier === "@/data/site") return { site };
+  if (specifier === "@/lib/booking-anchor-focus") return { BOOKING_JUMP };
   throw new Error(`Unexpected NotFound dependency: ${specifier}`);
 }, notFoundExports);
 
@@ -101,6 +103,8 @@ test("an unpublished About renders its actual NotFound component and only noinde
   assert.equal(page.aboutHeadCalls, 0, "The failed child head is skipped by TanStack");
   assert.match(page.html, /Seite nicht gefunden/);
   assert.doesNotMatch(page.html, /Freigegebene Vorstellung/);
+  assert.match(page.html, /<title>Seite nicht gefunden/);
+  assert.match(page.html, /name="description" content="Diese Seite ist nicht verfügbar/);
   assert.deepEqual(robotsValues(page.html), ["noindex,nofollow"]);
   assert.deepEqual(robotsValues(page.html.match(/<head>([\s\S]*?)<\/head>/)?.[1] ?? ""), ["noindex,nofollow"]);
 });
@@ -108,6 +112,8 @@ test("an unpublished About renders its actual NotFound component and only noinde
 test("an unknown URL also renders NotFound with a single noindex directive", async () => {
   const page = await renderPage("/nicht-vorhanden", false);
   assert.match(page.html, /Seite nicht gefunden/);
+  assert.match(page.html, /<title>Seite nicht gefunden/);
+  assert.match(page.html, /name="description" content="Diese Seite ist nicht verfügbar/);
   assert.deepEqual(robotsValues(page.html), ["noindex,nofollow"]);
 });
 
