@@ -225,3 +225,11 @@
     -webkit-text-fill-color: CanvasText;
   }
 }
+
+/* The public shell contains the menu, the subpage and the footer as siblings. */
+[data-shell="public"]:has(> .wgt-page) :is(.menu__nav, .menu__svc, .foot__grid) a[aria-current="page"]:not([href*="#"]) {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: .25em;
+  text-decoration-thickness: 1px;
+}
