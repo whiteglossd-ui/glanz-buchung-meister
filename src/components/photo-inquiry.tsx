@@ -8,16 +8,25 @@ import { createBookingRequestIdStore } from "@/lib/booking-request-id";
 import { Button, Field, inputLine } from "./ui";
 import { useBookingDraft, clearBookingDraft } from "./booking-draft";
 
-export function PhotoInquiry({ title, hint }: { title: string; hint: string }) {
-  const [text, setText] = useBookingDraft("photo.text", "");
-  const [name, setName] = useBookingDraft("photo.name", "");
-  const [phone, setPhone] = useBookingDraft("photo.phone", "");
-  const [email, setEmail] = useBookingDraft("photo.email", "");
+export function PhotoInquiry({
+  title,
+  hint,
+  contact = false,
+}: {
+  title: string;
+  hint: string;
+  contact?: boolean;
+}) {
+  const draft = contact ? "contact." : "photo.";
+  const [text, setText] = useBookingDraft(draft + "text", "");
+  const [name, setName] = useBookingDraft(draft + "name", "");
+  const [phone, setPhone] = useBookingDraft(draft + "phone", "");
+  const [email, setEmail] = useBookingDraft(draft + "email", "");
   const [reviewEmailConsent, setReviewEmailConsent] = useBookingDraft(
-    "photo.reviewEmailConsent",
+    draft + "reviewEmailConsent",
     false,
   );
-  const [privacy, setPrivacy] = useBookingDraft("photo.privacy", false);
+  const [privacy, setPrivacy] = useBookingDraft(draft + "privacy", false);
   const [website, setWebsite] = useState("");
   const [requestIds] = useState(() =>
     createBookingRequestIdStore(
@@ -59,7 +68,7 @@ export function PhotoInquiry({ title, hint }: { title: string; hint: string }) {
         },
       });
       setSent(result);
-      clearBookingDraft("photo.");
+      clearBookingDraft(draft);
       requestIds.clear();
     } catch {
       setError(
@@ -78,20 +87,26 @@ export function PhotoInquiry({ title, hint }: { title: string; hint: string }) {
       noValidate
       data-hide-whatsapp
       aria-label={title}
-      className="relative space-y-5 rounded-card border border-line bg-surface p-5"
+      className="relative space-y-4 rounded-card border border-line bg-surface p-5 sm:p-7"
     >
       <h2 className="font-display text-2xl">{title}</h2>
       <p className="text-sm text-muted">{hint}</p>
-      <p className="text-xs text-subtle">
-        Die Anfrage ist unverbindlich. Den Preis und einen Termin stimmen wir nach der Begutachtung
-        mit dir ab.
-      </p>
+      {!contact && (
+        <p className="text-xs text-subtle">
+          Die Anfrage ist unverbindlich. Den Preis und einen Termin stimmen wir nach der
+          Begutachtung mit dir ab.
+        </p>
+      )}
       <p className="text-sm text-muted">
-        Fotos kannst du nach deiner Anfrage in deinem Kundenbereich ergänzen.
+        {contact
+          ? "Nach deiner Anfrage erhältst du per E-Mail Zugang zu deinem Kundenbereich."
+          : "Fotos kannst du nach deiner Anfrage in deinem Kundenbereich ergänzen."}
       </p>
-      <Field tone="public" id="desc" label="Beschreibung">
+      <Field tone="public" id="desc" label={contact ? "Nachricht" : "Beschreibung"}>
         <textarea
           id="desc"
+          name="message"
+          required
           {...fieldProps("text")}
           maxLength={2000}
           className={`${inputLine} min-h-28 py-2`}
@@ -100,40 +115,43 @@ export function PhotoInquiry({ title, hint }: { title: string; hint: string }) {
         />
         {fieldError("text")}
       </Field>
-      <Field tone="public" id="iname" label="Name">
-        <input
-          id="iname"
-          className={inputLine}
-          autoComplete="name"
-          name="name"
-          minLength={2}
-          maxLength={120}
-          {...fieldProps("name")}
-          required
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        {fieldError("name")}
-      </Field>
-      <Field tone="public" id="iphone" label="Telefon (optional)">
-        <input
-          id="iphone"
-          className={inputLine}
-          autoComplete="tel"
-          inputMode="tel"
-          type="tel"
-          name="tel"
-          minLength={6}
-          maxLength={40}
-          {...fieldProps("phone")}
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-        />
-        {fieldError("phone")}
-      </Field>
+      <div className="grid items-start gap-4 sm:grid-cols-2">
+        <Field tone="public" id="iname" label="Name">
+          <input
+            id="iname"
+            className={inputLine}
+            autoComplete="name"
+            name="name"
+            minLength={2}
+            maxLength={120}
+            {...fieldProps("name")}
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          {fieldError("name")}
+        </Field>
+        <Field tone="public" id="iphone" label="Telefon (optional)">
+          <input
+            id="iphone"
+            className={inputLine}
+            autoComplete="tel"
+            inputMode="tel"
+            type="tel"
+            name="tel"
+            minLength={6}
+            maxLength={40}
+            {...fieldProps("phone")}
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+          />
+          {fieldError("phone")}
+        </Field>
+      </div>
       <Field tone="public" id="iemail" label="E-Mail für das Kundenkonto">
         <input
           id="iemail"
+          name="email"
           type="email"
           required
           autoComplete="email"
@@ -145,18 +163,20 @@ export function PhotoInquiry({ title, hint }: { title: string; hint: string }) {
         />
         {fieldError("email")}
       </Field>
-      <label className="flex items-start gap-2 text-sm text-muted">
-        <input
-          type="checkbox"
-          className="mt-1"
-          checked={reviewEmailConsent}
-          onChange={(e) => setReviewEmailConsent(e.target.checked)}
-        />
-        <span>
-          Ich möchte sieben Tage nach dem abgeschlossenen Auftrag einmalig per E-Mail um ehrliches
-          Feedback und eine Google-Bewertung gebeten werden. Freiwillig und jederzeit widerrufbar.
-        </span>
-      </label>
+      {!contact && (
+        <label className="flex min-h-11 items-start gap-2 text-sm text-muted">
+          <input
+            type="checkbox"
+            className="mt-1"
+            checked={reviewEmailConsent}
+            onChange={(e) => setReviewEmailConsent(e.target.checked)}
+          />
+          <span>
+            Ich möchte sieben Tage nach dem abgeschlossenen Auftrag einmalig per E-Mail um ehrliches
+            Feedback und eine Google-Bewertung gebeten werden. Freiwillig und jederzeit widerrufbar.
+          </span>
+        </label>
+      )}
       <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
         <label htmlFor="iwebsite">Website</label>
         <input
@@ -168,7 +188,7 @@ export function PhotoInquiry({ title, hint }: { title: string; hint: string }) {
           onChange={(e) => setWebsite(e.target.value)}
         />
       </div>
-      <label htmlFor="iprivacy" className="flex items-start gap-2 text-sm text-muted">
+      <label htmlFor="iprivacy" className="flex min-h-11 items-start gap-2 text-sm text-muted">
         <input
           id="iprivacy"
           {...fieldProps("privacy")}
