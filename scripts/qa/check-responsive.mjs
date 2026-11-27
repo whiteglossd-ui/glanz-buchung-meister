@@ -532,6 +532,7 @@ try {
   // are produced by the existing isolated Linux CI job, never a local server.
   for (const { width, path } of [390, 1440].flatMap((width) => ["/", "/freudenstadt-lossburg"].map((path) => ({ width, path })))) {
     const routeLabel = path === "/" ? "home" : "lossburg";
+    const regional = path !== "/";
     console.log("RESPONSIVE_REVIEW_START:" + JSON.stringify({ width, path, elapsedMs: Date.now() - responsiveStarted }));
     const { context, page } = await openPage({ width, height: width === 390 ? 844 : 1000 });
     try {
@@ -542,9 +543,12 @@ try {
         await consent.getByRole("button", { name: "Ablehnen", exact: true }).click();
         await consent.waitFor({ state: "hidden" });
       }
-      const order = await page.evaluate(() => {
-        // Dark Edition order: hero (with its location choice), packages, results, process, request.
-        const selectors = [".reel", "#pakete", "#ergebnisse", "#ablauf", "#buchung"];
+      const order = await page.evaluate((isRegional) => {
+        // The regional pickup details replace the repeated results/process
+        // sections and appear before the package list.
+        const selectors = isRegional
+          ? [".reel", "#ablauf", "#pakete", "#buchung"]
+          : [".reel", "#pakete", "#ergebnisse", "#ablauf", "#buchung"];
         const sections = selectors.map((selector) => document.querySelector(selector));
         return {
           sectionsPresent: sections.every(Boolean),
@@ -554,18 +558,22 @@ try {
           ))),
           bookingCount: document.querySelectorAll("#buchung").length,
           processSteps: document.querySelectorAll("#ablauf ol.steps > li").length,
+          regionalPickupCards: document.querySelectorAll("#ablauf article.loc").length,
+          resultSectionPresent: Boolean(document.querySelector("#ergebnisse")),
           bookingAliases: ["termin", "service", "rundum-service", "rundum-anfrage"].map((id) => ({
             id,
             count: document.querySelectorAll(`#${id}`).length,
             insideBooking: Boolean(document.getElementById(id)?.closest("#buchung")),
           })),
         };
-      });
-      assert.equal(order.sectionsPresent, true, "Retain the location choice, packages, results, pickup process and booking.");
+      }, regional);
+      assert.equal(order.sectionsPresent, true, "Keep the chosen page's hero, services, pickup information and booking.");
       assert.equal(order.locationChoiceInHero, true, "Offer both locations in the introduction.");
-      assert.equal(order.editorialOrder, true, "Keep the approved editorial sequence before the request.");
+      assert.equal(order.editorialOrder, true, "Keep the regional or homepage editorial sequence before the request.");
       assert.equal(order.bookingCount, 1, "Keep one request flow and stable incoming anchor links.");
-      assert.equal(order.processSteps, 4, "The combined service section has four clear steps.");
+      assert.equal(order.processSteps, regional ? 0 : 4, "Show the four common steps only on the main homepage.");
+      assert.equal(order.regionalPickupCards, regional ? 2 : 0, "Show both real regional pickup options only on the regional page.");
+      assert.equal(order.resultSectionPresent, !regional, "Keep the results gallery on the homepage without duplicating it regionally.");
       assert.ok(order.bookingAliases.every((alias) => alias.count === 1 && alias.insideBooking),
         "Every supported incoming request anchor resolves once inside the combined booking section.");
       const locationChoice = page.getByRole("navigation", { name: "Standort wählen", exact: true });
@@ -595,25 +603,29 @@ try {
         `${width}px ${path}: both booking paths must fit inside the arrival viewport: ${JSON.stringify(choice)}`);
       assert.equal(await picker.getByRole("link").count(), 2);
       await page.locator("#buchung").screenshot({ path: `.qa-output/review-request-${path === "/" ? "" : "lossburg-"}${width}.png` });
-      await page.locator("#ergebnisse").scrollIntoViewIfNeeded();
-      // Customer videos play inline; the started player receives keyboard focus.
-      const video = page.locator("#ergebnisse").getByRole("button", {
-        name: "White-Gloss Ceramic 0:11 Min.: Hydrophober Lackschutz abspielen", exact: true,
-      });
-      await video.focus();
-      await video.press("Enter");
-      const player = page.locator('#ergebnisse video[src="/media/customer-beading.mp4"]');
-      await player.waitFor({ state: "visible" });
-      assert.equal(await player.evaluate((element) => element === document.activeElement && element.controls), true,
-        "Move keyboard focus to the started video with its controls.");
-      await page.locator("#ergebnisse").screenshot({ path: `.qa-output/review-results-${path === "/" ? "" : "lossburg-"}${width}.png` });
+      if (regional) {
+        await page.locator("#ablauf").screenshot({ path: `.qa-output/review-regional-pickup-${width}.png` });
+      } else {
+        await page.locator("#ergebnisse").scrollIntoViewIfNeeded();
+        // Customer videos play inline; the started player receives keyboard focus.
+        const video = page.locator("#ergebnisse").getByRole("button", {
+          name: "White-Gloss Ceramic 0:11 Min.: Hydrophober Lackschutz abspielen", exact: true,
+        });
+        await video.focus();
+        await video.press("Enter");
+        const player = page.locator('#ergebnisse video[src="/media/customer-beading.mp4"]');
+        await player.waitFor({ state: "visible" });
+        assert.equal(await player.evaluate((element) => element === document.activeElement && element.controls), true,
+          "Move keyboard focus to the started video with its controls.");
+        await page.locator("#ergebnisse").screenshot({ path: `.qa-output/review-results-${width}.png` });
+      }
       for (let y = 0; y < await page.evaluate(() => document.documentElement.scrollHeight); y += 650) {
         progress = { stage: "review-scroll", path, width, top: y, completed: results.length, updatedAt: new Date().toISOString() };
         await scrollAndRender(page, y);
       }
       await page.evaluate(() => window.scrollTo(0, 0));
       await page.screenshot({ path: `.qa-output/review-${routeLabel}-${width}.png`, fullPage: true });
-      results.push({ path, width, review: true, ...order, videoKeyboardFocusMoved: true });
+      results.push({ path, width, review: true, ...order, videoKeyboardFocusMoved: !regional });
     } finally {
       await context.close();
     }
