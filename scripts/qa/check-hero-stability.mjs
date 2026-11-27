@@ -83,6 +83,7 @@ async function geometry(page) {
       banner: bannerVisible ? rect(banner) : null,
       headingText: document.querySelector(".reel h1")?.textContent?.replace(/\s+/g, " ").trim() ?? "",
       headingRect: rect(document.querySelector(".reel h1")),
+      locationRects: [...document.querySelectorAll(".reel .hero__loc a")].map(rect),
       headingCount: document.querySelectorAll("h1").length,
       actionCount: actions.length,
       actionTargets: actions.map((link) => new URL(link.href).pathname + new URL(link.href).hash).sort(),
@@ -173,6 +174,9 @@ try {
         const { headingRect, header, banner } = result.initial;
         assert.ok(headingRect.top >= header.bottom - 1 && headingRect.bottom <= banner.top,
           `${viewport.name}: first-visit heading must fit between the header and consent notice`);
+        assert.equal(result.initial.locationRects.length, 2);
+        assert.ok(result.initial.locationRects.every((link) => link.top >= header.bottom - 1 && link.bottom <= banner.top),
+          `${viewport.name}: both service areas must remain visible above the consent notice`);
       }
       assert.equal(result.initial.actionCount, 2, "The hero has exactly two primary actions.");
       assert.deepEqual(result.initial.actionTargets, ["/#ablauf", "/#buchung"], "Hero actions lead to pickup process and request.");
