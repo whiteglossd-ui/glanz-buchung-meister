@@ -22,6 +22,7 @@ import { Route as DatenschutzRouteImport } from './routes/datenschutz'
 import { Route as DellenHagelschadenRouteImport } from './routes/dellen-hagelschaden'
 import { Route as FahrzeugZustandRouteImport } from './routes/fahrzeug-zustand'
 import { Route as FaqRouteImport } from './routes/faq'
+import { Route as FolierungSmartRepairRouteImport } from './routes/folierung-smart-repair'
 import { Route as FreudenstadtLossburgRouteImport } from './routes/freudenstadt-lossburg'
 import { Route as GalerieRouteImport } from './routes/galerie'
 import { Route as ImpressumRouteImport } from './routes/impressum'
@@ -141,6 +142,11 @@ const FahrzeugZustandRoute = FahrzeugZustandRouteImport.update({
 const FaqRoute = FaqRouteImport.update({
   id: '/faq',
   path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FolierungSmartRepairRoute = FolierungSmartRepairRouteImport.update({
+  id: '/folierung-smart-repair',
+  path: '/folierung-smart-repair',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FreudenstadtLossburgRoute = FreudenstadtLossburgRouteImport.update({
@@ -433,6 +439,7 @@ export interface FileRoutesByFullPath {
   '/dellen-hagelschaden': typeof DellenHagelschadenRoute
   '/fahrzeug-zustand': typeof FahrzeugZustandRoute
   '/faq': typeof FaqRoute
+  '/folierung-smart-repair': typeof FolierungSmartRepairRoute
   '/freudenstadt-lossburg': typeof FreudenstadtLossburgRoute
   '/galerie': typeof GalerieRoute
   '/impressum': typeof ImpressumRoute
@@ -501,6 +508,7 @@ export interface FileRoutesByTo {
   '/dellen-hagelschaden': typeof DellenHagelschadenRoute
   '/fahrzeug-zustand': typeof FahrzeugZustandRoute
   '/faq': typeof FaqRoute
+  '/folierung-smart-repair': typeof FolierungSmartRepairRoute
   '/freudenstadt-lossburg': typeof FreudenstadtLossburgRoute
   '/galerie': typeof GalerieRoute
   '/impressum': typeof ImpressumRoute
@@ -569,6 +577,7 @@ export interface FileRoutesById {
   '/dellen-hagelschaden': typeof DellenHagelschadenRoute
   '/fahrzeug-zustand': typeof FahrzeugZustandRoute
   '/faq': typeof FaqRoute
+  '/folierung-smart-repair': typeof FolierungSmartRepairRoute
   '/freudenstadt-lossburg': typeof FreudenstadtLossburgRoute
   '/galerie': typeof GalerieRoute
   '/impressum': typeof ImpressumRoute
@@ -641,6 +650,7 @@ export interface FileRouteTypes {
     | '/dellen-hagelschaden'
     | '/fahrzeug-zustand'
     | '/faq'
+    | '/folierung-smart-repair'
     | '/freudenstadt-lossburg'
     | '/galerie'
     | '/impressum'
@@ -709,6 +719,7 @@ export interface FileRouteTypes {
     | '/dellen-hagelschaden'
     | '/fahrzeug-zustand'
     | '/faq'
+    | '/folierung-smart-repair'
     | '/freudenstadt-lossburg'
     | '/galerie'
     | '/impressum'
@@ -776,6 +787,7 @@ export interface FileRouteTypes {
     | '/dellen-hagelschaden'
     | '/fahrzeug-zustand'
     | '/faq'
+    | '/folierung-smart-repair'
     | '/freudenstadt-lossburg'
     | '/galerie'
     | '/impressum'
@@ -847,6 +859,7 @@ export interface RootRouteChildren {
   DellenHagelschadenRoute: typeof DellenHagelschadenRoute
   FahrzeugZustandRoute: typeof FahrzeugZustandRoute
   FaqRoute: typeof FaqRoute
+  FolierungSmartRepairRoute: typeof FolierungSmartRepairRoute
   FreudenstadtLossburgRoute: typeof FreudenstadtLossburgRoute
   GalerieRoute: typeof GalerieRoute
   ImpressumRoute: typeof ImpressumRoute
@@ -969,6 +982,13 @@ declare module '@tanstack/react-router' {
       path: '/faq'
       fullPath: '/faq'
       preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/folierung-smart-repair': {
+      id: '/folierung-smart-repair'
+      path: '/folierung-smart-repair'
+      fullPath: '/folierung-smart-repair'
+      preLoaderRoute: typeof FolierungSmartRepairRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/freudenstadt-lossburg': {
@@ -1473,6 +1493,7 @@ const rootRouteChildren: RootRouteChildren = {
   DellenHagelschadenRoute: DellenHagelschadenRoute,
   FahrzeugZustandRoute: FahrzeugZustandRoute,
   FaqRoute: FaqRoute,
+  FolierungSmartRepairRoute: FolierungSmartRepairRoute,
   FreudenstadtLossburgRoute: FreudenstadtLossburgRoute,
   GalerieRoute: GalerieRoute,
   ImpressumRoute: ImpressumRoute,

@@ -145,6 +145,23 @@ function LeistungenIndex() {
               </p>
             </MediaTile>
           </article>
+          <article className="group relative min-w-0 border-b border-line pb-4">
+            <MediaTile shot="keramik" alt="Spiegelung auf dunklem Fahrzeuglack">
+              <p className="kicker">Partnerleistungen</p>
+              <h3 className="heading-2 mt-3 max-w-md">
+                <Link
+                  to="/folierung-smart-repair"
+                  className="after:absolute after:inset-0 hover:underline"
+                >
+                  Folierung, Dellen, Lack und Smart Repair
+                </Link>
+              </h3>
+              <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted">
+                Farbwechsel bis zur Luxuskarosserie, Dellen drücken ohne Lackieren, Lackierarbeiten
+                und Smart Repair mit erfahrenen Partnerbetrieben.
+              </p>
+            </MediaTile>
+          </article>
         </div>
       </section>
 
