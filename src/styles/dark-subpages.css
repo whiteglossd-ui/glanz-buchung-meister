@@ -218,6 +218,13 @@
     font-size: clamp(2.35rem, 9vw, 3.75rem);
   }
 }
+/* Keep Fahrzeugaufbereitung on one line in the two overview titles on small phones. */
+@media (max-width: 420px) {
+  .wgt.wgt-page .long-title-page .phero__in--fig .phero__title {
+    font-size: clamp(1.8rem, 8.8vw, 2.35rem);
+  }
+}
+
 @media (forced-colors: active) {
   .wgt.wgt-page :is(.chrome, h2.heading-2, h2.font-display) {
     background: none;
@@ -232,4 +239,20 @@
   text-decoration: underline;
   text-underline-offset: .25em;
   text-decoration-thickness: 1px;
+}
+
+/* Keep an observable, readable area while subpage content enters the viewport. */
+@media (prefers-reduced-motion: no-preference) {
+  .wgt.wgt-page :is([data-wg-rise], [data-wg-curtain]) {
+    clip-path: none;
+  }
+  .wgt.wgt-page :is([data-wg-rise="wait"], [data-wg-curtain="wait"], [data-wg-fade="wait"]) {
+    opacity: .92;
+    translate: 0 .3rem;
+  }
+  .wgt.wgt-page :is([data-wg-rise="in"], [data-wg-curtain="in"], [data-wg-fade="in"]) {
+    opacity: 1;
+    translate: none;
+    transition: opacity .35s ease-out, translate .35s ease-out;
+  }
 }

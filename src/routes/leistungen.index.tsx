@@ -35,7 +35,7 @@ function LeistungenIndex() {
   const finish = services.filter((s) => s.group === "finish");
 
   return (
-    <main id="main-content" tabIndex={-1}>
+    <main id="main-content" className="long-title-page" tabIndex={-1}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

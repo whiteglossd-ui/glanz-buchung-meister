@@ -294,9 +294,7 @@ export async function verifyRundumIntentLoading(page, { label, base }) {
   await packageLink.focus();
   await packageLink.press("Enter");
   await booking.waitFor({ state: "visible" });
-  // Wait for the newly mounted form to consume availability before exercising
-  // history and leaving the page. A disabled slot also catches a genuine API failure.
-  await booking.locator("#slot:enabled").waitFor({ state: "attached" });
+  assert.equal(await booking.locator("#slot").count(), 0, "The first package step does not mount the calendar");
   assert.equal(new URL(page.url()).hash, "#buchung");
   assert.equal(await packageLink.getAttribute("aria-current"), "location");
   assert.equal(await form.isVisible(), false);
@@ -307,9 +305,7 @@ export async function verifyRundumIntentLoading(page, { label, base }) {
   assert.equal(await form.locator("#rundum-name").inputValue(), draft);
   await page.goForward();
   await booking.waitFor({ state: "visible" });
-  // The remounted form starts a new availability read. Let it finish before the
-  // next mode switch unmounts the form, which would abort the read on purpose.
-  await booking.locator("#slot:enabled").waitFor({ state: "attached" });
+  assert.equal(await booking.locator("#slot").count(), 0);
   assert.equal(await booking.locator('input[name="klasse"][value="suv"]').isChecked(), true);
   await rundumLink.click();
   await form.waitFor({ state: "visible" });
@@ -323,12 +319,11 @@ export async function verifyRundumIntentLoading(page, { label, base }) {
   await reads.complete(`${label}: leave booking for prices`);
   await page.getByRole("contentinfo").getByRole("link", { name: "Preise", exact: true }).click();
   await page.waitForURL((url) => url.pathname === "/preise");
-  // The below-fold price calculator loads on approach. Exercise that entry
-  // and finish its availability read before navigating away.
+  // The below-fold price calculator loads its package selection on approach.
   await page.getByRole("heading", { name: "Preise für die Aufbereitung.", exact: true }).waitFor({ state: "visible" });
   await page.locator('[data-inquiry-start="booking"]').scrollIntoViewIfNeeded();
-  await page.locator("form.booking-flow #slot:enabled").waitFor({ state: "attached" });
-  await reads.complete(`${label}: leave prices after availability`);
+  await page.locator('form.booking-flow input[name="paket"]:checked').waitFor({ state: "visible" });
+  await reads.complete(`${label}: leave prices after loading the calculator`);
   await page.goBack({ waitUntil: "networkidle" });
   await form.waitFor({ state: "visible", timeout: 5000 });
   assert.equal(await form.locator("#rundum-name").inputValue(), draft, `${label}: client route and back keep unsent input`);

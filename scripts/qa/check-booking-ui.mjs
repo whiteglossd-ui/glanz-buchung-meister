@@ -53,9 +53,8 @@ async function openBooking(page, path = "/") {
   await page.goto(`${qaBase}${path}#buchung`, { waitUntil: "networkidle" });
   await dismissConsent(page);
   await page.locator("form.booking-flow").waitFor();
-  // The lazy configurator mounts after document navigation and starts a real
-  // availability read. Its time-slot selector is enabled only after the body is parsed.
-  await page.locator("form.booking-flow #slot:enabled").waitFor({ state: "attached" });
+  assert.equal(await page.locator("form.booking-flow #city, form.booking-flow #slot").count(), 0,
+    "The extras and contact controls mount only when their step is opened");
   await placeBelowHeader(page, "form.booking-flow");
 }
 
@@ -307,17 +306,6 @@ try {
     const { context, page, assets } = await openContext({ viewport: { width: 1280, height: 900 } });
     await openBooking(page);
     await bookingLayout(page, { desktop: true, embedded: true });
-    const ids = await page
-      .locator('input[type=checkbox][id^="extra-"]')
-      .evaluateAll((inputs) => inputs.map((input) => input.id));
-    assert.deepEqual(
-      ids.sort(),
-      requestable.map((extra) => `extra-${extra.id}`).sort(),
-      "Every bookable extra must be selectable with its production ID",
-    );
-    assert.equal(await page.locator("#extra-keramik-ultra").count(), 0, "Retired ceramic layers must not be offered");
-    results.push("All 11 bookable extras render with their production IDs");
-
     const total = ".booking-price strong";
     const step = async (number) => {
       await page
@@ -334,6 +322,17 @@ try {
     await page.locator('input[name="paket"][value="premium"]').check();
     await step(2);
     await page.selectOption("#city", "horb-am-neckar");
+    const ids = await page
+      .locator('input[type=checkbox][id^="extra-"]')
+      .evaluateAll((inputs) => inputs.map((input) => input.id));
+    assert.deepEqual(
+      ids.sort(),
+      requestable.map((extra) => `extra-${extra.id}`).sort(),
+      "Every bookable extra must be selectable with its production ID",
+    );
+    assert.equal(await page.locator("#extra-keramik-ultra").count(), 0, "Retired ceramic layers must not be offered");
+    results.push("All 11 bookable extras render with their production IDs");
+
     await page.locator("#extra-felgen").check();
     await expectText(page, total, "468 €", "Kompakt · White-Gloss Signature + Felgen");
     await step(1);
@@ -370,7 +369,11 @@ try {
     await page.locator('input[name="paket"][value="keramik"]').check();
     await expectText(page, total, "1.018 €", "White-Gloss Ceramic includes pickup up to 60 km");
 
-    await step(3);
+    assert.equal(assets.includes("/api/availability"), false, "Selecting packages and extras does not start a calendar read");
+    const calendarResponse = await observeReadDuringAction(page, (response) =>
+      new URL(response.url()).pathname === "/api/availability", () => step(3));
+    await completeSuccessfulRead(calendarResponse, { expectedStatuses: [200] });
+    await page.locator("#slot:enabled").waitFor({ state: "visible" });
     await page.locator("#name").waitFor({ state: "visible" });
     assert.ok(await page.locator('form.booking-flow button[type="submit"]').isVisible());
     await captureBookingStep(page, "desktop-1280-kontakt.png");
@@ -463,7 +466,7 @@ try {
         url.pathname === "/" && url.hash === "#buchung" && url.searchParams.get("paket") === "keramik");
       await page.waitForFunction(() =>
         document.querySelector('#paket-formular input[name="paket"][value="keramik"]')?.checked);
-      await page.locator('#paket-formular #slot:enabled').waitFor({ state: "attached" });
+      assert.equal(await page.locator("#paket-formular #slot").count(), 0);
       await page.waitForFunction(() => document.activeElement?.id === "buchung-heading");
       results.push(`Price-card navigation @${width}: Ceramic replaces the older Signature selection`);
     } finally { await context.close(); }
@@ -509,6 +512,19 @@ try {
       (await page.locator("#kundenbeispiele video, #kundenbeispiele .wg-video-card").count()) > 0,
       true,
     );
+    // A heading can occupy layout space while a reveal clips away every pixel.
+    await page.goto(`${qaBase}/preise`, { waitUntil: "networkidle" });
+    for (const title of await page.locator("#paketkatalog h2").all()) {
+      await title.scrollIntoViewIfNeeded();
+      await page.waitForFunction((heading) =>
+        heading.getAttribute("data-wg-rise") !== "wait" &&
+        getComputedStyle(heading).clipPath === "none" &&
+        Number(getComputedStyle(heading).opacity) > 0,
+        await title.elementHandle(),
+        { timeout: 5000 },
+      );
+    }
+    results.push("All package titles are readable when scrolled into view with motion enabled");
     await context.close();
   }
 

@@ -48,10 +48,17 @@ async function revealReviews(page, state) {
   state.visibleTarget = await revealTargetWithWheel({
     // Measure the heading a visitor needs to see, not the whole card deck:
     // on mobile the section is taller than the usable viewport.
-    measure: () => reviewHeading(page).evaluate((element) => {
-      const rect = element.getBoundingClientRect();
-      return { top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height, scrollY, viewportHeight: innerHeight, headerBottom: document.querySelector("[data-site-header]")?.getBoundingClientRect().bottom ?? 0 };
-    }),
+    measure: async (timeout) => {
+      // Suspense replaces the placeholder H2 when the reviews module mounts.
+      // Resolve its current DOM node and measure it in the same animation frame.
+      const geometry = await page.waitForFunction(() => {
+        const rect = document.querySelector("#bewertungen .wg-reviews__heading")?.getBoundingClientRect();
+        if (!rect?.width || !rect.height) return false;
+        return { top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height, scrollY, viewportHeight: innerHeight, headerBottom: document.querySelector("[data-site-header]")?.getBoundingClientRect().bottom ?? 0 };
+      }, undefined, { timeout });
+      try { return await geometry.jsonValue(); }
+      finally { await geometry.dispose(); }
+    },
     wheel: async (deltaY) => {
       const viewport = page.viewportSize();
       await page.mouse.move(viewport.width / 2, viewport.height / 2);
@@ -170,6 +177,12 @@ try {
         try {
           const checksBeforeScenario = report.checks.length;
           for (const path of ["/", "/abholservice/nagold", "/leistungen/keramikversiegelung", "/galerie"]) {
+            if (path !== "/") {
+              // A stationary pointer can hover a booking link as the layout check scrolls.
+              // Move it to the viewport margin and finish the outgoing page's reads before goto.
+              await page.mouse.move(1, 1);
+              await pageReads.complete(`${name}-${width}: before loading ${path}`);
+            }
             phase = `navigate/layout:${path}`;
             const visit = async () => {
               const response = await page.goto(qaBase + path, { waitUntil: "networkidle" });
