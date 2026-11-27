@@ -170,6 +170,12 @@ try {
         try {
           const checksBeforeScenario = report.checks.length;
           for (const path of ["/", "/abholservice/nagold", "/leistungen/keramikversiegelung", "/galerie"]) {
+            if (path !== "/") {
+              // A stationary pointer can hover a booking link as the layout check scrolls.
+              // Move it to the viewport margin and finish the outgoing page's reads before goto.
+              await page.mouse.move(1, 1);
+              await pageReads.complete(`${name}-${width}: before loading ${path}`);
+            }
             phase = `navigate/layout:${path}`;
             const visit = async () => {
               const response = await page.goto(qaBase + path, { waitUntil: "networkidle" });
