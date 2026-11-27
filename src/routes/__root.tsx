@@ -39,7 +39,7 @@ export const Route = createRootRoute({
       : ["bsc-300", "barlow-400"]
     ).map((name) => ({
       rel: "preload",
-      href: `/fonts/de-v1/${name}.woff2`,
+      href: `/fonts/${app ? "" : "de-v1/"}${name}.woff2`,
       as: "font",
       type: "font/woff2",
       crossOrigin: "anonymous" as const,

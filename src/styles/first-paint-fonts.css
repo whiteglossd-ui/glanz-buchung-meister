@@ -1,10 +1,21 @@
-/* Ordered after the complete faces: German UI text uses these smaller local
-   faces. Other characters continue to use the existing complete WOFF2 faces. */
-@font-face{font-family:Barlow;font-weight:300;font-display:swap;src:url("/fonts/de-v1/barlow-300.woff2") format("woff2");unicode-range:U+20-7E,U+A0,U+A7,U+B0,U+B2-B3,U+B7,U+C0-FF,U+2013-2014,U+2018-201A,U+201C-201E,U+2022,U+2026,U+2032-2033,U+2039-203A,U+20AC,U+2212}
-@font-face{font-family:Barlow;font-weight:400;font-display:swap;src:url("/fonts/de-v1/barlow-400.woff2") format("woff2");unicode-range:U+20-7E,U+A0,U+A7,U+B0,U+B2-B3,U+B7,U+C0-FF,U+2013-2014,U+2018-201A,U+201C-201E,U+2022,U+2026,U+2032-2033,U+2039-203A,U+20AC,U+2212}
-@font-face{font-family:Barlow;font-weight:500;font-display:swap;src:url("/fonts/de-v1/barlow-500.woff2") format("woff2");unicode-range:U+20-7E,U+A0,U+A7,U+B0,U+B2-B3,U+B7,U+C0-FF,U+2013-2014,U+2018-201A,U+201C-201E,U+2022,U+2026,U+2032-2033,U+2039-203A,U+20AC,U+2212}
-@font-face{font-family:Barlow;font-weight:600;font-display:swap;src:url("/fonts/de-v1/barlow-600.woff2") format("woff2");unicode-range:U+20-7E,U+A0,U+A7,U+B0,U+B2-B3,U+B7,U+C0-FF,U+2013-2014,U+2018-201A,U+201C-201E,U+2022,U+2026,U+2032-2033,U+2039-203A,U+20AC,U+2212}
-@font-face{font-family:"WG Display";font-weight:300;font-display:swap;src:url("/fonts/de-v1/bsc-200.woff2") format("woff2");unicode-range:U+20-7E,U+A0,U+A7,U+B0,U+B2-B3,U+B7,U+C0-FF,U+2013-2014,U+2018-201A,U+201C-201E,U+2022,U+2026,U+2032-2033,U+2039-203A,U+20AC,U+2212}
-@font-face{font-family:"WG Display";font-weight:400;font-display:swap;src:url("/fonts/de-v1/bsc-300.woff2") format("woff2");unicode-range:U+20-7E,U+A0,U+A7,U+B0,U+B2-B3,U+B7,U+C0-FF,U+2013-2014,U+2018-201A,U+201C-201E,U+2022,U+2026,U+2032-2033,U+2039-203A,U+20AC,U+2212}
-@font-face{font-family:"WG Display";font-weight:500;font-display:swap;src:url("/fonts/de-v1/bsc-400.woff2") format("woff2");unicode-range:U+20-7E,U+A0,U+A7,U+B0,U+B2-B3,U+B7,U+C0-FF,U+2013-2014,U+2018-201A,U+201C-201E,U+2022,U+2026,U+2032-2033,U+2039-203A,U+20AC,U+2212}
-@font-face{font-family:"WG Display";font-weight:600;font-display:swap;src:url("/fonts/de-v1/bsc-500.woff2") format("woff2");unicode-range:U+20-7E,U+A0,U+A7,U+B0,U+B2-B3,U+B7,U+C0-FF,U+2013-2014,U+2018-201A,U+201C-201E,U+2022,U+2026,U+2032-2033,U+2039-203A,U+20AC,U+2212}
+/* Public-only families. Missing glyphs fall through to the original face;
+   the operator's shell and its font metrics are completely untouched. */
+@font-face{font-family:"WG Public Text";font-weight:300;font-display:swap;src:url("/fonts/de-v1/barlow-300.woff2") format("woff2")}
+@font-face{font-family:"WG Public Text";font-weight:400;font-display:swap;src:url("/fonts/de-v1/barlow-400.woff2") format("woff2")}
+@font-face{font-family:"WG Public Text";font-weight:500;font-display:swap;src:url("/fonts/de-v1/barlow-500.woff2") format("woff2")}
+@font-face{font-family:"WG Public Text";font-weight:600;font-display:swap;src:url("/fonts/de-v1/barlow-600.woff2") format("woff2")}
+@font-face{font-family:"WG Public Display";font-weight:300;font-display:swap;src:url("/fonts/de-v1/bsc-200.woff2") format("woff2")}
+@font-face{font-family:"WG Public Display";font-weight:400;font-display:swap;src:url("/fonts/de-v1/bsc-300.woff2") format("woff2")}
+@font-face{font-family:"WG Public Display";font-weight:500;font-display:swap;src:url("/fonts/de-v1/bsc-400.woff2") format("woff2")}
+@font-face{font-family:"WG Public Display";font-weight:600;font-display:swap;src:url("/fonts/de-v1/bsc-500.woff2") format("woff2")}
+
+[data-shell="public"] {
+  --font-sans: "WG Public Text", Barlow, "Barlow Fallback", system-ui, sans-serif;
+  --font-display: var(--font-sans);
+  font-family: var(--font-sans);
+}
+[data-shell="public"] .wgt {
+  --serif: "WG Public Display", "WG Display", "Barlow Semi Condensed", Barlow, sans-serif;
+  --sans: "WG Public Text", Barlow, ui-sans-serif, system-ui, sans-serif;
+  --ui: var(--sans);
+}
