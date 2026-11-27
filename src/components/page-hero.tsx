@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { type ReactNode } from "react";
-import { FluidImg, Shot, type ShotName } from "./media";
+import type { ShotName } from "./media";
 import { cn } from "@/lib/utils";
 import { heroAvifSrcSet, heroWebpSrcSet } from "@/data/media-src";
 import { pageHeroSizes } from "@/lib/seo";
@@ -24,6 +24,48 @@ export function PageCrumbs({ items }: { items: { label: string; to?: string }[] 
     </nav>
   );
 }
+
+// Describe what is visible in the current files. Several routes use the same
+// photograph to introduce different services.
+const pageShots: Record<ShotName, { width: number; height: number; alt: string }> = {
+  hero: {
+    width: 1600,
+    height: 907,
+    alt: "Schwarzer Klassiker zwischen zwei senkrechten Lichtleisten",
+  },
+  atelier: { width: 1200, height: 675, alt: "Schwarzer BMW in Seitenansicht vor einem Holztor" },
+  lack: {
+    width: 1200,
+    height: 900,
+    alt: "Glänzende Frontpartie eines schwarzen BMW mit Scheinwerfer und Vorderrad",
+  },
+  keramik: {
+    width: 1200,
+    height: 900,
+    alt: "Spiegelung einer Holzfassade auf dem dunklen Fahrzeuglack",
+  },
+  leder: {
+    width: 1200,
+    height: 900,
+    alt: "Gepflegte Mittelkonsole mit Ledermittelarmlehne und Schalthebel",
+  },
+  dellen: { width: 1200, height: 800, alt: "Delle in einem hellen Karosserieblech am Radlauf" },
+  finish: {
+    width: 1200,
+    height: 900,
+    alt: "Heckleuchte und glänzende Heckpartie eines schwarzen BMW",
+  },
+  private: {
+    width: 1200,
+    height: 675,
+    alt: "Schwarzer BMW mit glänzendem Lack vor bewaldeten Hügeln",
+  },
+  felgen: {
+    width: 1200,
+    height: 900,
+    alt: "Seitenansicht eines schwarzen BMW mit Mehrspeichenfelgen",
+  },
+};
 
 // Intrinsic dimensions of the four workshop photos used by the editorial guides.
 const editorialDimensions: Record<string, [number, number]> = {
@@ -55,16 +97,23 @@ export function PagePhoto({
     decoding: "async" as const,
     className: "block size-full object-cover",
   };
-  if (source === "/media/hero.webp") {
+  const stem = source.match(/^\/media\/([a-z]+)\.webp$/)?.[1];
+  if (stem && Object.hasOwn(pageShots, stem)) {
+    const photo = pageShots[stem as ShotName];
+    const base = `/media/${stem}`;
+    const variants = (format: string) =>
+      [480, 800, 1200].map((w) => `${base}-${w}.${format} ${w}w`).join(", ");
+    const hero = stem === "hero";
     return (
       <picture className="block size-full">
-        <source type="image/avif" srcSet={heroAvifSrcSet} sizes={sizes} />
+        <source type="image/avif" srcSet={hero ? heroAvifSrcSet : variants("avif")} sizes={sizes} />
         <img
-          src="/media/hero-720.webp"
-          srcSet={heroWebpSrcSet}
-          width={1600}
-          height={907}
           {...imageProps}
+          src={`${base}-${hero ? 720 : 480}.webp`}
+          srcSet={hero ? heroWebpSrcSet : variants("webp")}
+          width={photo.width}
+          height={photo.height}
+          alt={alt ? photo.alt : ""}
         />
       </picture>
     );
@@ -85,24 +134,7 @@ export function PagePhoto({
       />
     );
   }
-  return shot ? (
-    <Shot
-      name={shot}
-      alt={alt}
-      priority={priority}
-      sizes={sizes}
-      framed={false}
-      className="size-full"
-    />
-  ) : (
-    <FluidImg
-      src={source}
-      alt={alt}
-      priority={priority}
-      sizes={sizes}
-      className="size-full object-cover"
-    />
-  );
+  return <img src={source} {...imageProps} />;
 }
 
 /**
