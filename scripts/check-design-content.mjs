@@ -161,7 +161,8 @@ const APPROVED_SITE_AUDIT_BLOBS = Object.freeze({
 const APPROVED_SUBPAGE_BLOBS = Object.freeze({
   "src/components/before-after-slider.tsx": "50fd54034216e8e6e4f8a61a7313084f8d75c1f6",
   "src/components/city-landing.tsx": "f8814b08ecf410de9ae140b7f702c639a1ae00e4",
-  "src/components/configurator.tsx": "118ab848de778adfb0cfa97cae1ca460668675c8",
+  // Mount later steps on first use. All copy and the visited form match revision 1d605b6.
+  "src/components/configurator.tsx": "9283755f25ee47b4948b6f693e673e9dbab67415",
   "src/components/customer-video-gallery.tsx": "8317df4f3c9e283a2078ce4d1e95275af6145a9a",
   "src/components/dark/dark-chrome.tsx": "fac06e546c9c3fc28af72a0c1547ab87543d7dd8",
   "src/components/full-service.tsx": "659be1c7fa84d81ab9cf207a3874131103b063d7",
