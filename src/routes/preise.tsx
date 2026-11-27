@@ -24,6 +24,8 @@ const packagePhotos = {
   keramik: ["beads-sq", "Wassertropfen auf einer versiegelten Lackoberfläche"],
 } as const;
 
+const packageImageSizes = "auto, (max-width: 820px) 90vw, (max-width: 1100px) 42vw, 380px";
+
 export const Route = createFileRoute("/preise")({
   component: PreisePage,
   head: () =>
@@ -66,18 +68,25 @@ function PreisePage() {
             const photo = `/media/dark/gen/${image}`;
             return (
               <li key={p.id} id={packageAnchor(p.id)} className="pack">
-                <div className="pack__img">
+                <picture className="pack__img">
+                  <source
+                    type="image/avif"
+                    srcSet={`/media/pricing/${image}-320.avif 320w, /media/pricing/${image}-800.avif 800w`}
+                    sizes={packageImageSizes}
+                    width={320}
+                    height={240}
+                  />
                   <img
                     src={`${photo}-320.webp`}
                     srcSet={`${photo}-320.webp 320w, ${photo}-800.webp 800w`}
-                    sizes="(max-width: 700px) 90vw, (max-width: 1100px) 40vw, 360px"
+                    sizes={packageImageSizes}
                     width={320}
                     height={320}
                     loading="lazy"
                     decoding="async"
                     alt={alt}
                   />
-                </div>
+                </picture>
                 <div className="pack__body gap-3">
                   <p className="label">{p.kicker}</p>
                   <h2 className="h3">{p.name}</h2>
