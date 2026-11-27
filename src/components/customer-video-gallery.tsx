@@ -1,15 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
+import type { CustomerVideo } from "@/data/customer-videos";
 import { MediaRail, type MediaRailItem } from "./media-rail";
-
-export type CustomerVideo = {
-  title: string;
-  category: string;
-  duration: string;
-  description: string;
-  src: string;
-  poster: string;
-  featured?: boolean;
-};
 
 export function CustomerVideoGallery({
   videos,
@@ -66,6 +57,10 @@ export function CustomerVideoGallery({
           </span>
           <img
             src={video.poster}
+            srcSet={`${video.src}-poster-360.webp 360w, ${video.poster} ${video.posterWidth}w`}
+            sizes={video.featured ? "(min-width: 1280px) 1232px, 95vw" : "(min-width: 1280px) 604px, (min-width: 640px) 46vw, 92vw"}
+            width={video.posterWidth}
+            height={video.posterHeight}
             alt=""
             className="wg-video-poster"
             loading="lazy"

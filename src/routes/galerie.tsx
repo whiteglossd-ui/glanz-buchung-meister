@@ -1,16 +1,24 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CustomerPhotoGallery } from "@/components/customer-photo-gallery";
 import { CustomerProjectStory } from "@/components/customer-project-story";
+import { BeforeAfterSlider } from "@/components/before-after-slider";
 import { Shot } from "@/components/media";
 import { ctaPrimary } from "@/components/ui";
+import { customerPhotos } from "@/data/customer-photos";
 import { site } from "@/data/site";
 import { serializeJsonLd } from "@/lib/json-ld";
 import { pageHead } from "@/lib/seo";
 import { CustomerVideoGallery } from "@/components/customer-video-gallery";
-import { customerVideos } from "@/components/results-teaser";
+import { customerVideos } from "@/data/customer-videos";
 import { WebsiteStudioContent } from "@/components/website-studio-content";
 import { loadPublicStudioDocument } from "@/lib/studio-public.functions";
 import { studioGalleryPhotos, studioHero, studioMetadata } from "@/lib/studio-public";
+
+const coverSizes = "(min-width: 1280px) 1232px, (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)";
+
+function coverSources(id: string) {
+  return customerPhotos.find((photo) => id === `static:${photo.id}`)?.srcSet;
+}
 
 export const Route = createFileRoute("/galerie")({
   component: GaleriePage,
@@ -25,7 +33,10 @@ export const Route = createFileRoute("/galerie")({
       }),
       path: "/galerie",
       image: hero?.src ?? "/media/atelier-1200.webp",
-      ...(hero ? { preloadImage: hero.src } : { preloadShot: "atelier" }),
+      ...(hero
+        ? { preloadImage: hero.src, preloadSrcSet: coverSources(hero.id) }
+        : { preloadShot: "atelier" }),
+      preloadSizes: coverSizes,
     });
   },
 });
@@ -56,9 +67,37 @@ function GaleriePage() {
           <div><p>{document?.content.lead.trim() || "Lack, Leder, Felgen. Entdecke unsere Arbeit an einem echten Kundenfahrzeug – in Bildern und kurzen Filmen."}</p><Link to="/" hash="buchung" className={ctaPrimary}>Termin anfragen</Link></div>
         </div>
         <figure className="gallery-cover">
-          {hero ? <img src={hero.src} alt={hero.alt} width={hero.width} height={hero.height} loading="eager" fetchPriority="high" decoding="async" className="size-full object-cover" /> : <Shot name="atelier" alt="Aufbereiteter schwarzer BMW im Seitenprofil vor der Werkstatt" priority framed={false} sizes="(min-width: 1280px) 1200px, 95vw" />}
+          {hero ? (
+            <img
+              src={hero.src}
+              srcSet={coverSources(hero.id)}
+              sizes={coverSizes}
+              alt={hero.alt}
+              width={hero.width}
+              height={hero.height}
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              className="size-full object-cover"
+            />
+          ) : (
+            <Shot name="atelier" alt="Aufbereiteter schwarzer BMW im Seitenprofil vor der Werkstatt" priority framed={false} sizes={coverSizes} />
+          )}
           <figcaption><span>{hero ? hero.caption : "BMW · Außenaufbereitung"}</span><span>White-Gloss Detailing · Horb am Neckar</span></figcaption>
         </figure>
+      </section>
+      <section className="gallery-comparison mx-auto max-w-7xl px-4 sm:px-6" aria-labelledby="lackvergleich-heading">
+        <div className="gallery-comparison-copy">
+          <p className="kicker">Lackkorrektur</p>
+          <h2 id="lackvergleich-heading" className="heading-2">Vor und nach der Politur.</h2>
+          <p>Im Werkstattlicht werden feine Waschkratzer sichtbar. Nach der Politur spiegelt sich die Holzfassade im Lack.</p>
+        </div>
+        <BeforeAfterSlider
+          afterAlt="Polierter dunkler Lack mit Spiegelung der Holzfassade im Tageslicht"
+          instruction="Griff ziehen oder mit den Pfeiltasten bewegen"
+          caption=""
+          sizes="(min-width: 1280px) 760px, (min-width: 800px) 60vw, 95vw"
+        />
       </section>
       <CustomerProjectStory />
       <section id="kundenbilder" className="section mx-auto max-w-7xl px-4 sm:px-6" aria-labelledby="kundenbilder-heading">

@@ -203,15 +203,34 @@ try {
           const viewer = page.locator("dialog.customer-photo-dialog");
           await viewer.waitFor({ state: "visible" });
           const viewerImage = viewer.locator(".customer-photo-viewer > img");
-          const gallerySources = await page.locator(".customer-photo-trigger > img").evaluateAll((images) => images.map((image) => image.src));
+          const gallerySources = await page.locator(".customer-photo-trigger > img").evaluateAll((images) =>
+            images.map((image) => ({
+              src: image.src,
+              candidates: image.srcset.split(",").filter(Boolean).map((candidate) =>
+                new URL(candidate.trim().split(/\s+/)[0], image.baseURI).href),
+            })),
+          );
           assert.ok(gallerySources.length >= 2, "The keyboard scenario needs two gallery images");
-          // Wait for the full-size image before replacing/removing its <img>.
+          // Wait for the selected lightbox image before replacing/removing its <img>.
           // Otherwise this test can cancel its own download (Firefox NS_BINDING_ABORTED).
           report.galleryImages.push({ label: `${name}-${width}`, index: 1, ...await viewerImage.evaluate(decodedGalleryImage, gallerySources[0]) });
           await page.keyboard.press("ArrowRight");
           await page.waitForFunction(() => document.querySelector("dialog.customer-photo-dialog .kicker")?.textContent?.includes("Bild 2 von"));
           report.galleryImages.push({ label: `${name}-${width}`, index: 2, ...await viewerImage.evaluate(decodedGalleryImage, gallerySources[1]) });
           assert.equal(await viewer.locator(".customer-photo-viewer > img").evaluate((image) => getComputedStyle(image).objectFit), "contain");
+          if (width === 390) {
+            await viewerImage.evaluate((image) => {
+              for (const [type, x] of [["touchstart", 60], ["touchend", 210]]) {
+                const touch = { clientX: x, clientY: 120 };
+                image.dispatchEvent(Object.assign(new Event(type, { bubbles: true }), {
+                  touches: type === "touchend" ? [] : [touch],
+                  changedTouches: [touch],
+                }));
+              }
+            });
+            await page.waitForFunction(() => document.querySelector("dialog.customer-photo-dialog .kicker")?.textContent?.includes("Bild 1 von"));
+            await viewerImage.evaluate(decodedGalleryImage, gallerySources[0]);
+          }
           await page.keyboard.press("Escape");
           await viewer.waitFor({ state: "hidden" });
           assert.ok(await trigger.evaluate((element) => document.activeElement === element));

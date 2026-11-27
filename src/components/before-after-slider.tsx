@@ -14,12 +14,14 @@ interface BeforeAfterSliderProps {
   beforeLabel?: string;
   afterLabel?: string;
   className?: string;
+  instruction?: string;
+  caption?: string;
+  sizes?: string;
 }
 
-function ComparisonImage({ src, alt }: { src: string; alt: string }) {
+function ComparisonImage({ src, alt, sizes = "(min-width: 1280px) 1200px, 100vw" }: { src: string; alt: string; sizes?: string }) {
   // Bundled compare-* images have responsive variants. Leave other URLs alone.
   const name = src.match(/^\/media\/(compare-before|compare-after)-800\.webp$/)?.[1];
-  const sizes = "(min-width: 1280px) 1200px, 100vw";
   return (
     <picture>
       {name ? (
@@ -40,7 +42,7 @@ function ComparisonImage({ src, alt }: { src: string; alt: string }) {
         src={src}
         alt={alt}
         width={name ? 1200 : undefined}
-        height={name ? 800 : undefined}
+        height={name ? 904 : undefined}
         className="absolute inset-0 h-full w-full object-cover"
         loading="lazy"
         decoding="async"
@@ -59,6 +61,9 @@ export function BeforeAfterSlider({
   beforeLabel = "Vorher",
   afterLabel = "Nach der Politur",
   className = "",
+  instruction = "Schieberegler nach links/rechts ziehen",
+  caption = "Direkter Lackvergleich unter Prüflicht",
+  sizes,
 }: BeforeAfterSliderProps) {
   // Stufenlose Position (Float). Gerundet wird nur fuer Screenreader, sonst
   // springt die Linie auf breiten Bildschirmen in ~12-px-Schritten.
@@ -204,13 +209,13 @@ export function BeforeAfterSlider({
         data-pressed={isPressed ? "true" : undefined}
         className="group relative aspect-[16/10] sm:aspect-[16/9] w-full cursor-ew-resize select-none overflow-hidden rounded-card border border-line bg-surface touch-pan-y touch-pinch-zoom focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
       >
-        <ComparisonImage src={afterImage} alt={afterAlt} />
+        <ComparisonImage src={afterImage} alt={afterAlt} sizes={sizes} />
 
         <div
           className="absolute inset-0 h-full w-full overflow-hidden"
           style={{ clipPath: `inset(0 ${100 - sliderPos}% 0 0)` }}
         >
-          <ComparisonImage src={beforeImage} alt={beforeAlt} />
+          <ComparisonImage src={beforeImage} alt={beforeAlt} sizes={sizes} />
         </div>
 
         <span className="absolute left-4 top-4 rounded bg-bg/80 px-2.5 py-1 text-xs font-medium uppercase tracking-[0.14em] text-fg backdrop-blur-sm pointer-events-none border border-line">
@@ -243,8 +248,8 @@ export function BeforeAfterSlider({
       </div>
 
       <div className="flex items-center justify-between text-xs text-subtle px-1">
-        <span>Schieberegler nach links/rechts ziehen</span>
-        <span>Direkter Lackvergleich unter Prüflicht</span>
+        <span>{instruction}</span>
+        {caption && <span>{caption}</span>}
       </div>
     </div>
   );
