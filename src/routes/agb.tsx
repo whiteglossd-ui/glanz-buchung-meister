@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { LegalDocument } from "@/components/legal-document";
 import { PageHero } from "@/components/page-hero";
 import { paymentNote, pickupKeramikNote, pickupTierSummary, site } from "@/data/site";
 import { pageHead } from "@/lib/seo";
@@ -25,7 +26,7 @@ function TermsPage() {
         lead="Anfrage, Ausführung, Zahlung – in klarer Sprache."
         crumbs={[{ label: "Startseite", to: "/" }, { label: "AGB" }]}
       />
-      <article className="prose-legal mx-auto max-w-3xl px-4 py-16 sm:px-6">
+      <LegalDocument>
         <p>
           Diese Allgemeinen Geschäftsbedingungen gelten für Leistungen der Fahrzeugaufbereitung von{" "}
           {site.legalName}, Inhaber {site.owner}, {site.street}, {site.postalCode} {site.city}{" "}
@@ -153,7 +154,7 @@ function TermsPage() {
         </section>
 
         <p className="text-xs text-subtle">Stand: 7. September 2026</p>
-      </article>
+      </LegalDocument>
     </main>
   );
 }

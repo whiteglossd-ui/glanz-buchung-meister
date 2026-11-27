@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { LegalDocument } from "@/components/legal-document";
 import { PageHero } from "@/components/page-hero";
 import { ctaPrimary } from "@/components/ui";
 import { site } from "@/data/site";
@@ -34,7 +35,7 @@ function AccessibilityPage() {
           </a>
         }
       />
-      <article className="prose-legal mx-auto max-w-3xl px-4 py-16 sm:px-6">
+      <LegalDocument>
         <p>
           White-Gloss Detailing bemüht sich, diese Website für alle nutzbar zu halten. Eine
           unabhängige Konformitätsprüfung nach WCAG 2.2 AA liegt noch nicht vor. Diese Erklärung
@@ -86,7 +87,7 @@ function AccessibilityPage() {
           <Link to="/datenschutz">Datenschutz</Link>
         </p>
         <p className="text-xs text-subtle">Stand: 25. September 2026</p>
-      </article>
+      </LegalDocument>
     </main>
   );
 }

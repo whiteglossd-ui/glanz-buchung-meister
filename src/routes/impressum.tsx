@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { LegalDocument } from "@/components/legal-document";
 import { PageHero } from "@/components/page-hero";
 import { site } from "@/data/site";
 import { pageHead } from "@/lib/seo";
@@ -27,8 +28,7 @@ function ImpressumPage() {
           { label: "Impressum" },
         ]}
       />
-      <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
-      <div className="space-y-8 text-sm leading-relaxed">
+      <LegalDocument>
         <section>
           <h2 className="font-display text-2xl">Angaben gemäß § 5 DDG</h2>
           <address className="mt-3 not-italic text-muted">
@@ -86,8 +86,7 @@ function ImpressumPage() {
           </p>
         </section>
         <p className="text-xs text-subtle">Stand: 17. Oktober 2026</p>
-      </div>
-      </div>
+      </LegalDocument>
     </main>
   );
 }
