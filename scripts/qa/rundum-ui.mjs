@@ -5,6 +5,9 @@ import { observePageReads } from "./read-completion.mjs";
 
 export const iconPreloadObservations = [];
 export const rundumArrivalObservations = [];
+// The visible second line belongs to each booking link's accessible name.
+const packageModeName = /^Paket wählen\s+Preis sehen, Termin wünschen$/;
+const rundumModeName = /^Rundum-Service\s+Wünsche kombinieren$/;
 
 async function assertStableRundumArrival(page, label, reads) {
   await reads.complete(label, { timeoutMs: 5000 });
@@ -157,7 +160,7 @@ export async function verifyRundumUi(page, { label, screenshot }) {
     `${label}: service promise and form use the intended responsive split/stack: ${JSON.stringify(position)}`);
   assert.match(await intro.textContent(), /Pflege und Reparatur aus einer Hand/);
   assert.match(await intro.textContent(), /Du kennst Leistungen und Festpreis, bevor du zusagst\./);
-  const request = section.getByRole("navigation", { name: "Art der Anfrage" }).getByRole("link", { name: "Rundum-Service", exact: true });
+  const request = section.getByRole("navigation", { name: "Art der Anfrage" }).getByRole("link", { name: rundumModeName });
   assert.equal(await request.getAttribute("href"), "#rundum-anfrage");
   const whatsapp = page.locator("[data-wa-float]");
   const target = new URL(await whatsapp.getAttribute("href")), configured = new URL(site.whatsapp);
@@ -256,15 +259,15 @@ export async function verifyRundumIntentLoading(page, { label, base }) {
   const form = page.getByRole("form", { name: "Rundum-Service anfragen", exact: true });
   await page.locator("[data-hero-cta=booking]").click();
   await page.waitForFunction(() => location.hash === "#buchung");
-  await page.getByRole("navigation", { name: "Art der Anfrage" }).getByRole("link", { name: "Rundum-Service", exact: true }).click();
+  await page.getByRole("navigation", { name: "Art der Anfrage" }).getByRole("link", { name: rundumModeName }).click();
   await form.waitFor({ state: "visible", timeout: 5000 });
   await assertStableRundumArrival(page, `${label}: hero and shared request mode`, reads);
   assert.ok(await page.evaluate(() => performance.getEntriesByType("resource").some((entry) =>
     /^\/assets\/rundum-service-form-[^/]+\.js$/.test(new URL(entry.name).pathname))), `${label}: the anchor loads the actual form chunk`);
   const draft = "QA ungesendeter Formularentwurf";
   const modes = page.getByRole("navigation", { name: "Art der Anfrage" });
-  const packageLink = modes.getByRole("link", { name: "Paket wählen", exact: true });
-  const rundumLink = modes.getByRole("link", { name: "Rundum-Service", exact: true });
+  const packageLink = modes.getByRole("link", { name: packageModeName });
+  const rundumLink = modes.getByRole("link", { name: rundumModeName });
   const booking = page.locator("#paket-formular .booking-flow");
   await form.locator("#rundum-name").fill(draft);
   await packageLink.focus();
