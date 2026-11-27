@@ -131,6 +131,16 @@ export const seoIntents: Record<string, SearchIntent> = {
     intent: "informational",
     purpose: "Streusalz bei winterlichen Temperaturen möglichst schonend vom Fahrzeug entfernen",
   },
+  "/ratgeber/auto-folieren-lassen": {
+    cluster: "auto folieren lassen ablauf",
+    intent: "informational",
+    purpose: "Ablauf, Folienarten und Lackprüfung vor einer Autofolierung verstehen",
+  },
+  "/ratgeber/folieren-oder-lackieren": {
+    cluster: "auto folieren oder lackieren",
+    intent: "informational",
+    purpose: "Zwischen Folierung, Lackierarbeiten und Dellen drücken entscheiden",
+  },
   ...Object.fromEntries(
     services
       .filter((s) => !s.pendingApproval)

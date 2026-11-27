@@ -350,6 +350,25 @@ function FolierungPage() {
           </Link>
           .
         </p>
+        <p className="mt-4 leading-relaxed text-muted">
+          Mehr im Ratgeber:{" "}
+          <Link
+            to="/ratgeber/$slug"
+            params={{ slug: "auto-folieren-lassen" }}
+            className="underline underline-offset-4 hover:text-fg"
+          >
+            Auto folieren lassen
+          </Link>{" "}
+          und{" "}
+          <Link
+            to="/ratgeber/$slug"
+            params={{ slug: "folieren-oder-lackieren" }}
+            className="underline underline-offset-4 hover:text-fg"
+          >
+            Folieren oder Lackieren
+          </Link>
+          .
+        </p>
 
         <div className="mt-12">
           <WhatsAppPhotoCta />

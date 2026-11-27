@@ -208,15 +208,17 @@ const APPROVED_SUBPAGE_BLOBS = Object.freeze({
 // and the service overview. Only links and the new tile were added; all
 // existing copy stays. See docs/folierung-smart-repair-2026-11-27.md.
 // Second update (27.11.2026): /folierung SEO page, menu/footer links and the
-// homepage partner block. See docs/folierung-2026-11-27.md.
+// homepage partner block, two Ratgeber articles on Folierung.
+// See docs/folierung-2026-11-27.md.
 const APPROVED_PARTNER_SERVICES_BLOBS = Object.freeze({
   "src/components/dark/dark-chrome.tsx": "3a1f81c48694d2a371aaf2b608758b204c3d8130",
   "src/components/dark/dark-home.tsx": "5c88e348c2c200761aa82a281b08923a8c9ef544",
   "src/components/full-service.tsx": "594b5d8668735332cf15c8f5df35d976a1cd55b3",
-  "src/data/sitemap-static.xml": "8dfb3ce49eafa2b984cf3d99b6b5f443b8fa2679",
-  "src/lib/seo-intents.ts": "25e244cfa34e9ec6aca28a902303a6c553df4150",
+  "src/data/sitemap-static.xml": "22977d2d8bae76ad7f15f9a53d33336c0744138b",
+  "src/lib/seo-intents.ts": "0749b8aafaf8ca4ce3d84bc36e06608c96f56380",
   "src/routes/leistungen.index.tsx": "9c9a2a9ff14175620dee8f838df0f7476ece321d",
   "public/llms.txt": "34eaed799cdd6db4f7c1db490e817d49867818b9",
+  "src/data/editorial-guides.json": "11882909ae811db93a910f97b3d0529b74cab095",
 });
 
 function sourceBlobId(source) {

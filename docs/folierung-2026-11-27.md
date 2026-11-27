@@ -8,6 +8,7 @@
 - **Startseite**: Block „Folieren, Dellen drücken, Lackieren." im Bereich Leistungen (`dark-home.tsx`, Stil `src/components/dark/home-partner.css`), plus Link „Autofolierung und Farbwechsel" in der Leistungsliste.
 - **Menü und Footer**: Link „Autofolierung".
 - `/folierung-smart-repair`: Folierungs-Karte verlinkt auf `/folierung`. SEO-Cluster dort jetzt auf Dellen, Lack und Smart Repair, damit sich beide Seiten nicht gegenseitig Konkurrenz machen.
+- **Ratgeber**: zwei Beiträge in `src/data/editorial-guides.json`: `/ratgeber/auto-folieren-lassen` und `/ratgeber/folieren-oder-lackieren`, verlinkt mit `/folierung` und `/folierung-smart-repair`.
 - Registriert in Sitemap, `seo-intents.ts`, `llms.txt`, Responsive-Check, Preview-Export und Live-Smoke-Test.
 
 ## Keine erfundenen Angaben
