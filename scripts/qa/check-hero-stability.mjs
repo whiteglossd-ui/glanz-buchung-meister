@@ -222,20 +222,32 @@ try {
           "Short screens keep the introduction active while scrolling.");
       }
 
-      // Reduced motion: static introduction, no later chapters, actions reachable.
-      await page.emulateMedia({ reducedMotion: "reduce" });
-      await page.reload({ waitUntil: "networkidle" });
-      await page.waitForTimeout(600);
-      result.reduced = await geometry(page);
-      actionsReachable(result.reduced, `${viewport.name} reduced motion`);
-      assert.equal(await page.locator(".reel__ch--1").isVisible(), false, "Reduced motion hides the later chapters.");
-      await page.screenshot({ path: `${output}/${viewport.name}-reduced.png` });
+      await phase.run("reduced-motion", async () => {
+        // A live preference change must disable the later chapters even
+        // halfway down a short screen. Do not force real visitors to the top.
+        await page.emulateMedia({ reducedMotion: "reduce" });
+        await page.locator(".reel__ch--1").waitFor({ state: "hidden" });
+        // Separately verify a reduced-motion landing in the same consent state.
+        // A reload is not a landing: Chromium can restore the preceding scroll.
+        const landing = await context.newPage();
+        browserDiagnostics.attach(landing);
+        landing.on("pageerror", (error) => result.pageErrors.push(redactHeroEvidence(error.message)));
+        await landing.emulateMedia({ reducedMotion: "reduce" });
+        await landing.goto(`${qaBase}/`, { waitUntil: "networkidle" });
+        await landing.evaluate(() => document.fonts.ready.then(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)))));
+        result.reduced = await geometry(landing);
+        assert.equal(result.reduced.scrollY, 0, "A fresh reduced-motion landing starts at the top.");
+        assert.equal(result.reduced.storedConsent, "rejected");
+        actionsReachable(result.reduced, `${viewport.name} reduced motion`);
+        assert.equal(await landing.locator(".reel__ch--1").isVisible(), false, "Reduced motion hides the later chapters.");
+        await landing.screenshot({ path: `${output}/${viewport.name}-reduced.png` });
+      });
       if (result.pageErrors.length) report.failures.push(`${viewport.name}: ${result.pageErrors.join("; ")}`);
     } catch (error) {
       result.error = redactHeroEvidence(error.message);
       result.errorDetails = redactHeroEvidence({ name: error.name, message: error.message, stack: error.stack });
       report.failures.push(`${viewport.name} [${result.phase ?? "setup"}]: ${result.error}`);
-      const page = context.pages()[0];
+      const page = context.pages().at(-1);
       if (page) {
         result.failureGeometry = await geometry(page).catch((snapshotError) => ({ error: redactHeroEvidence(snapshotError.message) }));
         await page.screenshot({ path: `${output}/${viewport.name}-failure.png` }).catch(() => {});
