@@ -18,6 +18,3 @@ export const logoAvifSrcSet =
 export const logoWebpSrcSet =
   "/media/logo-176.webp 176w, /media/logo-280.webp 280w, /media/logo-352.webp 352w, /media/logo-440.webp 440w";
 export const logoJsonLdHref = "/media/logo-760.webp";
-
-// Width of the figure in the public two-column page header.
-export const pageHeroSizes = "(min-width: 1356px) 520px, (min-width: 821px) 39vw, 90vw";

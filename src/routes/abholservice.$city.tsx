@@ -1,8 +1,7 @@
-import { pageHeroSizes } from "@/data/media-src";
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { CityLanding } from "@/components/city-landing";
 import { cities } from "@/data/site";
-import { pageHead } from "@/lib/seo";
+import { pageHead, pageHeroSizes } from "@/lib/seo";
 import { citySeoCopy } from "@/lib/city-copy";
 import { parseBookingSelection } from "@/lib/booking-selection";
 import { loadPublicStudioDocument } from "@/lib/studio-public.functions";

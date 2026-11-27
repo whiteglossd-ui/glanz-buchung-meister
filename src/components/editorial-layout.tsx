@@ -14,7 +14,9 @@ export function EditorialLayout({
         <p className="kicker">Auf dieser Seite</p>
         <ul>
           {links.map(({ id, label }) => (
-            <li key={id}><a href={`#${id}`}>{label}</a></li>
+            <li key={id}>
+              <a href={`#${id}`}>{label}</a>
+            </li>
           ))}
         </ul>
       </nav>

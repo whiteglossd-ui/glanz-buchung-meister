@@ -1,12 +1,11 @@
 import { EditorialLayout } from "@/components/editorial-layout";
-import { pageHeroSizes } from "@/data/media-src";
 import { serializeJsonLd } from "@/lib/json-ld";
 import { createFileRoute } from "@tanstack/react-router";
 import { PhotoNote, Shot } from "@/components/media";
 import { PageHero } from "@/components/page-hero";
 import { ctaGhost, ctaPrimary } from "@/components/ui";
 import { site } from "@/data/site";
-import { absUrl, pageHead } from "@/lib/seo";
+import { absUrl, pageHead, pageHeroSizes } from "@/lib/seo";
 
 const DESCRIPTION =
   "Aufbereitung für Luxus-, Sport- und Sammlerfahrzeuge ab ca. 80.000 € in Horb am Neckar. Erst anrufen, dann anschauen – nicht über den Online-Konfigurator.";

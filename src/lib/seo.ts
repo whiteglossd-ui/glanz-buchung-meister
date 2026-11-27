@@ -3,7 +3,6 @@ import {
   heroPreloadMobile,
   heroPreloadWide,
   logoJsonLdHref,
-  pageHeroSizes,
 } from "@/data/media-src";
 import {
   cities,
@@ -20,6 +19,9 @@ export function absUrl(path: string) {
 }
 
 const OG_IMAGE = "/media/hero.jpg";
+
+// Width of the figure in the public two-column page header.
+export const pageHeroSizes = "(min-width: 1356px) 520px, (min-width: 821px) 39vw, 90vw";
 
 export function pageHead(opts: {
   title: string;
