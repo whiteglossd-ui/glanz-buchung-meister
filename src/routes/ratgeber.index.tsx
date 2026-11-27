@@ -1,3 +1,4 @@
+import { BOOKING_JUMP } from "@/lib/booking-anchor-focus";
 import { serializeJsonLd } from "@/lib/json-ld";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { IconArrowRight } from "@/components/icons";
@@ -5,6 +6,7 @@ import { MediaTile, PageHero } from "@/components/page-hero";
 import { ctaPrimary } from "@/components/ui";
 import { articles } from "@/data/ratgeber";
 import editorial from "@/data/editorial-guides.json";
+import editorialHead from "@/data/editorial-head.json";
 import { listPublishedCms } from "@/lib/cms.functions";
 import { site } from "@/data/site";
 import { pageHead } from "@/lib/seo";
@@ -20,8 +22,8 @@ export const Route = createFileRoute("/ratgeber/")({
   component: RatgeberIndex,
   head: () =>
     pageHead({
-      title: editorial.blog.title,
-      description: editorial.blog.description,
+      title: editorialHead.blog.title,
+      description: editorialHead.blog.description,
       path: "/ratgeber",
       preloadShot: "keramik",
     }),
@@ -75,19 +77,19 @@ function RatgeberIndex() {
           { label: "Ratgeber" },
         ]}
         actions={
-          <Link to="/" hash="buchung" className={ctaPrimary}>
+          <Link to="/" hash="buchung" hashScrollIntoView={BOOKING_JUMP} className={ctaPrimary}>
             Termin anfragen
           </Link>
         }
       />
       <section className="border-t border-line">
-        <div className="gd-split gd-split--duo">
+        <div className="wrap my-12 grid gap-x-10 gap-y-12 md:my-20 md:grid-cols-2">
           {articles.map((a) => (
             <article
               key={a.slug}
-              className="group relative block border-b border-line lg:odd:border-r"
+              className="group relative min-w-0 border-b border-line pb-4"
             >
-              <MediaTile src={a.category ? a.image.replace(/-full\.webp$/, "-800.webp") : a.image} alt={a.imageAlt ?? `Titelbild: ${a.title}`}>
+              <MediaTile src={a.image} alt={a.imageAlt ?? `Titelbild: ${a.title}`}>
                 <p className="kicker">
                   {a.category ? `${a.category} · ` : null}
                   <time dateTime={a.date}>{new Date(a.date).toLocaleDateString("de-DE", {
@@ -125,7 +127,7 @@ function RatgeberIndex() {
               return (
                 <article
                   key={r.id}
-                  className="group relative block border-b border-line p-8 lg:odd:border-r"
+                  className="group relative min-w-0 border-b border-line bg-surface p-6 sm:p-8"
                 >
                   <p className="kicker">Aktuell</p>
                   <h2 className="heading-2 mt-3">

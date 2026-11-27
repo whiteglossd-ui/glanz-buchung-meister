@@ -1,8 +1,10 @@
+import { BOOKING_JUMP } from "@/lib/booking-anchor-focus";
+import { EditorialLayout } from "@/components/editorial-layout";
 import { serializeJsonLd } from "@/lib/json-ld";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { PageHero } from "@/components/page-hero";
 import { ctaPrimary } from "@/components/ui";
-import { articles, type Article } from "@/data/ratgeber";
+import type { Article } from "@/data/ratgeber";
 import { listPublishedCms } from "@/lib/cms.functions";
 import { cmsPublishedDate } from "@/lib/cms-date";
 import { logoJsonLdHref } from "@/data/media-src";
@@ -18,12 +20,9 @@ const pickupGuideSlugs = new Set([
   "leasingrueckgabe-aufbereitung-vermeiden-mehrkosten",
 ]);
 
-async function loadArticle(slug: string): Promise<Omit<Article, "date"> & { date?: string }> {
-  // Keep article text out of unrelated routes' startup graph. The page's
-  // component import is already split by TanStack; its loader needs the same boundary.
-  const { getArticle } = await import("@/data/ratgeber");
-  const staticArticle = getArticle(slug);
-  if (staticArticle) return staticArticle;
+type PublishedArticle = Omit<Article, "date"> & { date?: string };
+
+async function loadCmsArticle(slug: string): Promise<PublishedArticle> {
   const rows = await listPublishedCms({ data: { kind: "blog" } });
   const row = rows.find((r) => r.slug === slug);
   if (!row) throw notFound();
@@ -45,7 +44,15 @@ async function loadArticle(slug: string): Promise<Omit<Article, "date"> & { date
 }
 
 export const Route = createFileRoute("/ratgeber/$slug")({
-  loader: async ({ params }) => loadArticle(params.slug),
+  loader: async ({ params }) => {
+    const { articles, getArticle } = await import("@/data/ratgeber");
+    const article = getArticle(params.slug) ?? await loadCmsArticle(params.slug);
+    const related = article.related ?? articleNavigation[article.slug]?.related;
+    const matches = related
+      ? related.flatMap((slug) => articles.filter((entry) => entry.slug === slug))
+      : articles.filter((entry) => entry.slug !== article.slug).slice(0, 3);
+    return { ...article, others: matches.map(({ title, slug }) => ({ title, slug })) };
+  },
   head: ({ loaderData }) =>
     pageHead({
       title: loaderData?.seoTitle ?? articleNavigation[loaderData?.slug ?? ""]?.title ?? `${loaderData?.title ?? "Ratgeber"} | ${site.name}`,
@@ -61,8 +68,6 @@ function ArticlePage() {
   const guide = articleNavigation[a.slug];
   const request = articleBookingSelection(a.slug);
   const service = services.find((s) => s.slug === guide?.service);
-  const related = a.related ?? guide?.related;
-  const others = related ? related.flatMap((slug) => articles.filter((x) => x.slug === slug)) : articles.filter((x) => x.slug !== a.slug).slice(0, 3);
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -116,12 +121,16 @@ function ArticlePage() {
           { label: a.title },
         ]}
         actions={
-          <Link to={request.leistung ? "/fahrzeug-zustand" : "/"} search={request} hash="buchung" className={ctaPrimary}>
+          <Link to={request.leistung ? "/fahrzeug-zustand" : "/"} search={request} hash="buchung" hashScrollIntoView={BOOKING_JUMP} className={ctaPrimary}>
             Termin anfragen
           </Link>
         }
       />
-      <article className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+      <EditorialLayout links={[
+        ...a.sections.map((section, i) => ({ id: `abschnitt-${i + 1}`, label: section.heading })),
+        { id: "weitere-beitraege", label: "Weitere Beiträge" },
+      ]}>
+        <article>
         {guide ? <p className="mb-6 text-lg text-fg">{guide.question}</p> : null}
         {a.category && a.date ? (
           <p className="kicker">
@@ -130,8 +139,8 @@ function ArticlePage() {
         ) : (
           <p className="text-sm text-muted">Alle genannten Einstiegspreise gelten für die Kompaktklasse und verstehen sich {site.vatNote} Fahrzeuggröße und Zustand bestimmen den Aufwand; den verbindlichen Preis stimmen wir vor Beginn mit dir ab.</p>
         )}
-        {a.sections.map((s) => (
-          <section key={s.heading} className="mt-10">
+        {a.sections.map((s, i) => (
+          <section id={`abschnitt-${i + 1}`} key={i} className="mt-9 border-t border-line pt-7">
             <h2 className="font-display text-2xl">{s.heading}</h2>
             {s.paragraphs.map((p) => (
               <p key={p} className="mt-3 leading-relaxed text-muted">
@@ -168,26 +177,27 @@ function ArticlePage() {
         <Link
           to={request.leistung ? "/fahrzeug-zustand" : "/"}
           search={request}
-          hash="buchung"
-          className="mt-12 inline-flex min-h-11 items-center rounded-sm bg-accent px-5 text-sm font-medium text-accent-fg"
+          hash="buchung" hashScrollIntoView={BOOKING_JUMP}
+          className={`${ctaPrimary} mt-12`}
         >
           Termin anfragen
         </Link>
-        <h2 className="mt-16 font-display text-2xl">Weitere Beiträge</h2>
+        <h2 id="weitere-beitraege" className="mt-16 font-display text-2xl">Weitere Beiträge</h2>
         <ul className="mt-4 space-y-2">
-          {others.map((o) => (
+          {a.others.map((o) => (
             <li key={o.slug}>
               <Link
                 to="/ratgeber/$slug"
                 params={{ slug: o.slug }}
-                className="text-sm text-muted hover:text-fg"
+                className="inline-flex min-h-11 items-center text-sm text-muted underline-offset-4 hover:text-fg hover:underline"
               >
                 {o.title}
               </Link>
             </li>
           ))}
         </ul>
-      </article>
+        </article>
+      </EditorialLayout>
     </main>
   );
 }

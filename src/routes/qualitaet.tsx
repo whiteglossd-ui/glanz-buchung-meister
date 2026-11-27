@@ -1,3 +1,4 @@
+import { BOOKING_JUMP } from "@/lib/booking-anchor-focus";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Shot } from "@/components/media";
 import { PageHero } from "@/components/page-hero";
@@ -8,9 +9,9 @@ import { pageHead } from "@/lib/seo";
 
 // Keep the first photo; replace the later photos independently by gallery ID.
 const STEP_PHOTOS: Record<string, { id: string; position: string }> = {
-  "02.": { id: "customer-14", position: "50% 55%" },
-  "03.": { id: "customer-01", position: "50% 68%" },
-  "04.": { id: "customer-07", position: "50% 62%" },
+  "02": { id: "customer-14", position: "50% 55%" },
+  "03": { id: "customer-01", position: "50% 68%" },
+  "04": { id: "customer-07", position: "50% 62%" },
 };
 
 export const Route = createFileRoute("/qualitaet")({
@@ -36,27 +37,27 @@ function QualityPage() {
         lead="Ein Auto nach dem anderen. Erst anschauen, dann arbeiten, dann kontrollieren."
         crumbs={[{ label: "Startseite", to: "/" }, { label: "Arbeitsweise" }]}
         actions={
-          <Link to="/" hash="buchung" className={ctaPrimary}>
+          <Link to="/" hash="buchung" hashScrollIntoView={BOOKING_JUMP} className={ctaPrimary}>
             Termin anfragen
           </Link>
         }
       />
-      <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
-        <ol className="mt-16 space-y-16">
+      <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 lg:py-20">
+        <ol className="grid gap-x-12 gap-y-12 md:grid-cols-2">
           {processSteps.map((s) => {
             const image = STEP_PHOTOS[s.n];
             const photo = customerPhotos.find((item) => item.id === image?.id);
             return (
               <li key={s.n} className="border-t border-line pt-8">
-                <p className="font-display text-5xl tracking-tight text-subtle/80">{s.n}</p>
+                <p aria-hidden="true" className="font-display text-3xl tracking-tight text-subtle">{s.n}</p>
                 <h2 className="mt-4 font-display text-3xl tracking-tight">{s.title}</h2>
-                <p className="mt-3 text-sm leading-relaxed text-muted">{s.text}</p>
+                <p className="mt-3 leading-relaxed text-muted">{s.text}</p>
                 {photo ? (
                   <div className="group mt-8 aspect-[16/9] w-full overflow-hidden outline outline-1 -outline-offset-1 outline-white/10">
                     <img
                       src={photo.src}
                       srcSet={photo.srcSet}
-                      sizes="(min-width: 768px) 45rem, (min-width: 640px) calc(100vw - 3rem), calc(100vw - 2rem)"
+                      sizes="(min-width: 1152px) 520px, (min-width: 768px) 44vw, 92vw"
                       width={photo.width}
                       height={photo.height}
                       alt={photo.alt}
@@ -71,7 +72,7 @@ function QualityPage() {
                     name="atelier"
                     alt={`Schritt ${s.title} bei der Fahrzeugaufbereitung`}
                     className="mt-8 aspect-[16/9] w-full"
-                    sizes="(min-width: 768px) 48rem, 100vw"
+                    sizes="(min-width: 1152px) 520px, (min-width: 768px) 44vw, 92vw"
                   />
                 )}
               </li>
@@ -83,7 +84,7 @@ function QualityPage() {
           {atelierPhotos.invite}
         </p>
         <h2 className="mt-20 font-display text-4xl tracking-tight">Was du erwarten darfst</h2>
-        <ul className="mt-6 space-y-4 text-sm leading-relaxed text-muted">
+        <ul className="mt-7 grid max-w-4xl gap-x-10 gap-y-5 leading-relaxed text-muted sm:grid-cols-2">
           <li>
             <strong className="text-fg">Sorgfältige Begutachtung.</strong> Material, Schmutz und
             Schäden bestimmen, welche Behandlung sinnvoll ist.
@@ -106,8 +107,8 @@ function QualityPage() {
         </blockquote>
         <Link
           to="/"
-          hash="buchung"
-          className="mt-10 inline-flex min-h-11 items-center rounded-sm bg-accent px-5 text-sm font-medium text-accent-fg"
+          hash="buchung" hashScrollIntoView={BOOKING_JUMP}
+          className={`${ctaPrimary} mt-10`}
         >
           Aufbereitung anfragen
         </Link>

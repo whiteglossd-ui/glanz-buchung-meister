@@ -456,6 +456,16 @@ try {
       await openBooking(page, "/preise");
       await bookingLayout(page, { desktop: width >= 960, embedded: false });
       await captureBookingStep(page, `standalone-preise-${width}.png`, { includeSteps: true });
+      // A mounted price calculator must not consume the destination's choice.
+      await page.locator('input[name="paket"][value="premium"]').check();
+      await page.locator('#paket-keramik a[href*="paket=keramik"]').click();
+      await page.waitForURL((url) =>
+        url.pathname === "/" && url.hash === "#buchung" && url.searchParams.get("paket") === "keramik");
+      await page.waitForFunction(() =>
+        document.querySelector('#paket-formular input[name="paket"][value="keramik"]')?.checked);
+      await page.locator('#paket-formular #slot:enabled').waitFor({ state: "attached" });
+      await page.waitForFunction(() => document.activeElement?.id === "buchung-heading");
+      results.push(`Price-card navigation @${width}: Ceramic replaces the older Signature selection`);
     } finally { await context.close(); }
   }
 

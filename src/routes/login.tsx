@@ -5,14 +5,17 @@ import { emailAndPasswordEnabled } from "@/lib/auth/email-password";
 import { BrandMark } from "@/components/media";
 import { Button, Field, inputClass } from "@/components/ui";
 import { site } from "@/data/site";
+import "../styles/operations.css";
 
 export const Route = createFileRoute("/login")({
   component: Login,
   head: () => ({
     meta: [
       { title: `Anmeldung Betrieb | ${site.name}` },
+      { name: "description", content: "Anmeldung für den Inhaber und freigeschaltete Mitarbeiter von White-Gloss Detailing." },
       { name: "robots", content: "noindex,nofollow" },
     ],
+    links: [{ rel: "canonical", href: `${site.origin}/login` }],
   }),
 });
 
@@ -56,11 +59,11 @@ function Login() {
   }
 
   return (
-    <main id="main-content" className="grid min-h-dvh place-items-center px-4 py-16" tabIndex={-1}>
-      <div className="w-full max-w-sm space-y-6">
+    <main id="main-content" className="wg-operations grid min-h-dvh place-items-center px-4 py-16" tabIndex={-1}>
+      <div className="wg-signin w-full space-y-6">
         <div>
           <BrandMark variant="auth" />
-          <h1 className="mt-4 font-display text-4xl">Betrieb</h1>
+          <h1 className="mt-5 font-display text-4xl">Betrieb</h1>
           <p className="mt-2 text-sm text-muted">
             Anmeldung nur für den Inhaber und beauftragte Mitarbeiter. Google ist nur für
             Adressen @white-gloss.de und ausdrücklich freigeschaltete Postfächer zugelassen.
@@ -118,7 +121,7 @@ function Login() {
         ) : (
           <p className="text-sm text-muted">Anmeldung ist deaktiviert.</p>
         )}
-        <Link to="/" className="block text-center text-sm text-muted hover:text-fg">
+        <Link to="/" className="inline-flex min-h-11 items-center text-sm text-muted underline underline-offset-4 hover:text-fg">
           Zur Website
         </Link>
       </div>

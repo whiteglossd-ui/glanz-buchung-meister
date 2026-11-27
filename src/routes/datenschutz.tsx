@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CookieSettingsButton } from "@/components/consent-banner";
+import { LegalDocument } from "@/components/legal-document";
 import { PageHero } from "@/components/page-hero";
 import { site } from "@/data/site";
 import { pageHead } from "@/lib/seo";
@@ -26,7 +27,7 @@ function PrivacyPage() {
         lead="Welche personenbezogenen Daten wir verarbeiten, zu welchem Zweck und wie lange wir sie speichern."
         crumbs={[{ label: "Startseite", to: "/" }, { label: "Datenschutz" }]}
       />
-      <article className="prose-legal mx-auto max-w-3xl px-4 py-16 sm:px-6">
+      <LegalDocument>
         <section>
           <h2>1. Verantwortlicher</h2>
           <address className="not-italic">
@@ -301,7 +302,7 @@ function PrivacyPage() {
           <CookieSettingsButton />
         </p>
         <p className="text-xs text-subtle">Stand: 26. November 2026</p>
-      </article>
+      </LegalDocument>
     </main>
   );
 }

@@ -20,6 +20,9 @@ export function absUrl(path: string) {
 
 const OG_IMAGE = "/media/hero.jpg";
 
+// Width of the figure in the public two-column page header.
+export const pageHeroSizes = "(min-width: 1356px) 520px, (min-width: 821px) 39vw, 90vw";
+
 export function pageHead(opts: {
   title: string;
   description: string;
@@ -50,7 +53,7 @@ export function pageHead(opts: {
         href: `/media/${opts.preloadShot}-800.avif`,
         type: "image/avif",
         imageSrcSet: `/media/${opts.preloadShot}-480.avif 480w, /media/${opts.preloadShot}-800.avif 800w, /media/${opts.preloadShot}-1200.avif 1200w`,
-        imageSizes: "100vw",
+        imageSizes: opts.preloadSizes ?? pageHeroSizes,
         fetchPriority: "high" as const,
       }
     : null;
@@ -63,7 +66,7 @@ export function pageHead(opts: {
           type: "image/avif",
           media: "(max-width: 767px)",
           imageSrcSet: heroAvifSrcSet,
-          imageSizes: "100vw",
+          imageSizes: opts.preloadSizes ?? "100vw",
           fetchPriority: "high" as const,
         },
         {
@@ -73,7 +76,7 @@ export function pageHead(opts: {
           type: "image/avif",
           media: "(min-width: 768px)",
           imageSrcSet: heroAvifSrcSet,
-          imageSizes: "100vw",
+          imageSizes: opts.preloadSizes ?? "100vw",
           fetchPriority: "high" as const,
         },
       ]

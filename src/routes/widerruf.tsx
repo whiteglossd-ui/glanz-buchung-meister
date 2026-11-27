@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { LegalDocument } from "@/components/legal-document";
 import { PageHero } from "@/components/page-hero";
 import { site } from "@/data/site";
 import { pageHead } from "@/lib/seo";
@@ -29,7 +30,7 @@ function WithdrawalPage() {
           { label: "Widerruf" },
         ]}
       />
-      <article className="prose-legal mx-auto max-w-3xl px-4 py-16 sm:px-6">
+      <LegalDocument>
         <section>
           <h2>Widerrufsrecht</h2>
           <p>
@@ -108,7 +109,7 @@ function WithdrawalPage() {
         </section>
 
         <p className="text-xs text-subtle">Stand: 3. September 2026</p>
-      </article>
+      </LegalDocument>
     </main>
   );
 }

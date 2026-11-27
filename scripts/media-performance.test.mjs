@@ -368,7 +368,7 @@ test("comparison default photos expose AVIF/WebP sizes, dimensions and lazy load
     }
     const image = elements.find((element) => element.type === "img");
     assert.equal(image.props.width, 1200);
-    assert.equal(image.props.height, 800);
+    assert.equal(image.props.height, 904);
     assert.equal(image.props.loading, "lazy");
     assert.equal(image.props.fetchPriority, "low");
   }

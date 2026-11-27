@@ -155,6 +155,53 @@ const APPROVED_SITE_AUDIT_BLOBS = Object.freeze({
   "src/data/site.ts": "8652484143fab7f221392573416f41f0ba23a98e",
 });
 
+// The requested subpage redesign moves existing copy into shared components.
+// Each entry locks the reviewed implementation, including the four metadata
+// fields split out of editorial-guides.json. See docs/unterseiten-2026-11-27.md.
+const APPROVED_SUBPAGE_BLOBS = Object.freeze({
+  "src/components/before-after-slider.tsx": "50fd54034216e8e6e4f8a61a7313084f8d75c1f6",
+  "src/components/city-landing.tsx": "f8814b08ecf410de9ae140b7f702c639a1ae00e4",
+  "src/components/configurator.tsx": "118ab848de778adfb0cfa97cae1ca460668675c8",
+  "src/components/customer-video-gallery.tsx": "8317df4f3c9e283a2078ce4d1e95275af6145a9a",
+  "src/components/dark/dark-chrome.tsx": "fac06e546c9c3fc28af72a0c1547ab87543d7dd8",
+  "src/components/full-service.tsx": "659be1c7fa84d81ab9cf207a3874131103b063d7",
+  "src/components/home-page.tsx": "636d425218ec331c55c3be09a34918d029023a74",
+  "src/components/legal-document.tsx": "c627515179afda0c91fea634784e8c01123db47a",
+  "src/components/not-found.tsx": "d51d876dacc59d458fdf2352e227fc3012e9ae07",
+  "src/components/page-hero.tsx": "9717fc09fa3c3d6e6edd2aa02c231c93f4c11428",
+  "src/components/photo-inquiry.tsx": "7725bca81ff7014ceb9c59e5045c5b5862dc98ee",
+  "src/components/regional-home-details.tsx": "618c2352a0d0ce96750503465588bfeb8eefcdbf",
+  "src/components/results-teaser.tsx": "e83305034ab50f33bb98a029c89db5fa8b5c0f0d",
+  "src/components/rundum-service-form.tsx": "b4df4e86dbbed968f068e5c89bde7777c8d8132d",
+  "src/components/service-sections.tsx": "b9fef29a5aca35cea9b971bca63501e80d88a764",
+  "src/data/customer-videos.ts": "da0f25cfa4912298b1aa2384ca76bddc4498b625",
+  "src/data/editorial-guides.json": "3b0ebad6f04c2f2904d4542775d08105426d8d66",
+  "src/data/editorial-head.json": "b3aae66745e99c8cc978fcbe8b1a5c7d57b07a7c",
+  "src/lib/seo.ts": "882a7d26be88cb2ec765676a7c232384f97ac957",
+  "src/routes/__root.tsx": "2659725a9a043d38c2405662be1a798dda73f727",
+  "src/routes/abholservice.$city.tsx": "ff730ef5b5733cd3f6b44a128338a861d36be387",
+  "src/routes/abholservice.index.tsx": "8759e690fb97667711fd9054de1aa25e37b618ba",
+  "src/routes/agb.tsx": "b7c8e3d55a45ed6bb3998c28aeb07550841524eb",
+  "src/routes/auftragsstatus.tsx": "0a156a04e81fa47a3988dc3926c05c29c964c341",
+  "src/routes/b2b.tsx": "e2e9bfecc1bb149bb4093068a7bc926e66dc0fe5",
+  "src/routes/barrierefreiheit.tsx": "4b55056195f54ada1eb43c3700be72e58d44d57b",
+  "src/routes/datenloeschung.tsx": "5d7ed089ce2e5261bce7d65ea2dddfd897f3999b",
+  "src/routes/faq.tsx": "298e7375ac321d204643803c0cb33817b3aaa756",
+  "src/routes/galerie.tsx": "129220813436cf33593022f724a4df3fdb5e6f62",
+  "src/routes/impressum.tsx": "f1b104d7c3dcce02d762abe2b608f740d4aef354",
+  "src/routes/kontakt.tsx": "1124ade5dd428e5ada0a9c980b1b819375f09891",
+  "src/routes/leistungen.$slug.$city.tsx": "939d2560355ebfc59bc296b2cd3fa3873c51a834",
+  "src/routes/leistungen.$slug.index.tsx": "8165b2d7ef44b723e87abeb2ea0b97b03425541b",
+  "src/routes/leistungen.index.tsx": "40f5127c9b98cf6bdf54f5f6f72d212b2b58097c",
+  "src/routes/luxusfahrzeuge.tsx": "51880e4a74a718475f03c7e050187b2dd49181a9",
+  "src/routes/preise.tsx": "74b1715153ac56ccbdd288e8bf4e95305d16749b",
+  "src/routes/qualitaet.tsx": "d65673bb27492812e30b3359b51f5f9a0a743e69",
+  "src/routes/ratgeber.$slug.tsx": "7a2eaa90af03c3d47bfd3123a27a874244f24207",
+  "src/routes/ratgeber.index.tsx": "a09da9b74b16e61e8bda7c1acd4ace06815b5f39",
+  "src/routes/ueber-uns.tsx": "aa7dd2433a0a71cebf90624dea371b1667fb5333",
+  "src/routes/widerruf.tsx": "66621d31a30e395b984f8a0a86079aaaececcff7",
+});
+
 function sourceBlobId(source) {
   const bytes = Buffer.from(source.replace(/\r\n/g, "\n"), "utf8");
   return createHash("sha1").update(`blob ${bytes.length}\0`).update(bytes).digest("hex");
@@ -171,7 +218,7 @@ const cosmeticProps = /^(className|style|ref|key|src|srcSet|sizes|width|height|l
 const cosmeticComponents = /^(Fragment|RevealLines|Icon[A-Z]|[A-Z].*Icon$)/;
 
 export const protectedFiles = [
-  "src/data/site.ts", "src/data/ratgeber.ts", "src/data/editorial-guides.json", "src/data/local-proof.ts",
+  "src/data/site.ts", "src/data/ratgeber.ts", "src/data/editorial-guides.json", "src/data/editorial-head.json", "src/data/local-proof.ts",
   "src/data/google-profile.ts", "src/data/review-links.json", "src/data/search-watchlist.ts", "src/data/sitemap-static.xml",
   "src/lib/seo.ts", "src/lib/seo-policy.ts", "src/lib/seo-intents.ts", "src/lib/city-seo.ts",
   "src/lib/city-copy.ts", "src/lib/city-logistics.ts", "src/lib/article-navigation.ts",
@@ -448,7 +495,7 @@ export function inspectDesignContent({
     };
   }
   const protectedPresent = protectedFiles.filter((name) => names.includes(name)
-    || (commit === DESIGN_BASE && ["src/data/editorial-guides.json", "src/data/review-links.json"].includes(name)));
+    || (commit === DESIGN_BASE && ["src/data/editorial-guides.json", "src/data/editorial-head.json", "src/data/review-links.json"].includes(name)));
   const seoBlobs = approvedSeoBlobs ?? (commit === DESIGN_BASE ? APPROVED_SEO_BLOBS : {});
   for (const [name, blobId] of Object.entries(seoBlobs)) {
     if ((!sources.includes(name) && !protectedPresent.includes(name)) || !/^[a-f0-9]{40}$/.test(blobId)) {
@@ -465,7 +512,7 @@ export function inspectDesignContent({
       throw new Error(`Invalid approved protected Rundum source: ${name}`);
   }
   const homeBlobs = approvedHomeBlobs ?? (commit === DESIGN_BASE
-    ? { ...APPROVED_HOME_BLOBS, ...APPROVED_SITE_AUDIT_BLOBS }
+    ? { ...APPROVED_HOME_BLOBS, ...APPROVED_SITE_AUDIT_BLOBS, ...APPROVED_SUBPAGE_BLOBS }
     : {});
   const failures = [];
   for (const [name, blobId] of Object.entries(homeBlobs)) {

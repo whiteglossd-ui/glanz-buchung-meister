@@ -1,7 +1,7 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { CityLanding } from "@/components/city-landing";
 import { cities } from "@/data/site";
-import { pageHead } from "@/lib/seo";
+import { pageHead, pageHeroSizes } from "@/lib/seo";
 import { citySeoCopy } from "@/lib/city-copy";
 import { parseBookingSelection } from "@/lib/booking-selection";
 import { loadPublicStudioDocument } from "@/lib/studio-public.functions";
@@ -25,7 +25,7 @@ export const Route = createFileRoute("/abholservice/$city")({
     return pageHead({
       ...studioMetadata(loaderData.document, copy),
       path: `/abholservice/${loaderData.city.slug}`,
-      ...(hero ? { preloadImage: hero.src, image: hero.src } : { preloadHero: true }),
+      ...(hero ? { preloadImage: hero.src, image: hero.src } : { preloadHero: true, preloadSizes: pageHeroSizes }),
     });
   },
 });

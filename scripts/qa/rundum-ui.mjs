@@ -184,13 +184,20 @@ export async function verifyRundumUi(page, { label, screenshot }) {
     `${label}: switching the already-visible picker must not return to the section heading`);
   assert.equal(await request.evaluate((link) => link === document.activeElement), true);
   assert.deepEqual(await form.locator('input[name="services"]').evaluateAll((inputs) => inputs.map((input) => input.value)), [...RUNDUM_SERVICES]);
-  for (const [id, required] of [["name", true], ["email", true], ["phone", false], ["vehicleMake", true], ["vehicleModel", true], ["text", true], ["date", false]]) {
-    const input = form.locator("#rundum-" + id);
-    assert.equal(await input.count(), 1, `${label}: ${id} exists`);
-    assert.equal(await input.evaluate((element) => element.required), required, `${label}: ${id} required flag`);
-    const bounds = await input.boundingBox();
-    assert.ok(bounds.width > 0 && bounds.height >= 40, `${label}: ${id} is a usable touch target`);
-  }
+  const checkFields = async (fields) => {
+    for (const [id, required] of fields) {
+      const input = form.locator("#rundum-" + id);
+      assert.equal(await input.count(), 1, `${label}: ${id} exists`);
+      assert.equal(await input.evaluate((element) => element.required), required, `${label}: ${id} required flag`);
+      const bounds = await input.boundingBox();
+      assert.ok(bounds && bounds.width > 0 && bounds.height >= 44, `${label}: ${id} has a 44px touch target`);
+    }
+  };
+  await checkFields([["vehicleMake", true], ["vehicleModel", true], ["text", true], ["date", false]]);
+  assert.equal(await form.locator("#rundum-name").isVisible(), false);
+  await form.getByRole("button", { name: "Weiter zu Kontakt & Anfrage" }).click();
+  await form.getByRole("alert").waitFor();
+  assert.equal(await form.locator("fieldset").getAttribute("aria-invalid"), "true");
   assert.equal(await page.locator('main input[type="file"]').count(), 0, `${label}: no public customer upload`);
   assert.match(await form.textContent(), /Fotos kannst du nach deiner Anfrage in deinem Kundenbereich ergänzen\./);
   assert.match(await form.textContent(), /Erst nach deiner Freigabe werden die vereinbarten Arbeiten ausgeführt\./);
@@ -198,6 +205,12 @@ export async function verifyRundumUi(page, { label, screenshot }) {
   await options.nth(0).check();
   await options.nth(4).check();
   assert.equal(await form.locator('input[name="services"]:checked').count(), 2, `${label}: service selection is multiple`);
+  await form.locator("#rundum-vehicleMake").fill("Prüfmarke");
+  await form.locator("#rundum-vehicleModel").fill("Prüfmodell");
+  await form.locator("#rundum-text").fill("Unversendeter Entwurf zum Holservice.");
+  await form.getByRole("button", { name: "Weiter zu Kontakt & Anfrage" }).click();
+  await checkFields([["name", true], ["email", true], ["phone", false]]);
+  assert.equal(await form.locator("#rundum-vehicleMake").isVisible(), false);
   await form.locator("#rundum-name").focus();
   assert.equal(await page.evaluate(() => document.activeElement?.id), "rundum-name");
   await page.keyboard.press("Tab");
@@ -208,6 +221,9 @@ export async function verifyRundumUi(page, { label, screenshot }) {
     return element.type !== "hidden" && element.tabIndex >= 0 && box.width > 0 && (box.left < -1 || box.right > innerWidth + 1);
   }).map((element) => element.id || element.name));
   assert.deepEqual(clipped, [], `${label}: no clipped controls`);
+  await form.getByRole("button", { name: "Zurück" }).click();
+  assert.equal(await form.locator("#rundum-vehicleModel").inputValue(), "Prüfmodell");
+  assert.equal(await form.locator('input[name="services"]:checked').count(), 2);
   // The promise is a separate stacked block on mobile. Its arrival and image
   // were checked above; now verify the form title and controls in their panel.
   const measureFrame = () => formPanel.evaluate((element) => {
@@ -269,6 +285,11 @@ export async function verifyRundumIntentLoading(page, { label, base }) {
   const packageLink = modes.getByRole("link", { name: packageModeName });
   const rundumLink = modes.getByRole("link", { name: rundumModeName });
   const booking = page.locator("#paket-formular .booking-flow");
+  await form.locator('input[name="services"]').first().check();
+  await form.locator("#rundum-vehicleMake").fill("Prüfmarke");
+  await form.locator("#rundum-vehicleModel").fill("Prüfmodell");
+  await form.locator("#rundum-text").fill("Unversendeter Entwurf zum Holservice.");
+  await form.getByRole("button", { name: "Weiter zu Kontakt & Anfrage" }).click();
   await form.locator("#rundum-name").fill(draft);
   await packageLink.focus();
   await packageLink.press("Enter");
@@ -302,9 +323,10 @@ export async function verifyRundumIntentLoading(page, { label, base }) {
   await reads.complete(`${label}: leave booking for prices`);
   await page.getByRole("contentinfo").getByRole("link", { name: "Preise", exact: true }).click();
   await page.waitForURL((url) => url.pathname === "/preise");
-  // The prices route eagerly mounts its own configurator. Let its availability
-  // response finish before history navigation unmounts and aborts the request.
+  // The below-fold price calculator loads on approach. Exercise that entry
+  // and finish its availability read before navigating away.
   await page.getByRole("heading", { name: "Preise für die Aufbereitung.", exact: true }).waitFor({ state: "visible" });
+  await page.locator('[data-inquiry-start="booking"]').scrollIntoViewIfNeeded();
   await page.locator("form.booking-flow #slot:enabled").waitFor({ state: "attached" });
   await reads.complete(`${label}: leave prices after availability`);
   await page.goBack({ waitUntil: "networkidle" });

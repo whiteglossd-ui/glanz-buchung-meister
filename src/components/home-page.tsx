@@ -6,6 +6,7 @@ import { WebsiteStudioContent } from "@/components/website-studio-content";
 import type { PublishedStudioDocument } from "@/lib/studio-public";
 import type { PackageId } from "@/data/site";
 import { lossburgHome } from "@/data/home-location";
+import { FullService } from "@/components/full-service";
 import { RegionalHomeDetails } from "@/components/regional-home-details";
 
 /**
@@ -47,25 +48,28 @@ export function HomePage({
       initialCity={initialCity ?? (regional ? "lossburg" : undefined)}
       jsonLd={<script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }} />}
       studio={
-        regional ? (
-          <RegionalHomeDetails />
-        ) : studio ? (
-          <section className="sec wgt-studio" aria-label="Aus unserer Werkstatt">
-            <div className="wrap">
-              <WebsiteStudioContent
-                content={document.content}
-                assets={document.assets}
-                headingLevel={1}
-                showIntro={false}
-                showHero={false}
-                showBody={
-                  document.content.body.trim() !== homeCopy.body &&
-                  homeText("body", document.content.body) !== homeCopy.body
-                }
-              />
-            </div>
-          </section>
-        ) : null
+        <>
+          {!regional && <FullService />}
+          {regional ? (
+            <RegionalHomeDetails />
+          ) : studio ? (
+            <section className="sec wgt-studio" aria-label="Aus unserer Werkstatt">
+              <div className="wrap">
+                <WebsiteStudioContent
+                  content={document.content}
+                  assets={document.assets}
+                  headingLevel={1}
+                  showIntro={false}
+                  showHero={false}
+                  showBody={
+                    document.content.body.trim() !== homeCopy.body &&
+                    homeText("body", document.content.body) !== homeCopy.body
+                  }
+                />
+              </div>
+            </section>
+          ) : null}
+        </>
       }
     />
   );

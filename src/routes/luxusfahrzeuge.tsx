@@ -1,10 +1,11 @@
+import { EditorialLayout } from "@/components/editorial-layout";
 import { serializeJsonLd } from "@/lib/json-ld";
 import { createFileRoute } from "@tanstack/react-router";
 import { PhotoNote, Shot } from "@/components/media";
 import { PageHero } from "@/components/page-hero";
 import { ctaGhost, ctaPrimary } from "@/components/ui";
 import { site } from "@/data/site";
-import { absUrl, pageHead } from "@/lib/seo";
+import { absUrl, pageHead, pageHeroSizes } from "@/lib/seo";
 
 const DESCRIPTION =
   "Aufbereitung für Luxus-, Sport- und Sammlerfahrzeuge ab ca. 80.000 € in Horb am Neckar. Erst anrufen, dann anschauen – nicht über den Online-Konfigurator.";
@@ -16,7 +17,7 @@ export const Route = createFileRoute("/luxusfahrzeuge")({
       title: `Aufbereitung für Luxus- und Sammlerfahrzeuge | ${site.name}`,
       description: DESCRIPTION,
       path: "/luxusfahrzeuge",
-      preloadHero: true,
+      preloadHero: true, preloadSizes: pageHeroSizes,
     }),
 });
 
@@ -65,8 +66,13 @@ function LuxuryPage() {
           </div>
         }
       />
-      <div className="mx-auto max-w-3xl px-4 py-20 sm:px-6">
-        <ol className="space-y-12">
+      <EditorialLayout links={[
+        { id: "beratung", label: "Beratung und Ablauf" },
+        { id: "diskretion", label: "Persönliche Abstimmung" },
+        { id: "motive", label: "Aus der Werkstatt" },
+      ]}>
+        <h2 id="beratung" className="mb-5 font-display text-2xl">Beratung und Ablauf</h2>
+        <ol className="grid gap-x-8 gap-y-6 sm:grid-cols-2">
           {[
             [
               "Anrufen oder schreiben",
@@ -86,15 +92,16 @@ function LuxuryPage() {
             ],
           ].map(([t, d], i) => (
             <li key={t} className="border-t border-line pt-8">
-              <p className="font-display text-4xl text-subtle/80">
+              <p aria-hidden="true" className="font-display text-2xl text-subtle">
                 {String(i + 1).padStart(2, "0")}
               </p>
-              <h2 className="mt-4 font-display text-3xl tracking-tight">{t}</h2>
+              <h3 className="mt-4 font-display text-2xl tracking-tight">{t}</h3>
               <p className="mt-3 text-sm leading-relaxed text-muted">{d}</p>
             </li>
           ))}
         </ol>
-        <ul className="mt-14 space-y-3 text-sm text-muted">
+        <h2 id="diskretion" className="mt-14 font-display text-2xl">Persönliche Abstimmung</h2>
+        <ul className="mt-5 list-disc space-y-3 pl-5 leading-relaxed text-muted">
           <li>Erstgespräch persönlich am Telefon oder vertraulich via WhatsApp</li>
           <li>Begutachtung des Fahrzeugs in unserer Werkstatt in Horb oder vor Ort</li>
           <li>Hol- und Bringservice nach persönlicher Abstimmung</li>
@@ -108,9 +115,9 @@ function LuxuryPage() {
         <a href={site.phoneHref} className={`${ctaPrimary} mt-10`}>
           Persönlich anrufen · {site.phoneDisplay}
         </a>
-      </div>
+      </EditorialLayout>
 
-      <section className="border-t border-line">
+      <section id="motive" className="border-t border-line">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
           <p className="kicker">Aus der Werkstatt</p>
           <h2 className="mt-4 max-w-2xl font-display text-4xl tracking-tight sm:text-5xl">

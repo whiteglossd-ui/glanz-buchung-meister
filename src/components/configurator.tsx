@@ -1,5 +1,5 @@
-import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { Link, useMatch, useNavigate, useRouterState } from "@tanstack/react-router";
+import { useEffect, useId, useMemo, useRef, useState, type FormEvent } from "react";
 import { bookingMeasurement } from "@/lib/openai-measurement";
 import {
   cities,
@@ -30,6 +30,8 @@ import { berlinWallToUtc, defaultWorkEnd, rangesOverlap } from "@/lib/booking-ti
 import "@/styles/booking-editorial.css";
 import "@/styles/dark-booking.css";
 
+const stepLabels = ["Fahrzeug & Paket", "Extras & Abholung", "Kontakt & Anfrage"] as const;
+
 export function Configurator({
   initialPackage,
   initialCity,
@@ -38,14 +40,17 @@ export function Configurator({
   initialCity?: string;
 }) {
   const navigate = useNavigate();
+  const formPath = useMatch({ strict: false, shouldThrow: false, select: (match) => match.pathname });
   const entryKey = useRouterState({
-    select: (state) => state.location.state.__TSR_key ?? state.location.href,
+    select: ({ location }) =>
+      location.pathname === formPath ? (location.state.__TSR_key ?? location.href) : null,
   });
   const [packageId, setPackageId] = useBookingDraft<PackageId>(
     "packageId",
     initialPackage ?? "premium",
   );
   const [step, setStep] = useState(1);
+  const flowId = useId();
   const stepHeading = useRef<HTMLHeadingElement>(null);
   function changeStep(next: number) {
     setStep(next);
@@ -88,8 +93,12 @@ export function Configurator({
   const { fieldProps, fieldError, showErrors } = usePublicFormErrors();
 
   useEffect(() => {
-    if (appliedBookingEntries.has(entryKey) || pending || savedReference) return;
-    appliedBookingEntries.add(entryKey);
+    // The departing price calculator can still be mounted when the URL changes.
+    // Only a matching form with an explicit selection may consume the new entry.
+    if (!entryKey || (!initialPackage && !initialCity) || pending || savedReference) return;
+    const selectionKey = JSON.stringify([entryKey, initialPackage, initialCity]);
+    if (appliedBookingEntries.has(selectionKey)) return;
+    appliedBookingEntries.add(selectionKey);
     const selection = applyBookingSelection(
       { packageId, citySlug },
       { paket: initialPackage, ort: initialCity },
@@ -298,15 +307,18 @@ export function Configurator({
       noValidate
       data-hide-whatsapp
       aria-labelledby="buchung-heading"
-      aria-label="Unverbindliche Terminanfrage"
       className="booking-flow booking-editorial"
     >
       <nav aria-label="Schritte der Terminanfrage" className="booking-steps">
-        {["Fahrzeug & Paket", "Extras & Abholung", "Kontakt & Anfrage"].map((label, index) => (
+        <p className="booking-progress" id={`${flowId}-progress`}>
+          Schritt {step} von {stepLabels.length}
+        </p>
+        {stepLabels.map((label, index) => (
           <button
             key={label}
             type="button"
             aria-current={step === index + 1 ? "step" : undefined}
+            aria-controls={`${flowId}-step-${index + 1}`}
             disabled={pending || savedReference !== null}
             onClick={() => changeStep(index + 1)}
           >
@@ -324,13 +336,14 @@ export function Configurator({
       </div>
       <h3
         ref={stepHeading}
+        aria-describedby={`${flowId}-progress`}
         tabIndex={-1}
         className="booking-step-title font-display text-2xl"
         style={{ scrollMarginTop: "6rem" }}
       >
-        {step === 1 ? "Fahrzeug & Paket" : step === 2 ? "Extras & Abholung" : "Kontakt & Anfrage"}
+        {stepLabels[step - 1]}
       </h3>
-      <div hidden={step !== 1} className="booking-step-panel space-y-8">
+      <div id={`${flowId}-step-1`} hidden={step !== 1} className="booking-step-panel space-y-5">
         <fieldset>
           <legend className="text-xs uppercase tracking-[0.16em] text-subtle">Paket</legend>
           <div className="booking-package-options mt-3 flex flex-col gap-3">
@@ -395,7 +408,7 @@ export function Configurator({
           </div>
         </fieldset>
       </div>
-      <div hidden={step !== 2} className="booking-step-panel space-y-6">
+      <div id={`${flowId}-step-2`} hidden={step !== 2} className="booking-step-panel space-y-6">
         <details
           className="booking-extras"
           open={extrasOpen}
@@ -474,7 +487,7 @@ export function Configurator({
         </Field>
       </div>
 
-      <div hidden={step !== 3} className="booking-step-panel booking-contact space-y-5">
+      <div id={`${flowId}-step-3`} hidden={step !== 3} className="booking-step-panel booking-contact space-y-4">
         <p className="text-xs uppercase tracking-[0.16em] text-subtle">Unverbindliche Anfrage</p>
         <p className="font-display text-3xl text-fg" aria-live="polite">
           ab {eur(quote.total)}
@@ -494,106 +507,108 @@ export function Configurator({
           Aufwand erfordert, stimmen wir den Endpreis nach der Begutachtung mit dir ab.{" "}
           {paymentNote}
         </p>
-        <Field tone="public" id="name" label="Name (Pflichtfeld)">
-          <input
-            disabled={pending || savedReference !== null}
-            id="name"
-            className={inputLine}
-            autoComplete="name"
-            name="name"
-            minLength={2}
-            maxLength={120}
-            {...fieldProps("name")}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-          {fieldError("name")}
-        </Field>
-        <Field tone="public" id="phone" label="Telefon (Pflichtfeld)">
-          <input
-            disabled={pending || savedReference !== null}
-            id="phone"
-            className={inputLine}
-            autoComplete="tel"
-            inputMode="tel"
-            type="tel"
-            name="tel"
-            minLength={6}
-            maxLength={40}
-            {...fieldProps("phone")}
-            required
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
-          {fieldError("phone")}
-        </Field>
-        <Field tone="public" id="email" label="E-Mail (Pflichtfeld)">
-          <input
-            disabled={pending || savedReference !== null}
-            id="email"
-            type="email"
-            className={inputLine}
-            autoComplete="email"
-            name="email"
-            maxLength={160}
-            required
-            {...fieldProps("email")}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          {fieldError("email")}
-        </Field>
-        <Field tone="public" id="street" label="Straße und Hausnummer (Pflichtfeld)">
-          <input
-            disabled={pending || savedReference !== null}
-            id="street"
-            className={inputLine}
-            autoComplete="street-address"
-            name="street"
-            minLength={3}
-            maxLength={120}
-            {...fieldProps("street")}
-            required
-            value={street}
-            onChange={(e) => setStreet(e.target.value)}
-          />
-          {fieldError("street")}
-        </Field>
-        <div className="grid gap-5 sm:grid-cols-[minmax(0,10rem)_minmax(0,1fr)]">
-          <Field tone="public" id="postalCode" label="PLZ (Pflichtfeld)">
+        <div className="booking-contact-fields">
+          <Field tone="public" id="name" label="Name (Pflichtfeld)">
             <input
               disabled={pending || savedReference !== null}
-              id="postalCode"
+              id="name"
               className={inputLine}
-              autoComplete="postal-code"
-              inputMode="numeric"
-              name="postal-code"
-              pattern="[0-9]{5}"
-              maxLength={5}
-              {...fieldProps("postalCode")}
-              required
-              value={postalCode}
-              onChange={(e) => setPostalCode(e.target.value)}
-            />
-            {fieldError("postalCode")}
-          </Field>
-          <Field tone="public" id="town" label="Ort (Pflichtfeld)">
-            <input
-              disabled={pending || savedReference !== null}
-              id="town"
-              className={inputLine}
-              autoComplete="address-level2"
-              name="town"
+              autoComplete="name"
+              name="name"
               minLength={2}
-              maxLength={80}
-              {...fieldProps("town")}
+              maxLength={120}
+              {...fieldProps("name")}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               required
-              value={town}
-              onChange={(e) => setTown(e.target.value)}
             />
-            {fieldError("town")}
+            {fieldError("name")}
           </Field>
+          <Field tone="public" id="phone" label="Telefon (Pflichtfeld)">
+            <input
+              disabled={pending || savedReference !== null}
+              id="phone"
+              className={inputLine}
+              autoComplete="tel"
+              inputMode="tel"
+              type="tel"
+              name="tel"
+              minLength={6}
+              maxLength={40}
+              {...fieldProps("phone")}
+              required
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+            {fieldError("phone")}
+          </Field>
+          <Field tone="public" id="email" label="E-Mail (Pflichtfeld)">
+            <input
+              disabled={pending || savedReference !== null}
+              id="email"
+              type="email"
+              className={inputLine}
+              autoComplete="email"
+              name="email"
+              maxLength={160}
+              required
+              {...fieldProps("email")}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            {fieldError("email")}
+          </Field>
+          <Field tone="public" id="street" label="Straße und Hausnummer (Pflichtfeld)">
+            <input
+              disabled={pending || savedReference !== null}
+              id="street"
+              className={inputLine}
+              autoComplete="street-address"
+              name="street"
+              minLength={3}
+              maxLength={120}
+              {...fieldProps("street")}
+              required
+              value={street}
+              onChange={(e) => setStreet(e.target.value)}
+            />
+            {fieldError("street")}
+          </Field>
+          <div className="booking-address-fields grid gap-3 sm:grid-cols-[minmax(0,8rem)_minmax(0,1fr)]">
+            <Field tone="public" id="postalCode" label="PLZ (Pflichtfeld)">
+              <input
+                disabled={pending || savedReference !== null}
+                id="postalCode"
+                className={inputLine}
+                autoComplete="postal-code"
+                inputMode="numeric"
+                name="postal-code"
+                pattern="[0-9]{5}"
+                maxLength={5}
+                {...fieldProps("postalCode")}
+                required
+                value={postalCode}
+                onChange={(e) => setPostalCode(e.target.value)}
+              />
+              {fieldError("postalCode")}
+            </Field>
+            <Field tone="public" id="town" label="Ort (Pflichtfeld)">
+              <input
+                disabled={pending || savedReference !== null}
+                id="town"
+                className={inputLine}
+                autoComplete="address-level2"
+                name="town"
+                minLength={2}
+                maxLength={80}
+                {...fieldProps("town")}
+                required
+                value={town}
+                onChange={(e) => setTown(e.target.value)}
+              />
+              {fieldError("town")}
+            </Field>
+          </div>
         </div>
         <details>
           <summary className="min-h-11 cursor-pointer py-3">
@@ -720,7 +735,7 @@ export function Configurator({
           </p>
         ) : null}
         <section aria-label="Zusammenfassung deiner Anfrage" className="border-y border-line py-5">
-          <h4 className="text-lg font-medium">deine Anfrage im Überblick</h4>
+          <h4 className="text-lg font-medium">Deine Anfrage im Überblick</h4>
           <dl className="booking-summary mt-3 text-sm">
             <dt>Paket · {quote.klass.label}</dt>
             <dd>

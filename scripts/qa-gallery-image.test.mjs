@@ -38,3 +38,13 @@ test("changing the selected image while decoding fails its exact-image proof", a
   const image = fixture(async () => { image.currentSrc = source.replace("customer-16", "customer-09"); });
   await assert.rejects(decodedGalleryImage(image, source), /different image/);
 });
+
+test("gallery accepts only responsive candidates belonging to the selected photo", async () => {
+  const small = source.replace("-1400.webp", "-480.webp");
+  const expected = { src: source, candidates: [small] };
+  const image = fixture(async () => {});
+  image.currentSrc = small;
+  assert.equal((await decodedGalleryImage(image, expected)).source, small);
+  image.currentSrc = small.replace("customer-16", "customer-09");
+  await assert.rejects(decodedGalleryImage(image, expected), /different image/);
+});

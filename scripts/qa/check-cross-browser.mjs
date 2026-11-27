@@ -19,7 +19,7 @@ await mkdir(output, { recursive: true });
 const report = {
   status: "running",
   scope: "Playwright Firefox and WebKit on Linux, 390px and 1440px viewports. WebKit is not a real Safari/iOS test; no physical device or native Windows/macOS browser claim.",
-  checks: [], diagnostics: [], failures: [], screenshots: [], reviews: [], reviewRequests: [], reviewActions: [], galleryImages: [],
+  checks: [], diagnostics: [], failures: [], screenshots: [], reviews: [], reviewRequests: [], reviewActions: [], galleryImages: [], galleryTransitions: [],
 };
 const diagnostics = [];
 const engineNames = ["firefox", "webkit"], viewportWidths = [390, 1440];
@@ -126,7 +126,7 @@ async function verifyContactCard(page, label) {
   assert.equal(await background(), "rgb(242, 243, 245)", `${label}: follows the device in System mode`);
   const theme = page.getByRole("group", { name: "Darstellung" });
   await page.evaluate(() => document.fonts.ready);
-  for (const [name, color] of [["Dunkel", "rgb(5, 6, 10)"], ["Hell", "rgb(242, 243, 245)"]]) {
+  for (const [name, color] of [["Dunkel", "rgb(9, 10, 13)"], ["Hell", "rgb(242, 243, 245)"]]) {
     await theme.getByText(name, { exact: true }).click();
     assert.ok(await theme.getByRole("radio", { name, exact: true }).isChecked());
     assert.equal(await background(), color, `${label}: ${name} switches the palette`);
@@ -203,15 +203,34 @@ try {
           const viewer = page.locator("dialog.customer-photo-dialog");
           await viewer.waitFor({ state: "visible" });
           const viewerImage = viewer.locator(".customer-photo-viewer > img");
-          const gallerySources = await page.locator(".customer-photo-trigger > img").evaluateAll((images) => images.map((image) => image.src));
+          const gallerySources = await page.locator(".customer-photo-trigger > img").evaluateAll((images) =>
+            images.map((image) => ({
+              src: image.src,
+              candidates: image.srcset.split(",").filter(Boolean).map((candidate) =>
+                new URL(candidate.trim().split(/\s+/)[0], image.baseURI).href),
+            })),
+          );
           assert.ok(gallerySources.length >= 2, "The keyboard scenario needs two gallery images");
-          // Wait for the full-size image before replacing/removing its <img>.
+          // Wait for the selected lightbox image before replacing/removing its <img>.
           // Otherwise this test can cancel its own download (Firefox NS_BINDING_ABORTED).
           report.galleryImages.push({ label: `${name}-${width}`, index: 1, ...await viewerImage.evaluate(decodedGalleryImage, gallerySources[0]) });
           await page.keyboard.press("ArrowRight");
           await page.waitForFunction(() => document.querySelector("dialog.customer-photo-dialog .kicker")?.textContent?.includes("Bild 2 von"));
           report.galleryImages.push({ label: `${name}-${width}`, index: 2, ...await viewerImage.evaluate(decodedGalleryImage, gallerySources[1]) });
           assert.equal(await viewer.locator(".customer-photo-viewer > img").evaluate((image) => getComputedStyle(image).objectFit), "contain");
+          if (width === 390) {
+            await viewerImage.evaluate((image) => {
+              for (const [type, x] of [["touchstart", 60], ["touchend", 210]]) {
+                const touch = { clientX: x, clientY: 120 };
+                image.dispatchEvent(Object.assign(new Event(type, { bubbles: true }), {
+                  touches: type === "touchend" ? [] : [touch],
+                  changedTouches: [touch],
+                }));
+              }
+            });
+            await page.waitForFunction(() => document.querySelector("dialog.customer-photo-dialog .kicker")?.textContent?.includes("Bild 1 von"));
+            await viewerImage.evaluate(decodedGalleryImage, gallerySources[0]);
+          }
           await page.keyboard.press("Escape");
           await viewer.waitFor({ state: "hidden" });
           assert.ok(await trigger.evaluate((element) => document.activeElement === element));
@@ -236,6 +255,40 @@ try {
           assert.equal(await page.evaluate(() => document.activeElement?.id), "main-content");
           report.checks.push(`${name} ${width}px: gallery keys/focus return, menu focus trap/Escape and skip link`);
 
+          // Scroll the lazy comparison into view and wait for the exact selected
+          // image bytes before this client-side transition can remove the gallery.
+          const comparison = page.getByRole("slider", { name: "Vorher-Nachher-Vergleich der Lackaufbereitung" });
+          await comparison.scrollIntoViewIfNeeded();
+          const pictureSelector = ".gallery-cover img, .gallery-comparison [role=slider] img";
+          const galleryPictures = page.locator(pictureSelector);
+          assert.equal(await galleryPictures.count(), 3, "Cover and both comparison images must be present");
+          await page.waitForFunction((selector) =>
+            [...document.querySelectorAll(selector)].every((image) => image.complete && image.naturalWidth > 0),
+            pictureSelector,
+          );
+          const transition = { label: `${name}-${width}`, decoded: [], requests: [] };
+          report.galleryTransitions.push(transition);
+          for (const picture of await galleryPictures.all()) {
+            const expected = await picture.evaluate((image) => {
+              const sources = [...image.parentElement.querySelectorAll("source"), image];
+              return {
+                src: image.src,
+                candidates: sources.flatMap((source) => source.srcset.split(",").filter(Boolean).map((value) =>
+                  new URL(value.trim().split(/\s+/)[0], image.baseURI).href)),
+              };
+            });
+            transition.decoded.push(await picture.evaluate(decodedGalleryImage, expected));
+          }
+          const recordGalleryImage = (event) => (request) => {
+            const path = new URL(request.url()).pathname;
+            if (request.resourceType() === "image" && /^\/media\/(compare-before|compare-after|atelier)-/.test(path)) {
+              transition.requests.push({ event, path, phase, page: new URL(page.url()).pathname });
+            }
+          };
+          page.on("request", recordGalleryImage("start"));
+          page.on("requestfinished", recordGalleryImage("finished"));
+          page.on("requestfailed", recordGalleryImage("failed"));
+          await page.evaluate(() => window.scrollTo(0, 0));
           // Let intent preloads started during the keyboard/menu checks finish first.
           // Otherwise the next page.goto cancels the test's own request ("Load request cancelled").
           await pageReads.complete(`${name}-${width}: gallery and keyboard navigation`);
@@ -249,6 +302,8 @@ try {
           // Start from the hydrated gallery with the real link, rather than
           // replacing the document (and its preloads) with page.goto().
           await openBusinessMenu();
+          await pageReads.complete(`${name}-${width}: decoded gallery pictures and business menu ready`);
+          phase = "gallery-to-business-link";
           await businessNav.getByRole("link", { name: "B2B im Überblick", exact: true }).click();
           await page.waitForURL((url) => url.pathname === "/b2b" && !url.hash);
           await dialog.waitFor({ state: "hidden" });
@@ -327,4 +382,4 @@ try {
   await writeFile(resolve(output, "results.json"), JSON.stringify(report, null, 2));
 }
 console.log(JSON.stringify(report, null, 2));
-console.log("Cross-browser read evidence: " + JSON.stringify({ status: report.status, failures: report.failures, lastLayout: report.lastLayout, actions: report.reviewActions, reads: report.reviewRequests, gallery: report.galleryImages, errors: report.diagnostics.flatMap((item) => item.errors) }));
+console.log("Cross-browser read evidence: " + JSON.stringify({ status: report.status, failures: report.failures, lastLayout: report.lastLayout, actions: report.reviewActions, reads: report.reviewRequests, gallery: report.galleryImages, galleryTransitions: report.galleryTransitions, errors: report.diagnostics.flatMap((item) => item.errors) }));

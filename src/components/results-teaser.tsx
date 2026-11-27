@@ -1,45 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { LazyBeforeAfterSlider } from "./lazy-before-after-slider";
 import { IconArrowRight } from "./icons";
-import { CustomerVideoGallery, type CustomerVideo } from "./customer-video-gallery";
-
-export const customerVideos: readonly CustomerVideo[] = [
-  {
-    title: "Glasversiegelung im Wasserlauf",
-    category: "Glasversiegelung",
-    duration: "0:08 Min.",
-    description:
-      "Der gleichmäßige Wasserlauf zeigt die hydrophobe Wirkung auf der versiegelten Scheibe.",
-    src: "/media/customer-glass",
-    poster: "/media/customer-glass-poster.jpg",
-    featured: true,
-  },
-  {
-    title: "Hydrophober Lackschutz",
-    category: "White-Gloss Ceramic",
-    duration: "0:11 Min.",
-    description:
-      "Der Abperleffekt auf der Motorhaube macht den aufbereiteten und geschützten Lack sichtbar.",
-    src: "/media/customer-beading",
-    poster: "/media/customer-beading-poster.jpg",
-  },
-  {
-    title: "Innenraum im Detail",
-    category: "Innenraum",
-    duration: "0:16 Min.",
-    description: "Mittelkonsole, Leder und Einstiegsbereich nach der Innenraumaufbereitung.",
-    src: "/media/customer-interior",
-    poster: "/media/customer-interior-poster.jpg",
-  },
-  {
-    title: "Lackfinish & Seitenlinie",
-    category: "Lackkorrektur",
-    duration: "0:09 Min.",
-    description: "Felgen, Karosserielinien und Lackglanz am freigegebenen Kundenfahrzeug.",
-    src: "/media/customer-exterior",
-    poster: "/media/customer-exterior-poster.jpg",
-  },
-];
+import { CustomerVideoGallery } from "./customer-video-gallery";
+import { customerVideos } from "@/data/customer-videos";
 
 export function ResultsTeaser({ service }: { service?: string }) {
   const videos = service

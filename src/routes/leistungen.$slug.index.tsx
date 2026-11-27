@@ -1,3 +1,6 @@
+import { BOOKING_JUMP } from "@/lib/booking-anchor-focus";
+import { EditorialLayout } from "@/components/editorial-layout";
+import { ServiceQuestions, ServiceSteps } from "@/components/service-sections";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { PageHero } from "@/components/page-hero";
 import { WhatsAppPhotoCta } from "@/components/whatsapp-photo-cta";
@@ -17,7 +20,6 @@ import { ResultsTeaser } from "@/components/results-teaser";
 import { serializeJsonLd } from "@/lib/json-ld";
 import { ServicePriceNote } from "@/components/service-price-note";
 import { pickupAreaLink } from "@/lib/seo-policy";
-import { articles } from "@/data/ratgeber";
 import { articleNavigation } from "@/lib/article-navigation";
 import { WebsiteStudioContent } from "@/components/website-studio-content";
 import { loadPublicStudioDocument } from "@/lib/studio-public.functions";
@@ -32,7 +34,16 @@ export const Route = createFileRoute("/leistungen/$slug/")({
   loader: async ({ params }) => {
     const service = services.find((s) => s.slug === params.slug);
     if (!service) throw notFound();
-    return { service, document: await loadPublicStudioDocument(`service:${service.slug}`) };
+    const [document, guides] = await Promise.all([
+      loadPublicStudioDocument(`service:${service.slug}`),
+      service.pendingApproval ? [] : import("@/data/ratgeber").then(({ articles }) =>
+        articles
+          .filter((article) => articleNavigation[article.slug]?.service === service.slug)
+          .slice(0, 3)
+          .map(({ slug, title }) => ({ slug, title })),
+      ),
+    ]);
+    return { service, document, guides };
   },
   head: ({ loaderData }) =>
     pageHead({
@@ -48,16 +59,13 @@ export const Route = createFileRoute("/leistungen/$slug/")({
 });
 
 function ServicePage() {
-  const { service: s, document } = Route.useLoaderData();
+  const { service: s, document, guides } = Route.useLoaderData();
   const hero = studioHero(document);
   const title = document?.content.title.trim() || s.title;
   const lead = document?.content.lead.trim() || s.teaser;
   const { ort } = Route.useSearch();
   const request = serviceBookingSelection(s.slug, ort);
   const pack = packages.find((p) => packageServiceSlug[p.id] === s.slug);
-  const guides = s.pendingApproval
-    ? []
-    : articles.filter((article) => articleNavigation[article.slug]?.service === s.slug).slice(0, 3);
   const resultService =
     s.slug === "keramikversiegelung"
       ? "White-Gloss Ceramic"
@@ -147,7 +155,7 @@ function ServicePage() {
           ) : (
             <Link
               to={request.leistung ? "/fahrzeug-zustand" : "/"}
-              hash="buchung"
+              hash="buchung" hashScrollIntoView={BOOKING_JUMP}
               search={request}
               className={ctaPrimary}
             >
@@ -156,7 +164,16 @@ function ServicePage() {
           )
         }
       />
-      <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+      <EditorialLayout links={[
+        { id: "umfang", label: "Leistungsumfang" },
+        ...(!s.pendingApproval ? [
+          { id: "ablauf", label: "Ablauf" },
+          { id: "fragen", label: "Häufige Fragen" },
+          { id: "service-request-heading", label: "Termin anfragen" },
+        ] : []),
+        { id: "abholorte", label: "Abholorte" },
+      ]}>
+        <h2 id="umfang" className="mb-5 font-display text-2xl">Leistungsumfang</h2>
         {s.fromPrice ? (
           <p className="font-display text-4xl tracking-tight tabular-nums">
             ab {money(s.fromPrice)}&nbsp;€
@@ -237,17 +254,7 @@ function ServicePage() {
             ))}
           </ul>
         ) : null}
-        {s.steps ? (
-          <ol className="mt-12 space-y-8">
-            {s.steps.map((st, i) => (
-              <li key={st.title} className="border-t border-line pt-6">
-                <p className="font-display text-3xl tracking-tight text-subtle/80">0{i + 1}</p>
-                <h2 className="mt-2 font-display text-2xl tracking-tight">{st.title}</h2>
-                <p className="mt-2 text-sm leading-relaxed text-muted">{st.text}</p>
-              </li>
-            ))}
-          </ol>
-        ) : null}
+        <ServiceSteps service={s} />
         {s.beforeBooking ? (
           <section className="mt-12" aria-labelledby="service-before-heading">
             <h2 id="service-before-heading" className="font-display text-2xl tracking-tight">
@@ -262,6 +269,7 @@ function ServicePage() {
             </ul>
           </section>
         ) : null}
+        <ServiceQuestions service={s} />
         {pack ? (
           <p className="mt-10 border border-line bg-surface p-5 text-sm leading-relaxed">
             Paket {pack.name} ab {eur(pack.price)} {site.vatNote} ·{" "}
@@ -290,7 +298,7 @@ function ServicePage() {
             <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
               <Link
                 to={request.leistung ? "/fahrzeug-zustand" : "/"}
-                hash="buchung"
+                hash="buchung" hashScrollIntoView={BOOKING_JUMP}
                 search={request}
                 className={ctaPrimary}
               >
@@ -327,7 +335,7 @@ function ServicePage() {
             </ul>
           </section>
         ) : null}
-        <h2 className="mt-16 font-display text-3xl tracking-tight">
+        <h2 id="abholorte" className="mt-16 font-display text-3xl tracking-tight">
           Hol- und Bringservice nach Stadt
         </h2>
         <ul className="mt-6 grid grid-cols-1 gap-x-8 text-sm text-muted sm:grid-cols-2">
@@ -342,7 +350,7 @@ function ServicePage() {
             </li>
           ))}
         </ul>
-      </div>
+      </EditorialLayout>
     </main>
   );
 }

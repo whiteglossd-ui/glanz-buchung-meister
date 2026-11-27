@@ -28,6 +28,7 @@ import forgeDesktopCss from "../styles/forge-desktop.css?url";
 export const Route = createRootRoute({
   notFoundComponent: NotFoundComponent,
   head: ({ matches }) => {
+    const missing = matches.some((match) => match.status === "notFound" || match._notFound);
     const app = matches.some((match: AnyRouteMatch) =>
       /^\/(admin|login)(\/|$)/.test(match.routeId),
     );
@@ -48,11 +49,12 @@ export const Route = createRootRoute({
       meta: [
         { charSet: "utf-8" },
         { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-        { title: `Fahrzeugaufbereitung ${site.city} | ${site.name}` },
+        { title: missing ? `Seite nicht gefunden | ${site.name}` : `Fahrzeugaufbereitung ${site.city} | ${site.name}` },
         {
           name: "description",
-          content:
-            "Premium-Fahrzeugaufbereitung in Horb am Neckar: Innenreinigung, Lackkorrektur, Keramikversiegelung und Hol- und Bringservice. Termin anfragen.",
+          content: missing
+            ? "Diese Seite ist nicht verfügbar. Hier geht es zur Startseite, zu den Preisen und zur Terminanfrage bei White-Gloss Detailing."
+            : "Premium-Fahrzeugaufbereitung in Horb am Neckar: Innenreinigung, Lackkorrektur, Keramikversiegelung und Hol- und Bringservice. Termin anfragen.",
         },
         { name: "theme-color", content: "#090a0d" },
         // Successful pages declare their robots policy through pageHead().

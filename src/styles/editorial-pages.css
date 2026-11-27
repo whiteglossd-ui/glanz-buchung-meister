@@ -1,0 +1,110 @@
+/* These layouts are mounted below the public subpage hero. */
+.wgt-page .editorial-layout {
+  width: 100%;
+  max-width: 1356px;
+  margin-inline: auto;
+  padding: clamp(2.75rem, 6vw, 6.5rem) var(--pad);
+  display: grid;
+  align-items: start;
+  gap: clamp(2rem, 5vw, 5rem);
+}
+.wgt-page .editorial-contents {
+  min-width: 0;
+  border-top: 1px solid var(--line-2);
+  padding-top: 1.1rem;
+}
+.wgt-page .editorial-contents .kicker {
+  margin: 0 0 0.65rem;
+}
+.wgt-page .editorial-contents ul {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 1.25rem;
+}
+.wgt-page .editorial-contents a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-block: 0.35rem;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  color: var(--ink-2);
+}
+.wgt-page .editorial-contents a:is(:hover, :focus-visible) {
+  color: var(--ink);
+  text-decoration: underline;
+}
+.wgt-page .editorial-reading {
+  min-width: 0;
+  max-width: 48rem;
+}
+.wgt-page .editorial-reading :is(section, h2, article)[id] {
+  scroll-margin-top: 1rem;
+}
+.wgt-page .editorial-reading > section:not(:first-child) {
+  border-top: 1px solid var(--line);
+  padding-top: clamp(1.5rem, 3vw, 2.5rem);
+}
+.wgt-page .editorial-reading h2 {
+  text-wrap: balance;
+}
+.wgt-page .editorial-reading h2.font-display {
+  font-size: clamp(1.7rem, 2.55vw, 2.75rem);
+  line-height: 1.16;
+}
+.wgt-page .editorial-reading section > p {
+  line-height: 1.72;
+}
+.wgt-page .editorial-faq details {
+  border-bottom: 1px solid var(--line);
+}
+.wgt-page .editorial-faq summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 48px;
+  padding: 1rem 0;
+  cursor: pointer;
+  color: var(--ink);
+}
+.wgt-page .editorial-faq summary::-webkit-details-marker {
+  display: none;
+}
+.wgt-page .editorial-faq details[open] summary svg {
+  transform: rotate(180deg);
+}
+.wgt-page .editorial-faq details p {
+  margin: 0 0 1.25rem;
+  max-width: 65ch;
+}
+@media (min-width: 900px) {
+  .wgt-page .editorial-layout {
+    grid-template-columns: minmax(11rem, 0.55fr) minmax(0, 1.55fr);
+  }
+  .wgt-page .editorial-contents ul {
+    display: block;
+  }
+  .wgt-page .editorial-contents li + li {
+    border-top: 1px solid var(--line);
+  }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .wgt-page .editorial-reading :is(section, article)[id] {
+      animation: editorial-enter linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 22%;
+    }
+  }
+}
+@keyframes editorial-enter {
+  from {
+    opacity: 0.84;
+    transform: translateY(0.4rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
