@@ -1,3 +1,4 @@
+import { pageHeroSizes } from "@/data/media-src";
 import { serializeJsonLd } from "@/lib/json-ld";
 import { createFileRoute } from "@tanstack/react-router";
 import { PhotoNote, Shot } from "@/components/media";
@@ -16,7 +17,7 @@ export const Route = createFileRoute("/luxusfahrzeuge")({
       title: `Aufbereitung für Luxus- und Sammlerfahrzeuge | ${site.name}`,
       description: DESCRIPTION,
       path: "/luxusfahrzeuge",
-      preloadHero: true,
+      preloadHero: true, preloadSizes: pageHeroSizes,
     }),
 });
 

@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { type ReactNode } from "react";
 import { FluidImg, Shot, type ShotName } from "./media";
 import { cn } from "@/lib/utils";
+import { heroAvifSrcSet, heroWebpSrcSet, pageHeroSizes } from "@/data/media-src";
 
 export function PageCrumbs({
   items,
@@ -23,6 +24,58 @@ export function PageCrumbs({
       ))}
     </nav>
   );
+}
+
+// Intrinsic dimensions of the four workshop photos used by the editorial guides.
+const editorialDimensions: Record<string, [number, number]> = {
+  "own-02": [960, 600],
+  "own-04": [1148, 718],
+  "own-07": [1148, 1531],
+  "own-08": [1082, 676],
+};
+
+export function PagePhoto({
+  shot,
+  src,
+  alt,
+  priority = false,
+  sizes = pageHeroSizes,
+}: {
+  shot?: ShotName;
+  src?: string;
+  alt: string;
+  priority?: boolean;
+  sizes?: string;
+}) {
+  const source = src ?? `/media/${shot ?? "hero"}.webp`;
+  const imageProps = {
+    alt,
+    sizes,
+    loading: priority ? "eager" as const : "lazy" as const,
+    fetchPriority: priority ? "high" as const : "low" as const,
+    decoding: "async" as const,
+    className: "block size-full object-cover",
+  };
+  if (source === "/media/hero.webp") {
+    return (
+      <picture className="block size-full">
+        <source type="image/avif" srcSet={heroAvifSrcSet} sizes={sizes} />
+        <img src="/media/hero-720.webp" srcSet={heroWebpSrcSet} width={1600} height={907} {...imageProps} />
+      </picture>
+    );
+  }
+  const editorial = source.match(/^(\/media\/dark\/customer-selection\/(own-\d+))-(?:full|800|480)\.webp$/);
+  const size = editorial && editorialDimensions[editorial[2]];
+  if (editorial && size) {
+    const path = editorial[1];
+    return (
+      <img src={`${path}-480.webp`} srcSet={`${path}-480.webp 480w, ${path}-800.webp 800w, ${path}-full.webp ${size[0]}w`}
+        width={size[0]} height={size[1]} {...imageProps} />
+    );
+  }
+  return shot
+    ? <Shot name={shot} alt={alt} priority={priority} sizes={sizes} framed={false} className="size-full" />
+    : <FluidImg src={source} alt={alt} priority={priority} sizes={sizes} className="size-full object-cover" />;
 }
 
 /**
@@ -65,24 +118,7 @@ export function PageHero({
         </div>
         <figure className="phero__fig">
           <div className="phero__frame">
-            {media ?? (shot ? (
-              <Shot
-                name={shot}
-                alt={alt}
-                priority={priority}
-                framed={false}
-                className="size-full"
-                sizes={priority ? "100vw" : "(min-width: 821px) 40vw, 90vw"}
-              />
-            ) : (
-              <FluidImg
-                src={src ?? "/media/hero.webp"}
-                alt={alt}
-                priority={priority}
-                className="size-full object-cover"
-                sizes="(min-width: 821px) 40vw, 90vw"
-              />
-            ))}
+            {media ?? <PagePhoto shot={shot} src={src} alt={alt} priority={priority} />}
           </div>
         </figure>
       </div>
@@ -104,30 +140,11 @@ export function MediaTile({
   className?: string;
 }) {
   return (
-    <div
-      className={cn(
-        "group relative min-h-[22rem] overflow-hidden sm:min-h-[26rem]",
-        className,
-      )}
-    >
-      {shot ? (
-        <Shot
-          name={shot}
-          alt={alt}
-          framed={false}
-          className="absolute inset-0 h-full w-full"
-          sizes="(min-width: 1024px) 50vw, 100vw"
-        />
-      ) : (
-        <FluidImg
-          src={src ?? "/media/atelier.webp"}
-          alt={alt}
-          className="absolute inset-0 h-full w-full object-cover"
-          sizes="(min-width: 1024px) 50vw, 100vw"
-        />
-      )}
-      <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/45 to-transparent" />
-      <div className="absolute inset-x-0 bottom-0 p-6 sm:p-8">{children}</div>
+    <div className={cn("group flex h-full flex-col", className)}>
+      <div className="aspect-[16/10] overflow-hidden rounded-[var(--r)]">
+        <PagePhoto shot={shot} src={src} alt={alt} sizes="(min-width: 1356px) 570px, (min-width: 768px) 43vw, 90vw" />
+      </div>
+      <div className="min-w-0 px-1 pt-5 pb-2 sm:pt-7">{children}</div>
     </div>
   );
 }
