@@ -1,7 +1,5 @@
 {
   "faq": {
-    "title": "FAQ zur Fahrzeugaufbereitung in Horb | White-Gloss",
-    "description": "Antworten zu Preisen, Pflege und Abholung in Horb am Neckar. So funktionieren unser digitales Kundenportal, die Unterschrift und die Fahrzeugübergabe.",
     "lead": "Was passt zu meinem Auto, wie lange bleibt es bei euch und muss ich es vorher ausräumen? Hier findest du die Antworten, bevor du einen Termin anfragst.",
     "groups": [
       {
@@ -54,8 +52,6 @@
     ]
   },
   "blog": {
-    "title": "Blog & Ratgeber für Fahrzeugpflege | White-Gloss",
-    "description": "Werkstattwissen zur Fahrzeugpflege: Kosten vergleichen, Hundehaare entfernen, das Auto für den Verkauf vorbereiten und den Lack im Winter richtig pflegen.",
     "lead": "Was kannst du selbst machen, wann lohnt sich ein Termin und welche Arbeit kannst du dir sparen? Hier findest du unsere Ratgeber zur Fahrzeugpflege.",
     "articles": [
       {

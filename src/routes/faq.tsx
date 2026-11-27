@@ -4,6 +4,7 @@ import { PageHero } from "@/components/page-hero";
 import { ctaGhost, ctaPrimary } from "@/components/ui";
 import { faqs, site } from "@/data/site";
 import editorial from "@/data/editorial-guides.json";
+import editorialHead from "@/data/editorial-head.json";
 import { listPublishedCms } from "@/lib/cms.functions";
 import { pageHead } from "@/lib/seo";
 
@@ -18,8 +19,8 @@ export const Route = createFileRoute("/faq")({
   component: FaqPage,
   head: () =>
     pageHead({
-      title: editorial.faq.title,
-      description: editorial.faq.description,
+      title: editorialHead.faq.title,
+      description: editorialHead.faq.description,
       path: "/faq",
       preloadShot: "atelier",
     }),

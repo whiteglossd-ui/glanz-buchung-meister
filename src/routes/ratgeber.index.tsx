@@ -5,6 +5,7 @@ import { MediaTile, PageHero } from "@/components/page-hero";
 import { ctaPrimary } from "@/components/ui";
 import { articles } from "@/data/ratgeber";
 import editorial from "@/data/editorial-guides.json";
+import editorialHead from "@/data/editorial-head.json";
 import { listPublishedCms } from "@/lib/cms.functions";
 import { site } from "@/data/site";
 import { pageHead } from "@/lib/seo";
@@ -20,8 +21,8 @@ export const Route = createFileRoute("/ratgeber/")({
   component: RatgeberIndex,
   head: () =>
     pageHead({
-      title: editorial.blog.title,
-      description: editorial.blog.description,
+      title: editorialHead.blog.title,
+      description: editorialHead.blog.description,
       path: "/ratgeber",
       preloadShot: "keramik",
     }),
