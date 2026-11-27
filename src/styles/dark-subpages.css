@@ -38,11 +38,55 @@
   descent-override: 23.09%;
   line-gap-override: 0%;
 }
+/* Match the advances of Barlow body copy and tightly tracked labels while
+   the public font subsets download. Each face resolves to an installed font. */
+@font-face {
+  font-family: "WG Subpage Text Fallback";
+  src: local("Arial"), local("Liberation Sans"), local("Roboto");
+  font-display: swap;
+  size-adjust: 96.5%;
+  ascent-override: 103.63%;
+  descent-override: 20.73%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "WG Subpage Compact Fallback";
+  src: local("Arial"), local("Liberation Sans"), local("Roboto");
+  font-weight: 400;
+  font-display: swap;
+  size-adjust: 89%;
+  ascent-override: 112.36%;
+  descent-override: 22.47%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "WG Subpage Compact Fallback";
+  src: local("Arial"), local("Liberation Sans"), local("Roboto");
+  font-weight: 500;
+  font-display: swap;
+  size-adjust: 78%;
+  ascent-override: 128.21%;
+  descent-override: 25.64%;
+  line-gap-override: 0%;
+}
 [data-shell="public"] .wgt.wgt-page {
   --serif: "WG Public Display", "WG Subpage Display Fallback", sans-serif;
-  --sans: "WG Public Text", "Barlow Fallback", sans-serif;
+  --sans: "WG Public Text", "WG Subpage Text Fallback", sans-serif;
+  --font-sans: var(--sans);
   --ui: var(--sans);
 }
+.wgt.wgt-page ~ .consent-banner {
+  --font-sans: "WG Public Text", "WG Subpage Text Fallback", sans-serif;
+  font-family: var(--font-sans);
+}
+.wgt.wgt-page .gallery-intro-heading .kicker {
+  font-family: "WG Public Text", "WG Subpage Compact Fallback", sans-serif;
+}
+.wgt.wgt-page .phero .crumbs,
+.wgt.wgt-page main:has(> .city-wa-bar) .phero__title {
+  font-family: "WG Public Display", "WG Subpage Compact Fallback", sans-serif;
+}
+
 /* Barlow Semi Condensed Light has a 503/1000-em zero. Keep the original
    20-character title measure even when the local font has a different zero. */
 .wgt.wgt-page .phero__title { max-width: min(100%, 10.06em); }
