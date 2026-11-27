@@ -3,7 +3,7 @@ import { serializeJsonLd } from "@/lib/json-ld";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { PageHero } from "@/components/page-hero";
 import { ctaPrimary } from "@/components/ui";
-import { articles, type Article } from "@/data/ratgeber";
+import type { Article } from "@/data/ratgeber";
 import { listPublishedCms } from "@/lib/cms.functions";
 import { cmsPublishedDate } from "@/lib/cms-date";
 import { logoJsonLdHref } from "@/data/media-src";
@@ -19,12 +19,9 @@ const pickupGuideSlugs = new Set([
   "leasingrueckgabe-aufbereitung-vermeiden-mehrkosten",
 ]);
 
-async function loadArticle(slug: string): Promise<Omit<Article, "date"> & { date?: string }> {
-  // Keep article text out of unrelated routes' startup graph. The page's
-  // component import is already split by TanStack; its loader needs the same boundary.
-  const { getArticle } = await import("@/data/ratgeber");
-  const staticArticle = getArticle(slug);
-  if (staticArticle) return staticArticle;
+type PublishedArticle = Omit<Article, "date"> & { date?: string };
+
+async function loadCmsArticle(slug: string): Promise<PublishedArticle> {
   const rows = await listPublishedCms({ data: { kind: "blog" } });
   const row = rows.find((r) => r.slug === slug);
   if (!row) throw notFound();
@@ -46,7 +43,15 @@ async function loadArticle(slug: string): Promise<Omit<Article, "date"> & { date
 }
 
 export const Route = createFileRoute("/ratgeber/$slug")({
-  loader: async ({ params }) => loadArticle(params.slug),
+  loader: async ({ params }) => {
+    const { articles, getArticle } = await import("@/data/ratgeber");
+    const article = getArticle(params.slug) ?? await loadCmsArticle(params.slug);
+    const related = article.related ?? articleNavigation[article.slug]?.related;
+    const matches = related
+      ? related.flatMap((slug) => articles.filter((entry) => entry.slug === slug))
+      : articles.filter((entry) => entry.slug !== article.slug).slice(0, 3);
+    return { ...article, others: matches.map(({ title, slug }) => ({ title, slug })) };
+  },
   head: ({ loaderData }) =>
     pageHead({
       title: loaderData?.seoTitle ?? articleNavigation[loaderData?.slug ?? ""]?.title ?? `${loaderData?.title ?? "Ratgeber"} | ${site.name}`,
@@ -62,8 +67,6 @@ function ArticlePage() {
   const guide = articleNavigation[a.slug];
   const request = articleBookingSelection(a.slug);
   const service = services.find((s) => s.slug === guide?.service);
-  const related = a.related ?? guide?.related;
-  const others = related ? related.flatMap((slug) => articles.filter((x) => x.slug === slug)) : articles.filter((x) => x.slug !== a.slug).slice(0, 3);
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -180,7 +183,7 @@ function ArticlePage() {
         </Link>
         <h2 id="weitere-beitraege" className="mt-16 font-display text-2xl">Weitere Beiträge</h2>
         <ul className="mt-4 space-y-2">
-          {others.map((o) => (
+          {a.others.map((o) => (
             <li key={o.slug}>
               <Link
                 to="/ratgeber/$slug"

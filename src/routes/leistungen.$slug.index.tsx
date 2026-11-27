@@ -19,7 +19,6 @@ import { ResultsTeaser } from "@/components/results-teaser";
 import { serializeJsonLd } from "@/lib/json-ld";
 import { ServicePriceNote } from "@/components/service-price-note";
 import { pickupAreaLink } from "@/lib/seo-policy";
-import { articles } from "@/data/ratgeber";
 import { articleNavigation } from "@/lib/article-navigation";
 import { WebsiteStudioContent } from "@/components/website-studio-content";
 import { loadPublicStudioDocument } from "@/lib/studio-public.functions";
@@ -34,7 +33,16 @@ export const Route = createFileRoute("/leistungen/$slug/")({
   loader: async ({ params }) => {
     const service = services.find((s) => s.slug === params.slug);
     if (!service) throw notFound();
-    return { service, document: await loadPublicStudioDocument(`service:${service.slug}`) };
+    const [document, guides] = await Promise.all([
+      loadPublicStudioDocument(`service:${service.slug}`),
+      service.pendingApproval ? [] : import("@/data/ratgeber").then(({ articles }) =>
+        articles
+          .filter((article) => articleNavigation[article.slug]?.service === service.slug)
+          .slice(0, 3)
+          .map(({ slug, title }) => ({ slug, title })),
+      ),
+    ]);
+    return { service, document, guides };
   },
   head: ({ loaderData }) =>
     pageHead({
@@ -50,16 +58,13 @@ export const Route = createFileRoute("/leistungen/$slug/")({
 });
 
 function ServicePage() {
-  const { service: s, document } = Route.useLoaderData();
+  const { service: s, document, guides } = Route.useLoaderData();
   const hero = studioHero(document);
   const title = document?.content.title.trim() || s.title;
   const lead = document?.content.lead.trim() || s.teaser;
   const { ort } = Route.useSearch();
   const request = serviceBookingSelection(s.slug, ort);
   const pack = packages.find((p) => packageServiceSlug[p.id] === s.slug);
-  const guides = s.pendingApproval
-    ? []
-    : articles.filter((article) => articleNavigation[article.slug]?.service === s.slug).slice(0, 3);
   const resultService =
     s.slug === "keramikversiegelung"
       ? "White-Gloss Ceramic"
