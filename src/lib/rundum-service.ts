@@ -4,6 +4,7 @@ export const RUNDUM_SERVICES = [
   "Dellenentfernung",
   "Smart Repair",
   "Lackierarbeiten",
+  "Folierung",
   "Felgenreparatur",
   "Brandlochreparatur",
   "Beratung / noch unsicher",

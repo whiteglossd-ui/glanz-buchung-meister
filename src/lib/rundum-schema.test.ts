@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { rundumInquirySchema } from "./rundum-schema.ts";
+import { RUNDUM_SERVICES } from "./rundum-service.ts";
 const valid = {
   idempotencyKey: "d8543d34-e506-4b19-880d-7cfd59c3a618",
   name: "Testkunde",
@@ -26,4 +27,10 @@ test("Rundum request needs only relevant details and no photos, phone, address o
     { date: "2020-01-01" },
   ])
     assert.equal(rundumInquirySchema.safeParse({ ...valid, ...override }).success, false);
+});
+
+test("Rundum request accepts every offered service at once, including Folierung", () => {
+  const value = rundumInquirySchema.parse({ ...valid, services: [...RUNDUM_SERVICES] });
+  assert.deepEqual(value.services, [...RUNDUM_SERVICES]);
+  assert.ok(RUNDUM_SERVICES.includes("Folierung"));
 });

@@ -203,6 +203,20 @@ const APPROVED_SUBPAGE_BLOBS = Object.freeze({
   "src/routes/widerruf.tsx": "66621d31a30e395b984f8a0a86079aaaececcff7",
 });
 
+// November 27 owner request: new partner services page (Folierung, Dellen
+// drücken, Lackierarbeiten, Smart Repair) linked from menu, footer, homepage
+// and the service overview. Only links and the new tile were added; all
+// existing copy stays. See docs/folierung-smart-repair-2026-11-27.md.
+const APPROVED_PARTNER_SERVICES_BLOBS = Object.freeze({
+  "src/components/dark/dark-chrome.tsx": "f441d2eb5692f3f5177036a4833bf9dd319c68d5",
+  "src/components/dark/dark-home.tsx": "7eeae47815f0e2f75e8b25363c3c2b0b2fb18852",
+  "src/components/full-service.tsx": "594b5d8668735332cf15c8f5df35d976a1cd55b3",
+  "src/data/sitemap-static.xml": "6c8d6cde12572845ce1ce736578b24f0164579ec",
+  "src/lib/seo-intents.ts": "065d7868fedb86d6765d5f2376bed4479b8acf8b",
+  "src/routes/leistungen.index.tsx": "9c9a2a9ff14175620dee8f838df0f7476ece321d",
+  "public/llms.txt": "b36a1aca8b5c1a27201e130e386df6d0ab0ff54e",
+});
+
 function sourceBlobId(source) {
   const bytes = Buffer.from(source.replace(/\r\n/g, "\n"), "utf8");
   return createHash("sha1").update(`blob ${bytes.length}\0`).update(bytes).digest("hex");
@@ -513,7 +527,7 @@ export function inspectDesignContent({
       throw new Error(`Invalid approved protected Rundum source: ${name}`);
   }
   const homeBlobs = approvedHomeBlobs ?? (commit === DESIGN_BASE
-    ? { ...APPROVED_HOME_BLOBS, ...APPROVED_SITE_AUDIT_BLOBS, ...APPROVED_SUBPAGE_BLOBS }
+    ? { ...APPROVED_HOME_BLOBS, ...APPROVED_SITE_AUDIT_BLOBS, ...APPROVED_SUBPAGE_BLOBS, ...APPROVED_PARTNER_SERVICES_BLOBS }
     : {});
   const failures = [];
   for (const [name, blobId] of Object.entries(homeBlobs)) {

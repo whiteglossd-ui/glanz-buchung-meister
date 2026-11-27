@@ -50,6 +50,9 @@ export function FullService() {
           <Link to="/" hash="rundum-anfrage" hashScrollIntoView={BOOKING_JUMP} onClick={focusBookingHeading} className="btn btn--solid">
             Angebot anfragen <span aria-hidden="true">→</span>
           </Link>
+          <Link to="/folierung-smart-repair" className="btn">
+            Folierung, Lack &amp; Smart Repair <span aria-hidden="true">→</span>
+          </Link>
           <p className="muted small max-w-prose">
             Preise nach Absprache, nach Besichtigung und Abstimmung mit den Partnerbetrieben.
           </p>

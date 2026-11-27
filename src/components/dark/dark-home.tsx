@@ -581,6 +581,7 @@ export function DarkHome({
                 <li key={s.slug}><Link to="/leistungen/$slug" params={{ slug: s.slug }}>{s.nav}</Link></li>
               ))}
               <li><Link to="/dellen-hagelschaden">Dellen- und Hagelschäden</Link></li>
+              <li><Link to="/folierung-smart-repair">Folierung, Lack und Smart Repair</Link></li>
               <li><Link to="/luxusfahrzeuge">Luxusfahrzeuge</Link></li>
               <li><Link to="/b2b">Firmen, Flotten und Autohäuser</Link></li>
               <li><Link to="/ratgeber">Ratgeber</Link></li>
