@@ -302,9 +302,10 @@ export async function verifyRundumIntentLoading(page, { label, base }) {
   await reads.complete(`${label}: leave booking for prices`);
   await page.getByRole("contentinfo").getByRole("link", { name: "Preise", exact: true }).click();
   await page.waitForURL((url) => url.pathname === "/preise");
-  // The prices route eagerly mounts its own configurator. Let its availability
-  // response finish before history navigation unmounts and aborts the request.
+  // The below-fold price calculator loads on approach. Exercise that entry
+  // and finish its availability read before navigating away.
   await page.getByRole("heading", { name: "Preise für die Aufbereitung.", exact: true }).waitFor({ state: "visible" });
+  await page.locator('[data-inquiry-start="booking"]').scrollIntoViewIfNeeded();
   await page.locator("form.booking-flow #slot:enabled").waitFor({ state: "attached" });
   await reads.complete(`${label}: leave prices after availability`);
   await page.goBack({ waitUntil: "networkidle" });

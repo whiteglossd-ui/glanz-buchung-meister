@@ -14,8 +14,15 @@ import {
 import { pageHead } from "@/lib/seo";
 import { pricePageJsonLd } from "@/lib/page-schema";
 import { serializeJsonLd } from "@/lib/json-ld";
-import { money } from "@/lib/utils";
+import { eur, money } from "@/lib/utils";
+import { BOOKING_JUMP } from "@/lib/booking-anchor-focus";
 import { ctaPrimary, PriceLine } from "@/components/ui";
+
+const packagePhotos = {
+  basis: ["foam-sq", "Reinigungsschaum auf schwarzem Fahrzeuglack"],
+  premium: ["polish-sq", "Poliermaschine bei der Bearbeitung des Lacks"],
+  keramik: ["beads-sq", "Wassertropfen auf einer versiegelten Lackoberfläche"],
+} as const;
 
 export const Route = createFileRoute("/preise")({
   component: PreisePage,
@@ -47,115 +54,123 @@ function PreisePage() {
           { label: "Preise & Pakete" },
         ]}
         actions={
-          <Link to="/" hash="buchung" className={ctaPrimary}>
+          <Link to="/" hash="buchung" hashScrollIntoView={BOOKING_JUMP} className={ctaPrimary}>
             Termin anfragen
           </Link>
         }
       />
-      <div className="section mx-auto max-w-7xl px-4 sm:px-6">
-      <ol className="mt-14 divide-y divide-line border-y border-line">
-        {packages.map((p, i) => (
-          <li key={p.id} id={packageAnchor(p.id)} className="lift gd-pack py-10">
-            <p className="ga-num font-display text-3xl text-subtle tabular-nums">
-              {String(i + 1).padStart(2, "0")}
-            </p>
-            <div className="ga-pack-copy">
-              <h2 className="heading-2 mt-2">{p.name}</h2>
-              <p className="mt-2 text-sm text-muted">{p.kicker}</p>
-              <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted">{p.body}</p>
-              <ul className="mt-5 space-y-2 text-sm text-muted">
-                {p.items.map((item) => (
-                  <li key={item} className="flex gap-3">
-                    <span className="mt-[0.55em] size-1 shrink-0 rounded-full bg-subtle" aria-hidden />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-              <Link
-                to="/"
-                search={{ paket: p.id }}
-                hash="buchung"
-                className={`${ctaPrimary} mt-6`}
-              >
-                Paket anfragen
-              </Link>
+      <div className="wrap section">
+        <ol id="paketkatalog" className="packs list-none p-0" aria-label="Aufbereitungspakete">
+          {packages.map((p) => {
+            const [image, alt] = packagePhotos[p.id];
+            const photo = `/media/dark/gen/${image}`;
+            return (
+              <li key={p.id} id={packageAnchor(p.id)} className="pack">
+                <div className="pack__img">
+                  <img
+                    src={`${photo}-320.webp`}
+                    srcSet={`${photo}-320.webp 320w, ${photo}-800.webp 800w`}
+                    sizes="(max-width: 700px) 90vw, (max-width: 1100px) 40vw, 360px"
+                    width={320}
+                    height={320}
+                    loading="lazy"
+                    decoding="async"
+                    alt={alt}
+                  />
+                </div>
+                <div className="pack__body gap-3">
+                  <p className="label">{p.kicker}</p>
+                  <h2 className="h3">{p.name}</h2>
+                  <p className="pack__price"><small>ab</small> {eur(p.price)}</p>
+                  <p className="text-sm text-muted">{site.vatNote} · {p.duration}</p>
+                  <Link
+                    to="/"
+                    search={{ paket: p.id }}
+                    hash="buchung"
+                    hashScrollIntoView={BOOKING_JUMP}
+                    aria-label={`Termin anfragen für ${p.name}`}
+                    className={ctaPrimary}
+                  >
+                    Termin anfragen
+                  </Link>
+                  <details className="pack__det">
+                    <summary className="min-h-11 items-center">
+                      Leistungsumfang <span aria-hidden="true">›</span>
+                    </summary>
+                    <p className="mt-4 text-sm leading-relaxed text-muted">{p.body}</p>
+                    <ul>
+                      {p.items.map((item) => <li key={item}>{item}</li>)}
+                    </ul>
+                  </details>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+        <aside className="my-8 max-w-3xl border-l border-line-strong pl-5">
+          <p className="font-display text-xl">Preise nach Absprache – nach Besichtigung und Abstimmung.</p>
+          <p className="mt-2 text-sm leading-relaxed text-muted">
+            Die angegebenen Einstiegspreise gelten für die Kompaktklasse und enthalten
+            die Mehrwertsteuer. Fahrzeugklasse und Zusatzleistungen bestimmen den
+            berechneten Preis. Entsteht durch Verschmutzung oder Lackzustand
+            zusätzlicher Aufwand, stimmen wir diesen vor Beginn mit dir ab.
+          </p>
+        </aside>
+        <h2 className="heading-2 mt-20">Fahrzeuggröße</h2>
+        <div className="facts mt-8 grid gap-4 md:grid-cols-3">
+          {vehicleClasses.map((c) => (
+            <div key={c.id} className="border border-line p-6">
+              <h3 className="font-display text-2xl tracking-wide">{c.label}</h3>
+              <p className="mt-2 text-sm text-muted">{c.hint}</p>
+              <p className="mt-5 text-xs uppercase tracking-[0.16em] text-subtle">
+                {c.factor === 1 ? "Basispreis" : `Faktor ${c.factor.toString().replace(".", ",")}`}
+              </p>
             </div>
-            <p className="ga-price flex min-w-[8.5rem] flex-col items-end gap-2">
-              <span className="flex items-baseline gap-2 lg:justify-end">
-                <span className="text-xs uppercase tracking-[0.2em] text-subtle">ab </span>
-                <span className="font-display text-4xl leading-none tracking-wide tabular-nums">
-                  {money(p.price)}
-                </span>
-                <span className="text-sm text-muted"> €</span>
-              </span>
-              <span className="block text-xs text-subtle">
-                {site.vatNote} · {p.duration}
-              </span>
-            </p>
-          </li>
-        ))}
-      </ol>
-      <p className="mt-8 max-w-2xl text-sm leading-relaxed text-muted">
-        Die angegebenen Einstiegspreise gelten für die Kompaktklasse und enthalten
-        die Mehrwertsteuer. Fahrzeugklasse und Zusatzleistungen bestimmen den
-        berechneten Preis. Entsteht durch Verschmutzung oder Lackzustand
-        zusätzlicher Aufwand, stimmen wir diesen vor Beginn mit dir ab.
-      </p>
-      <h2 className="heading-2 mt-20">Fahrzeuggröße</h2>
-      <div className="gd-tiles gd-tiles-3 mt-8">
-        {vehicleClasses.map((c) => (
-          <div key={c.id} className="border border-line p-6">
-            <h3 className="font-display text-2xl tracking-wide">{c.label}</h3>
-            <p className="mt-2 text-sm text-muted">{c.hint}</p>
-            <p className="mt-5 text-xs uppercase tracking-[0.16em] text-subtle">
-              {c.factor === 1 ? "Basispreis" : `Faktor ${c.factor.toString().replace(".", ",")}`}
-            </p>
+          ))}
+        </div>
+        <h2 className="heading-2 mt-20">Zusatzleistungen</h2>
+        <p className="mt-4 max-w-2xl text-sm text-muted">
+          Alle Einstiegspreise gelten für die Kompaktklasse und verstehen sich {site.vatNote}
+          {" "}Der Fahrzeuggrößenfaktor gilt für Paket und Zusatzleistungen, nicht für die Abholung.
+          Vor einer Reparatur prüfen wir, ob das Material geeignet ist.
+        </p>
+        {(["pflege", "reparatur"] as const).map((group) => (
+          <div key={group}>
+            <h3 className="mt-12 text-xs uppercase tracking-[0.2em] text-subtle">
+              {group === "pflege" ? "Pflege & Aufbereitung" : "Reparatur"}
+            </h3>
+            <ul className="mt-2 divide-y divide-line border-y border-line">
+              {extras
+                .filter((e) => e.group === group && e.requestable !== false)
+                .map((e) => (
+                  <PriceLine
+                    key={e.id}
+                    name={e.name}
+                    hint={e.hint}
+                    price={e.price}
+                    note={e.inspect ? "nach Prüfung am Fahrzeug" : undefined}
+                  />
+                ))}
+            </ul>
           </div>
         ))}
-      </div>
-      <h2 className="heading-2 mt-20">Zusatzleistungen</h2>
-      <p className="mt-4 max-w-2xl text-sm text-muted">
-        Alle Einstiegspreise gelten für die Kompaktklasse und verstehen sich {site.vatNote}
-        {" "}Der Fahrzeuggrößenfaktor gilt für Paket und Zusatzleistungen, nicht für die Abholung.
-        Vor einer Reparatur prüfen wir, ob das Material geeignet ist.
-      </p>
-      {(["pflege", "reparatur"] as const).map((group) => (
-        <div key={group}>
-          <h3 className="mt-12 text-xs uppercase tracking-[0.2em] text-subtle">
-            {group === "pflege" ? "Pflege & Aufbereitung" : "Reparatur"}
-          </h3>
-          <ul className="mt-2 divide-y divide-line border-y border-line">
-            {extras
-              .filter((e) => e.group === group && e.requestable !== false)
-              .map((e) => (
-                <PriceLine
-                  key={e.id}
-                  name={e.name}
-                  hint={e.hint}
-                  price={e.price}
-                  note={e.inspect ? "nach Prüfung am Fahrzeug" : undefined}
-                />
-              ))}
-          </ul>
+        <p className="mt-6 text-sm text-subtle">
+          Hol- und Bringservice: {pickupTierSummary()}. {pickupKeramikNote()}.
+          Wenn Verschmutzung oder Lackzustand
+          mehr Aufwand bedeuten, stimmen wir das mit dir ab, bevor wir anfangen.
+        </p>
+        <div id="buchung" className="mt-16">
+          <h2 id="buchung-heading" className="mb-8 font-display text-3xl">
+            Preis berechnen
+          </h2>
+          <WhatsAppPhotoCta className="mb-10" headingLevel={3} />
+          <LazyConfigurator />
         </div>
-      ))}
-      <p className="mt-6 text-sm text-subtle">
-        Hol- und Bringservice: {pickupTierSummary()}. {pickupKeramikNote()}.
-        Wenn Verschmutzung oder Lackzustand
-        mehr Aufwand bedeuten, stimmen wir das mit dir ab, bevor wir anfangen.
-      </p>
-      <div id="buchung" className="mt-16">
-        <h2 id="buchung-heading" className="mb-8 font-display text-3xl">
-          Preis berechnen
-        </h2>
-        <WhatsAppPhotoCta className="mb-10" headingLevel={3} />
-        <LazyConfigurator eager />
-      </div>
-      <p className="mt-10 text-sm">
-        <Link to="/faq" className="hover:underline">
-          Häufige Fragen zu Kosten und Dauer
-        </Link>
-      </p>
+        <p className="mt-10 text-sm">
+          <Link to="/faq" className="hover:underline">
+            Häufige Fragen zu Kosten und Dauer
+          </Link>
+        </p>
       </div>
     </main>
   );
