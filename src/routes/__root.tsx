@@ -22,6 +22,7 @@ import "../styles/dark-edition.css";
 // Dark Edition 1:1 aus der Vorlage (Startseite, Kopf- und Fußzeile), auf .wgt begrenzt.
 import "../styles/dark-template.css";
 import "../styles/dark-subpages.css";
+import "../styles/first-paint-fonts.css";
 import forgeDesktopCss from "../styles/forge-desktop.css?url";
 
 export const Route = createRootRoute({
@@ -38,7 +39,7 @@ export const Route = createRootRoute({
       : ["bsc-300", "barlow-400"]
     ).map((name) => ({
       rel: "preload",
-      href: `/fonts/${name}.woff2`,
+      href: `/fonts/de-v1/${name}.woff2`,
       as: "font",
       type: "font/woff2",
       crossOrigin: "anonymous" as const,
@@ -108,4 +109,3 @@ export const Route = createRootRoute({
     );
   },
 });
-
