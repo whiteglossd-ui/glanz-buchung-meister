@@ -10,6 +10,7 @@ import { cmsPublishedDate } from "@/lib/cms-date";
 import { logoJsonLdHref } from "@/data/media-src";
 import { services, site } from "@/data/site";
 import { pageHead } from "@/lib/seo";
+import { consolidatedServices } from "@/lib/seo-policy";
 import { articleBookingSelection, articleNavigation } from "@/lib/article-navigation";
 
 const pickupGuideSlugs = new Set([
@@ -162,7 +163,9 @@ function ArticlePage() {
           </p>
         ) : null}
         {service ? <p className="mt-8 leading-relaxed text-muted">
-          Leistungsumfang und Grenzen findest du unter <Link to="/leistungen/$slug" params={{ slug: service.slug }} className="underline underline-offset-4">{service.nav}</Link>.
+          Leistungsumfang und Grenzen findest du unter {Object.hasOwn(consolidatedServices, service.slug)
+            ? <Link to={consolidatedServices[service.slug] as never} className="underline underline-offset-4">{service.nav}</Link>
+            : <Link to="/leistungen/$slug" params={{ slug: service.slug }} className="underline underline-offset-4">{service.nav}</Link>}.
           {" "}{request.paket || request.leistung ? "Die Anfrage übernimmt das zugehörige Paket oder dein Interesse an dieser individuellen Leistung." : "Wähle in der Anfrage das passende Paket und deinen Abholort aus."}
           {pickupGuideSlugs.has(a.slug) ? (
             <>

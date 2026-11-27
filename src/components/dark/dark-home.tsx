@@ -19,6 +19,7 @@ import { LazyConfigurator } from "@/components/lazy-configurator";
 import { LazyRundumInquiry } from "@/components/lazy-rundum-inquiry";
 import { BOOKING_JUMP, focusBookingHeading } from "@/lib/booking-anchor-focus";
 import { pickupDistanceLabel } from "@/lib/city-copy";
+import { isConsolidatedService } from "@/lib/seo-policy";
 import { LazyGoogleReviews } from "@/components/lazy-google-reviews";
 import "./dark-hero.css";
 import "./home-partner.css";
@@ -578,13 +579,12 @@ export function DarkHome({
               </p>
             </div>
             <ul className="svc svc--wide" data-reveal>
-              {services.map((s) => (
+              {services.filter((s) => !isConsolidatedService(s.slug)).map((s) => (
                 <li key={s.slug}><Link to="/leistungen/$slug" params={{ slug: s.slug }}>{s.nav}</Link></li>
               ))}
-              <li><Link to="/dellen-hagelschaden">Dellen- und Hagelschäden</Link></li>
               <li><Link to="/folierung">Autofolierung und Farbwechsel</Link></li>
               <li><Link to="/lackierarbeiten">Lackierarbeiten</Link></li>
-              <li><Link to="/dellen-druecken">Dellen drücken ohne Lackieren</Link></li>
+              <li><Link to="/dellen-druecken">Dellen drücken und Hagelschäden</Link></li>
               <li><Link to="/smart-repair">Smart Repair</Link></li>
               <li><Link to="/folierung-smart-repair">Folierung, Lack und Smart Repair</Link></li>
               <li><Link to="/luxusfahrzeuge">Luxusfahrzeuge</Link></li>

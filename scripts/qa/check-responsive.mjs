@@ -315,7 +315,6 @@ const paths = [
     "/ratgeber/keramikversiegelung-langzeitschutz",
     "/kontakt",
     "/fahrzeug-zustand",
-    "/dellen-hagelschaden",
     "/folierung",
     "/lackierarbeiten",
     "/dellen-druecken",

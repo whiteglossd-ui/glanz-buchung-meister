@@ -8,17 +8,23 @@ import { pageHead } from "@/lib/seo";
 const config: PartnerLandingConfig = {
   id: "dellen-druecken",
   path: "/dellen-druecken",
-  serviceName: "Dellen drücken ohne Lackieren",
-  alternateNames: ["Ausbeulen ohne Lackieren", "Ausbeultechnik", "Beulendoktor", "Dellen entfernen"],
+  serviceName: "Dellen drücken und Hagelschaden-Reparatur",
+  alternateNames: [
+    "Ausbeulen ohne Lackieren",
+    "Dellenentfernung",
+    "Hagelschaden reparieren",
+    "Ausbeultechnik",
+    "Dellen entfernen",
+  ],
   description:
-    "Dellen drücken ohne Lackieren in Horb am Neckar und Loßburg: Parkdellen, Türkantendellen und Hagelschäden mit erfahrenem Partnerbetrieb. Erste Einschätzung per Foto.",
+    "Dellen drücken und Hagelschaden in Horb am Neckar und Loßburg: Parkdellen und Hagel ohne Lackieren entfernen, mit erfahrenem Partnerbetrieb. Erste Einschätzung per Foto.",
   crumb: "Dellen drücken",
   heroImage: "inspection",
-  kicker: "Dellen drücken · Ausbeulen ohne Lackieren",
-  title: "Dellen drücken ohne Lackieren.",
+  kicker: "Dellen drücken · Hagelschaden · Ausbeulen ohne Lackieren",
+  title: "Dellen und Hagelschäden ohne Lackieren.",
   lead:
-    "Parkdellen, Türkantendellen oder Hagel: Der Partner drückt die Delle von innen heraus, ohne neu zu lackieren, wenn Lack und Blech es zulassen. Für Horb am Neckar, Loßburg und die Region. Dein Ansprechpartner bleibt White-Gloss.",
-  primaryCta: "Delle anfragen",
+    "Parkdellen, Türkantendellen oder Hagel: Der Partner drückt die Delle von innen heraus, ohne neu zu lackieren, wenn Lack und Blech es zulassen. Eine erste Einschätzung bekommst du oft schon per Foto. Für Horb am Neckar, Loßburg und die Region. Dein Ansprechpartner bleibt White-Gloss.",
+  primaryCta: "Foto-Begutachtung anfragen",
   introLabel: "Ausbeulen ohne Lackieren",
   introTitle: "Blech zurück in Form. Lack bleibt original.",
   intro:
@@ -97,6 +103,10 @@ const config: PartnerLandingConfig = {
       a: "Nein. Die Stelle muss von innen erreichbar sein und der Lack darf nicht gerissen sein. Bei scharfen Knicken, an Kanten oder bei beschädigtem Lack ist oft eine andere Reparatur nötig. Das sagen wir dir vorher.",
     },
     {
+      q: "Was mache ich nach einem Hagelschaden?",
+      a: "Fotografiere die betroffenen Flächen, am besten mit Licht von der Seite, und schick uns die Bilder. Wir geben dir eine erste Einschätzung und schauen uns das Auto dann vor Ort an. Den Preis erfährst du, bevor du zusagst.",
+    },
+    {
       q: "Reicht ein Foto für die Einschätzung?",
       a: "Für eine erste Einschätzung oft ja. Fotografiere die Delle schräg mit Licht von der Seite. Verbindlich wird es erst, wenn wir das Fahrzeug gesehen haben.",
     },
@@ -113,7 +123,7 @@ const config: PartnerLandingConfig = {
       a: `Ja. Unsere Werkstatt ist in ${site.city}, in Loßburg entsteht unser neuer Standort. Auf Wunsch holen wir dein Auto in Loßburg, Freudenstadt, Nagold, Rottenburg und weiteren Orten ab und bringen es zurück.`,
     },
   ],
-  inquiryTitle: "Dellen drücken anfragen",
+  inquiryTitle: "Delle oder Hagelschaden prüfen lassen",
   inquiryHint:
     "Schreib kurz, wo die Delle sitzt und wie groß sie ungefähr ist. Fotos ergänzt du nach der Anfrage in deinem Kundenbereich.",
   articles: [{ slug: "smart-repair-oder-lackkorrektur", label: "Dellenentfernung oder Lackkorrektur" }],
@@ -123,7 +133,7 @@ export const Route = createFileRoute("/dellen-druecken")({
   component: () => <PartnerLanding config={config} />,
   head: () =>
     pageHead({
-      title: `Dellen drücken Horb & Loßburg: ohne Lackieren | ${site.name}`,
+      title: `Dellen & Hagelschaden Horb, Loßburg: ohne Lackieren | ${site.name}`,
       description: config.description,
       path: config.path,
     }),

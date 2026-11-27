@@ -33,7 +33,11 @@ Keine Preise, Dauer, Garantien, Partnernamen oder Zertifikate.
 In der jeweiligen Route im Array `options` bei der passenden Karte `photo` ausfüllen:
 `{ src: "/media/partner/<datei>.webp", alt: "…", width: …, height: … }`. Datei unter `public/media/partner/` ablegen.
 
-## Hinweis SEO
-`/dellen-druecken` (Methode), `/dellen-hagelschaden` (Hagel, Foto-Begutachtung) und
-`/leistungen/smart-repair` (heißt im Katalog „Dellenentfernung") liegen thematisch nah beieinander.
-Später ggf. zusammenführen.
+## Dellen-Seiten zusammengelegt (Inhaberentscheidung 27.11.2026)
+- Hauptseite: `/dellen-druecken` (Dellen drücken und Hagelschäden, Foto-Begutachtung).
+- 301-Weiterleitungen auf `/dellen-druecken`:
+  - `/dellen-hagelschaden` (`src/routes/dellen-hagelschaden.tsx`)
+  - `/leistungen/smart-repair` und alle `/leistungen/smart-repair/<stadt>`
+- Steuerung zentral in `src/lib/seo-policy.ts`: `consolidatedPaths`, `consolidatedServices`.
+- Der Katalogeintrag `smart-repair` in `site.ts` bleibt für Buchung, Panel und Ratgeber bestehen. Er wird in Menü, Footer und Listen nicht mehr verlinkt.
+- Aus Sitemap und `seo-intents.ts` entfernt.

@@ -1,7 +1,7 @@
 import { BOOKING_JUMP } from "@/lib/booking-anchor-focus";
 import { EditorialLayout } from "@/components/editorial-layout";
 import { ServiceQuestions, ServiceSteps } from "@/components/service-sections";
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, redirect } from "@tanstack/react-router";
 import { PageHero } from "@/components/page-hero";
 import { WhatsAppPhotoCta } from "@/components/whatsapp-photo-cta";
 import { ctaPrimary, PriceLine } from "@/components/ui";
@@ -19,7 +19,7 @@ import { eur, money } from "@/lib/utils";
 import { ResultsTeaser } from "@/components/results-teaser";
 import { serializeJsonLd } from "@/lib/json-ld";
 import { ServicePriceNote } from "@/components/service-price-note";
-import { pickupAreaLink } from "@/lib/seo-policy";
+import { consolidatedServices, pickupAreaLink } from "@/lib/seo-policy";
 import { articleNavigation } from "@/lib/article-navigation";
 import { WebsiteStudioContent } from "@/components/website-studio-content";
 import { loadPublicStudioDocument } from "@/lib/studio-public.functions";
@@ -34,6 +34,9 @@ export const Route = createFileRoute("/leistungen/$slug/")({
   loader: async ({ params }) => {
     const service = services.find((s) => s.slug === params.slug);
     if (!service) throw notFound();
+    if (Object.hasOwn(consolidatedServices, service.slug)) {
+      throw redirect({ href: consolidatedServices[service.slug], statusCode: 301 });
+    }
     const [document, guides] = await Promise.all([
       loadPublicStudioDocument(`service:${service.slug}`),
       service.pendingApproval ? [] : import("@/data/ratgeber").then(({ articles }) =>

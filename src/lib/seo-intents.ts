@@ -1,6 +1,7 @@
 import { cities, services } from "../data/site.ts";
 import { articleNavigation } from "./article-navigation.ts";
 import { citySeoCopy } from "./city-copy.ts";
+import { isConsolidatedService } from "./seo-policy.ts";
 
 export type SearchIntent = {
   cluster: string;
@@ -81,11 +82,6 @@ export const seoIntents: Record<string, SearchIntent> = {
     intent: "navigational",
     purpose: "Echte Arbeitsbeispiele ansehen",
   },
-  "/dellen-hagelschaden": {
-    cluster: "hagelschaden foto begutachtung",
-    intent: "commercial",
-    purpose: "Konkreten Schaden zur Prüfung einreichen",
-  },
   "/folierung": {
     cluster: "autofolierung farbwechsel horb",
     intent: "commercial",
@@ -97,9 +93,9 @@ export const seoIntents: Record<string, SearchIntent> = {
     purpose: "Lackschaden, Kratzer oder Bauteillackierung anfragen",
   },
   "/dellen-druecken": {
-    cluster: "dellen drücken ohne lackieren",
+    cluster: "dellen drücken hagelschaden ohne lackieren",
     intent: "commercial",
-    purpose: "Parkdelle oder Hagelschaden ohne Lackieren entfernen lassen",
+    purpose: "Parkdelle oder Hagelschaden ohne Lackieren entfernen lassen, erste Einschätzung per Foto",
   },
   "/smart-repair": {
     cluster: "smart repair felgen leder kleinschaden",
@@ -158,7 +154,7 @@ export const seoIntents: Record<string, SearchIntent> = {
   },
   ...Object.fromEntries(
     services
-      .filter((s) => !s.pendingApproval)
+      .filter((s) => !s.pendingApproval && !isConsolidatedService(s.slug))
       .map((s) => [
         `/leistungen/${s.slug}`,
         {

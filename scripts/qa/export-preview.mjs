@@ -20,7 +20,7 @@ const MAX_TOTAL = 60 * 1024 * 1024;
 const pages = [
   "/", "/leistungen", "/preise", "/kontakt", "/galerie", "/abholservice",
   "/ratgeber", "/faq", "/ueber-uns", "/qualitaet", "/luxusfahrzeuge", "/b2b",
-  "/dellen-hagelschaden", "/folierung", "/lackierarbeiten", "/dellen-druecken", "/smart-repair", "/folierung-smart-repair",
+  "/folierung", "/lackierarbeiten", "/dellen-druecken", "/smart-repair", "/folierung-smart-repair",
 ];
 
 const server = spawn(process.execPath, ["scripts/qa/isolated-server.mjs"], {

@@ -11,7 +11,7 @@ import { serviceCityHeading, serviceCityTitle } from "@/lib/city-seo";
 import { pageHead } from "@/lib/seo";
 import { eur } from "@/lib/utils";
 import { ServicePriceNote } from "@/components/service-price-note";
-import { localSeoEvidence, serviceCitySeo } from "@/lib/seo-policy";
+import { isConsolidatedService, localSeoEvidence, serviceCitySeo } from "@/lib/seo-policy";
 
 export const Route = createFileRoute("/leistungen/$slug/$city")({
   loader: ({ params }) => {
@@ -38,7 +38,7 @@ export const Route = createFileRoute("/leistungen/$slug/$city")({
 function ServiceCityPage() {
   const { service, city } = Route.useLoaderData();
   const request = serviceBookingSelection(service.slug, city.slug);
-  const otherServices = services.filter((s) => s.slug !== service.slug && !s.pendingApproval);
+  const otherServices = services.filter((s) => s.slug !== service.slug && !s.pendingApproval && !isConsolidatedService(s.slug));
   const evidence = localSeoEvidence[`${service.slug}/${city.slug}`];
   const pickup = cityPickupPriceText(city);
   const jsonLd = {

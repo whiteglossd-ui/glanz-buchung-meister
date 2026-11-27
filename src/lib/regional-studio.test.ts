@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { cities, cityPickupPriceText, packages, quoteTotal, services, site } from "../data/site.ts";
 import { cityJourneyText, citySeoCopy } from "./city-copy.ts";
 import { cityPlanningText, cityLogisticsFaq } from "./city-logistics.ts";
-import { publicSeo, serviceCitySeo } from "./seo-policy.ts";
+import { isConsolidatedService, publicSeo, serviceCitySeo } from "./seo-policy.ts";
 import { studioMetadata } from "./studio-public.ts";
 
 const confirmed: Record<string, [number | null, number | null, string]> = {
@@ -51,7 +51,7 @@ test("all pickup hubs retain distinct metadata, index policy and their confirmed
     for (const service of services) {
       assert.equal(
         serviceCitySeo(service.slug, city.slug).status,
-        service.pendingApproval ? "redirect" : "noindex",
+        service.pendingApproval || isConsolidatedService(service.slug) ? "redirect" : "noindex",
         `${service.slug}/${city.slug}`,
       );
     }
