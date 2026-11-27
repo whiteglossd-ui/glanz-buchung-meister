@@ -82,6 +82,8 @@ async function geometry(page) {
       header: rect(header),
       banner: bannerVisible ? rect(banner) : null,
       headingText: document.querySelector(".reel h1")?.textContent?.replace(/\s+/g, " ").trim() ?? "",
+      headingRect: rect(document.querySelector(".reel h1")),
+      locationRects: [...document.querySelectorAll(".reel .hero__loc a")].map(rect),
       headingCount: document.querySelectorAll("h1").length,
       actionCount: actions.length,
       actionTargets: actions.map((link) => new URL(link.href).pathname + new URL(link.href).hash).sort(),
@@ -168,6 +170,14 @@ try {
         [...result.layoutShifts].sort((a, b) => b.value - a.value).slice(0, 3))}`);
       assert.equal(result.initial.headingCount, 1, "The homepage has exactly one H1.");
       assert.ok(result.initial.headingText.length > 10, "The hero H1 carries the homepage title.");
+      if (viewport.width <= 767 && viewport.height > 560) {
+        const { headingRect, header, banner } = result.initial;
+        assert.ok(headingRect.top >= header.bottom - 1 && headingRect.bottom <= banner.top,
+          `${viewport.name}: first-visit heading must fit between the header and consent notice`);
+        assert.equal(result.initial.locationRects.length, 2);
+        assert.ok(result.initial.locationRects.every((link) => link.top >= header.bottom - 1 && link.bottom <= banner.top),
+          `${viewport.name}: both service areas must remain visible above the consent notice`);
+      }
       assert.equal(result.initial.actionCount, 2, "The hero has exactly two primary actions.");
       assert.deepEqual(result.initial.actionTargets, ["/#ablauf", "/#buchung"], "Hero actions lead to pickup process and request.");
       assert.ok(result.initial.poster?.complete && result.initial.poster.width > 0, "The first hero frame is decoded.");
@@ -216,20 +226,32 @@ try {
           "Short screens keep the introduction active while scrolling.");
       }
 
-      // Reduced motion: static introduction, no later chapters, actions reachable.
-      await page.emulateMedia({ reducedMotion: "reduce" });
-      await page.reload({ waitUntil: "networkidle" });
-      await page.waitForTimeout(600);
-      result.reduced = await geometry(page);
-      actionsReachable(result.reduced, `${viewport.name} reduced motion`);
-      assert.equal(await page.locator(".reel__ch--1").isVisible(), false, "Reduced motion hides the later chapters.");
-      await page.screenshot({ path: `${output}/${viewport.name}-reduced.png` });
+      await phase.run("reduced-motion", async () => {
+        // A live preference change must disable the later chapters even
+        // halfway down a short screen. Do not force real visitors to the top.
+        await page.emulateMedia({ reducedMotion: "reduce" });
+        await page.locator(".reel__ch--1").waitFor({ state: "hidden" });
+        // Separately verify a reduced-motion landing in the same consent state.
+        // A reload is not a landing: Chromium can restore the preceding scroll.
+        const landing = await context.newPage();
+        browserDiagnostics.attach(landing);
+        landing.on("pageerror", (error) => result.pageErrors.push(redactHeroEvidence(error.message)));
+        await landing.emulateMedia({ reducedMotion: "reduce" });
+        await landing.goto(`${qaBase}/`, { waitUntil: "networkidle" });
+        await landing.evaluate(() => document.fonts.ready.then(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)))));
+        result.reduced = await geometry(landing);
+        assert.equal(result.reduced.scrollY, 0, "A fresh reduced-motion landing starts at the top.");
+        assert.equal(result.reduced.storedConsent, "rejected");
+        actionsReachable(result.reduced, `${viewport.name} reduced motion`);
+        assert.equal(await landing.locator(".reel__ch--1").isVisible(), false, "Reduced motion hides the later chapters.");
+        await landing.screenshot({ path: `${output}/${viewport.name}-reduced.png` });
+      });
       if (result.pageErrors.length) report.failures.push(`${viewport.name}: ${result.pageErrors.join("; ")}`);
     } catch (error) {
       result.error = redactHeroEvidence(error.message);
       result.errorDetails = redactHeroEvidence({ name: error.name, message: error.message, stack: error.stack });
       report.failures.push(`${viewport.name} [${result.phase ?? "setup"}]: ${result.error}`);
-      const page = context.pages()[0];
+      const page = context.pages().at(-1);
       if (page) {
         result.failureGeometry = await geometry(page).catch((snapshotError) => ({ error: redactHeroEvidence(snapshotError.message) }));
         await page.screenshot({ path: `${output}/${viewport.name}-failure.png` }).catch(() => {});
