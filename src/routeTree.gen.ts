@@ -22,6 +22,7 @@ import { Route as DatenschutzRouteImport } from './routes/datenschutz'
 import { Route as DellenHagelschadenRouteImport } from './routes/dellen-hagelschaden'
 import { Route as FahrzeugZustandRouteImport } from './routes/fahrzeug-zustand'
 import { Route as FaqRouteImport } from './routes/faq'
+import { Route as FolierungRouteImport } from './routes/folierung'
 import { Route as FolierungSmartRepairRouteImport } from './routes/folierung-smart-repair'
 import { Route as FreudenstadtLossburgRouteImport } from './routes/freudenstadt-lossburg'
 import { Route as GalerieRouteImport } from './routes/galerie'
@@ -142,6 +143,11 @@ const FahrzeugZustandRoute = FahrzeugZustandRouteImport.update({
 const FaqRoute = FaqRouteImport.update({
   id: '/faq',
   path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FolierungRoute = FolierungRouteImport.update({
+  id: '/folierung',
+  path: '/folierung',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FolierungSmartRepairRoute = FolierungSmartRepairRouteImport.update({
@@ -439,6 +445,7 @@ export interface FileRoutesByFullPath {
   '/dellen-hagelschaden': typeof DellenHagelschadenRoute
   '/fahrzeug-zustand': typeof FahrzeugZustandRoute
   '/faq': typeof FaqRoute
+  '/folierung': typeof FolierungRoute
   '/folierung-smart-repair': typeof FolierungSmartRepairRoute
   '/freudenstadt-lossburg': typeof FreudenstadtLossburgRoute
   '/galerie': typeof GalerieRoute
@@ -508,6 +515,7 @@ export interface FileRoutesByTo {
   '/dellen-hagelschaden': typeof DellenHagelschadenRoute
   '/fahrzeug-zustand': typeof FahrzeugZustandRoute
   '/faq': typeof FaqRoute
+  '/folierung': typeof FolierungRoute
   '/folierung-smart-repair': typeof FolierungSmartRepairRoute
   '/freudenstadt-lossburg': typeof FreudenstadtLossburgRoute
   '/galerie': typeof GalerieRoute
@@ -577,6 +585,7 @@ export interface FileRoutesById {
   '/dellen-hagelschaden': typeof DellenHagelschadenRoute
   '/fahrzeug-zustand': typeof FahrzeugZustandRoute
   '/faq': typeof FaqRoute
+  '/folierung': typeof FolierungRoute
   '/folierung-smart-repair': typeof FolierungSmartRepairRoute
   '/freudenstadt-lossburg': typeof FreudenstadtLossburgRoute
   '/galerie': typeof GalerieRoute
@@ -650,6 +659,7 @@ export interface FileRouteTypes {
     | '/dellen-hagelschaden'
     | '/fahrzeug-zustand'
     | '/faq'
+    | '/folierung'
     | '/folierung-smart-repair'
     | '/freudenstadt-lossburg'
     | '/galerie'
@@ -719,6 +729,7 @@ export interface FileRouteTypes {
     | '/dellen-hagelschaden'
     | '/fahrzeug-zustand'
     | '/faq'
+    | '/folierung'
     | '/folierung-smart-repair'
     | '/freudenstadt-lossburg'
     | '/galerie'
@@ -787,6 +798,7 @@ export interface FileRouteTypes {
     | '/dellen-hagelschaden'
     | '/fahrzeug-zustand'
     | '/faq'
+    | '/folierung'
     | '/folierung-smart-repair'
     | '/freudenstadt-lossburg'
     | '/galerie'
@@ -859,6 +871,7 @@ export interface RootRouteChildren {
   DellenHagelschadenRoute: typeof DellenHagelschadenRoute
   FahrzeugZustandRoute: typeof FahrzeugZustandRoute
   FaqRoute: typeof FaqRoute
+  FolierungRoute: typeof FolierungRoute
   FolierungSmartRepairRoute: typeof FolierungSmartRepairRoute
   FreudenstadtLossburgRoute: typeof FreudenstadtLossburgRoute
   GalerieRoute: typeof GalerieRoute
@@ -982,6 +995,13 @@ declare module '@tanstack/react-router' {
       path: '/faq'
       fullPath: '/faq'
       preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/folierung': {
+      id: '/folierung'
+      path: '/folierung'
+      fullPath: '/folierung'
+      preLoaderRoute: typeof FolierungRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/folierung-smart-repair': {
@@ -1493,6 +1513,7 @@ const rootRouteChildren: RootRouteChildren = {
   DellenHagelschadenRoute: DellenHagelschadenRoute,
   FahrzeugZustandRoute: FahrzeugZustandRoute,
   FaqRoute: FaqRoute,
+  FolierungRoute: FolierungRoute,
   FolierungSmartRepairRoute: FolierungSmartRepairRoute,
   FreudenstadtLossburgRoute: FreudenstadtLossburgRoute,
   GalerieRoute: GalerieRoute,

@@ -86,8 +86,13 @@ export const seoIntents: Record<string, SearchIntent> = {
     intent: "commercial",
     purpose: "Konkreten Schaden zur Prüfung einreichen",
   },
+  "/folierung": {
+    cluster: "autofolierung farbwechsel horb",
+    intent: "commercial",
+    purpose: "Autofolierung, Farbwechsel oder Teilfolierung anfragen",
+  },
   "/folierung-smart-repair": {
-    cluster: "auto folierung smart repair horb",
+    cluster: "dellen lackierarbeiten smart repair partner horb",
     intent: "commercial",
     purpose: "Folierung, Dellen drücken, Lackierarbeiten oder Smart Repair anfragen",
   },

@@ -231,6 +231,11 @@ function PartnerServicesPage() {
                       <li key={point}>{point}</li>
                     ))}
                   </ul>
+                  {service.id === "folierung" ? (
+                    <Link to="/folierung" className="golink">
+                      Mehr zur Autofolierung <span aria-hidden="true">→</span>
+                    </Link>
+                  ) : null}
                   {service.id === "dellen" ? (
                     <Link to="/dellen-hagelschaden" className="golink">
                       Mehr zu Dellen und Hagelschäden <span aria-hidden="true">→</span>

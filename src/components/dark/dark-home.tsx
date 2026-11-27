@@ -21,6 +21,7 @@ import { BOOKING_JUMP, focusBookingHeading } from "@/lib/booking-anchor-focus";
 import { pickupDistanceLabel } from "@/lib/city-copy";
 import { LazyGoogleReviews } from "@/components/lazy-google-reviews";
 import "./dark-hero.css";
+import "./home-partner.css";
 import { darkFrameSrc, initDarkHome, tweenNumber } from "@/lib/dark-motion";
 
 const IMG = "/media/dark/gen";
@@ -581,11 +582,39 @@ export function DarkHome({
                 <li key={s.slug}><Link to="/leistungen/$slug" params={{ slug: s.slug }}>{s.nav}</Link></li>
               ))}
               <li><Link to="/dellen-hagelschaden">Dellen- und Hagelschäden</Link></li>
+              <li><Link to="/folierung">Autofolierung und Farbwechsel</Link></li>
               <li><Link to="/folierung-smart-repair">Folierung, Lack und Smart Repair</Link></li>
               <li><Link to="/luxusfahrzeuge">Luxusfahrzeuge</Link></li>
               <li><Link to="/b2b">Firmen, Flotten und Autohäuser</Link></li>
               <li><Link to="/ratgeber">Ratgeber</Link></li>
             </ul>
+            <div className="hpart" data-reveal>
+              <p className="label label--rule">Mit Partnerbetrieben</p>
+              <h3 className="h3 hpart__title">Folieren, Dellen drücken, Lackieren.</h3>
+              <ul className="hpart__grid">
+                <li>
+                  <Link to="/folierung" className="hpart__card">
+                    <span className="hpart__num" aria-hidden="true">01</span>
+                    <span className="hpart__name">Autofolierung</span>
+                    <span className="muted">Farbwechsel und Teilfolierung, vom Alltagsauto bis zur Luxuskarosserie.</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/dellen-hagelschaden" className="hpart__card">
+                    <span className="hpart__num" aria-hidden="true">02</span>
+                    <span className="hpart__name">Dellen drücken</span>
+                    <span className="muted">Parkdellen und Hagelschäden ohne Lackieren, wenn Lack und Blech es zulassen.</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/folierung-smart-repair" hash="lackierarbeiten" className="hpart__card">
+                    <span className="hpart__num" aria-hidden="true">03</span>
+                    <span className="hpart__name">Lackierarbeiten</span>
+                    <span className="muted">Kratzer, Steinschläge und Bauteile, ausgeführt vom Lackierbetrieb.</span>
+                  </Link>
+                </li>
+              </ul>
+            </div>
           </div>
         </section>
 

@@ -40,6 +40,7 @@ const pageChecks = [
   { path: "/qualitaet", markers: ["Wie wir arbeiten"] },
   { path: "/fahrzeug-zustand", markers: ["Zustand prüfen"] },
   { path: "/dellen-hagelschaden", markers: ["Dellen und Hagelschäden prüfen lassen", "Foto-Begutachtung"] },
+  { path: "/folierung", markers: ["Autofolierung und Farbwechsel in Horb.", "Häufige Fragen zur Autofolierung"] },
   { path: "/folierung-smart-repair", markers: ["Folierung, Lack und Smart Repair.", "Dellen drücken ohne Lackieren"] },
 ];
 
