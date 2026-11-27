@@ -1,3 +1,5 @@
+import { EditorialLayout } from "@/components/editorial-layout";
+import { ServiceQuestions, ServiceSteps } from "@/components/service-sections";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { PageHero } from "@/components/page-hero";
 import { WhatsAppPhotoCta } from "@/components/whatsapp-photo-cta";
@@ -156,7 +158,16 @@ function ServicePage() {
           )
         }
       />
-      <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+      <EditorialLayout links={[
+        { id: "umfang", label: "Leistungsumfang" },
+        ...(!s.pendingApproval ? [
+          { id: "ablauf", label: "Ablauf" },
+          { id: "fragen", label: "Häufige Fragen" },
+          { id: "service-request-heading", label: "Termin anfragen" },
+        ] : []),
+        { id: "abholorte", label: "Abholorte" },
+      ]}>
+        <h2 id="umfang" className="mb-5 font-display text-2xl">Leistungsumfang</h2>
         {s.fromPrice ? (
           <p className="font-display text-4xl tracking-tight tabular-nums">
             ab {money(s.fromPrice)}&nbsp;€
@@ -237,17 +248,7 @@ function ServicePage() {
             ))}
           </ul>
         ) : null}
-        {s.steps ? (
-          <ol className="mt-12 space-y-8">
-            {s.steps.map((st, i) => (
-              <li key={st.title} className="border-t border-line pt-6">
-                <p className="font-display text-3xl tracking-tight text-subtle/80">0{i + 1}</p>
-                <h2 className="mt-2 font-display text-2xl tracking-tight">{st.title}</h2>
-                <p className="mt-2 text-sm leading-relaxed text-muted">{st.text}</p>
-              </li>
-            ))}
-          </ol>
-        ) : null}
+        <ServiceSteps service={s} />
         {s.beforeBooking ? (
           <section className="mt-12" aria-labelledby="service-before-heading">
             <h2 id="service-before-heading" className="font-display text-2xl tracking-tight">
@@ -262,6 +263,7 @@ function ServicePage() {
             </ul>
           </section>
         ) : null}
+        <ServiceQuestions service={s} />
         {pack ? (
           <p className="mt-10 border border-line bg-surface p-5 text-sm leading-relaxed">
             Paket {pack.name} ab {eur(pack.price)} {site.vatNote} ·{" "}
@@ -327,7 +329,7 @@ function ServicePage() {
             </ul>
           </section>
         ) : null}
-        <h2 className="mt-16 font-display text-3xl tracking-tight">
+        <h2 id="abholorte" className="mt-16 font-display text-3xl tracking-tight">
           Hol- und Bringservice nach Stadt
         </h2>
         <ul className="mt-6 grid grid-cols-1 gap-x-8 text-sm text-muted sm:grid-cols-2">
@@ -342,7 +344,7 @@ function ServicePage() {
             </li>
           ))}
         </ul>
-      </div>
+      </EditorialLayout>
     </main>
   );
 }

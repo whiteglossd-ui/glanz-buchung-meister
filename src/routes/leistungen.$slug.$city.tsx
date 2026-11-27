@@ -1,3 +1,5 @@
+import { EditorialLayout } from "@/components/editorial-layout";
+import { ServiceQuestions, ServiceSteps } from "@/components/service-sections";
 import { serializeJsonLd } from "@/lib/json-ld";
 import { createFileRoute, Link, notFound, redirect } from "@tanstack/react-router";
 import { PageHero } from "@/components/page-hero";
@@ -117,14 +119,19 @@ function ServiceCityPage() {
           </Link>
         }
       />
-      <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+      <EditorialLayout links={[
+        ...(!service.pendingApproval ? [{ id: "abholung", label: "Anfahrt und Abholung" }] : []),
+        { id: "umfang", label: "Leistungsumfang" },
+        ...(!service.pendingApproval ? [{ id: "ablauf", label: "Ablauf" }, { id: "fragen", label: "Häufige Fragen" }] : []),
+        { id: "leistungen", label: "Weitere Leistungen" },
+      ]}>
         {service.pendingApproval ? (
           <p className="mb-8 rounded-card border border-line bg-surface p-4 text-sm">
             Diese Leistung bieten wir derzeit nicht an, auch nicht mit Hol- und Bringservice aus {city.name}. Für Fragen nutze bitte das Kontaktformular.
           </p>
         ) : (
           <>
-        <section aria-label={`Anfahrt und Abholung aus ${city.name}`} className="mb-8 space-y-4">
+        <section id="abholung" aria-label={`Anfahrt und Abholung aus ${city.name}`} className="mb-8 space-y-4">
           <h2 className="font-display text-2xl">{city.slug === "horb-am-neckar" ? "Direkt zur Werkstatt in Horb" : `Abholung aus ${city.name} planen`}</h2>
           <p className="text-muted">{city.pickupNote ?? `${city.blurb} Entfernungen und Fahrzeiten sind Richtwerte; die genaue Übergabeadresse stimmen wir vorab ab.`}</p>
           <p className="text-sm text-muted">{city.slug === "horb-am-neckar"
@@ -145,7 +152,8 @@ function ServiceCityPage() {
         </p>
           </>
         )}
-        <ul className="mt-8 space-y-3">
+        <h2 id="umfang" className="mt-10 font-display text-2xl">Leistungsumfang</h2>
+        <ul className="mt-5 space-y-3">
           {service.bullets.map((b) => (
             <li key={b} className="border-l border-line pl-4 text-sm text-fg">
               {b}
@@ -166,19 +174,8 @@ function ServiceCityPage() {
         </div>
         {service.honestNote ? <p className="mt-6 border border-line p-4 text-sm">{service.honestNote}</p> : null}
         <ServicePriceNote service={service} />
-        {service.steps?.length ? (
-          <section className="mt-10" aria-label={`Ablauf: ${service.seoNav}`}>
-            <h2 className="font-display text-2xl">So läuft die {service.seoNav} ab</h2>
-            <ol className="mt-6 space-y-5">
-              {service.steps.map((step) => (
-                <li key={step.title} className="border-l border-line pl-4">
-                  <h3 className="font-display text-lg">{step.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted">{step.text}</p>
-                </li>
-              ))}
-            </ol>
-          </section>
-        ) : null}
+        <ServiceSteps service={service} />
+        <ServiceQuestions service={service} />
         {service.slug === "keramikversiegelung" ? (
           <p className="mt-8 text-sm">
             Paket White-Gloss Ceramic ab {eur(packages[2].price)} {site.vatNote} {pickupKeramikNote()}.
@@ -188,11 +185,11 @@ function ServiceCityPage() {
           to={request.leistung ? "/fahrzeug-zustand" : "/"}
           search={request}
           hash="buchung"
-          className="mt-10 inline-flex min-h-11 items-center rounded-sm bg-accent px-5 text-sm font-medium text-accent-fg"
+          className={`${ctaPrimary} mt-10`}
         >
           Abholung aus {city.name} anfragen
         </Link>}
-        <h2 className="mt-16 font-display text-2xl">Weitere Leistungen für {city.name}</h2>
+        <h2 id="leistungen" className="mt-16 font-display text-2xl">Weitere Leistungen für {city.name}</h2>
         <ul className="mt-4 grid grid-cols-2 gap-2 text-sm text-muted">
           {otherServices.map((s) => (
             <li key={s.slug}>
@@ -200,7 +197,7 @@ function ServiceCityPage() {
                 to="/leistungen/$slug"
                 params={{ slug: s.slug }}
                 search={{ ort: city.slug }}
-                className="hover:text-fg"
+                className="inline-flex min-h-11 items-center hover:text-fg"
               >
                 {s.nav}
               </Link>
@@ -208,7 +205,7 @@ function ServiceCityPage() {
           ))}
         </ul>
         <p className="mt-12 text-sm text-muted"><Link to="/abholservice" className="underline">Abholgebiete und Entfernungsstaffeln</Link> · <Link to="/preise" className="underline">Pakete und Preise</Link></p>
-      </div>
+      </EditorialLayout>
     </main>
   );
 }

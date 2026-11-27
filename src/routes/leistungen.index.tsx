@@ -72,7 +72,7 @@ function LeistungenIndex() {
       />
 
       <section className="border-t border-line">
-        <div className="section mx-auto max-w-7xl px-4 sm:px-6 pt-16 pb-4">
+        <div className="wrap section pt-16 pb-4">
           <p className="kicker">Fahrzeugpflege</p>
           <h2 className="heading-2 mt-4 max-w-xl">Reinigung, Politur und Schutz</h2>
           <p className="mt-4 max-w-2xl text-muted leading-relaxed">
@@ -86,11 +86,11 @@ function LeistungenIndex() {
             .
           </p>
         </div>
-        <div className="gd-split gd-split--duo">
+        <div className="wrap mt-8 mb-14 grid gap-x-10 gap-y-12 md:grid-cols-2">
           {atelier.map((s) => (
             <article
               key={s.slug}
-              className="group relative block border-b border-line lg:odd:border-r"
+              className="group relative min-w-0 border-b border-line pb-4"
             >
               <MediaTile src={s.image} alt={s.imageAlt}>
                 <h3 className="heading-2 max-w-md">
@@ -120,25 +120,25 @@ function LeistungenIndex() {
           {extra.map((row) => (
             <article
               key={row.id}
-              className="border-b border-line p-8 lg:odd:border-r"
+              className="min-w-0 border-b border-line px-1 py-8"
             >
-              <h2 className="heading-2">{row.title}</h2>
+              <h3 className="heading-2">{row.title}</h3>
               <p className="mt-3 max-w-md whitespace-pre-wrap text-sm leading-relaxed text-muted">
                 {row.body}
               </p>
             </article>
           ))}
-          <article className="group relative block border-b border-line lg:odd:border-r">
+          <article className="group relative min-w-0 border-b border-line pb-4">
             <MediaTile shot="private" alt="Freigegebenes Kundenfahrzeug nach der Aufbereitung bei White-Gloss Detailing">
               <p className="kicker">Luxusfahrzeuge</p>
-              <h2 className="heading-2 mt-3 max-w-md">
+              <h3 className="heading-2 mt-3 max-w-md">
                 <Link
                   to="/luxusfahrzeuge"
                   className="after:absolute after:inset-0 hover:underline"
                 >
                   Luxusfahrzeuge ab ca. 80.000&nbsp;€
                 </Link>
-              </h2>
+              </h3>
               <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted">
                 Telefonische Beratung und anschließende Begutachtung vor Ort.
               </p>
@@ -147,7 +147,7 @@ function LeistungenIndex() {
         </div>
       </section>
 
-      <section className="section mx-auto max-w-7xl px-4 sm:px-6">
+      <section className="wrap section">
         <p className="kicker">Nacharbeit</p>
         <h2 className="heading-2 mt-4 max-w-xl">Reparaturen und weitere Pflegeleistungen</h2>
         <ol className="mt-12 divide-y divide-line border-y border-line">
@@ -195,11 +195,11 @@ function LeistungenIndex() {
         <WhatsAppPhotoCta />
       </section>
 
-      <section className="section mx-auto max-w-7xl px-4 sm:px-6">
+      <section className="wrap section">
         <p className="kicker">{cities.length} Abholorte</p>
         <h2 className="heading-2 mt-4">Leistungen nach Stadt</h2>
         <p className="mt-4 max-w-2xl text-muted">
-          Wähle deinen Ort und informiere sich über unsere Leistungen
+          Wähle deinen Ort und informiere dich über unsere Leistungen
           und die Abholung. Die Aufbereitung erfolgt in Horb am Neckar.{" "}
           <Link to="/abholservice" className="underline underline-offset-4 hover:text-fg">
             Alle Abholorte und Preise
