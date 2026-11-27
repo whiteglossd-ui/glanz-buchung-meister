@@ -1,6 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { site, services } from "@/data/site";
+import { logoAvifSrcSet } from "@/data/media-src";
 import { CookieSettingsButton } from "@/components/consent-banner";
 import { BOOKING_JUMP, focusBookingHeading } from "@/lib/booking-anchor-focus";
 
@@ -129,7 +130,14 @@ export function DarkHeader() {
   // Tastaturfokus, sonst startet jeder Menü-Öffner eine Startseiten-Abfrage.
   const logo = (onClick?: () => void) => (
     <Link to={homePath} className="hdr__logo" data-site-logo onClick={onClick} preload={onClick ? false : undefined} aria-label={`${site.name} – zur Startseite`}>
-      <img src="/media/logo-280.avif" alt={site.name} width={280} height={161} />
+      <img
+        src="/media/logo-280.avif"
+        srcSet={logoAvifSrcSet}
+        sizes="(max-width: 820px) 84px, 104px"
+        alt={site.name}
+        width={280}
+        height={161}
+      />
     </Link>
   );
 
@@ -269,7 +277,15 @@ export function DarkFooter() {
         </div>
         <div className="wrap foot__top">
           <div className="foot__brand">
-            <img src="/media/logo-280.avif" alt={site.name} width={280} height={161} loading="lazy" />
+            <img
+              src="/media/logo-280.avif"
+              srcSet={logoAvifSrcSet}
+              sizes="132px"
+              alt={site.name}
+              width={280}
+              height={161}
+              loading="lazy"
+            />
             <p className="muted small">
               Innenraumreinigung, Lackkorrektur und Keramikversiegelung in {site.city}. Auf Wunsch hole
               ich dein Auto ab und bringe es dir frisch aufbereitet zurück.
