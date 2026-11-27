@@ -1,4 +1,4 @@
-import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { Link, useMatch, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect, useId, useMemo, useRef, useState, type FormEvent } from "react";
 import { bookingMeasurement } from "@/lib/openai-measurement";
 import {
@@ -40,8 +40,10 @@ export function Configurator({
   initialCity?: string;
 }) {
   const navigate = useNavigate();
+  const formPath = useMatch({ strict: false, shouldThrow: false, select: (match) => match.pathname });
   const entryKey = useRouterState({
-    select: (state) => state.location.state.__TSR_key ?? state.location.href,
+    select: ({ location }) =>
+      location.pathname === formPath ? (location.state.__TSR_key ?? location.href) : null,
   });
   const [packageId, setPackageId] = useBookingDraft<PackageId>(
     "packageId",
@@ -91,8 +93,12 @@ export function Configurator({
   const { fieldProps, fieldError, showErrors } = usePublicFormErrors();
 
   useEffect(() => {
-    if (appliedBookingEntries.has(entryKey) || pending || savedReference) return;
-    appliedBookingEntries.add(entryKey);
+    // The departing price calculator can still be mounted when the URL changes.
+    // Only a matching form with an explicit selection may consume the new entry.
+    if (!entryKey || (!initialPackage && !initialCity) || pending || savedReference) return;
+    const selectionKey = JSON.stringify([entryKey, initialPackage, initialCity]);
+    if (appliedBookingEntries.has(selectionKey)) return;
+    appliedBookingEntries.add(selectionKey);
     const selection = applyBookingSelection(
       { packageId, citySlug },
       { paket: initialPackage, ort: initialCity },
