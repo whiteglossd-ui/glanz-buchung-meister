@@ -11,13 +11,34 @@ import { OpenInquiriesPanel } from "@/components/open-inquiries-panel";
 import { RoappInvoicesPanel } from "@/components/roapp-invoices-panel";
 import { RoappTransferPanel } from "@/components/roapp-transfer-panel";
 
+import "../styles/operations.css";
+
+const sectionTitles: Record<string, string> = {
+  "/admin/bitrix": "Aufträge",
+  "/admin/blog": "Ratgeber",
+  "/admin/einstellungen": "Einstellungen",
+  "/admin/faqs": "Häufige Fragen",
+  "/admin/galerie": "Fahrzeuggalerie",
+  "/admin/leistungen": "Dienstleistungen",
+  "/admin/studio": "Website Studio",
+};
+
 const icons: Record<string, typeof Settings> = { Bitrix24: Share2, Website: Settings };
 
 export const Route = createFileRoute("/admin")({
   component: AdminShell,
-  head: () => ({
-    meta: [{ title: `Betrieb | ${site.name}` }, { name: "robots", content: "noindex,nofollow" }],
-  }),
+  head: ({ matches }) => {
+    const path = matches.at(-1)?.pathname.replace(/\/$/, "") || "/admin";
+    const section = sectionTitles[path] || "Betrieb";
+    return {
+      meta: [
+        { title: `${section} | ${site.name}` },
+        { name: "description", content: `${section} im geschützten Betriebsbereich von ${site.name}.` },
+        { name: "robots", content: "noindex,nofollow" },
+      ],
+      links: [{ rel: "canonical", href: `${site.origin}${path}` }],
+    };
+  },
 });
 
 function AdminShell() {
@@ -49,7 +70,7 @@ function AdminShell() {
 
   if (isPending || (user && access === "pending")) {
     return (
-      <div className="grid min-h-dvh place-items-center">
+      <div className="wg-operations grid min-h-dvh place-items-center" role="status">
         <p className="text-sm text-muted">Sitzung wird geprüft …</p>
       </div>
     );
@@ -57,7 +78,7 @@ function AdminShell() {
   if (!user) return <RedirectToSignIn />;
   if (access === "denied") {
     return (
-      <main id="main-content" className="grid min-h-dvh place-items-center px-4" tabIndex={-1}>
+      <main id="main-content" className="wg-operations grid min-h-dvh place-items-center px-4" tabIndex={-1}>
         <div className="max-w-md space-y-4 text-center">
           <h1 className="font-display text-3xl">Kein Betriebszugang</h1>
           <p className="text-sm text-muted">
@@ -73,7 +94,7 @@ function AdminShell() {
   }
 
   return (
-    <div id="main-content" className="min-h-dvh bg-bg" tabIndex={-1}>
+    <div id="main-content" className="wg-operations min-h-dvh bg-bg" tabIndex={-1}>
       <header className="border-b border-line">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-3 sm:px-6">
           <div className="flex min-h-11 items-center gap-3">

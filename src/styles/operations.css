@@ -1,0 +1,28 @@
+.wg-operations {
+  --color-bg: #090a0d;
+  --color-surface: #101114;
+  --color-fg: #f3f0e8;
+  --color-line: rgb(243 240 232 / 18%);
+  --color-muted: #bdc0c6;
+  background: var(--color-bg);
+  color: var(--color-fg);
+}
+.wg-operations :is(h1, h2, h3) {
+  font-family: "WG Public Display", Barlow, sans-serif;
+  font-weight: 400;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+.wg-operations :focus-visible {
+  outline: 2px solid var(--color-fg);
+  outline-offset: 3px;
+}
+.wg-signin {
+  max-width: 28rem;
+  border-block: 1px solid var(--color-line);
+  padding-block: clamp(1.5rem, 5vw, 3rem);
+}
+.wg-signin :is(input, button) {
+  border-radius: 4px;
+  min-height: 44px;
+}
