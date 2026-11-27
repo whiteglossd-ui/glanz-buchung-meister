@@ -233,3 +233,19 @@
   text-underline-offset: .25em;
   text-decoration-thickness: 1px;
 }
+
+/* Keep an observable, readable area while subpage content enters the viewport. */
+@media (prefers-reduced-motion: no-preference) {
+  .wgt.wgt-page :is([data-wg-rise], [data-wg-curtain]) {
+    clip-path: none;
+  }
+  .wgt.wgt-page :is([data-wg-rise="wait"], [data-wg-curtain="wait"], [data-wg-fade="wait"]) {
+    opacity: .92;
+    translate: 0 .3rem;
+  }
+  .wgt.wgt-page :is([data-wg-rise="in"], [data-wg-curtain="in"], [data-wg-fade="in"]) {
+    opacity: 1;
+    translate: none;
+    transition: opacity .35s ease-out, translate .35s ease-out;
+  }
+}

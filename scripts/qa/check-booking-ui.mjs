@@ -509,6 +509,19 @@ try {
       (await page.locator("#kundenbeispiele video, #kundenbeispiele .wg-video-card").count()) > 0,
       true,
     );
+    // A heading can occupy layout space while a reveal clips away every pixel.
+    await page.goto(`${qaBase}/preise`, { waitUntil: "networkidle" });
+    for (const title of await page.locator("#paketkatalog h2").all()) {
+      await title.scrollIntoViewIfNeeded();
+      await page.waitForFunction((heading) =>
+        heading.getAttribute("data-wg-rise") !== "wait" &&
+        getComputedStyle(heading).clipPath === "none" &&
+        Number(getComputedStyle(heading).opacity) > 0,
+        await title.elementHandle(),
+        { timeout: 5000 },
+      );
+    }
+    results.push("All package titles are readable when scrolled into view with motion enabled");
     await context.close();
   }
 
