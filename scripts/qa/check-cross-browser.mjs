@@ -23,7 +23,7 @@ const report = {
 };
 const diagnostics = [];
 const engineNames = ["firefox", "webkit"], viewportWidths = [390, 1440];
-const expectedChecksPerScenario = 9; // four pages, initial Rundum CTA, Rundum form, navigation, business links, booking
+const expectedChecksPerScenario = 10; // four pages, initial Rundum CTA, Rundum form, navigation, business links, booking, contact card
 
 async function rejectConsent(page) {
   const reject = page.getByRole("button", { name: "Ablehnen", exact: true });
@@ -116,6 +116,25 @@ async function verifyLayout(page, label) {
     return box.width > 0 && box.height > 0 && box.bottom > 0 && box.top < innerHeight && getComputedStyle(image).visibility !== "hidden";
   }).every((image) => image.complete && image.naturalWidth > 0));
   report.lastLayout.stage = "finished";
+}
+
+async function verifyContactCard(page, label) {
+  await page.emulateMedia({ colorScheme: "light" });
+  const response = await page.goto(`${qaBase}/visitenkarte.html`, { waitUntil: "load" });
+  assert.equal(response.status(), 200, `${label}: the printed QR destination loads`);
+  const background = () => page.evaluate(() => getComputedStyle(document.documentElement).backgroundColor);
+  assert.equal(await background(), "rgb(242, 243, 245)", `${label}: follows the device in System mode`);
+  const theme = page.getByRole("group", { name: "Darstellung" });
+  await page.evaluate(() => document.fonts.ready);
+  for (const [name, color] of [["Dunkel", "rgb(5, 6, 10)"], ["Hell", "rgb(242, 243, 245)"]]) {
+    await theme.getByText(name, { exact: true }).click();
+    assert.ok(await theme.getByRole("radio", { name, exact: true }).isChecked());
+    assert.equal(await background(), color, `${label}: ${name} switches the palette`);
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${label}: ${name} fits the viewport`);
+    await screenshot(page, `${label}-visitenkarte-${name.toLowerCase()}.png`);
+  }
+  assert.equal(await page.getByRole("link", { name: /Kontakt speichern/ }).getAttribute("href"), "/visitenkarte.vcf");
+  report.checks.push(`${label}: contact card follows the device, switches themes and keeps its vCard link`);
 }
 
 try {
@@ -277,8 +296,11 @@ try {
           await screenshot(page, `${name}-${width}-booking.png`);
           report.checks.push(`${name} ${width}px: real booking selection totals 468 EUR without submission`);
           });
+          phase = "contact-card";
+          await pageReads.complete(`${name}-${width}: booking`);
+          await verifyContactCard(page, `${name}-${width}`);
           assert.equal(report.checks.length - checksBeforeScenario, expectedChecksPerScenario,
-            `${name} ${width}px must complete every page, Rundum, gallery/navigation and booking check`);
+            `${name} ${width}px must complete every page, Rundum, gallery/navigation, booking and contact card check`);
         } finally {
           phase = "context-close";
           await context.close();
