@@ -1,3 +1,4 @@
+import { EditorialLayout } from "@/components/editorial-layout";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PhotoInquiry } from "@/components/photo-inquiry";
 import { PageHero } from "@/components/page-hero";
@@ -43,7 +44,12 @@ function DellenPage() {
           </div>
         }
       />
-      <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+      <EditorialLayout links={[
+        { id: "schaden", label: "Schäden und Verfahren" },
+        { id: "fotos", label: "Fotos zur Einschätzung" },
+        { id: "buchung", label: "Begutachtung anfragen" },
+      ]}>
+        <h2 id="schaden" className="mb-5 font-display text-2xl">Schäden und Verfahren</h2>
         <p className="text-sm text-muted leading-relaxed">
           Bei kleinen Stellen reicht oft ein Foto für eine erste Einschätzung. Wir besprechen mit
           dir, welcher Meisterbetrieb die Arbeit ausführt und ob lackfreies Ausbeulen reicht oder
@@ -57,13 +63,13 @@ function DellenPage() {
             ["Lackierarbeiten", "Bei beschädigtem Lack prüft ein Meister-Partner die passende Reparatur"],
             ["Foto-Begutachtung", "Bei kleinen Schäden häufig ohne ersten Vor-Ort-Termin möglich"],
           ].map(([t, d]) => (
-            <li key={t} className="border border-line bg-surface p-5">
+            <li key={t} className="border-t border-line pt-4 pb-3">
               <p className="font-display text-xl tracking-tight">{t}</p>
               <p className="mt-2 text-sm text-muted">{d}</p>
             </li>
           ))}
         </ul>
-        <div className="mt-12">
+        <div id="fotos" className="mt-12">
           <WhatsAppPhotoCta />
         </div>
         <div id="buchung" className="mt-12">
@@ -72,7 +78,7 @@ function DellenPage() {
             hint="Beschreib kurz den Schaden. Fotos ergänzt du nach der Anfrage in deinem Kundenbereich."
           />
         </div>
-      </div>
+      </EditorialLayout>
     </main>
   );
 }

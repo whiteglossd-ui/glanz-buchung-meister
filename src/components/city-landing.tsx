@@ -86,7 +86,7 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
       </PageHero>
 
       {editorial && (editorial.content.sections.length > 0 || editorial.content.faqs.length > 0 || editorial.content.images.some((image) => image.assetId !== editorial.content.heroAssetId)) && (
-        <section className="section wrap" aria-label={`Weitere Informationen für ${city.name}`}>
+        <section className="section mx-auto max-w-7xl px-4 sm:px-6" aria-label={`Weitere Informationen für ${city.name}`}>
           <WebsiteStudioContent content={editorial.content} assets={editorial.assets} headingLevel={1} showIntro={false} showHero={false} showBody={false} />
         </section>
       )}
@@ -95,7 +95,7 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
 
       {regional ? <CityRegionalService city={city} body={editorial?.content.body.trim()} faqs={proof?.faqs} /> : <>
       <section className="cv-auto border-t border-line bg-surface">
-        <div className="section wrap">
+        <div className="section mx-auto max-w-7xl px-4 sm:px-6">
           <h2 className="heading-2">Pakete für {city.name}</h2>
           <p className="mt-4 max-w-xl text-muted">
             {city.slug === "horb-am-neckar"
@@ -132,7 +132,7 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
       </section>
 
       <section className="cv-auto border-t border-line">
-        <div className="section wrap">
+        <div className="section mx-auto max-w-7xl px-4 sm:px-6">
           <h2 className="heading-2">
             {city.km === 0 ? "Direkt am Standort Horb" : `Abholung in ${city.name}: Strecke und Übergabe`}
           </h2>
@@ -192,7 +192,7 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
       </section>
 
       <section className="cv-auto border-t border-line">
-        <div className="section wrap">
+        <div className="section mx-auto max-w-7xl px-4 sm:px-6">
           <h2 className="heading-2">Leistungen mit Abholung in {city.name}</h2>
           <ul className="mt-8 columns-1 gap-x-10 sm:columns-2">
             {services
@@ -233,7 +233,7 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
 
       {(logisticsFaq || proof?.faqs?.length) && (
         <section className="cv-auto border-t border-line bg-surface">
-          <div className="section wrap">
+          <div className="section mx-auto max-w-7xl px-4 sm:px-6">
             <h2 className="heading-2">Fragen zur Abholung in {city.name}</h2>
             <dl className="mt-8 max-w-3xl space-y-8">
               {logisticsFaq ? (

@@ -39,7 +39,7 @@ function AbholIndex() {
           </Link>
         }
       />
-      <section className="section wrap">
+      <section className="section mx-auto max-w-7xl px-4 sm:px-6">
         <h2 className="heading-2">Abholorte und Kosten</h2>
         <p className="mt-5 mb-8 max-w-2xl text-muted">
           {pickupTierSummary()}. Alle Beträge {site.vatNote} {pickupKeramikNote()}. Entfernungen und

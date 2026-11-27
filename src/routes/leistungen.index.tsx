@@ -72,7 +72,7 @@ function LeistungenIndex() {
       />
 
       <section className="border-t border-line">
-        <div className="wrap section pt-16 pb-4">
+        <div className="section mx-auto max-w-7xl px-4 sm:px-6 pt-16 pb-4">
           <p className="kicker">Fahrzeugpflege</p>
           <h2 className="heading-2 mt-4 max-w-xl">Reinigung, Politur und Schutz</h2>
           <p className="mt-4 max-w-2xl text-muted leading-relaxed">
@@ -147,7 +147,7 @@ function LeistungenIndex() {
         </div>
       </section>
 
-      <section className="wrap section">
+      <section className="section mx-auto max-w-7xl px-4 sm:px-6">
         <p className="kicker">Nacharbeit</p>
         <h2 className="heading-2 mt-4 max-w-xl">Reparaturen und weitere Pflegeleistungen</h2>
         <ol className="mt-12 divide-y divide-line border-y border-line">
@@ -195,7 +195,7 @@ function LeistungenIndex() {
         <WhatsAppPhotoCta />
       </section>
 
-      <section className="wrap section">
+      <section className="section mx-auto max-w-7xl px-4 sm:px-6">
         <p className="kicker">{cities.length} Abholorte</p>
         <h2 className="heading-2 mt-4">Leistungen nach Stadt</h2>
         <p className="mt-4 max-w-2xl text-muted">
