@@ -69,17 +69,26 @@ export function ReviewShowcase({ data }: { data?: GoogleReviewsData | null }) {
     move(event.key === "ArrowLeft" ? -1 : 1);
   }
 
-  const moreLinks = !featured || more.length === 0 ? reviewLinks.more : null;
+  const moreLinks = featured
+    ? (more.length === 0 ? reviewLinks.more : null)
+    : [reviewLinks.featured, ...reviewLinks.more];
   return (
     <div className="wg-reviews">
       <p className="label label--rule">03 / Google</p>
       <h2 id={headingId} className="h2 chrome wg-reviews__heading">Erfahrungen unserer Kunden.</h2>
       <div className="wg-reviews__deck">
         <div className="wg-reviews__focus">
-          <p className="wg-reviews__eyebrow">Im Fokus · Google Maps</p>
-          {featured ? <Quote review={featured} /> : <h3>{reviewLinks.featured.title}</h3>}
-          {!featured && <ReviewSource href={reviewLinks.featured.url} label="Originalrezension auf Google Maps lesen" />}
-          {featured && data && (
+          <p className="wg-reviews__eyebrow">{featured ? "Im Fokus · Google Maps" : "Originalrezensionen · Google Maps"}</p>
+          {featured ? <Quote review={featured} /> : (
+            <>
+              <h3>Bewertungen direkt bei Google lesen.</h3>
+              <p className="wg-reviews__fallback-copy">
+                Dort findest du die Originaltexte, Sterne und die aktuelle Gesamtzahl.
+              </p>
+              <ReviewSource href={googleProfile.url} label="Google-Bewertungen öffnen" />
+            </>
+          )}
+          {data && (
             <p className="wg-reviews__meta">
               <strong>{data.averageRating.toLocaleString("de-DE", { minimumFractionDigits: 1, maximumFractionDigits: 1 })} von 5 Sternen</strong>
               <span>{data.totalReviewCount} Bewertungen auf Google Maps</span>
@@ -93,7 +102,7 @@ export function ReviewShowcase({ data }: { data?: GoogleReviewsData | null }) {
       {(moreLinks || more.length > 0) && (
         <>
           <div className="wg-reviews__bar">
-            <h3 id={`${headingId}-more`}>Weitere Kundenstimmen</h3>
+            <h3 id={`${headingId}-more`}>{featured ? "Weitere Kundenstimmen" : "Direkt zu Originalrezensionen"}</h3>
             <div className="wg-reviews__actions" hidden={!edges.back && !edges.next}>
               <button type="button" aria-label="Vorherige Kundenstimme" aria-controls={trackId} aria-disabled={!edges.back} onClick={() => move(-1)}>←</button>
               <button type="button" aria-label="Nächste Kundenstimme" aria-controls={trackId} aria-disabled={!edges.next} onClick={() => move(1)}>→</button>
@@ -102,9 +111,9 @@ export function ReviewShowcase({ data }: { data?: GoogleReviewsData | null }) {
           <ul id={trackId} ref={track} className="wg-reviews__track" data-lenis-prevent-horizontal="" aria-labelledby={`${headingId}-more`} tabIndex={0} onKeyDown={keyMove}>
             {moreLinks ? moreLinks.map((item) => (
               <li className="wg-reviews__item" key={item.url}>
-                <p className="wg-reviews__eyebrow">Google Maps</p>
+                <p className="wg-reviews__eyebrow">Rezension auf Google Maps</p>
                 <h4>{item.title}</h4>
-                <ReviewSource href={item.url} label="Original lesen" subject={item.title} />
+                <ReviewSource href={item.url} label="Bei Google lesen" subject={item.title} />
               </li>
             )) : more.map((review) => (
               <li className="wg-reviews__item" key={review.id}><Quote review={review} /></li>
@@ -113,7 +122,7 @@ export function ReviewShowcase({ data }: { data?: GoogleReviewsData | null }) {
         </>
       )}
       <p className="wg-reviews__caption">
-        {featured ? "Auswahl aus den zuletzt aktualisierten schriftlichen Rezensionen." : "Ausgewählte Originalrezensionen. Die Texte öffnen sich direkt auf Google Maps."}
+        {featured ? "Auswahl aus den zuletzt aktualisierten schriftlichen Rezensionen." : "Die Kartentitel beschreiben verlinkte Rezensionen. Sterne und Texte siehst du direkt bei Google Maps."}
         {" "}Wir prüfen nicht eigenständig, ob jede bewertende Person einen Auftrag bei uns hatte.
       </p>
       <ReviewSource href={googleProfile.url} label="Alle Bewertungen auf Google ansehen" />

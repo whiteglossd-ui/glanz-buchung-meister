@@ -7,37 +7,8 @@
  */
 
 /* 1. Schrift ---------------------------------------------------------------
- * „WG Display“ = Barlow Semi Condensed (OFL 1.1, public/fonts/bsc-*.woff2).
- * Gewichtszuordnung wie in der Vorlage um eine Stufe leichter: Überschriften
- * mit font-weight 400 zeigen den Light-Schnitt. Fließtext: Barlow. */
-@font-face {
-  font-family: "WG Display";
-  font-style: normal;
-  font-weight: 300;
-  font-display: swap;
-  src: url("/fonts/bsc-200.woff2") format("woff2");
-}
-@font-face {
-  font-family: "WG Display";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("/fonts/bsc-300.woff2") format("woff2");
-}
-@font-face {
-  font-family: "WG Display";
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url("/fonts/bsc-400.woff2") format("woff2");
-}
-@font-face {
-  font-family: "WG Display";
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url("/fonts/bsc-500.woff2") format("woff2");
-}
+ * Öffentliche Schriften und ihre Schnitte werden einmal in
+ * first-paint-fonts.css definiert. Admin und Login behalten Barlow. */
 
 :is([data-shell="public"], .film-menu, .wg-video-dialog, .customer-photo-dialog) {
   --font-sans: "Barlow", "Barlow Fallback", ui-sans-serif, system-ui, sans-serif;

@@ -62,9 +62,9 @@ function Lines({ text }: { text: string }) {
 }
 
 const packImage: Record<PackageId, [string, string]> = {
-  basis: ["foam-sq-800.webp", "Schaum auf schwarzem Lack bei der Außenreinigung"],
-  premium: ["polish-sq-800.webp", "Poliermaschine auf glänzendem schwarzem Lack"],
-  keramik: ["beads-sq-800.webp", "Abperleffekt auf keramikversiegeltem Lack"],
+  basis: ["foam-sq", "Schaum auf schwarzem Lack bei der Außenreinigung"],
+  premium: ["polish-sq", "Poliermaschine auf glänzendem schwarzem Lack"],
+  keramik: ["beads-sq", "Abperleffekt auf keramikversiegeltem Lack"],
 };
 
 function atmo(name: string) {
@@ -135,7 +135,15 @@ function Packages() {
           {packages.map((p, i) => (
             <article key={p.id} className={`prow${p.featured ? " prow--rec" : ""}`} data-reveal>
               <figure className="prow__img clip">
-                <img src={`${IMG}/${packImage[p.id][0]}`} alt={packImage[p.id][1]} loading="lazy" />
+                <img
+                  src={`${IMG}/${packImage[p.id][0]}-320.webp`}
+                  srcSet={`${IMG}/${packImage[p.id][0]}-320.webp 320w, ${IMG}/${packImage[p.id][0]}-800.webp 800w`}
+                  sizes="(max-width: 700px) 76px, (max-width: 1100px) 110px, 132px"
+                  alt={packImage[p.id][1]}
+                  width="320"
+                  height="320"
+                  loading="lazy"
+                />
               </figure>
               <div className="prow__main">
                 <span className="prow__n">0{i + 1}</span>
@@ -320,20 +328,18 @@ function DarkBooking({
         <div className="cfg wgt-booking" data-booking-form aria-labelledby="anfrage-heading">
           <h3 className="h3 h3--lg" id="anfrage-heading">Jetzt Termin anfragen</h3>
           <nav className="cfg__mode book__modes" aria-label="Art der Anfrage">
-            <a href="#buchung" onClick={selectMode} aria-labelledby="book-mode-package" aria-describedby="book-mode-package-help" aria-current={!rundum ? "location" : undefined} aria-controls="paket-formular">
-              <strong id="book-mode-package">Paket wählen</strong>
-              <span id="book-mode-package-help">Preis sehen, Termin wünschen</span>
+            <a href="#buchung" onClick={selectMode} aria-current={!rundum ? "location" : undefined} aria-controls="paket-formular">
+              <strong>Paket wählen</strong>
+              <span>Preis sehen, Termin wünschen</span>
             </a>
             <a
               href="#rundum-anfrage"
               onClick={selectMode}
               aria-current={rundum ? "location" : undefined}
               aria-controls="rundum-formular"
-              aria-labelledby="book-mode-service"
-              aria-describedby="book-mode-service-help"
             >
-              <strong id="book-mode-service">Rundum-Service</strong>
-              <span id="book-mode-service-help">Wünsche kombinieren</span>
+              <strong>Rundum-Service</strong>
+              <span>Wünsche kombinieren</span>
             </a>
           </nav>
           <div id="paket-formular" hidden={rundum}>
@@ -444,6 +450,8 @@ export function DarkHome({
 
         <Packages />
 
+        {!regional && (
+          <>
         {/* Bildbühne mit Laufband */}
         <section className="pin" aria-hidden="true">
           <div className="pin__stick">
@@ -510,6 +518,8 @@ export function DarkHome({
             <div className="hg__bar" aria-hidden="true"><span className="hg__fill" /></div>
           </div>
         </section>
+          </>
+        )}
 
         <section className="sec sec--tight" id="bewertungen" aria-label="Google-Kundenbewertungen">
           <div className="wrap">
@@ -519,7 +529,7 @@ export function DarkHome({
           </div>
         </section>
 
-        <section className="sec" id="ablauf" aria-labelledby="ablauf-h">
+        {!regional && <section className="sec" id="ablauf" aria-labelledby="ablauf-h">
           <div className="wrap process">
             <div className="process__intro">
               <div className="process__stick">
@@ -548,7 +558,7 @@ export function DarkHome({
               ))}
             </ol>
           </div>
-        </section>
+        </section>}
 
         <section className="sec" id="leistungen" aria-labelledby="leistungen-h">
           {atmo("chrome-curves")}
@@ -612,7 +622,7 @@ export function DarkHome({
                   und Konditionen stimmen wir vor deinem Termin mit dir ab.
                 </p>
                 <div className="loc__links">
-                  <Link className="tlink" to="/freudenstadt-lossburg">Standort Loßburg / Freudenstadt <span aria-hidden="true">→</span></Link>
+                  {!regional && <Link className="tlink" to="/freudenstadt-lossburg">Standort Loßburg / Freudenstadt <span aria-hidden="true">→</span></Link>}
                   <Link className="tlink" to="/abholservice/$city" params={{ city: "lossburg" }}>Loßburg <span aria-hidden="true">→</span></Link>
                   <Link className="tlink" to="/abholservice/$city" params={{ city: "freudenstadt" }}>Freudenstadt <span aria-hidden="true">→</span></Link>
                 </div>
@@ -621,7 +631,7 @@ export function DarkHome({
           </div>
         </section>
 
-        <section className="sec" id="abholung" aria-labelledby="abholung-h">
+        {!regional && <section className="sec" id="abholung" aria-labelledby="abholung-h">
           {atmo("wheel-wide")}
           <div className="wrap pickup">
             <div className="pickup__intro">
@@ -650,7 +660,7 @@ export function DarkHome({
               ))}
             </ul>
           </div>
-        </section>
+        </section>}
 
         <DarkBooking initialPackage={initialPackage} initialCity={initialCity} serviceArea={serviceArea} />
       </main>

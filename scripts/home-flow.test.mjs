@@ -168,9 +168,10 @@ test("the planned Loßburg route has its own canonical and truthful local metada
     "https://white-gloss.de/freudenstadt-lossburg");
   assert.match(head.meta.find((tag) => tag.title)?.title, /Loßburg.*Freudenstadt/);
   const description = head.meta.find((tag) => tag.name === "description")?.content;
-  assert.match(description, /Nordschwarzwald/);
+  assert.match(description, /Freudenstadt und Loßburg/);
+  assert.match(description, /Abholung nach Absprache/);
   assert.match(description, /in Vorbereitung/);
-  assert.match(description, /aktuell in Horb/);
+  assert.match(description, /derzeit in Horb am Neckar/);
   assert.equal(head.meta.some((tag) => ["geo.position", "ICBM"].includes(tag.name)), false);
   assert.deepEqual(Route.validateSearch({ ort: "lossburg" }), { ort: "lossburg" });
 });
@@ -233,12 +234,20 @@ test("the dark home keeps every conversion anchor in one booking section", () =>
 
 test("both home variants render one conversion flow and an accessible location choice", () => {
   const { DarkHome } = loadDarkHome();
+  const { RegionalHomeDetails } = evaluate("components/regional-home-details.tsx", {
+    "@tanstack/react-router": {
+      Link: ({ to, params: _params, children, ...props }) =>
+        React.createElement("a", { ...props, href: to }, children),
+    },
+    "@/data/site": siteData,
+  });
   const { HomePage } = evaluate("components/home-page.tsx", {
     "@/lib/json-ld": jsonLd,
     "@/lib/seo": seo,
     "@/data/home-copy": homeCopy,
     "@/components/dark/dark-home": { DarkHome },
     "@/components/website-studio-content": { WebsiteStudioContent: () => null },
+    "@/components/regional-home-details": { RegionalHomeDetails },
     "@/data/home-location": homeLocation,
   });
   for (const location of ["horb", "lossburg"]) {
@@ -253,7 +262,12 @@ test("both home variants render one conversion flow and an accessible location c
     assert.match(switcher, /Werkstatt in Vorbereitung/);
     const current = /<a[^>]*aria-current="page"[^>]*>([\s\S]*?)<\/a>/.exec(switcher)?.[1];
     assert.match(text(current), location === "horb" ? /Horb am Neckar/ : /Loßburg \/ Freudenstadt/);
-    if (location === "lossburg") assert.match(html, /data-city="lossburg"/);
+    if (location === "lossburg") {
+      assert.match(html, /data-city="lossburg"/);
+      assert.match(text(html), /Abholung in Freudenstadt/);
+      assert.match(text(html), /Abholung in Loßburg/);
+      assert.match(text(html), /In Horb aufbereitet/);
+    }
     const business = JSON.parse(/<script type="application\/ld\+json">([^<]+)<\/script>/.exec(html)?.[1]);
     const locations = business["@graph"].filter((item) => item["@type"] === "AutomotiveBusiness");
     assert.equal(locations.length, 1);

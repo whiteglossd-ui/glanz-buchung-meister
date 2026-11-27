@@ -31,9 +31,8 @@ export const Route = createRootRoute({
     const app = matches.some((match: AnyRouteMatch) =>
       /^\/(admin|login)(\/|$)/.test(match.routeId),
     );
-    // Dark Edition: the public first viewport uses WG Display (Barlow Semi
-    // Condensed Light, bsc-300) for headings and Barlow 400 for copy.
-    // Operational screens retain their existing Barlow family.
+    // Public pages preload the smaller Dark Edition font subsets; operational
+    // screens retain their existing full Barlow family.
     const fontPreloads = (app
       ? ["barlow-400", "barlow-300"]
       : ["bsc-300", "barlow-400"]
@@ -60,8 +59,6 @@ export const Route = createRootRoute({
       ],
       links: [
         { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
-        // Discover the existing install icon before the manifest requests it after hydration.
-        { rel: "preload", as: "image", type: "image/png", href: "/favicon-192.png", fetchPriority: "high" as const },
         ...fontPreloads,
         { rel: "manifest", href: "/__grok/manifest.webmanifest" },
         { rel: "apple-touch-icon", href: "/__grok/icon-180.png" },

@@ -1,5 +1,12 @@
 import { eur } from "../lib/utils.ts";
 
+// OpenStreetMap building way 425076932 resolves Arnistal 27, Dettingen,
+// 72160 Horb am Neckar to this exact building (Nominatim, 27.11.2026).
+const locationLat = 48.4155662;
+const locationLng = 8.6249998;
+const osmBBox = [locationLng - 0.02, locationLat - 0.01, locationLng + 0.02, locationLat + 0.01]
+  .map((coordinate) => coordinate.toFixed(7)).join("%2C");
+
 export const site = {
   name: "White-Gloss Detailing",
   shortName: "White Gloss",
@@ -28,14 +35,14 @@ export const site = {
   vatRate: 0.19,
   vatId: "DE465024196",
   hoursLabel: "Mo–Fr 09:00–17:00 Uhr",
-  lat: 48.445,
-  lng: 8.691,
+  lat: locationLat,
+  lng: locationLng,
   mapsGoogle:
     "https://www.google.com/maps/search/?api=1&query=Arnistal%2027%2C%2072160%20Horb%20am%20Neckar",
   mapsGoogleEmbed:
     "https://www.google.com/maps?q=Arnistal+27,+72160+Horb+am+Neckar&hl=de&z=16&output=embed",
   mapsOsmEmbed:
-    "https://www.openstreetmap.org/export/embed.html?bbox=8.671%2C48.435%2C8.711%2C48.455&layer=mapnik&marker=48.445%2C8.691",
+    `https://www.openstreetmap.org/export/embed.html?bbox=${osmBBox}&layer=mapnik&marker=${locationLat}%2C${locationLng}`,
 };
 
 export const atelierPhotos = {

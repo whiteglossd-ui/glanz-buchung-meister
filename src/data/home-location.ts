@@ -3,7 +3,8 @@ export const lossburgHome = {
   path: "/freudenstadt-lossburg",
   title: "Fahrzeugaufbereitung Loßburg & Freudenstadt | White-Gloss",
   description:
-    "Detailing und Autopflege für Loßburg, Freudenstadt und den Nordschwarzwald mit Hol- und Bringservice. Neue Werkstatt in Vorbereitung; Aufbereitung aktuell in Horb.",
+    "Fahrzeugaufbereitung für Freudenstadt und Loßburg: Abholung nach Absprache, Aufbereitung derzeit in Horb am Neckar. Werkstatt in Loßburg in Vorbereitung.",
   locationLabel: "Loßburg · Freudenstadt · Nordschwarzwald",
-  lead: "Ob Daily Driver, Liebhaberwagen oder Leasingrückgabe: Wir kümmern uns um dein Auto im Raum Loßburg und Freudenstadt – mit persönlicher Beratung und Hol- und Bringservice. Unsere neue Werkstatt ist in Vorbereitung; die Aufbereitung findet aktuell in Horb statt.",
+  heading: "Fahrzeugaufbereitung für\nLoßburg & Freudenstadt",
+  lead: "Wir holen dein Auto nach Absprache in Loßburg oder Freudenstadt ab, bereiten es derzeit in unserer Werkstatt in Horb am Neckar auf und bringen es zurück. Die Werkstatt in Loßburg ist in Vorbereitung.",
 } as const;
