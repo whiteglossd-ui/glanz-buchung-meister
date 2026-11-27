@@ -1,8 +1,7 @@
 import { serializeJsonLd } from "@/lib/json-ld";
 import { Link } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { HeroMedia } from "@/components/media";
-import { PageCrumbs } from "@/components/page-hero";
+import { PageHero } from "@/components/page-hero";
 import { ctaGhost, ctaPrimary } from "@/components/ui";
 import { cityJsonLd, whatsappForCity } from "@/lib/city-seo";
 import {
@@ -52,58 +51,42 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
 
-      <section className="film-chapter">
-        <div className="film-chapter-media" data-parallax>
-          {hero ? <img src={hero.src} alt={hero.alt} width={hero.width} height={hero.height} loading="eager" fetchPriority="high" decoding="async" className="absolute inset-0 h-full w-full object-cover" /> : <HeroMedia
-            priority
-            alt={`Werkstattfahrzeug von White-Gloss Detailing – Fahrzeugaufbereitung für Kunden aus ${city.name}`}
-            className="absolute inset-0 h-full w-full object-cover"
-          />}
-        </div>
-        <div className="film-chapter-veil" />
-        <div className="film-chapter-copy" data-reveal>
-          <PageCrumbs
-            items={[
-              { label: "Startseite", to: "/" },
-              { label: "Hol- und Bringservice", to: "/abholservice" },
-              { label: city.name },
-            ]}
-          />
-          <p className="kicker mt-5">Mit Hol- und Bringservice</p>
-          <h1 className="heading-page mt-4 max-w-4xl">{editorial?.content.title.trim() || copy.heading}</h1>
-          <p className="mt-5 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
-            {editorial?.content.lead.trim() || city.blurb}
-            {!regional && ` Innenraumreinigung, Lackpflege oder Keramikversiegelung machen wir in unserer Werkstatt in ${site.city}. Hol- und Bringservice: ${pickup}.`}
+      <PageHero
+        shot="hero"
+        alt={hero?.alt ?? `Werkstattfahrzeug von White-Gloss Detailing – Fahrzeugaufbereitung für Kunden aus ${city.name}`}
+        media={hero ? <img src={hero.src} alt={hero.alt} width={hero.width} height={hero.height} loading="eager" fetchPriority="high" decoding="async" className="size-full object-cover" /> : undefined}
+        crumbs={[
+          { label: "Startseite", to: "/" },
+          { label: "Hol- und Bringservice", to: "/abholservice" },
+          { label: city.name },
+        ]}
+        kicker="Mit Hol- und Bringservice"
+        title={editorial?.content.title.trim() || copy.heading}
+        lead={`${editorial?.content.lead.trim() || city.blurb}${regional ? "" : ` Innenraumreinigung, Lackpflege oder Keramikversiegelung machen wir in unserer Werkstatt in ${site.city}. Hol- und Bringservice: ${pickup}.`}`}
+        actions={<>
+          <Link to={request.leistung ? "/fahrzeug-zustand" : "/"} hash="buchung" search={request} className={ctaPrimary}>
+            Termin anfragen
+          </Link>
+          <a href={wa} className={ctaGhost} target="_blank" rel="noopener noreferrer">
+            <IconMessage className="size-4" aria-hidden />
+            Beratung per WhatsApp
+          </a>
+        </>}
+      >
+        {selectedService && (
+          <p className="mt-4 text-sm text-muted">
+            Deine Auswahl: {selectedService.nav}. Die Leistung ist für deine Anfrage vorgemerkt.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link
-              to={request.leistung ? "/fahrzeug-zustand" : "/"}
-              hash="buchung"
-              search={request}
-              className={ctaPrimary}
-            >
-              Termin anfragen
-            </Link>
-            <a href={wa} className={ctaGhost} target="_blank" rel="noopener noreferrer">
-              <IconMessage className="size-4" aria-hidden />
-              Beratung per WhatsApp
-            </a>
-          </div>
-          {selectedService ? (
-            <p className="mt-4 text-sm text-muted">
-              Deine Auswahl: {selectedService.nav}. Die Leistung ist für deine Anfrage vorgemerkt.
-            </p>
-          ) : null}
-          {!regional && <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-xs uppercase tracking-[0.14em] text-subtle">
-            <li>Preise inkl. MwSt.</li>
-            <li>Hol- und Bringservice {pickup}</li>
-            <li>Werkstatt {site.city}</li>
-          </ul>}
-        </div>
-      </section>
+        )}
+        {!regional && <ul className="mt-7 flex flex-wrap gap-x-5 gap-y-2 border-t border-line pt-5 text-sm text-muted">
+          <li>Preise inkl. MwSt.</li>
+          <li>Hol- und Bringservice {pickup}</li>
+          <li>Werkstatt {site.city}</li>
+        </ul>}
+      </PageHero>
 
       {editorial && (editorial.content.sections.length > 0 || editorial.content.faqs.length > 0 || editorial.content.images.some((image) => image.assetId !== editorial.content.heroAssetId)) && (
-        <section className="section mx-auto max-w-7xl px-4 sm:px-6" aria-label={`Weitere Informationen für ${city.name}`}>
+        <section className="section wrap" aria-label={`Weitere Informationen für ${city.name}`}>
           <WebsiteStudioContent content={editorial.content} assets={editorial.assets} headingLevel={1} showIntro={false} showHero={false} showBody={false} />
         </section>
       )}
@@ -112,7 +95,7 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
 
       {regional ? <CityRegionalService city={city} body={editorial?.content.body.trim()} faqs={proof?.faqs} /> : <>
       <section className="cv-auto border-t border-line bg-surface">
-        <div className="section mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="section wrap">
           <h2 className="heading-2">Pakete für {city.name}</h2>
           <p className="mt-4 max-w-xl text-muted">
             {city.slug === "horb-am-neckar"
@@ -149,7 +132,7 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
       </section>
 
       <section className="cv-auto border-t border-line">
-        <div className="section mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="section wrap">
           <h2 className="heading-2">
             {city.km === 0 ? "Direkt am Standort Horb" : `Abholung in ${city.name}: Strecke und Übergabe`}
           </h2>
@@ -176,7 +159,7 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
             </Link>
             .
           </p>
-          <dl className={`gd-tiles mt-10 ${city.km === 0 ? "gd-tiles-3" : "gd-tiles-3"}`}>
+          <dl className="mt-10 grid gap-4 sm:grid-cols-3">
             {city.km === 0 ? (
               <div className="border border-line p-5">
                 <dt className="text-xs uppercase tracking-[0.16em] text-subtle">Standort</dt>
@@ -209,7 +192,7 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
       </section>
 
       <section className="cv-auto border-t border-line">
-        <div className="section mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="section wrap">
           <h2 className="heading-2">Leistungen mit Abholung in {city.name}</h2>
           <ul className="mt-8 columns-1 gap-x-10 sm:columns-2">
             {services
@@ -250,7 +233,7 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
 
       {(logisticsFaq || proof?.faqs?.length) && (
         <section className="cv-auto border-t border-line bg-surface">
-          <div className="section mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="section wrap">
             <h2 className="heading-2">Fragen zur Abholung in {city.name}</h2>
             <dl className="mt-8 max-w-3xl space-y-8">
               {logisticsFaq ? (

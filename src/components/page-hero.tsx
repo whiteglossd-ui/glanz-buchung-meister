@@ -93,6 +93,7 @@ export function PageHero({
   actions,
   crumbs,
   media,
+  children,
 }: {
   kicker?: string;
   title: string;
@@ -104,6 +105,7 @@ export function PageHero({
   actions?: ReactNode;
   crumbs?: { label: string; to?: string }[];
   media?: ReactNode;
+  children?: ReactNode;
 }) {
   return (
     <section className="phero page-hero">
@@ -115,6 +117,7 @@ export function PageHero({
           <h1 className="phero__title chrome">{title}</h1>
           {lead ? <p className="hero__lead">{lead}</p> : null}
           {actions ? <div className="hero__actions">{actions}</div> : null}
+          {children}
         </div>
         <figure className="phero__fig">
           <div className="phero__frame">

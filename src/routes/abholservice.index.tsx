@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { IconArrowRight } from "@/components/icons";
 import { PageHero } from "@/components/page-hero";
 import { ctaPrimary } from "@/components/ui";
 import { cities, cityPickupPriceText, pickupTierSummary, pickupKeramikNote, site } from "@/data/site";
@@ -38,21 +39,21 @@ function AbholIndex() {
           </Link>
         }
       />
-      <section className="section mx-auto max-w-7xl px-4 sm:px-6">
+      <section className="section wrap">
         <h2 className="heading-2">Abholorte und Kosten</h2>
         <p className="mt-5 mb-8 max-w-2xl text-muted">
           {pickupTierSummary()}. Alle Beträge {site.vatNote} {pickupKeramikNote()}. Entfernungen und
           Fahrzeiten sind Richtwerte ab Horb. Den genauen Abholort, Preis und die Übergabezeiten
           bestätigen wir persönlich.
         </p>
-        <ul className="divide-y divide-line border-y border-line">
+        <ul className="grid gap-x-10 md:grid-cols-2">
           {cities.map((c) => (
-            <li key={c.slug}>
+            <li key={c.slug} className="border-t border-line">
               <Link
                 to="/abholservice/$city"
                 params={{ city: c.slug }}
                 aria-label={`${citySeoCopy(c).linkLabel}, ${cityDistanceLine(c)}, Abholung ${cityPickupPriceText(c)}`}
-                className="flex min-h-16 flex-col items-start gap-2 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
+                className="group flex h-full min-h-20 flex-wrap items-center justify-between gap-x-4 gap-y-2 py-5"
               >
                 <span>
                   <span className="block font-display text-2xl tracking-tight">
@@ -62,7 +63,7 @@ function AbholIndex() {
                     {cityDistanceLine(c)}
                   </span>
                 </span>
-                <span className="text-sm text-muted">{cityPickupPriceText(c)}</span>
+                <span className="inline-flex items-center gap-3 text-sm text-fg">{cityPickupPriceText(c)} <IconArrowRight className="link-arrow size-4" aria-hidden="true" /></span>
               </Link>
             </li>
           ))}
