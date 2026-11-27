@@ -207,14 +207,27 @@ const APPROVED_SUBPAGE_BLOBS = Object.freeze({
 // drücken, Lackierarbeiten, Smart Repair) linked from menu, footer, homepage
 // and the service overview. Only links and the new tile were added; all
 // existing copy stays. See docs/folierung-smart-repair-2026-11-27.md.
+// Second update (27.11.2026): /folierung SEO page, menu/footer links and the
+// homepage partner block, two Ratgeber articles on Folierung, and the premium
+// landing pages /lackierarbeiten, /dellen-druecken and /smart-repair. Owner decision:
+// /dellen-hagelschaden and /leistungen/smart-repair redirect (301) to /dellen-druecken
+// (seo-policy consolidatedPaths/consolidatedServices); links updated site-wide.
+// See docs/folierung-2026-11-27.md.
 const APPROVED_PARTNER_SERVICES_BLOBS = Object.freeze({
-  "src/components/dark/dark-chrome.tsx": "f441d2eb5692f3f5177036a4833bf9dd319c68d5",
-  "src/components/dark/dark-home.tsx": "7eeae47815f0e2f75e8b25363c3c2b0b2fb18852",
+  "src/components/dark/dark-chrome.tsx": "fbefca9e32d42e3b5187464d4d4a652a6681909d",
+  "src/components/dark/dark-home.tsx": "6403fd43981fafbfd55d95ac37754af38d794448",
   "src/components/full-service.tsx": "594b5d8668735332cf15c8f5df35d976a1cd55b3",
-  "src/data/sitemap-static.xml": "6c8d6cde12572845ce1ce736578b24f0164579ec",
-  "src/lib/seo-intents.ts": "065d7868fedb86d6765d5f2376bed4479b8acf8b",
-  "src/routes/leistungen.index.tsx": "9c9a2a9ff14175620dee8f838df0f7476ece321d",
-  "public/llms.txt": "b36a1aca8b5c1a27201e130e386df6d0ab0ff54e",
+  "src/data/sitemap-static.xml": "3e2b9109565eaefad1dc20e071abcfbbcd227da6",
+  "src/lib/seo-intents.ts": "7307d2d34fa6967347f7d451e3679f8787053f78",
+  "src/routes/leistungen.index.tsx": "80861dbf872a770f73dd48e55fe9cc2d5a366081",
+  "public/llms.txt": "a4fc563e86a8b9ffa094cf637770f01170bc2170",
+  "src/data/editorial-guides.json": "86d063708824415b881c84f0b25486b31098236e",
+  "src/routes/leistungen.$slug.$city.tsx": "b4e52ec90d79896a586dee94cb9f5d84a04607a2",
+  "src/routes/leistungen.$slug.index.tsx": "2b7df5429bbc7d1bb87be147a416b3797becf628",
+  "src/routes/ratgeber.$slug.tsx": "3780c2776ed81c57692d915a392b7c46e29b2758",
+  "src/routes/ueber-uns.tsx": "e313103f342724e06af9b3327d3c2cf6c428bc6b",
+  "src/lib/seo-policy.ts": "4a26dce0475b49b5b54ae549034909b6e0d8d9ef",
+  "src/routes/dellen-hagelschaden.tsx": "c023db13858ba444fe446ecd3ae66ef884fff8b1",
 });
 
 function sourceBlobId(source) {

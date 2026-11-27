@@ -4,8 +4,11 @@ import { test } from "node:test";
 import { cities, services } from "../data/site.ts";
 import { serviceBookingSelection } from "./booking-selection.ts";
 import {
+  consolidatedPaths,
+  consolidatedServices,
   filterIndexableSitemap,
   hasLocalSeoEvidence,
+  isConsolidatedService,
   publicSeo,
   seoRobots,
   serviceCitySeo,
@@ -94,13 +97,19 @@ test("all service-city combinations have one decision; unavailable services redi
     cities.map((city) => serviceCitySeo(service.slug, city.slug)),
   );
   assert.equal(decisions.length, services.length * cities.length);
-  assert.equal(decisions.filter((d) => d.status === "noindex").length, services.filter((s) => !s.pendingApproval).length * cities.length);
-  assert.equal(decisions.filter((d) => d.status === "redirect").length, services.filter((s) => s.pendingApproval).length * cities.length);
+  const redirected = (s: (typeof services)[number]) => s.pendingApproval || isConsolidatedService(s.slug);
+  assert.equal(decisions.filter((d) => d.status === "noindex").length, services.filter((s) => !redirected(s)).length * cities.length);
+  assert.equal(decisions.filter((d) => d.status === "redirect").length, services.filter(redirected).length * cities.length);
+  const targets = new Set(["/leistungen/scheinwerferaufbereitung", ...Object.values(consolidatedServices)]);
   for (const decision of decisions)
     if (decision.status === "redirect") {
       assert.notEqual(publicSeo(decision.target).status, "redirect");
-      assert.equal(decision.target, "/leistungen/scheinwerferaufbereitung");
+      assert.ok(targets.has(decision.target), decision.target);
     }
+  for (const [from, to] of Object.entries(consolidatedPaths)) {
+    assert.deepEqual(publicSeo(from), { status: "redirect", target: to, reason: "page-consolidated" });
+    assert.equal(publicSeo(to).status, "index");
+  }
 });
 
 test("index requires demand AND two distinct facts AND public proof AND availability", () => {

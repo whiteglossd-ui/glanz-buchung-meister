@@ -4,6 +4,7 @@ import { site, services } from "@/data/site";
 import { logoAvifSrcSet } from "@/data/media-src";
 import { CookieSettingsButton } from "@/components/consent-banner";
 import { BOOKING_JUMP, focusBookingHeading } from "@/lib/booking-anchor-focus";
+import { isConsolidatedService } from "@/lib/seo-policy";
 
 /** Startseite des aktuellen Standorts (Horb oder Loßburg). */
 function useHomePath() {
@@ -237,10 +238,13 @@ export function DarkHeader() {
             </nav>
             <p className="label menu__gap">Detailing</p>
             <div className="menu__svc">
-              {services.map((s) => (
+              {services.filter((s) => !isConsolidatedService(s.slug)).map((s) => (
                 <Link key={s.slug} to="/leistungen/$slug" params={{ slug: s.slug }} onClick={close}>{s.nav}</Link>
               ))}
-              <Link to="/dellen-hagelschaden" onClick={close}>Dellen- und Hagelschäden</Link>
+              <Link to="/folierung" onClick={close}>Autofolierung</Link>
+              <Link to="/lackierarbeiten" onClick={close}>Lackierarbeiten</Link>
+              <Link to="/dellen-druecken" onClick={close}>Dellen &amp; Hagelschäden</Link>
+              <Link to="/smart-repair" onClick={close}>Smart Repair</Link>
               <Link to="/folierung-smart-repair" onClick={close}>Folierung, Lack &amp; Smart Repair</Link>
             </div>
             <p className="label menu__gap" id="wgt-menu-info">Informationen</p>
@@ -336,7 +340,10 @@ export function DarkFooter() {
             <Link to="/leistungen/$slug" params={{ slug: "lackkorrektur" }}>Lackkorrektur</Link>
             <Link to="/leistungen/$slug" params={{ slug: "innenraumreinigung" }}>Innenraumreinigung</Link>
             <Link to="/leistungen/$slug" params={{ slug: "lederreparatur" }}>Lederreparatur</Link>
-            <Link to="/dellen-hagelschaden">Dellen und Hagelschäden</Link>
+            <Link to="/folierung">Autofolierung</Link>
+            <Link to="/lackierarbeiten">Lackierarbeiten</Link>
+            <Link to="/dellen-druecken">Dellen &amp; Hagelschäden</Link>
+            <Link to="/smart-repair">Smart Repair</Link>
             <Link to="/folierung-smart-repair">Folierung, Lack &amp; Smart Repair</Link>
             <Link to="/preise">Preise</Link>
             <Link to="/luxusfahrzeuge">Luxusfahrzeuge</Link>

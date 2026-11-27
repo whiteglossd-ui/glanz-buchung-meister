@@ -9,6 +9,7 @@ import { listPublishedCms } from "@/lib/cms.functions";
 import { pageHead } from "@/lib/seo";
 import { serializeJsonLd } from "@/lib/json-ld";
 import { money } from "@/lib/utils";
+import { isConsolidatedService } from "@/lib/seo-policy";
 
 export const Route = createFileRoute("/leistungen/")({
   loader: async () => {
@@ -32,7 +33,7 @@ export const Route = createFileRoute("/leistungen/")({
 function LeistungenIndex() {
   const { extra } = Route.useLoaderData();
   const atelier = services.filter((s) => s.group === "atelier");
-  const finish = services.filter((s) => s.group === "finish");
+  const finish = services.filter((s) => s.group === "finish" && !isConsolidatedService(s.slug));
 
   return (
     <main id="main-content" className="long-title-page" tabIndex={-1}>

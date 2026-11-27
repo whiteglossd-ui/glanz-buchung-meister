@@ -26,7 +26,7 @@
         "title": "Lack, Leasingrückgabe und Verkauf",
         "items": [
           { "q": "Könnt ihr Kratzer im Lack wegpolieren?", "a": "Feine Waschspuren und oberflächliche Kratzer lassen sich oft deutlich verbessern. Reicht der Kratzer unter den Klarlack, polieren wir ihn nicht um jeden Preis heraus. Vor einer Lackkorrektur schauen wir uns die Stelle bei gutem Licht an und prüfen die Lackstärke. Dann sagen wir dir, was möglich ist und was sichtbar bleiben kann.", "link": { "path": "/leistungen/lackkorrektur", "label": "Lackkorrektur und ihre Grenzen" } },
-          { "q": "Organisiert ihr Dellenziehen oder Lackierarbeiten?", "a": "Ja. Für Dellenziehen, Hagelschäden und Lackierarbeiten arbeiten wir mit Meisterbetrieben zusammen. Wir klären zuerst, ob eine Aufbereitung reicht oder ob ein Partnerbetrieb ranmuss. Wenn lackfreies Ausbeulen möglich ist, sagen wir dir das. Wer den Auftrag ausführt und was er kostet, klären wir vor deiner Zusage.", "link": { "path": "/dellen-hagelschaden", "label": "Dellen- und Hagelschaden einschätzen lassen" } },
+          { "q": "Organisiert ihr Dellenziehen oder Lackierarbeiten?", "a": "Ja. Für Dellenziehen, Hagelschäden und Lackierarbeiten arbeiten wir mit Meisterbetrieben zusammen. Wir klären zuerst, ob eine Aufbereitung reicht oder ob ein Partnerbetrieb ranmuss. Wenn lackfreies Ausbeulen möglich ist, sagen wir dir das. Wer den Auftrag ausführt und was er kostet, klären wir vor deiner Zusage.", "link": { "path": "/dellen-druecken", "label": "Dellen- und Hagelschaden einschätzen lassen" } },
           { "q": "Was macht ihr bei matten oder beschädigten Scheinwerfern?", "a": "Du kannst uns den Zustand zeigen. Bei Bedarf beziehen wir einen Meister-Partner ein, der die zulässigen Möglichkeiten am Fahrzeug prüft, zum Beispiel den Austausch eines beschädigten Bauteils. Schleifen, Polieren oder Versiegeln bauartgenehmigter Scheinwerfer-Abdeckscheiben bieten wir nicht als buchbare Aufbereitung an.", "link": { "path": "/leistungen/scheinwerferaufbereitung", "label": "Hinweise zu matten Scheinwerfern" } },
           { "q": "Muss mein Leasingauto zur Rückgabe wie neu aussehen?", "a": "Nein. Normale, alters- und laufleistungsgerechte Gebrauchsspuren sind nicht dasselbe wie ein Schaden. Entscheidend sind dein Vertrag und der Rückgabekatalog. Zeig uns die Stellen, die dir Sorgen machen. Wir trennen Reinigung und mögliche optische Korrektur von Schäden, für die eine andere Werkstatt oder ein Gutachten sinnvoll ist. Nachzahlungen können wir nicht ausschließen.", "link": { "path": "/ratgeber/leasingrueckgabe-checkliste", "label": "Checkliste für die Leasingrückgabe" } },
           { "q": "Welches Paket lohnt sich vor dem Autoverkauf?", "a": "Bei einem gepflegten Alltagsauto reicht oft eine gründliche Reinigung für Besichtigung und Fotos. Sind die Sitze fleckig oder wirkt der Lack matt, lohnt es sich, genau diese Stellen prüfen zu lassen. Für ein älteres Auto würden wir nicht automatisch eine Keramikversiegelung einplanen. Und bekannte Schäden bleiben natürlich Teil der Fahrzeugbeschreibung.", "link": { "path": "/ratgeber/auto-vor-dem-verkauf-aufbereiten", "label": "Ratgeber: Auto vor dem Verkauf aufbereiten" } }
@@ -132,6 +132,110 @@
           { "heading": "Auto im Winter waschen: Braucht es nach jeder Salzfahrt eine Wäsche?", "paragraphs": ["Nein. Ein weißer Salzfilm nach der Fahrt sieht auf dunklem Lack schnell schlimm aus, aber intakter Lack braucht nicht nach jeder Fahrt eine Wäsche. Bei Steinschlägen oder abgeplatztem Lack lohnt sich ein genauerer Blick. Der ADAC unterscheidet hier zwischen intakten und vorgeschädigten Oberflächen. Das ist wichtiger als eine starre Regel wie „jeden Samstag waschen“.", "Wenn das Auto stark verschmutzt ist, wähle einen milderen Tag. Scheiben, Leuchten, Spiegel und die nach Herstellervorgaben zugänglichen Kameras oder Sensoren sauber zu halten ist im Alltag dringender als ein glänzender Kotflügel."] },
           { "heading": "Erst vorwaschen, dann an den Lack gehen", "paragraphs": ["Wenn die Schweller noch mit körnigem Straßenschmutz bedeckt sind, geh nicht direkt mit dem Waschhandschuh darüber. Löse grobe Partikel zuerst mit der Vorwäsche. Beseitige Schnee und Eis vor der Einfahrt in eine Anlage, ohne mit einem Eiskratzer über lackierte Flächen zu gehen. Achte an der Anlage auf die Hinweise zum Fahrzeug und zum Regensensor.", "Bei extremer Kälte um −10 °C oder darunter verschiebe die Wäsche lieber. Der ADAC warnt hier vor dem Temperaturunterschied zwischen kalten Teilen am Fahrzeug und dem Waschwasser. Wenn du an einem kühlen Tag wäschst, trockne nach Möglichkeit Türfalze und Dichtungen, damit sie nicht anfrieren."] },
           { "heading": "Nach dem Winter: Ist es nur Schmutz oder schon ein Lackschaden?", "paragraphs": ["Sieh dir Front, Schweller und Radlaufkanten nach einer gründlichen Reinigung bei Tageslicht an. Ein oberflächlicher Rückstand sieht anders aus als ein Steinschlag oder eine Lackabplatzung. Reib auf Verdacht nicht trocken darüber und versuche nicht, beschädigte Stellen einfach zuzupolieren.", "Wenn du für den Alltag weniger Aufwand beim Waschen möchtest, kann eine zum Fahrzeug passende Versiegelung helfen. Sie ist kein Ersatz für eine Reparatur und auch keine Pflicht für den Winter. Wenn du dir bei einer Stelle unsicher bist, ist ein Foto bei Tageslicht der bessere erste Schritt."] }
+        ]
+      },
+      {
+        "slug": "auto-folieren-lassen",
+        "title": "Auto folieren lassen: Ablauf, Folienarten und Vorbereitung",
+        "seoTitle": "Auto folieren lassen in Horb: Ablauf & Folien | White-Gloss",
+        "excerpt": "Farbwechsel ohne Neulackierung: Wie eine Autofolierung abläuft, welche Folien es gibt und worauf du vorher achten solltest.",
+        "seoExcerpt": "Auto folieren lassen in Horb am Neckar: Ablauf einer Autofolierung, Voll- oder Teilfolierung, Glanz, Matt und Satin und warum der Lack vorher geprüft wird.",
+        "date": "2026-11-27",
+        "image": "/media/finish.webp",
+        "imageAlt": "Glänzende Heckpartie eines dunklen Fahrzeugs",
+        "minutes": 4,
+        "category": "Folierung",
+        "link": {
+          "path": "/folierung",
+          "label": "Autofolierung anfragen"
+        },
+        "related": [
+          "folieren-oder-lackieren",
+          "smart-repair-oder-lackkorrektur",
+          "keramikversiegelung-langzeitschutz"
+        ],
+        "sources": [],
+        "sections": [
+          {
+            "heading": "Was bei einer Autofolierung passiert",
+            "paragraphs": [
+              "Bei einer Autofolierung wird das Fahrzeug mit einer dünnen Folie beklebt. Im Englischen heißt das Car Wrapping. So bekommt dein Auto eine neue Farbe oder neue Akzente, ohne dass neu lackiert wird.",
+              "Du kannst das ganze Auto folieren lassen oder nur einzelne Teile. Bei einer Vollfolierung bekommen alle sichtbaren Außenflächen Folie. Bei einer Teilfolierung sind es zum Beispiel Dach, Spiegelkappen oder Chromleisten."
+            ]
+          },
+          {
+            "heading": "Glanz, Matt, Satin oder Effekt?",
+            "paragraphs": [
+              "Glanzfolie wirkt wie frischer Lack. Mattfolie und Satinfolie wirken ruhiger und seidiger. Effektfolien verändern ihre Farbe je nach Licht und Blickwinkel.",
+              "Am besten suchst du Farbe und Finish an einem Muster aus. Ein kleines Bild am Bildschirm zeigt nie genau, wie die Folie im Tageslicht auf deinem Auto wirkt."
+            ]
+          },
+          {
+            "heading": "Warum der Lack vorher geprüft wird",
+            "paragraphs": [
+              "Die Folie haftet auf dem Lack. Auf intaktem Originallack lässt sie sich in der Regel später wieder ablösen. Bei nachlackierten oder beschädigten Stellen kann beim Entfernen Lack mitgehen.",
+              "Deshalb schauen wir uns den Lack vor der Folierung an, auch mit Lackdickenmessung. So weißt du vorher, ob dein Lack geeignet ist oder ob zuerst eine Reparatur sinnvoll ist."
+            ]
+          },
+          {
+            "heading": "So läuft es bei White-Gloss ab",
+            "paragraphs": [
+              "Du schickst uns dein Fahrzeug und deine Wunschfarbe, gern mit Fotos. Wir prüfen den Lack und stimmen Farbe, Folie und Umfang mit unserem Partner-Folierer ab. Den Preis erfährst du, bevor du zusagst.",
+              "Die Folierung übernimmt ein erfahrener Partnerbetrieb. Auf Wunsch holen wir dein Auto in Horb am Neckar und Umgebung ab und bringen es zurück. Bei der Übergabe bekommst du die Pflegehinweise für deine Folie."
+            ]
+          }
+        ]
+      },
+      {
+        "slug": "folieren-oder-lackieren",
+        "title": "Folieren oder Lackieren: Was passt zu deinem Auto?",
+        "seoTitle": "Auto folieren oder lackieren? Unterschiede | White-Gloss",
+        "excerpt": "Neue Farbe, Kratzer oder Delle: Wann eine Folie die bessere Wahl ist, wann der Lackierer ran muss und wann Dellen drücken reicht.",
+        "seoExcerpt": "Folieren oder lackieren? Wann eine Autofolierung passt, wann Lackierarbeiten nötig sind und wann Dellen drücken ohne Lackieren reicht. Ratgeber aus Horb.",
+        "date": "2026-11-27",
+        "image": "/media/keramik.webp",
+        "imageAlt": "Spiegelung einer Holzfassade auf dunklem Fahrzeuglack",
+        "minutes": 4,
+        "category": "Folierung",
+        "link": {
+          "path": "/folierung-smart-repair",
+          "label": "Folierung, Dellen, Lack und Smart Repair"
+        },
+        "related": [
+          "auto-folieren-lassen",
+          "smart-repair-oder-lackkorrektur",
+          "lackkorrektur-swirls-kratzer-politur"
+        ],
+        "sources": [],
+        "sections": [
+          {
+            "heading": "Zwei Wege zu einer neuen Optik",
+            "paragraphs": [
+              "Folieren und Lackieren lösen unterschiedliche Aufgaben. Eine Folie legt sich wie eine neue Haut über den vorhandenen Lack. Eine Lackierung ersetzt oder repariert den Lack selbst.",
+              "Welcher Weg passt, hängt davon ab, was du willst: eine neue Farbe, einen neuen Look an einzelnen Teilen oder die Reparatur eines Schadens."
+            ]
+          },
+          {
+            "heading": "Wann eine Folierung passt",
+            "paragraphs": [
+              "Wenn du die Farbe wechseln möchtest und der Lack in gutem Zustand ist, ist eine Folierung oft die passende Wahl. Der Originallack bleibt darunter erhalten, und die Folie lässt sich in der Regel wieder entfernen.",
+              "Auch für Akzente wie ein schwarzes Dach, dunkle Zierleisten oder Spiegelkappen in Kontrastfarbe eignet sich Folie gut."
+            ]
+          },
+          {
+            "heading": "Wann Lackierarbeiten nötig sind",
+            "paragraphs": [
+              "Eine Folie verdeckt keine Schäden. Tiefe Kratzer, Steinschläge oder Rost verschwinden unter der Folie nicht. Solche Stellen gehören vorher zum Lackierer.",
+              "Ob eine kleine Ausbesserung reicht oder ein Bauteil neu lackiert wird, entscheidet der Lackierbetrieb am Fahrzeug. Feine Waschkratzer dagegen behandeln wir oft schon mit einer Politur bei uns."
+            ]
+          },
+          {
+            "heading": "Und bei Dellen?",
+            "paragraphs": [
+              "Weder Folie noch Lack beseitigen eine Delle. Parkdellen oder Hagelschäden lassen sich oft ohne Lackieren herausdrücken, wenn Lack und Blech es zulassen.",
+              "Für Folierung, Lackierarbeiten und Dellen drücken arbeiten wir mit spezialisierten Partnerbetrieben. Wir schauen uns dein Auto an und sagen dir ehrlich, welcher Weg sinnvoll ist. Den Preis erfährst du, bevor du zusagst."
+            ]
+          }
         ]
       }
     ]

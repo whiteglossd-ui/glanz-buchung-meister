@@ -37,6 +37,19 @@ export const helperPaths = new Set([
   "/auftragsstatus",
 ]);
 
+/**
+ * Pages merged into one stronger page (owner decision 27.11.2026: the three
+ * dent pages become /dellen-druecken). Each old URL answers with a 301.
+ */
+export const consolidatedPaths: Readonly<Record<string, string>> = {
+  "/dellen-hagelschaden": "/dellen-druecken",
+};
+/** Catalog services whose public page moved; booking keeps the slug. */
+export const consolidatedServices: Readonly<Record<string, string>> = {
+  "smart-repair": "/dellen-druecken",
+};
+export const isConsolidatedService = (slug: string) => Object.hasOwn(consolidatedServices, slug);
+
 export function hasLocalSeoEvidence(evidence?: LocalSeoEvidence): boolean {
   if (!evidence || evidence.available !== true) return false;
   const { demand, facts, proof } = evidence;
@@ -74,6 +87,12 @@ export function serviceCitySeo(
   const service = services.find((item) => item.slug === serviceSlug);
   const city = cities.find((item) => item.slug === citySlug);
   if (!service || !city) return { status: "noindex", reason: "unknown-combination" };
+  if (isConsolidatedService(service.slug))
+    return {
+      status: "redirect",
+      target: consolidatedServices[service.slug],
+      reason: "service-consolidated-into-dedicated-page",
+    };
   if (service.pendingApproval)
     return {
       status: "redirect",
@@ -90,9 +109,19 @@ export function publicSeo(path: string): SeoDecision {
   if (helperPaths.has(path) || /^\/(admin|api)(\/|$)/.test(path)) {
     return { status: "noindex", reason: "helper-or-private-page" };
   }
+  if (Object.hasOwn(consolidatedPaths, path)) {
+    return { status: "redirect", target: consolidatedPaths[path], reason: "page-consolidated" };
+  }
   const matrix = /^\/leistungen\/([^/]+)\/([^/]+)$/.exec(path);
   if (matrix) return serviceCitySeo(matrix[1], matrix[2]);
   const service = services.find((item) => path === `/leistungen/${item.slug}`);
+  if (service && isConsolidatedService(service.slug)) {
+    return {
+      status: "redirect",
+      target: consolidatedServices[service.slug],
+      reason: "service-consolidated-into-dedicated-page",
+    };
+  }
   if (service?.pendingApproval) return { status: "noindex", reason: "unavailable-service" };
   return { status: "index", reason: "public-hub-or-editorial-page" };
 }

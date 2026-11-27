@@ -194,6 +194,7 @@ function loadDarkHome({ hash = "", hydrated = false } = {}) {
     "@/data/home-copy": homeCopy,
     "@/data/scroll-film": scrollFilm,
     "@/lib/city-copy": cityCopy,
+    "@/lib/seo-policy": seoPolicy,
     "@/lib/booking-anchor-focus": { focusBookingHeading: () => {} },
     "@/lib/dark-motion": { darkFrameSrc: (s, i) => `/media/dark/seq/${s}/${i + 1}.webp`, initDarkHome: () => () => {}, tweenNumber: () => {} },
     "@/components/lazy-configurator": {

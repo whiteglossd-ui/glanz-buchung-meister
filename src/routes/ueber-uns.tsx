@@ -130,10 +130,10 @@ function AboutPage() {
               zusammen.
             </p>
             <Link
-              to="/dellen-hagelschaden"
+              to="/dellen-druecken"
               className="inline-flex min-h-11 items-center underline underline-offset-4"
             >
-              Dellen- und Hagelschäden
+              Dellen drücken und Hagelschäden
             </Link>
             <h3 className="mt-6 border-t border-line pt-6 font-display text-2xl">Kundenstimmen</h3>
             <a

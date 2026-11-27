@@ -28,6 +28,8 @@ type PartnerService = {
   text: string;
   points: string[];
   icon: LucideIcon;
+  /** Dedicated landing page for this service. */
+  page: "/folierung" | "/dellen-druecken" | "/lackierarbeiten" | "/smart-repair";
   photo?: SlotPhoto;
 };
 
@@ -45,6 +47,7 @@ const partnerServices: PartnerService[] = [
       "Auch für Luxus-, Sport- und Sammlerfahrzeuge",
     ],
     icon: Layers,
+    page: "/folierung",
   },
   {
     id: "dellen",
@@ -59,6 +62,7 @@ const partnerServices: PartnerService[] = [
       "Erste Einschätzung oft schon per Foto",
     ],
     icon: ScanSearch,
+    page: "/dellen-druecken",
   },
   {
     id: "lackierarbeiten",
@@ -73,6 +77,7 @@ const partnerServices: PartnerService[] = [
       "Anschließend auf Wunsch Politur und Versiegelung bei uns",
     ],
     icon: Paintbrush,
+    page: "/lackierarbeiten",
   },
   {
     id: "smart-repair",
@@ -87,6 +92,7 @@ const partnerServices: PartnerService[] = [
       "Was möglich ist, klären wir vorab am Fahrzeug",
     ],
     icon: Wrench,
+    page: "/smart-repair",
   },
 ];
 
@@ -231,11 +237,9 @@ function PartnerServicesPage() {
                       <li key={point}>{point}</li>
                     ))}
                   </ul>
-                  {service.id === "dellen" ? (
-                    <Link to="/dellen-hagelschaden" className="golink">
-                      Mehr zu Dellen und Hagelschäden <span aria-hidden="true">→</span>
-                    </Link>
-                  ) : null}
+                  <Link to={service.page} className="golink">
+                    Mehr zu {service.label} <span aria-hidden="true">→</span>
+                  </Link>
                 </div>
               </li>
             ))}

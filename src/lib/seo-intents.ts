@@ -1,6 +1,7 @@
 import { cities, services } from "../data/site.ts";
 import { articleNavigation } from "./article-navigation.ts";
 import { citySeoCopy } from "./city-copy.ts";
+import { isConsolidatedService } from "./seo-policy.ts";
 
 export type SearchIntent = {
   cluster: string;
@@ -81,13 +82,28 @@ export const seoIntents: Record<string, SearchIntent> = {
     intent: "navigational",
     purpose: "Echte Arbeitsbeispiele ansehen",
   },
-  "/dellen-hagelschaden": {
-    cluster: "hagelschaden foto begutachtung",
+  "/folierung": {
+    cluster: "autofolierung farbwechsel horb",
     intent: "commercial",
-    purpose: "Konkreten Schaden zur Prüfung einreichen",
+    purpose: "Autofolierung, Farbwechsel oder Teilfolierung anfragen",
+  },
+  "/lackierarbeiten": {
+    cluster: "lackierarbeiten kratzer steinschlag horb",
+    intent: "commercial",
+    purpose: "Lackschaden, Kratzer oder Bauteillackierung anfragen",
+  },
+  "/dellen-druecken": {
+    cluster: "dellen drücken hagelschaden ohne lackieren",
+    intent: "commercial",
+    purpose: "Parkdelle oder Hagelschaden ohne Lackieren entfernen lassen, erste Einschätzung per Foto",
+  },
+  "/smart-repair": {
+    cluster: "smart repair felgen leder kleinschaden",
+    intent: "commercial",
+    purpose: "Kleine Schäden an Lack, Felgen oder Innenraum gezielt reparieren lassen",
   },
   "/folierung-smart-repair": {
-    cluster: "auto folierung smart repair horb",
+    cluster: "partnerleistungen karosserie lack übersicht",
     intent: "commercial",
     purpose: "Folierung, Dellen drücken, Lackierarbeiten oder Smart Repair anfragen",
   },
@@ -126,9 +142,19 @@ export const seoIntents: Record<string, SearchIntent> = {
     intent: "informational",
     purpose: "Streusalz bei winterlichen Temperaturen möglichst schonend vom Fahrzeug entfernen",
   },
+  "/ratgeber/auto-folieren-lassen": {
+    cluster: "auto folieren lassen ablauf",
+    intent: "informational",
+    purpose: "Ablauf, Folienarten und Lackprüfung vor einer Autofolierung verstehen",
+  },
+  "/ratgeber/folieren-oder-lackieren": {
+    cluster: "auto folieren oder lackieren",
+    intent: "informational",
+    purpose: "Zwischen Folierung, Lackierarbeiten und Dellen drücken entscheiden",
+  },
   ...Object.fromEntries(
     services
-      .filter((s) => !s.pendingApproval)
+      .filter((s) => !s.pendingApproval && !isConsolidatedService(s.slug))
       .map((s) => [
         `/leistungen/${s.slug}`,
         {

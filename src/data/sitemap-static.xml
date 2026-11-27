@@ -9,7 +9,6 @@
   <url><loc>https://white-gloss.de/leistungen/lackkorrektur</loc></url>
   <url><loc>https://white-gloss.de/leistungen/keramikversiegelung</loc></url>
   <url><loc>https://white-gloss.de/leistungen/lederpflege</loc></url>
-  <url><loc>https://white-gloss.de/leistungen/smart-repair</loc></url>
   <url><loc>https://white-gloss.de/leistungen/leasingrueckgabe</loc></url>
   <url><loc>https://white-gloss.de/leistungen/lederreparatur</loc></url>
   <url><loc>https://white-gloss.de/leistungen/geruchsneutralisation</loc></url>
@@ -19,7 +18,10 @@
   <url><loc>https://white-gloss.de/faq</loc></url>
   <url><loc>https://white-gloss.de/kontakt</loc></url>
   <url><loc>https://white-gloss.de/galerie</loc></url>
-  <url><loc>https://white-gloss.de/dellen-hagelschaden</loc></url>
+  <url><loc>https://white-gloss.de/folierung</loc></url>
+  <url><loc>https://white-gloss.de/lackierarbeiten</loc></url>
+  <url><loc>https://white-gloss.de/dellen-druecken</loc></url>
+  <url><loc>https://white-gloss.de/smart-repair</loc></url>
   <url><loc>https://white-gloss.de/folierung-smart-repair</loc></url>
   <url><loc>https://white-gloss.de/fahrzeug-zustand</loc></url>
   <url><loc>https://white-gloss.de/b2b</loc></url>
@@ -43,6 +45,8 @@
   <url><loc>https://white-gloss.de/ratgeber/hundehaare-aus-dem-auto-entfernen</loc></url>
   <url><loc>https://white-gloss.de/ratgeber/auto-vor-dem-verkauf-aufbereiten</loc></url>
   <url><loc>https://white-gloss.de/ratgeber/auto-im-winter-waschen</loc></url>
+  <url><loc>https://white-gloss.de/ratgeber/auto-folieren-lassen</loc></url>
+  <url><loc>https://white-gloss.de/ratgeber/folieren-oder-lackieren</loc></url>
   <url><loc>https://white-gloss.de/ratgeber/keramikversiegelung-kosten</loc></url>
   <url><loc>https://white-gloss.de/ratgeber/keramikversiegelung-langzeitschutz</loc></url>
   <url><loc>https://white-gloss.de/ratgeber/lackkorrektur-swirls</loc></url>
@@ -125,19 +129,6 @@
   <url><loc>https://white-gloss.de/leistungen/lederpflege/boeblingen</loc></url>
   <url><loc>https://white-gloss.de/leistungen/lederpflege/reutlingen</loc></url>
   <url><loc>https://white-gloss.de/leistungen/lederpflege/sindelfingen</loc></url>
-  <url><loc>https://white-gloss.de/leistungen/smart-repair/horb-am-neckar</loc></url>
-  <url><loc>https://white-gloss.de/leistungen/smart-repair/nagold</loc></url>
-  <url><loc>https://white-gloss.de/leistungen/smart-repair/rottenburg-am-neckar</loc></url>
-  <url><loc>https://white-gloss.de/leistungen/smart-repair/freudenstadt</loc></url>
-  <url><loc>https://white-gloss.de/leistungen/smart-repair/oberndorf-am-neckar</loc></url>
-  <url><loc>https://white-gloss.de/leistungen/smart-repair/herrenberg</loc></url>
-  <url><loc>https://white-gloss.de/leistungen/smart-repair/tuebingen</loc></url>
-  <url><loc>https://white-gloss.de/leistungen/smart-repair/calw</loc></url>
-  <url><loc>https://white-gloss.de/leistungen/smart-repair/balingen</loc></url>
-  <url><loc>https://white-gloss.de/leistungen/smart-repair/rottweil</loc></url>
-  <url><loc>https://white-gloss.de/leistungen/smart-repair/boeblingen</loc></url>
-  <url><loc>https://white-gloss.de/leistungen/smart-repair/reutlingen</loc></url>
-  <url><loc>https://white-gloss.de/leistungen/smart-repair/sindelfingen</loc></url>
   <url><loc>https://white-gloss.de/leistungen/leasingrueckgabe/horb-am-neckar</loc></url>
   <url><loc>https://white-gloss.de/leistungen/leasingrueckgabe/nagold</loc></url>
   <url><loc>https://white-gloss.de/leistungen/leasingrueckgabe/rottenburg-am-neckar</loc></url>
@@ -198,7 +189,6 @@
   <url><loc>https://white-gloss.de/leistungen/lackkorrektur/sulz-am-neckar</loc></url>
   <url><loc>https://white-gloss.de/leistungen/keramikversiegelung/sulz-am-neckar</loc></url>
   <url><loc>https://white-gloss.de/leistungen/lederpflege/sulz-am-neckar</loc></url>
-  <url><loc>https://white-gloss.de/leistungen/smart-repair/sulz-am-neckar</loc></url>
   <url><loc>https://white-gloss.de/leistungen/leasingrueckgabe/sulz-am-neckar</loc></url>
   <url><loc>https://white-gloss.de/leistungen/lederreparatur/sulz-am-neckar</loc></url>
   <url><loc>https://white-gloss.de/leistungen/geruchsneutralisation/sulz-am-neckar</loc></url>
@@ -209,7 +199,6 @@
   <url><loc>https://white-gloss.de/leistungen/lackkorrektur/empfingen</loc></url>
   <url><loc>https://white-gloss.de/leistungen/keramikversiegelung/empfingen</loc></url>
   <url><loc>https://white-gloss.de/leistungen/lederpflege/empfingen</loc></url>
-  <url><loc>https://white-gloss.de/leistungen/smart-repair/empfingen</loc></url>
   <url><loc>https://white-gloss.de/leistungen/leasingrueckgabe/empfingen</loc></url>
   <url><loc>https://white-gloss.de/leistungen/lederreparatur/empfingen</loc></url>
   <url><loc>https://white-gloss.de/leistungen/geruchsneutralisation/empfingen</loc></url>
@@ -220,7 +209,6 @@
   <url><loc>https://white-gloss.de/leistungen/lackkorrektur/voehringen</loc></url>
   <url><loc>https://white-gloss.de/leistungen/keramikversiegelung/voehringen</loc></url>
   <url><loc>https://white-gloss.de/leistungen/lederpflege/voehringen</loc></url>
-  <url><loc>https://white-gloss.de/leistungen/smart-repair/voehringen</loc></url>
   <url><loc>https://white-gloss.de/leistungen/leasingrueckgabe/voehringen</loc></url>
   <url><loc>https://white-gloss.de/leistungen/lederreparatur/voehringen</loc></url>
   <url><loc>https://white-gloss.de/leistungen/geruchsneutralisation/voehringen</loc></url>
@@ -231,7 +219,6 @@
   <url><loc>https://white-gloss.de/leistungen/lackkorrektur/dornhan</loc></url>
   <url><loc>https://white-gloss.de/leistungen/keramikversiegelung/dornhan</loc></url>
   <url><loc>https://white-gloss.de/leistungen/lederpflege/dornhan</loc></url>
-  <url><loc>https://white-gloss.de/leistungen/smart-repair/dornhan</loc></url>
   <url><loc>https://white-gloss.de/leistungen/leasingrueckgabe/dornhan</loc></url>
   <url><loc>https://white-gloss.de/leistungen/lederreparatur/dornhan</loc></url>
   <url><loc>https://white-gloss.de/leistungen/geruchsneutralisation/dornhan</loc></url>
@@ -242,7 +229,6 @@
   <url><loc>https://white-gloss.de/leistungen/lackkorrektur/dornstetten</loc></url>
   <url><loc>https://white-gloss.de/leistungen/keramikversiegelung/dornstetten</loc></url>
   <url><loc>https://white-gloss.de/leistungen/lederpflege/dornstetten</loc></url>
-  <url><loc>https://white-gloss.de/leistungen/smart-repair/dornstetten</loc></url>
   <url><loc>https://white-gloss.de/leistungen/leasingrueckgabe/dornstetten</loc></url>
   <url><loc>https://white-gloss.de/leistungen/lederreparatur/dornstetten</loc></url>
   <url><loc>https://white-gloss.de/leistungen/geruchsneutralisation/dornstetten</loc></url>
@@ -253,7 +239,6 @@
   <url><loc>https://white-gloss.de/leistungen/lackkorrektur/schopfloch</loc></url>
   <url><loc>https://white-gloss.de/leistungen/keramikversiegelung/schopfloch</loc></url>
   <url><loc>https://white-gloss.de/leistungen/lederpflege/schopfloch</loc></url>
-  <url><loc>https://white-gloss.de/leistungen/smart-repair/schopfloch</loc></url>
   <url><loc>https://white-gloss.de/leistungen/leasingrueckgabe/schopfloch</loc></url>
   <url><loc>https://white-gloss.de/leistungen/lederreparatur/schopfloch</loc></url>
   <url><loc>https://white-gloss.de/leistungen/geruchsneutralisation/schopfloch</loc></url>
