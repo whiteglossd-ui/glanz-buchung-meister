@@ -153,25 +153,25 @@ export function renderContactCard(contact) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark light">
-  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#05060a">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#090a0d">
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f2f3f5">
   <meta name="description" content="${h(description)}">
   <title>${h(c.name)} · Digitale Visitenkarte</title>
   <link rel="canonical" href="${h(c.cardUrl)}">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <style>
-    @font-face{font-family:Barlow;font-style:normal;font-weight:400;font-display:swap;src:url('/fonts/barlow-400.woff2') format('woff2')}
-    @font-face{font-family:Barlow;font-style:normal;font-weight:500;font-display:swap;src:url('/fonts/barlow-500.woff2') format('woff2')}
-    @font-face{font-family:"WG Display";font-style:normal;font-weight:400;font-display:swap;src:url('/fonts/bsc-300.woff2') format('woff2')}
-    @font-face{font-family:"WG Display";font-style:normal;font-weight:500;font-display:swap;src:url('/fonts/bsc-400.woff2') format('woff2')}
+    @font-face{font-family:Barlow;font-style:normal;font-weight:400;font-display:swap;src:url('/fonts/de-v1/barlow-400.woff2') format('woff2')}
+    @font-face{font-family:Barlow;font-style:normal;font-weight:500;font-display:swap;src:url('/fonts/de-v1/barlow-500.woff2') format('woff2')}
+    @font-face{font-family:"WG Display";font-style:normal;font-weight:400;font-display:swap;src:url('/fonts/de-v1/bsc-300.woff2') format('woff2')}
+    @font-face{font-family:"WG Display";font-style:normal;font-weight:500;font-display:swap;src:url('/fonts/de-v1/bsc-400.woff2') format('woff2')}
     :root{
       color-scheme:dark;
-      --bg:#05060a;--surface:#0e1014;--raised:#121419;
-      --ink:#eef0f3;--muted:#a9b0b9;--line:#ffffff1f;--line-strong:#ffffff38;
-      --accent:#eef0f3;--on-accent:#14171b;--accent-detail:#303843;
+      --bg:#090a0d;--surface:#0e1014;--raised:#121419;
+      --ink:#f3f0e8;--muted:#a9b0b9;--line:#ffffff1f;--line-strong:#ffffff38;
+      --accent:#f3f0e8;--on-accent:#14171b;--accent-detail:#303843;
       --steel:linear-gradient(100deg,#f6f7f9,#d5dae0 28%,#fff 46%,#bcc3cb 68%,#eceef1);
       --sheen:linear-gradient(180deg,#ffffff0b,#ffffff04);
-      --glow:#8c9baf20;--shadow:#00000070;--radius:14px;
+      --glow:#8c9baf20;--shadow:#00000070;--radius:4px;
       --display:"WG Display",Barlow,system-ui,sans-serif;
       font-family:Barlow,ui-sans-serif,system-ui,sans-serif;
       color:var(--ink);background:var(--bg)
@@ -179,10 +179,10 @@ export function renderContactCard(contact) {
     @supports (color:light-dark(white,black)){
       :root{
         color-scheme:dark light;
-        --bg:light-dark(#f2f3f5,#05060a);--surface:light-dark(#fff,#0e1014);--raised:light-dark(#e8ebef,#121419);
-        --ink:light-dark(#14171b,#eef0f3);--muted:light-dark(#4b5563,#a9b0b9);
+        --bg:light-dark(#f2f3f5,#090a0d);--surface:light-dark(#fff,#0e1014);--raised:light-dark(#e8ebef,#121419);
+        --ink:light-dark(#14171b,#f3f0e8);--muted:light-dark(#4b5563,#a9b0b9);
         --line:light-dark(#14181d1f,#ffffff1f);--line-strong:light-dark(#14181d38,#ffffff38);
-        --accent:light-dark(#242931,#eef0f3);--on-accent:light-dark(#f6f7f9,#14171b);
+        --accent:light-dark(#242931,#f3f0e8);--on-accent:light-dark(#f6f7f9,#14171b);
         --accent-detail:light-dark(#edf0f4,#303843);
         --steel:linear-gradient(100deg,light-dark(#323a44,#f6f7f9),light-dark(#222730,#d5dae0) 28%,light-dark(#353e49,#fff) 46%,light-dark(#20252d,#bcc3cb) 68%,light-dark(#222730,#eceef1));
         --sheen:linear-gradient(180deg,light-dark(#4d566400,#ffffff0b),light-dark(#4d566406,#ffffff04));
@@ -213,7 +213,7 @@ export function renderContactCard(contact) {
     .tagline{max-width:38ch;margin:10px 0 0;font-size:17px;line-height:1.5;color:var(--muted);overflow-wrap:anywhere}
     .owner{margin:8px 0 0;font-size:15px;color:var(--ink);overflow-wrap:anywhere}
     .actions{display:grid;gap:12px}
-    .action{display:flex;align-items:center;gap:14px;min-height:66px;padding:13px 16px;border:1px solid var(--line);border-radius:var(--radius);background:var(--sheen),var(--surface);transition:background-position .24s ease,border-color .16s ease}
+    .action{display:flex;align-items:center;gap:14px;min-height:66px;padding:13px 16px;border:1px solid var(--line);border-radius:var(--radius);background:var(--sheen),var(--surface);transition:transform .2s ease}
     .action--primary{min-height:76px;background:var(--steel),var(--accent);background-size:160% 100%;border-color:var(--accent);color:var(--on-accent)}
     .icon{display:block;width:24px;height:24px;flex:0 0 24px}
     .action-copy{display:block;flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
@@ -234,7 +234,7 @@ export function renderContactCard(contact) {
     .address{margin:8px 0 0;overflow-wrap:anywhere}
     .footer{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:20px;border-top:1px solid var(--line);padding-top:8px;font-size:13px;color:var(--muted)}
     .footer a{display:inline-flex;align-items:center;min-height:44px;text-decoration:underline;text-decoration-color:transparent;text-underline-offset:4px}
-    @media(hover:hover){.action:hover{border-color:var(--line-strong)}.action--primary:hover{background-position:right;border-color:var(--accent)}.email:hover,.footer a:hover{color:var(--ink);text-decoration-color:currentColor}}
+    @media(hover:hover){.action:hover{border-color:var(--line-strong)}.action--primary:hover{transform:translateY(-1px);border-color:var(--accent)}.email:hover,.footer a:hover{color:var(--ink);text-decoration-color:currentColor}}
     @media(min-width:700px){.card{margin:40px auto;padding:34px;border:1px solid var(--line);border-radius:var(--radius);background:var(--sheen),var(--surface);box-shadow:0 26px 70px -36px var(--shadow)}.identity{padding-bottom:28px}}
     @media(max-width:359px){.card{padding-inline:16px}.theme-option{padding-inline:7px}.direct-actions{grid-template-columns:1fr}.direct-actions .action{min-height:66px;padding:13px 16px;gap:14px}.direct-actions .action-detail{font-size:13px}.direct-actions .action-arrow{display:block}}
     @media(prefers-reduced-motion:reduce){.action{transition:none}}
@@ -246,7 +246,7 @@ export function renderContactCard(contact) {
   <main class="card">
     <header class="identity">
       <div class="identity-top">
-        <img class="brand" src="/media/logo-280.webp" alt="" width="280" height="161" decoding="async">
+        <picture><source type="image/avif" srcset="/media/logo-280.avif"><img class="brand" src="/media/logo-280.webp" alt="" width="280" height="161" fetchpriority="high" decoding="async"></picture>
         <fieldset class="theme-choice">
           <legend class="visually-hidden">Darstellung</legend>
           <label class="theme-option"><input class="visually-hidden" type="radio" name="card-theme" id="card-theme-auto" checked>System</label>
