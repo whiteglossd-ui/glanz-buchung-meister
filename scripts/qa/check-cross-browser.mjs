@@ -126,7 +126,7 @@ async function verifyContactCard(page, label) {
   assert.equal(await background(), "rgb(242, 243, 245)", `${label}: follows the device in System mode`);
   const theme = page.getByRole("group", { name: "Darstellung" });
   await page.evaluate(() => document.fonts.ready);
-  for (const [name, color] of [["Dunkel", "rgb(5, 6, 10)"], ["Hell", "rgb(242, 243, 245)"]]) {
+  for (const [name, color] of [["Dunkel", "rgb(9, 10, 13)"], ["Hell", "rgb(242, 243, 245)"]]) {
     await theme.getByText(name, { exact: true }).click();
     assert.ok(await theme.getByRole("radio", { name, exact: true }).isChecked());
     assert.equal(await background(), color, `${label}: ${name} switches the palette`);
