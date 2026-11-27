@@ -19,6 +19,7 @@ import { Route as BarrierefreiheitRouteImport } from './routes/barrierefreiheit'
 import { Route as DankeRouteImport } from './routes/danke'
 import { Route as DatenloeschungRouteImport } from './routes/datenloeschung'
 import { Route as DatenschutzRouteImport } from './routes/datenschutz'
+import { Route as DellenDrueckenRouteImport } from './routes/dellen-druecken'
 import { Route as DellenHagelschadenRouteImport } from './routes/dellen-hagelschaden'
 import { Route as FahrzeugZustandRouteImport } from './routes/fahrzeug-zustand'
 import { Route as FaqRouteImport } from './routes/faq'
@@ -28,6 +29,7 @@ import { Route as FreudenstadtLossburgRouteImport } from './routes/freudenstadt-
 import { Route as GalerieRouteImport } from './routes/galerie'
 import { Route as ImpressumRouteImport } from './routes/impressum'
 import { Route as KontaktRouteImport } from './routes/kontakt'
+import { Route as LackierarbeitenRouteImport } from './routes/lackierarbeiten'
 import { Route as LeistungenRouteImport } from './routes/leistungen'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LuxusfahrzeugeRouteImport } from './routes/luxusfahrzeuge'
@@ -35,6 +37,7 @@ import { Route as PreiseRouteImport } from './routes/preise'
 import { Route as QualitaetRouteImport } from './routes/qualitaet'
 import { Route as RatgeberRouteImport } from './routes/ratgeber'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SmartRepairRouteImport } from './routes/smart-repair'
 import { Route as UeberUnsRouteImport } from './routes/ueber-uns'
 import { Route as WiderrufRouteImport } from './routes/widerruf'
 import { Route as AbholserviceIndexRouteImport } from './routes/abholservice.index'
@@ -130,6 +133,11 @@ const DatenschutzRoute = DatenschutzRouteImport.update({
   path: '/datenschutz',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DellenDrueckenRoute = DellenDrueckenRouteImport.update({
+  id: '/dellen-druecken',
+  path: '/dellen-druecken',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DellenHagelschadenRoute = DellenHagelschadenRouteImport.update({
   id: '/dellen-hagelschaden',
   path: '/dellen-hagelschaden',
@@ -175,6 +183,11 @@ const KontaktRoute = KontaktRouteImport.update({
   path: '/kontakt',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LackierarbeitenRoute = LackierarbeitenRouteImport.update({
+  id: '/lackierarbeiten',
+  path: '/lackierarbeiten',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LeistungenRoute = LeistungenRouteImport.update({
   id: '/leistungen',
   path: '/leistungen',
@@ -208,6 +221,11 @@ const RatgeberRoute = RatgeberRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SmartRepairRoute = SmartRepairRouteImport.update({
+  id: '/smart-repair',
+  path: '/smart-repair',
   getParentRoute: () => rootRouteImport,
 } as any)
 const UeberUnsRoute = UeberUnsRouteImport.update({
@@ -442,6 +460,7 @@ export interface FileRoutesByFullPath {
   '/danke': typeof DankeRoute
   '/datenloeschung': typeof DatenloeschungRoute
   '/datenschutz': typeof DatenschutzRoute
+  '/dellen-druecken': typeof DellenDrueckenRoute
   '/dellen-hagelschaden': typeof DellenHagelschadenRoute
   '/fahrzeug-zustand': typeof FahrzeugZustandRoute
   '/faq': typeof FaqRoute
@@ -451,6 +470,7 @@ export interface FileRoutesByFullPath {
   '/galerie': typeof GalerieRoute
   '/impressum': typeof ImpressumRoute
   '/kontakt': typeof KontaktRoute
+  '/lackierarbeiten': typeof LackierarbeitenRoute
   '/leistungen': typeof LeistungenRouteWithChildren
   '/login': typeof LoginRoute
   '/luxusfahrzeuge': typeof LuxusfahrzeugeRoute
@@ -458,6 +478,7 @@ export interface FileRoutesByFullPath {
   '/qualitaet': typeof QualitaetRoute
   '/ratgeber': typeof RatgeberRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/smart-repair': typeof SmartRepairRoute
   '/ueber-uns': typeof UeberUnsRoute
   '/widerruf': typeof WiderrufRoute
   '/abholservice/$city': typeof AbholserviceCityRoute
@@ -512,6 +533,7 @@ export interface FileRoutesByTo {
   '/danke': typeof DankeRoute
   '/datenloeschung': typeof DatenloeschungRoute
   '/datenschutz': typeof DatenschutzRoute
+  '/dellen-druecken': typeof DellenDrueckenRoute
   '/dellen-hagelschaden': typeof DellenHagelschadenRoute
   '/fahrzeug-zustand': typeof FahrzeugZustandRoute
   '/faq': typeof FaqRoute
@@ -521,11 +543,13 @@ export interface FileRoutesByTo {
   '/galerie': typeof GalerieRoute
   '/impressum': typeof ImpressumRoute
   '/kontakt': typeof KontaktRoute
+  '/lackierarbeiten': typeof LackierarbeitenRoute
   '/login': typeof LoginRoute
   '/luxusfahrzeuge': typeof LuxusfahrzeugeRoute
   '/preise': typeof PreiseRoute
   '/qualitaet': typeof QualitaetRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/smart-repair': typeof SmartRepairRoute
   '/ueber-uns': typeof UeberUnsRoute
   '/widerruf': typeof WiderrufRoute
   '/abholservice/$city': typeof AbholserviceCityRoute
@@ -582,6 +606,7 @@ export interface FileRoutesById {
   '/danke': typeof DankeRoute
   '/datenloeschung': typeof DatenloeschungRoute
   '/datenschutz': typeof DatenschutzRoute
+  '/dellen-druecken': typeof DellenDrueckenRoute
   '/dellen-hagelschaden': typeof DellenHagelschadenRoute
   '/fahrzeug-zustand': typeof FahrzeugZustandRoute
   '/faq': typeof FaqRoute
@@ -591,6 +616,7 @@ export interface FileRoutesById {
   '/galerie': typeof GalerieRoute
   '/impressum': typeof ImpressumRoute
   '/kontakt': typeof KontaktRoute
+  '/lackierarbeiten': typeof LackierarbeitenRoute
   '/leistungen': typeof LeistungenRouteWithChildren
   '/login': typeof LoginRoute
   '/luxusfahrzeuge': typeof LuxusfahrzeugeRoute
@@ -598,6 +624,7 @@ export interface FileRoutesById {
   '/qualitaet': typeof QualitaetRoute
   '/ratgeber': typeof RatgeberRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/smart-repair': typeof SmartRepairRoute
   '/ueber-uns': typeof UeberUnsRoute
   '/widerruf': typeof WiderrufRoute
   '/abholservice/$city': typeof AbholserviceCityRoute
@@ -656,6 +683,7 @@ export interface FileRouteTypes {
     | '/danke'
     | '/datenloeschung'
     | '/datenschutz'
+    | '/dellen-druecken'
     | '/dellen-hagelschaden'
     | '/fahrzeug-zustand'
     | '/faq'
@@ -665,6 +693,7 @@ export interface FileRouteTypes {
     | '/galerie'
     | '/impressum'
     | '/kontakt'
+    | '/lackierarbeiten'
     | '/leistungen'
     | '/login'
     | '/luxusfahrzeuge'
@@ -672,6 +701,7 @@ export interface FileRouteTypes {
     | '/qualitaet'
     | '/ratgeber'
     | '/sitemap.xml'
+    | '/smart-repair'
     | '/ueber-uns'
     | '/widerruf'
     | '/abholservice/$city'
@@ -726,6 +756,7 @@ export interface FileRouteTypes {
     | '/danke'
     | '/datenloeschung'
     | '/datenschutz'
+    | '/dellen-druecken'
     | '/dellen-hagelschaden'
     | '/fahrzeug-zustand'
     | '/faq'
@@ -735,11 +766,13 @@ export interface FileRouteTypes {
     | '/galerie'
     | '/impressum'
     | '/kontakt'
+    | '/lackierarbeiten'
     | '/login'
     | '/luxusfahrzeuge'
     | '/preise'
     | '/qualitaet'
     | '/sitemap.xml'
+    | '/smart-repair'
     | '/ueber-uns'
     | '/widerruf'
     | '/abholservice/$city'
@@ -795,6 +828,7 @@ export interface FileRouteTypes {
     | '/danke'
     | '/datenloeschung'
     | '/datenschutz'
+    | '/dellen-druecken'
     | '/dellen-hagelschaden'
     | '/fahrzeug-zustand'
     | '/faq'
@@ -804,6 +838,7 @@ export interface FileRouteTypes {
     | '/galerie'
     | '/impressum'
     | '/kontakt'
+    | '/lackierarbeiten'
     | '/leistungen'
     | '/login'
     | '/luxusfahrzeuge'
@@ -811,6 +846,7 @@ export interface FileRouteTypes {
     | '/qualitaet'
     | '/ratgeber'
     | '/sitemap.xml'
+    | '/smart-repair'
     | '/ueber-uns'
     | '/widerruf'
     | '/abholservice/$city'
@@ -868,6 +904,7 @@ export interface RootRouteChildren {
   DankeRoute: typeof DankeRoute
   DatenloeschungRoute: typeof DatenloeschungRoute
   DatenschutzRoute: typeof DatenschutzRoute
+  DellenDrueckenRoute: typeof DellenDrueckenRoute
   DellenHagelschadenRoute: typeof DellenHagelschadenRoute
   FahrzeugZustandRoute: typeof FahrzeugZustandRoute
   FaqRoute: typeof FaqRoute
@@ -877,6 +914,7 @@ export interface RootRouteChildren {
   GalerieRoute: typeof GalerieRoute
   ImpressumRoute: typeof ImpressumRoute
   KontaktRoute: typeof KontaktRoute
+  LackierarbeitenRoute: typeof LackierarbeitenRoute
   LeistungenRoute: typeof LeistungenRouteWithChildren
   LoginRoute: typeof LoginRoute
   LuxusfahrzeugeRoute: typeof LuxusfahrzeugeRoute
@@ -884,6 +922,7 @@ export interface RootRouteChildren {
   QualitaetRoute: typeof QualitaetRoute
   RatgeberRoute: typeof RatgeberRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  SmartRepairRoute: typeof SmartRepairRoute
   UeberUnsRoute: typeof UeberUnsRoute
   WiderrufRoute: typeof WiderrufRoute
   ApiAutomationCronRoute: typeof ApiAutomationCronRoute
@@ -976,6 +1015,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DatenschutzRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dellen-druecken': {
+      id: '/dellen-druecken'
+      path: '/dellen-druecken'
+      fullPath: '/dellen-druecken'
+      preLoaderRoute: typeof DellenDrueckenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dellen-hagelschaden': {
       id: '/dellen-hagelschaden'
       path: '/dellen-hagelschaden'
@@ -1039,6 +1085,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KontaktRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lackierarbeiten': {
+      id: '/lackierarbeiten'
+      path: '/lackierarbeiten'
+      fullPath: '/lackierarbeiten'
+      preLoaderRoute: typeof LackierarbeitenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/leistungen': {
       id: '/leistungen'
       path: '/leistungen'
@@ -1086,6 +1139,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/smart-repair': {
+      id: '/smart-repair'
+      path: '/smart-repair'
+      fullPath: '/smart-repair'
+      preLoaderRoute: typeof SmartRepairRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ueber-uns': {
@@ -1510,6 +1570,7 @@ const rootRouteChildren: RootRouteChildren = {
   DankeRoute: DankeRoute,
   DatenloeschungRoute: DatenloeschungRoute,
   DatenschutzRoute: DatenschutzRoute,
+  DellenDrueckenRoute: DellenDrueckenRoute,
   DellenHagelschadenRoute: DellenHagelschadenRoute,
   FahrzeugZustandRoute: FahrzeugZustandRoute,
   FaqRoute: FaqRoute,
@@ -1519,6 +1580,7 @@ const rootRouteChildren: RootRouteChildren = {
   GalerieRoute: GalerieRoute,
   ImpressumRoute: ImpressumRoute,
   KontaktRoute: KontaktRoute,
+  LackierarbeitenRoute: LackierarbeitenRoute,
   LeistungenRoute: LeistungenRouteWithChildren,
   LoginRoute: LoginRoute,
   LuxusfahrzeugeRoute: LuxusfahrzeugeRoute,
@@ -1526,6 +1588,7 @@ const rootRouteChildren: RootRouteChildren = {
   QualitaetRoute: QualitaetRoute,
   RatgeberRoute: RatgeberRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  SmartRepairRoute: SmartRepairRoute,
   UeberUnsRoute: UeberUnsRoute,
   WiderrufRoute: WiderrufRoute,
   ApiAutomationCronRoute: ApiAutomationCronRoute,

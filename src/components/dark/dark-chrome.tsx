@@ -242,6 +242,9 @@ export function DarkHeader() {
               ))}
               <Link to="/dellen-hagelschaden" onClick={close}>Dellen- und Hagelschäden</Link>
               <Link to="/folierung" onClick={close}>Autofolierung</Link>
+              <Link to="/lackierarbeiten" onClick={close}>Lackierarbeiten</Link>
+              <Link to="/dellen-druecken" onClick={close}>Dellen drücken</Link>
+              <Link to="/smart-repair" onClick={close}>Smart Repair</Link>
               <Link to="/folierung-smart-repair" onClick={close}>Folierung, Lack &amp; Smart Repair</Link>
             </div>
             <p className="label menu__gap" id="wgt-menu-info">Informationen</p>
@@ -339,6 +342,9 @@ export function DarkFooter() {
             <Link to="/leistungen/$slug" params={{ slug: "lederreparatur" }}>Lederreparatur</Link>
             <Link to="/dellen-hagelschaden">Dellen und Hagelschäden</Link>
             <Link to="/folierung">Autofolierung</Link>
+            <Link to="/lackierarbeiten">Lackierarbeiten</Link>
+            <Link to="/dellen-druecken">Dellen drücken</Link>
+            <Link to="/smart-repair">Smart Repair</Link>
             <Link to="/folierung-smart-repair">Folierung, Lack &amp; Smart Repair</Link>
             <Link to="/preise">Preise</Link>
             <Link to="/luxusfahrzeuge">Luxusfahrzeuge</Link>

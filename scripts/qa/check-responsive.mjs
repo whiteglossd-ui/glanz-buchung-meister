@@ -317,6 +317,9 @@ const paths = [
     "/fahrzeug-zustand",
     "/dellen-hagelschaden",
     "/folierung",
+    "/lackierarbeiten",
+    "/dellen-druecken",
+    "/smart-repair",
     "/folierung-smart-repair",
     ...cities.map((city) => `/abholservice/${city.slug}`),
     ...services

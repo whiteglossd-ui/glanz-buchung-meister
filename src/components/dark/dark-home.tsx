@@ -583,6 +583,9 @@ export function DarkHome({
               ))}
               <li><Link to="/dellen-hagelschaden">Dellen- und Hagelschäden</Link></li>
               <li><Link to="/folierung">Autofolierung und Farbwechsel</Link></li>
+              <li><Link to="/lackierarbeiten">Lackierarbeiten</Link></li>
+              <li><Link to="/dellen-druecken">Dellen drücken ohne Lackieren</Link></li>
+              <li><Link to="/smart-repair">Smart Repair</Link></li>
               <li><Link to="/folierung-smart-repair">Folierung, Lack und Smart Repair</Link></li>
               <li><Link to="/luxusfahrzeuge">Luxusfahrzeuge</Link></li>
               <li><Link to="/b2b">Firmen, Flotten und Autohäuser</Link></li>
@@ -590,7 +593,7 @@ export function DarkHome({
             </ul>
             <div className="hpart" data-reveal>
               <p className="label label--rule">Mit Partnerbetrieben</p>
-              <h3 className="h3 hpart__title">Folieren, Dellen drücken, Lackieren.</h3>
+              <h3 className="h3 hpart__title">Folieren, Lackieren, Dellen drücken, Smart Repair.</h3>
               <ul className="hpart__grid">
                 <li>
                   <Link to="/folierung" className="hpart__card">
@@ -600,17 +603,24 @@ export function DarkHome({
                   </Link>
                 </li>
                 <li>
-                  <Link to="/dellen-hagelschaden" className="hpart__card">
+                  <Link to="/lackierarbeiten" className="hpart__card">
                     <span className="hpart__num" aria-hidden="true">02</span>
+                    <span className="hpart__name">Lackierarbeiten</span>
+                    <span className="muted">Kratzer, Steinschläge und Bauteile, ausgeführt vom Lackierbetrieb.</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/dellen-druecken" className="hpart__card">
+                    <span className="hpart__num" aria-hidden="true">03</span>
                     <span className="hpart__name">Dellen drücken</span>
                     <span className="muted">Parkdellen und Hagelschäden ohne Lackieren, wenn Lack und Blech es zulassen.</span>
                   </Link>
                 </li>
                 <li>
-                  <Link to="/folierung-smart-repair" hash="lackierarbeiten" className="hpart__card">
-                    <span className="hpart__num" aria-hidden="true">03</span>
-                    <span className="hpart__name">Lackierarbeiten</span>
-                    <span className="muted">Kratzer, Steinschläge und Bauteile, ausgeführt vom Lackierbetrieb.</span>
+                  <Link to="/smart-repair" className="hpart__card">
+                    <span className="hpart__num" aria-hidden="true">04</span>
+                    <span className="hpart__name">Smart Repair</span>
+                    <span className="muted">Kleine Schäden an Lack, Felgen und Innenraum gezielt reparieren.</span>
                   </Link>
                 </li>
               </ul>

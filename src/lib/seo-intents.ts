@@ -91,8 +91,23 @@ export const seoIntents: Record<string, SearchIntent> = {
     intent: "commercial",
     purpose: "Autofolierung, Farbwechsel oder Teilfolierung anfragen",
   },
+  "/lackierarbeiten": {
+    cluster: "lackierarbeiten kratzer steinschlag horb",
+    intent: "commercial",
+    purpose: "Lackschaden, Kratzer oder Bauteillackierung anfragen",
+  },
+  "/dellen-druecken": {
+    cluster: "dellen drücken ohne lackieren",
+    intent: "commercial",
+    purpose: "Parkdelle oder Hagelschaden ohne Lackieren entfernen lassen",
+  },
+  "/smart-repair": {
+    cluster: "smart repair felgen leder kleinschaden",
+    intent: "commercial",
+    purpose: "Kleine Schäden an Lack, Felgen oder Innenraum gezielt reparieren lassen",
+  },
   "/folierung-smart-repair": {
-    cluster: "dellen lackierarbeiten smart repair partner horb",
+    cluster: "partnerleistungen karosserie lack übersicht",
     intent: "commercial",
     purpose: "Folierung, Dellen drücken, Lackierarbeiten oder Smart Repair anfragen",
   },
