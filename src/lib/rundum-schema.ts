@@ -31,7 +31,7 @@ export const rundumInquirySchema = z.object({
   services: z
     .array(z.string().refine((v) => (RUNDUM_SERVICES as readonly string[]).includes(v)))
     .min(1)
-    .max(7)
+    .max(RUNDUM_SERVICES.length)
     .refine((v) => new Set(v).size === v.length),
   pickupRequested: z.boolean().default(false),
   date: z
