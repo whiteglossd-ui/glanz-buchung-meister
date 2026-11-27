@@ -1,3 +1,4 @@
+import { BOOKING_JUMP } from "@/lib/booking-anchor-focus";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PhotoInquiry } from "@/components/photo-inquiry";
 import { PageHero } from "@/components/page-hero";
@@ -40,7 +41,7 @@ function ZustandPage() {
             <a href="#buchung" className={ctaPrimary}>
               Zustand beschreiben
             </a>
-            <Link to="/" hash="buchung" className={ctaGhost}>
+            <Link to="/" hash="buchung" hashScrollIntoView={BOOKING_JUMP} className={ctaGhost}>
               Termin anfragen
             </Link>
           </>

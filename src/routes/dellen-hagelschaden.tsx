@@ -1,3 +1,4 @@
+import { BOOKING_JUMP } from "@/lib/booking-anchor-focus";
 import { EditorialLayout } from "@/components/editorial-layout";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PhotoInquiry } from "@/components/photo-inquiry";
@@ -35,7 +36,7 @@ function DellenPage() {
         ]}
         actions={
           <div className="flex flex-wrap gap-3">
-            <Link to="/dellen-hagelschaden" hash="buchung" className={ctaPrimary}>
+            <Link to="/dellen-hagelschaden" hash="buchung" hashScrollIntoView={BOOKING_JUMP} className={ctaPrimary}>
               Begutachtung anfragen
             </Link>
             <a href={site.whatsapp} className={ctaGhost} target="_blank" rel="noopener noreferrer">

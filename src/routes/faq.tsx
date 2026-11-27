@@ -1,3 +1,4 @@
+import { BOOKING_JUMP } from "@/lib/booking-anchor-focus";
 import { serializeJsonLd } from "@/lib/json-ld";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/page-hero";
@@ -87,7 +88,7 @@ function FaqPage() {
         crumbs={[{ label: "Startseite", to: "/" }, { label: "Häufige Fragen" }]}
         actions={
           <>
-            <Link to="/" hash="buchung" className={ctaPrimary}>
+            <Link to="/" hash="buchung" hashScrollIntoView={BOOKING_JUMP} className={ctaPrimary}>
               Termin anfragen
             </Link>
             <a href={site.phoneHref} className={ctaGhost}>

@@ -1,3 +1,4 @@
+import { BOOKING_JUMP } from "@/lib/booking-anchor-focus";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { PageHero } from "@/components/page-hero";
 import { WebsiteStudioContent } from "@/components/website-studio-content";
@@ -75,7 +76,7 @@ function AboutPage() {
         crumbs={[{ label: "Startseite", to: "/" }, { label: "Über uns" }]}
         actions={
           <>
-            <Link to="/" hash="buchung" className={ctaPrimary}>
+            <Link to="/" hash="buchung" hashScrollIntoView={BOOKING_JUMP} className={ctaPrimary}>
               Termin anfragen
             </Link>
             <Link to="/kontakt" className={ctaGhost}>

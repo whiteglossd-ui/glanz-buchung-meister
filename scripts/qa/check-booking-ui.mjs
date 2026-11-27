@@ -464,6 +464,7 @@ try {
       await page.waitForFunction(() =>
         document.querySelector('#paket-formular input[name="paket"][value="keramik"]')?.checked);
       await page.locator('#paket-formular #slot:enabled').waitFor({ state: "attached" });
+      await page.waitForFunction(() => document.activeElement?.id === "buchung-heading");
       results.push(`Price-card navigation @${width}: Ceramic replaces the older Signature selection`);
     } finally { await context.close(); }
   }

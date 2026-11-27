@@ -1,3 +1,4 @@
+import { BOOKING_JUMP } from "@/lib/booking-anchor-focus";
 import { Link } from "@tanstack/react-router";
 import { ctaGhost, ctaPrimary } from "@/components/ui";
 import { site } from "@/data/site";
@@ -31,7 +32,7 @@ export function NotFoundComponent() {
             <Link to="/preise" className={ctaGhost}>
               Preise
             </Link>
-            <Link to="/" hash="buchung" className={ctaGhost}>
+            <Link to="/" hash="buchung" hashScrollIntoView={BOOKING_JUMP} className={ctaGhost}>
               Termin anfragen
             </Link>
             <Link to="/kontakt" className={ctaGhost}>

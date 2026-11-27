@@ -1,3 +1,4 @@
+import { BOOKING_JUMP } from "@/lib/booking-anchor-focus";
 import { EditorialLayout } from "@/components/editorial-layout";
 import { ServiceQuestions, ServiceSteps } from "@/components/service-sections";
 import { serializeJsonLd } from "@/lib/json-ld";
@@ -111,7 +112,7 @@ function ServiceCityPage() {
         actions={service.pendingApproval ? <Link to="/kontakt" className={ctaPrimary}>Rückfrage zur Zulässigkeit</Link> :
           <Link
             to={request.leistung ? "/fahrzeug-zustand" : "/"}
-            hash="buchung"
+            hash="buchung" hashScrollIntoView={BOOKING_JUMP}
             search={request}
             className={ctaPrimary}
           >
@@ -184,7 +185,7 @@ function ServiceCityPage() {
         {service.pendingApproval ? null : <Link
           to={request.leistung ? "/fahrzeug-zustand" : "/"}
           search={request}
-          hash="buchung"
+          hash="buchung" hashScrollIntoView={BOOKING_JUMP}
           className={`${ctaPrimary} mt-10`}
         >
           Abholung aus {city.name} anfragen

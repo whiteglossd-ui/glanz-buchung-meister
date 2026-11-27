@@ -1,3 +1,4 @@
+import { BOOKING_JUMP } from "@/lib/booking-anchor-focus";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CustomerPhotoGallery } from "@/components/customer-photo-gallery";
 import { CustomerProjectStory } from "@/components/customer-project-story";
@@ -64,7 +65,7 @@ function GaleriePage() {
         <nav aria-label="Brotkrumen" className="gallery-crumbs"><Link to="/">Startseite</Link><span aria-hidden>/</span><span aria-current="page">Ergebnisse</span></nav>
         <div className="gallery-intro-heading">
           <div><p className="kicker">White-Gloss Detailing · Kundenauftrag</p><h1 className="heading-page">{document?.content.title.trim() || "Echte Ergebnisse aus unserer Werkstatt."}</h1></div>
-          <div><p>{document?.content.lead.trim() || "Lack, Leder, Felgen. Entdecke unsere Arbeit an einem echten Kundenfahrzeug – in Bildern und kurzen Filmen."}</p><Link to="/" hash="buchung" className={ctaPrimary}>Termin anfragen</Link></div>
+          <div><p>{document?.content.lead.trim() || "Lack, Leder, Felgen. Entdecke unsere Arbeit an einem echten Kundenfahrzeug – in Bildern und kurzen Filmen."}</p><Link to="/" hash="buchung" hashScrollIntoView={BOOKING_JUMP} className={ctaPrimary}>Termin anfragen</Link></div>
         </div>
         <figure className="gallery-cover">
           {hero ? (

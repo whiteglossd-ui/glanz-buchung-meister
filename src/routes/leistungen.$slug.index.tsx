@@ -1,3 +1,4 @@
+import { BOOKING_JUMP } from "@/lib/booking-anchor-focus";
 import { EditorialLayout } from "@/components/editorial-layout";
 import { ServiceQuestions, ServiceSteps } from "@/components/service-sections";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
@@ -154,7 +155,7 @@ function ServicePage() {
           ) : (
             <Link
               to={request.leistung ? "/fahrzeug-zustand" : "/"}
-              hash="buchung"
+              hash="buchung" hashScrollIntoView={BOOKING_JUMP}
               search={request}
               className={ctaPrimary}
             >
@@ -297,7 +298,7 @@ function ServicePage() {
             <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
               <Link
                 to={request.leistung ? "/fahrzeug-zustand" : "/"}
-                hash="buchung"
+                hash="buchung" hashScrollIntoView={BOOKING_JUMP}
                 search={request}
                 className={ctaPrimary}
               >

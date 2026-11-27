@@ -7,13 +7,19 @@ export function RouteFocus() {
   useEffect(() => {
     let frame = 0;
     const unsubscribe = router.subscribe("onRendered", (event) => {
-      if (!event.fromLocation || !event.pathChanged || event.toLocation.hash) return;
+      if (!event.fromLocation || !event.pathChanged) return;
+      const { hash } = event.toLocation;
+      const bookingArrival = hash === "buchung" &&
+        !["/", "/freudenstadt-lossburg"].includes(event.fromLocation.pathname);
+      if (hash && !bookingArrival) return;
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
-        const main = document.getElementById("main-content");
-        if (!main) return;
-        main.setAttribute("tabindex", "-1");
-        main.focus({ preventScroll: true });
+        const target = bookingArrival
+          ? document.getElementById("buchung-heading") ?? document.querySelector<HTMLElement>("#buchung h2")
+          : document.getElementById("main-content");
+        if (!target) return;
+        target.setAttribute("tabindex", "-1");
+        target.focus({ preventScroll: true });
       });
     });
     return () => {

@@ -1,3 +1,4 @@
+import { BOOKING_JUMP } from "@/lib/booking-anchor-focus";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { IconArrowRight } from "@/components/icons";
 import { PageHero } from "@/components/page-hero";
@@ -34,7 +35,7 @@ function AbholIndex() {
         lead="Spar dir die Fahrt zur Werkstatt: Wir stimmen Abholung und Rückgabe mit dir ab und bereiten dein Fahrzeug in Horb am Neckar auf."
         crumbs={[{ label: "Startseite", to: "/" }, { label: "Hol- und Bringservice" }]}
         actions={
-          <Link to="/" hash="buchung" className={ctaPrimary}>
+          <Link to="/" hash="buchung" hashScrollIntoView={BOOKING_JUMP} className={ctaPrimary}>
             Termin anfragen
           </Link>
         }

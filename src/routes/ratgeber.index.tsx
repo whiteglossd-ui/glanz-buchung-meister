@@ -1,3 +1,4 @@
+import { BOOKING_JUMP } from "@/lib/booking-anchor-focus";
 import { serializeJsonLd } from "@/lib/json-ld";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { IconArrowRight } from "@/components/icons";
@@ -76,7 +77,7 @@ function RatgeberIndex() {
           { label: "Ratgeber" },
         ]}
         actions={
-          <Link to="/" hash="buchung" className={ctaPrimary}>
+          <Link to="/" hash="buchung" hashScrollIntoView={BOOKING_JUMP} className={ctaPrimary}>
             Termin anfragen
           </Link>
         }

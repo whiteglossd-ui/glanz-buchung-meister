@@ -1,3 +1,4 @@
+import { BOOKING_JUMP } from "@/lib/booking-anchor-focus";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Shot } from "@/components/media";
 import { PageHero } from "@/components/page-hero";
@@ -36,7 +37,7 @@ function QualityPage() {
         lead="Ein Auto nach dem anderen. Erst anschauen, dann arbeiten, dann kontrollieren."
         crumbs={[{ label: "Startseite", to: "/" }, { label: "Arbeitsweise" }]}
         actions={
-          <Link to="/" hash="buchung" className={ctaPrimary}>
+          <Link to="/" hash="buchung" hashScrollIntoView={BOOKING_JUMP} className={ctaPrimary}>
             Termin anfragen
           </Link>
         }
@@ -106,7 +107,7 @@ function QualityPage() {
         </blockquote>
         <Link
           to="/"
-          hash="buchung"
+          hash="buchung" hashScrollIntoView={BOOKING_JUMP}
           className={`${ctaPrimary} mt-10`}
         >
           Aufbereitung anfragen

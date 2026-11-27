@@ -1,3 +1,4 @@
+import { BOOKING_JUMP } from "@/lib/booking-anchor-focus";
 import { EditorialLayout } from "@/components/editorial-layout";
 import { serializeJsonLd } from "@/lib/json-ld";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
@@ -120,7 +121,7 @@ function ArticlePage() {
           { label: a.title },
         ]}
         actions={
-          <Link to={request.leistung ? "/fahrzeug-zustand" : "/"} search={request} hash="buchung" className={ctaPrimary}>
+          <Link to={request.leistung ? "/fahrzeug-zustand" : "/"} search={request} hash="buchung" hashScrollIntoView={BOOKING_JUMP} className={ctaPrimary}>
             Termin anfragen
           </Link>
         }
@@ -176,7 +177,7 @@ function ArticlePage() {
         <Link
           to={request.leistung ? "/fahrzeug-zustand" : "/"}
           search={request}
-          hash="buchung"
+          hash="buchung" hashScrollIntoView={BOOKING_JUMP}
           className={`${ctaPrimary} mt-12`}
         >
           Termin anfragen
