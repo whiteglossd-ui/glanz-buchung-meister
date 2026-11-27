@@ -26,8 +26,10 @@ Repositories unter `/workspace/site_review_2026-11-27/`.
   Google-Business-Profile-API wahrheitsgemäß und führt zu den Originalen bei
   Google. Es werden weder Sterne noch Rezensionstexte erfunden.
 - Die Buchungskarten haben zugängliche Namen mit ihrem sichtbaren Text. Doppelt
-  geladene Schriftdateien und ein hoch priorisierter Favicon-Preload entfallen;
-  kleinere Paketbilder erhalten eine passende `srcSet`-Auswahl.
+  geladene Schriftdateien entfallen; kleinere Paketbilder erhalten eine
+  passende `srcSet`-Auswahl. Die bestehende Favicon-Vorladung bleibt erhalten,
+  weil die isolierten Browser- und Lighthouse-Prüfungen ihren Ladepfad
+  ausdrücklich absichern. Ihr Einsparpotenzial von etwa 15 kB ist gering.
 
 ## Getrennte Betreiber- und Plattformaufgaben
 
