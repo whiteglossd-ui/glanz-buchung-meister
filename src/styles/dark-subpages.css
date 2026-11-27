@@ -16,6 +16,37 @@
 .wgt.wgt-page .kicker { margin: revert-layer; }
 .wgt.wgt-page blockquote { margin: revert-layer; padding: revert-layer; border: revert-layer; font: revert-layer; color: revert-layer; }
 
+/* Match the locally available fallback to the narrower display face. The
+   document titles retain their line count while the German subset downloads. */
+@font-face {
+  font-family: "WG Subpage Display Fallback";
+  src: local("Arial"), local("Liberation Sans"), local("Roboto");
+  font-weight: 400;
+  font-display: swap;
+  size-adjust: 83%;
+  ascent-override: 120.48%;
+  descent-override: 24.10%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "WG Subpage Display Fallback";
+  src: local("Arial"), local("Liberation Sans"), local("Roboto");
+  font-weight: 500;
+  font-display: swap;
+  size-adjust: 86.63%;
+  ascent-override: 115.44%;
+  descent-override: 23.09%;
+  line-gap-override: 0%;
+}
+[data-shell="public"] .wgt.wgt-page {
+  --serif: "WG Public Display", "WG Subpage Display Fallback", sans-serif;
+  --sans: "WG Public Text", "Barlow Fallback", sans-serif;
+  --ui: var(--sans);
+}
+/* Barlow Semi Condensed Light has a 503/1000-em zero. Keep the original
+   20-character title measure even when the local font has a different zero. */
+.wgt.wgt-page .phero__title { max-width: min(100%, 10.06em); }
+
 /* Seitenkopf: Abstände der Vorlage wiederherstellen (höhere Spezifität als oben). */
 .wgt.wgt-page .phero .kicker { margin: 0 0 22px; }
 .wgt.wgt-page .phero .hero__lead { margin: 0 0 14px; }
