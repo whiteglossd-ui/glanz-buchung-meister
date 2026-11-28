@@ -366,6 +366,20 @@ function DarkBooking({
   );
 }
 
+/** Ratgeber articles and FAQ anchors for the partner services block. */
+const partnerArticles = [
+  ["auto-folieren-lassen", "Auto folieren lassen"],
+  ["autofolie-pflegen", "Autofolie pflegen"],
+  ["folieren-oder-lackieren", "Folieren oder Lackieren"],
+  ["hagelschaden-was-tun", "Hagelschaden: Was tun?"],
+] as const;
+const partnerFaqs = [
+  ["/folierung", "Fragen zur Folierung"],
+  ["/lackierarbeiten", "Fragen zum Lackieren"],
+  ["/dellen-druecken", "Fragen zu Dellen"],
+  ["/smart-repair", "Fragen zu Smart Repair"],
+] as const;
+
 /** Startseite im Look der Dark-Edition-Vorlage (Sandbox 25.11.2026). */
 export function DarkHome({
   location = "horb",
@@ -624,6 +638,24 @@ export function DarkHome({
                   </Link>
                 </li>
               </ul>
+              <div className="hpart__more">
+                <p className="hpart__more-t">Ratgeber</p>
+                <ul className="hpart__links">
+                  {partnerArticles.map(([slug, label]) => (
+                    <li key={slug}>
+                      <Link to="/ratgeber/$slug" params={{ slug }}>{label}</Link>
+                    </li>
+                  ))}
+                </ul>
+                <p className="hpart__more-t">Häufige Fragen</p>
+                <ul className="hpart__links">
+                  {partnerFaqs.map(([to, label]) => (
+                    <li key={to}>
+                      <Link to={to} hash="fragen">{label}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
         </section>

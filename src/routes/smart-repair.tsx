@@ -81,6 +81,41 @@ const config: PartnerLandingConfig = {
       icon: Search,
     },
   ],
+  guides: [
+    {
+      id: "eignung",
+      label: "Wissen",
+      title: "Wann Smart Repair passt und wann nicht.",
+      intro:
+        "Smart Repair lohnt sich bei kleinen, klar begrenzten Schäden. Hier siehst du, was gut geht, wo die Grenzen sind und worauf wir achten.",
+      items: [
+        {
+          title: "Gut geeignet",
+          text: "Einzelne Kratzer und Macken, kleine Steinschläge, Bordsteinschrammen an Felgen und abgenutzte Stellen an Leder und Kunststoff.",
+        },
+        {
+          title: "Eher nicht",
+          text: "Großflächige Schäden, viele Schäden auf einem Bauteil oder Schäden tief im Material. Dann ist eine Lackierung oder ein Teiletausch meist die bessere Lösung.",
+        },
+        {
+          title: "Felgen: Sicherheit zuerst",
+          text: "Smart Repair an Felgen ist eine optische Reparatur. Ist eine Felge gerissen oder verbogen, gehört sie in die Fachwerkstatt und nicht in die Smart-Repair-Ausbesserung.",
+        },
+        {
+          title: "Leder und Kunststoff",
+          text: "Abgenutzte Stellen werden gereinigt, ausgebessert und farblich angeglichen. Wie nah das Ergebnis am Original ist, hängt vom Material ab.",
+        },
+        {
+          title: "Brandlöcher",
+          text: "Kleine Brandlöcher in Polstern lassen sich oft füllen und angleichen. Bei größeren Löchern sagen wir dir vorher, was realistisch ist.",
+        },
+        {
+          title: "Aufbereitung danach",
+          text: "Nach der Reparatur kann dein Auto bei uns gereinigt und gepflegt werden, innen wie außen. So wirkt das ganze Fahrzeug wieder stimmig.",
+        },
+      ],
+    },
+  ],
   steps: [
     ["Anfragen", "Schreib uns, wo der Schaden sitzt. Fotos vom Schaden und von der Umgebung helfen für eine erste Einschätzung."],
     ["Begutachten", "Wir schauen uns die Stelle an und stimmen die Reparatur mit dem passenden Partner ab. Den Preis erfährst du, bevor du zusagst."],
@@ -103,6 +138,10 @@ const config: PartnerLandingConfig = {
     {
       q: "Sieht man die Reparatur danach noch?",
       a: "Das hängt vom Schaden und vom Material ab. Wir sagen dir vorher ehrlich, welches Ergebnis realistisch ist.",
+    },
+    {
+      q: "Kann man eine gerissene Felge mit Smart Repair reparieren?",
+      a: "Nein. Smart Repair an Felgen ist eine optische Reparatur für Kratzer und Bordsteinschäden. Ist eine Felge gerissen oder verbogen, ist das eine Frage der Sicherheit und gehört in die Fachwerkstatt.",
     },
     {
       q: "Wer macht die Reparatur?",
