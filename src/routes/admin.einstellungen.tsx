@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, CircleHelp, ImageIcon, Newspaper, Settings, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
-import { extras, packages, pickupPricing, site } from "@/data/site";
+import { extras, packages, site } from "@/data/site";
 import { eur } from "@/lib/utils";
 import { createSiteBackup, getSiteBackup, restoreSiteBackup } from "@/lib/backup.functions";
 import { Button } from "@/components/ui";
@@ -123,11 +123,7 @@ function AdminSettings() {
               {e.name} · ab {eur(e.price)}
             </li>
           ))}
-          {pickupPricing.tiers.map((t) => (
-            <li key={t.id}>
-              {t.label}: {t.amount === 0 ? "kostenlos" : eur(t.amount)}
-            </li>
-          ))}
+          <li>Abholung: nach Entfernung, Preis mit dem Terminangebot</li>
         </ul>
       </section>
 

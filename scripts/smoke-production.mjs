@@ -178,12 +178,11 @@ for (const check of pageChecks) {
       }
     }
     if (check.path === "/preise") {
-      if (
-        !/bis 10 km kostenlos/i.test(body) ||
-        !/bis 20 km 50/.test(body) ||
-        !/bis 50 km 70/.test(body)
-      ) {
-        fail(label, "Abholstaffel (10 km kostenlos / 20 km 50 / 50 km 70) fehlt");
+      if (!/richtet sich nach der Entfernung/i.test(body)) {
+        fail(label, "Hinweis zum entfernungsabhängigen Abholpreis fehlt");
+      }
+      if (/bis 10 km kostenlos|bis 20 km 50|bis 50 km 70/i.test(body)) {
+        fail(label, "alte Abholstaffel mit Beträgen ist noch sichtbar");
       }
       if (!/149/.test(body) || !/349/.test(body) || !/899/.test(body)) {
         fail(label, "Paketpreise 149/349/899 fehlen");

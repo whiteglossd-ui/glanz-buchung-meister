@@ -152,9 +152,7 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
               : `${cityJourneyText(city).replace(/Min\.$/, "Minuten")}.`}{" "}
             Entfernungen und Fahrzeiten sind Richtwerte.
             Für Politur und Keramik nutzen wir gleichmäßiges Licht und sauberes Wasser in der Werkstatt.
-            {city.pickupFlat !== undefined
-              ? ` Mit White-Gloss Classic oder White-Gloss Signature gilt in ${city.name} ein Festpreis von ${pickup}.`
-              : null}{" "}
+            {" "}
             <Link to="/abholservice" className="underline">
               Abholorte und Konditionen im Überblick
             </Link>

@@ -15,7 +15,7 @@ describe("Abholort-Chips", () => {
       const text = pickupPriceText(city.km);
       const status = pickupStatus(city.km);
       if (text === "auf Anfrage") assert.equal(status, "request", city.slug);
-      else if (text === "kostenlos") assert.equal(status, "free", city.slug);
+      else if (text === "ohne Anfahrt") assert.equal(status, "free", city.slug);
       else assert.equal(status, "fixed", `${city.slug}: ${text}`);
     }
   });

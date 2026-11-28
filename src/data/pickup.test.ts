@@ -3,12 +3,12 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { extname, join } from "node:path";
 import { describe, it } from "node:test";
 import { fileURLToPath } from "node:url";
-import { eur } from "../lib/utils.ts";
 import {
   cities,
   extras,
   packages,
   cityPickupFee,
+  PICKUP_BY_DISTANCE,
   pickupFee,
   pickupKeramikNote,
   pickupPricing,
@@ -47,24 +47,17 @@ describe("pickup pricing source of truth", () => {
     }
   });
 
-  it("builds the public staffel text from the same table", () => {
+  it("shows no pickup amounts publicly, only the distance rule", () => {
     const summary = pickupTierSummary();
-    for (const tier of pickupPricing.tiers) {
-      assert.match(summary, new RegExp(`bis ${tier.maxKm} km`, "i"));
-      if (tier.amount === 0) assert.match(summary, /kostenlos/);
-      else assert.ok(summary.includes(String(tier.amount)));
+    assert.match(summary, /Entfernung/);
+    assert.doesNotMatch(summary, /€|Euro|kostenlos|\d+\s*km/i);
+    assert.equal(pickupTierSummary({ includeCityExceptions: false }), summary);
+    assert.doesNotMatch(pickupKeramikNote(), /\d+\s*km|inklusive|enthalten/i);
+    assert.match(summary, /Terminangebot/);
+    for (const city of cities) {
+      const text = cityPickupPriceText(city);
+      assert.doesNotMatch(text, /€|kostenlos/, city.slug);
     }
-    assert.match(summary, /darüber auf Anfrage/);
-    assert.match(summary, /^Bis /);
-    const fixedPrice = cities.filter((city) => city.pickupFlat !== undefined);
-    assert.ok(summary.includes(eur(30)));
-    for (const city of fixedPrice) {
-      assert.ok(summary.includes(city.name), city.slug);
-    }
-    const distanceOnly = pickupTierSummary({ includeCityExceptions: false });
-    assert.ok(!distanceOnly.includes(eur(30)));
-    assert.ok(summary.startsWith(distanceOnly + ". "));
-    assert.ok(pickupKeramikNote().includes(String(pickupPricing.freeUpToKm)));
   });
 
   it("keeps city blurbs free of hardcoded euro amounts", () => {
@@ -129,15 +122,16 @@ describe("pickup pricing source of truth", () => {
       .map((city) => city.slug)
       .sort();
     assert.deepEqual(flat, ["schopfloch", "sulz-am-neckar", "voehringen"]);
-    assert.equal(cityPickupPriceText(cities.find((c) => c.slug === "sulz-am-neckar")!), eur(30));
-    assert.equal(cityPickupPriceText(cities.find((c) => c.slug === "dornhan")!), eur(50));
-    assert.equal(cityPickupPriceText(cities.find((c) => c.slug === "empfingen")!), "kostenlos");
+    assert.equal(cityPickupPriceText(cities.find((c) => c.slug === "sulz-am-neckar")!), PICKUP_BY_DISTANCE);
+    assert.equal(cityPickupPriceText(cities.find((c) => c.slug === "dornhan")!), PICKUP_BY_DISTANCE);
+    assert.equal(cityPickupPriceText(cities.find((c) => c.slug === "empfingen")!), PICKUP_BY_DISTANCE);
+    assert.equal(cityPickupPriceText(cities.find((c) => c.slug === "horb-am-neckar")!), "ohne Anfahrt");
     assert.equal(
       cityPickupPriceText(
         cities.find((c) => c.slug === "sulz-am-neckar")!,
         "keramik",
       ),
-      "inklusive bis 60 km",
+      PICKUP_BY_DISTANCE,
     );
     // A fixed price never makes an unknown distance billable or a free pickup paid.
     assert.equal(cityPickupFee({ km: null, pickupFlat: 30 }, "basis"), null);

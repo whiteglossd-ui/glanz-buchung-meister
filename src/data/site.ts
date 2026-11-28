@@ -149,17 +149,15 @@ export const packages: Package[] = [
     name: "White-Gloss Ceramic",
     searchLabel: "Lackkorrektur und Versiegelung",
     seoName: "White-Gloss Ceramic – Keramikversiegelung inkl. Lackkorrektur in Horb",
-    body: "Sorgfältig vorbereiteter Lack, anschließend mit Keramik versiegelt: Das Paket umfasst eine mehrstufige Lackkorrektur, Glas- und Felgenversiegelung sowie Lederpflege. Der Hol- und Bringservice bis 60 km ist inklusive. Standzeit und Pflege richten sich nach der verwendeten Beschichtung und der Fahrzeugnutzung. Ab 899 € inkl. MwSt. für die Kompaktklasse, Dauer ca. 2 Tage.",
+    body: "Sorgfältig vorbereiteter Lack, anschließend mit Keramik versiegelt: Das Paket umfasst eine mehrstufige Lackkorrektur, Glas- und Felgenversiegelung sowie Lederpflege. Die Abholung wird nach Entfernung berechnet; den Preis nennen wir mit dem Terminangebot. Standzeit und Pflege richten sich nach der verwendeten Beschichtung und der Fahrzeugnutzung. Ab 899 € inkl. MwSt. für die Kompaktklasse, Dauer ca. 2 Tage.",
     price: 899,
     duration: "ca. 2 Tage",
-    includesPickup: true,
     items: [
       "Reinigung und Innenraumpflege wie im Paket White-Gloss Signature; Keramikversiegelung ersetzt den Wachsauftrag",
       "Mehrstufige Lackkorrektur zur Reduzierung feiner Waschkratzer und Hologramme, soweit der Lackzustand es zulässt",
       "Keramikversiegelung mit Abperleffekt und passenden Pflegehinweisen",
       "Glas- und Felgenversiegelung für Rundumschutz",
       "Lederpflege und Tiefenimprägnierung im Innenraum",
-      "Hol- und Bringservice bis 60 km inklusive",
     ],
   },
 ];
@@ -511,14 +509,14 @@ export function pickupFee(km: number | null, packageId?: PackageId) {
   return null;
 }
 
-export function pickupPriceText(km: number | null, packageId?: PackageId) {
-  if (km !== null && km >= 0 && packageId === pickupPricing.freeWithPackageId && km <= pickupPricing.freeUpToKm) {
-    return `inklusive bis ${pickupPricing.freeUpToKm} km`;
-  }
-  const fee = pickupFee(km, packageId ?? "basis");
+/** Öffentlich keine Abholbeträge: Der Preis richtet sich nach der Entfernung und wird vorab bestätigt. */
+export const PICKUP_BY_DISTANCE = "je nach Entfernung";
+
+export function pickupPriceText(km: number | null, _packageId?: PackageId) {
+  const fee = pickupFee(km, "basis");
   if (fee === null) return "auf Anfrage";
-  if (fee === 0) return "kostenlos";
-  return eur(fee);
+  if (km === 0) return "ohne Anfahrt";
+  return PICKUP_BY_DISTANCE;
 }
 
 type PickupCity = Pick<City, "km" | "pickupFlat">;
@@ -531,41 +529,15 @@ export function cityPickupFee(city: PickupCity, packageId?: PackageId) {
 }
 
 export function cityPickupPriceText(city: PickupCity, packageId?: PackageId) {
-  if (city.pickupFlat === undefined) return pickupPriceText(city.km, packageId);
-  if (city.km !== null && packageId === pickupPricing.freeWithPackageId && city.km <= pickupPricing.freeUpToKm) {
-    return pickupPriceText(city.km, packageId);
-  }
-  const fee = cityPickupFee(city, packageId ?? "basis");
-  if (fee === null) return "auf Anfrage";
-  return fee === 0 ? "kostenlos" : eur(fee);
+  return pickupPriceText(city.km, packageId);
 }
 
-export function pickupTierSummary({ includeCityExceptions = true } = {}): string {
-  const parts = [...pickupPricing.tiers]
-    .sort((a, b) => a.maxKm - b.maxKm)
-    .map((t) => `bis ${t.maxKm} km ${t.amount === 0 ? "kostenlos" : eur(t.amount)}`);
-  const text = `${parts.join(", ")}, darüber auf Anfrage`;
-  const summary = text.charAt(0).toUpperCase() + text.slice(1);
-  if (!includeCityExceptions) return summary;
-
-  const fixedPrices = new Map<number, string[]>();
-  for (const city of cities) {
-    const price = city.pickupFlat;
-    if (price === undefined || price <= 0 || cityPickupFee(city, "basis") !== price) continue;
-    const names = fixedPrices.get(price) ?? [];
-    names.push(city.name);
-    fixedPrices.set(price, names);
-  }
-  const cityList = new Intl.ListFormat("de-DE");
-  const exceptions = [...fixedPrices].map(
-    ([price, names]) =>
-      `Mit Classic oder Signature gilt in ${cityList.format(names)} ein Festpreis von ${eur(price)}`,
-  );
-  return [summary, ...exceptions].join(". ");
+export function pickupTierSummary(_opts: { includeCityExceptions?: boolean } = {}): string {
+  return "Die Abholung wird nach Entfernung berechnet; den Preis nennen wir mit dem Terminangebot";
 }
 
 export function pickupKeramikNote(): string {
-  return `Im Paket White-Gloss Ceramic ist die Abholung bis ${pickupPricing.freeUpToKm} km enthalten`;
+  return "Das gilt für alle Pakete, auch für White-Gloss Ceramic";
 }
 
 export function extraIncluded(packageId: PackageId, extraId: string) {
@@ -853,7 +825,7 @@ export const services: ServicePage[] = [
     body: [
       "Eine Keramikversiegelung braucht einen sorgfältig vorbereiteten Lack. Wir reinigen die Oberfläche, reduzieren behandelbare Waschkratzer durch mehrstufige Politur und entfetten den Lack vor dem Auftrag der Beschichtung.",
       "Die Beschichtung ergänzt den Oberflächenschutz und erleichtert die Pflege. Aushärtezeit, erster Kontakt mit Wasser und erste Wäsche richten sich nach den Vorgaben des verwendeten Produkts. Bei der Übergabe erhältst du die passenden Pflegehinweise.",
-      "Plane ca. 2 Tage ein. Glas- und Felgenversiegelung, Lederpflege sowie der Hol- und Bringservice bis 60 km sind im Paket enthalten.",
+      "Plane ca. 2 Tage ein. Glas- und Felgenversiegelung, Lederpflege sind im Paket enthalten. Die Abholung wird nach Entfernung berechnet und mit dem Terminangebot genannt.",
     ],
     comparison: {
       heading: "Lackversiegelung im Vergleich",

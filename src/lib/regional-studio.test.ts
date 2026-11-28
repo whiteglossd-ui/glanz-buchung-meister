@@ -7,25 +7,25 @@ import { isConsolidatedService, publicSeo, serviceCitySeo } from "./seo-policy.t
 import { studioMetadata } from "./studio-public.ts";
 
 const confirmed: Record<string, [number | null, number | null, string]> = {
-  "horb-am-neckar": [0, 10, "kostenlos"],
-  "sulz-am-neckar": [12, 13, "30 €"],
-  empfingen: [10, 12, "kostenlos"],
-  voehringen: [17, 19, "30 €"],
-  dornhan: [20, 23, "50 €"],
-  dornstetten: [19, 19, "50 €"],
-  schopfloch: [11, 11, "30 €"],
-  nagold: [20, 25, "50 €"],
-  "rottenburg-am-neckar": [25, 30, "70 €"],
-  freudenstadt: [30, 35, "70 €"],
+  "horb-am-neckar": [0, 10, "ohne Anfahrt"],
+  "sulz-am-neckar": [12, 13, "je nach Entfernung"],
+  empfingen: [10, 12, "je nach Entfernung"],
+  voehringen: [17, 19, "je nach Entfernung"],
+  dornhan: [20, 23, "je nach Entfernung"],
+  dornstetten: [19, 19, "je nach Entfernung"],
+  schopfloch: [11, 11, "je nach Entfernung"],
+  nagold: [20, 25, "je nach Entfernung"],
+  "rottenburg-am-neckar": [25, 30, "je nach Entfernung"],
+  freudenstadt: [30, 35, "je nach Entfernung"],
   lossburg: [null, null, "auf Anfrage"],
-  "oberndorf-am-neckar": [30, 35, "70 €"],
-  herrenberg: [35, 40, "70 €"],
-  tuebingen: [35, 40, "70 €"],
-  calw: [40, 45, "70 €"],
-  balingen: [45, 50, "70 €"],
-  rottweil: [45, 50, "70 €"],
-  boeblingen: [50, 55, "70 €"],
-  reutlingen: [50, 55, "70 €"],
+  "oberndorf-am-neckar": [30, 35, "je nach Entfernung"],
+  herrenberg: [35, 40, "je nach Entfernung"],
+  tuebingen: [35, 40, "je nach Entfernung"],
+  calw: [40, 45, "je nach Entfernung"],
+  balingen: [45, 50, "je nach Entfernung"],
+  rottweil: [45, 50, "je nach Entfernung"],
+  boeblingen: [50, 55, "je nach Entfernung"],
+  reutlingen: [50, 55, "je nach Entfernung"],
   sindelfingen: [52, 60, "auf Anfrage"],
 };
 
@@ -39,7 +39,7 @@ test("all pickup hubs retain distinct metadata, index policy and their confirmed
     titles.add(metadata.title);
     descriptions.add(metadata.description);
     assert.ok(metadata.title.includes(city.name.replace(" am Neckar", "")), city.slug);
-    assert.ok(metadata.description.includes(cityPickupPriceText(city)), city.slug);
+    if (city.slug !== "horb-am-neckar") assert.ok(metadata.description.includes(cityPickupPriceText(city)), city.slug);
     assert.deepEqual(
       [city.km, city.minutes, cityPickupPriceText(city).replace(/\u00a0/g, " ")],
       confirmed[city.slug],
@@ -68,7 +68,7 @@ test("all pickup plans add useful information without repeating the introduction
     assert.ok(plan.length > 100, city.slug);
     assert.ok(!plan.includes(city.blurb), `${city.slug}: do not repeat the hero introduction`);
     if (city.pickupNote) assert.equal(plan, city.pickupNote, city.slug);
-    else assert.ok(plan.includes(cityPickupPriceText(city)), city.slug);
+    else if (city.slug !== "horb-am-neckar") assert.ok(plan.includes(cityPickupPriceText(city)), city.slug);
   }
   assert.equal(cities.filter((city) => city.pickupNote).length, 6);
   const nagold = cities.find((city) => city.slug === "nagold")!;
@@ -96,10 +96,9 @@ test("specific logistics FAQs explain free pickup and radius boundaries without 
     const city = cities.find((entry) => entry.slug === slug)!;
     const faq = cityLogisticsFaq(city)!;
     assert.ok(faq.question.endsWith("?"), slug);
-    assert.ok(faq.answer.includes(cityPickupPriceText(city)), slug);
+    if (slug !== "horb-am-neckar") assert.ok(faq.answer.includes(cityPickupPriceText(city)), slug);
     if (["boeblingen", "reutlingen", "sindelfingen"].includes(slug)) {
-      assert.ok(faq.answer.includes(cityPickupPriceText(city, "keramik")), slug);
-      assert.match(faq.answer, /White-Gloss Classic und White-Gloss Signature/);
+      assert.doesNotMatch(faq.answer, /€|inklusive|enthalten/, slug);
       assert.ok(faq.answer.includes(`${city.km} km`), slug);
     }
   }

@@ -138,8 +138,8 @@ function ServiceCityPage() {
           <p className="text-sm text-muted">{city.slug === "horb-am-neckar"
             ? `Du kannst das Fahrzeug nach Terminvereinbarung direkt zu ${site.street} bringen. Die Uhrzeit der Anfrage bezeichnet die Fahrzeugabgabe.`
             : cityPickupFee(city, "basis") === null
-              ? `Für ${city.name} ist die Abholung bei White-Gloss Classic und White-Gloss Signature nur nach individueller Preisabsprache möglich. Der Rechner zeigt diese Zusatzkosten ausdrücklich als offen an.`
-              : `Bei White-Gloss Classic und White-Gloss Signature beträgt der Hol- und Bringservice aus ${city.name} ${cityPickupPriceText(city)}. Für White-Gloss Ceramic ist die Abholung bis 60 km enthalten.`}</p>
+              ? `Für ${city.name} ist die Abholung nur nach individueller Absprache möglich. Den Preis nennen wir mit dem Terminangebot.`
+              : `Der Hol- und Bringservice aus ${city.name} wird nach Entfernung berechnet. Den Preis nennen wir mit dem Terminangebot.`}</p>
           <p className="text-sm text-muted">Abholort, Übergabezeit und Rückgabe werden persönlich bestätigt. Aktuell bereite ich dein Fahrzeug in {site.city} auf.</p>
           <Link to="/abholservice/$city" params={{ city: city.slug }} className="inline-flex min-h-11 items-center text-sm underline">Abholbedingungen für {city.name}</Link>
           {evidence && serviceCitySeo(service.slug, city.slug).status === "index" ? <div className="space-y-3">

@@ -17,7 +17,7 @@ export function citySeoCopy(city: City) {
   const isHorb = city.slug === "horb-am-neckar";
   const pickup = cityPickupPriceText(city);
   const localDescriptions: Partial<Record<string, string>> = {
-    "horb-am-neckar": `Fahrzeugpflege in unserer Werkstatt in ${site.city}, ${site.street}. Fahrzeug nach Termin selbst bringen oder kostenlose Abholung vereinbaren.`,
+    "horb-am-neckar": `Fahrzeugpflege in unserer Werkstatt in ${site.city}, ${site.street}. Fahrzeug nach Termin selbst bringen oder die Abholung vereinbaren.`,
     "sulz-am-neckar": `Fahrzeugaufbereitung für Sulz am Neckar in unserer Werkstatt in Horb. Abholung mit Classic oder Signature: ${pickup}. Teilort bei der Anfrage angeben.`,
     empfingen: `Werkstatt in Horb und Abholung aus Empfingen: ${pickup} ab Ortsmitte. Für Wiesenstetten oder Dommelsberg bitte die genaue Adresse angeben.`,
     voehringen: `Fahrzeugpflege in der Werkstatt in Horb mit Abholung in Vöhringen im Landkreis Rottweil: ${pickup} mit Classic oder Signature. Ortsteil bitte angeben.`,
@@ -70,5 +70,5 @@ export type PickupStatus = "free" | "fixed" | "request";
 export function pickupStatus(km: number | null): PickupStatus {
   const fee = pickupFee(km, "basis");
   if (fee === null) return "request";
-  return fee === 0 ? "free" : "fixed";
+  return km === 0 ? "free" : "fixed";
 }

@@ -66,7 +66,7 @@ export const APPROVED_SEO_BLOBS = Object.freeze({
   // November 26: FAQ/editorial additions and owner-requested panel/partner explanations.
   "src/data/editorial-guides.json": "d08011c3cdb2659537f420f924323ce9d4f1c3d3",
   "src/data/review-links.json": "07399789ba5aac7f36e52ae45293fb83f7bfe2e7",
-  "src/data/ratgeber.ts": "8980c307cc8d0792cc72732c815a53f66b9a4739",
+  "src/data/ratgeber.ts": "0324b5ea34f075f382574dc6de32002cf4cfc155",
   "src/data/site.ts": "41d7b3adb10ed87d80af37bd9d9456707df3c6f5",
   "src/lib/article-navigation.ts": "fdce84a10deab3ca061662ae973905cf7b76d802",
   "src/lib/city-copy.ts": "7ab598c838722794401309656ea80bcc62898aae",
@@ -129,8 +129,8 @@ const APPROVED_HOME_BLOBS = Object.freeze({
   "src/data/home-copy.ts": "f829b684e32560fbde054e7e4405568036b5ca82",
   "src/data/site.ts": "ceb058c938f7b805e2b5c3f86492ec003ddde865",
   "src/data/sitemap-static.xml": "1bccc405c21b6dcc79a9e5639a7ba1f33bf8ff97",
-  "src/lib/city-copy.ts": "98f164cc518d27ce7cfdfff66eef96d62e842369",
-  "src/lib/city-logistics.ts": "9f964c2dfb0d0822b583c761fce7550556219e0c",
+  "src/lib/city-copy.ts": "c6bb4368f3c2c57c7e865659cf281da0b3bddb6a",
+  "src/lib/city-logistics.ts": "e14061dc9b141b84adeeec6cdda0afeb19037ade",
   "src/routes/index.tsx": "7b87df2a86c7dac7b0f432e210d57f12ec64e3c2",
   "src/routes/leistungen.$slug.$city.tsx": "bb360ecb62e387d7fa8569e1259ece1ab9c19872",
   "src/lib/seo-intents.ts": "73799123a06bb026e009a30a40896ca35b3e3495",
@@ -152,7 +152,7 @@ const APPROVED_SITE_AUDIT_BLOBS = Object.freeze({
   "src/components/review-showcase.tsx": "26d2417351e911084682ed0132eb84756b7d735a",
   "src/components/reviews-spotlight.tsx": "6e09e3867ae99a35a7899a4de18686f00aaa66f9",
   "src/data/home-location.ts": "417224b91126a97fcf4018aacf536eeebee3c323",
-  "src/data/site.ts": "8652484143fab7f221392573416f41f0ba23a98e",
+  "src/data/site.ts": "768d4a2a04bd7f5dc0ce14e34b49311c39632a87",
 });
 
 // The requested subpage redesign moves existing copy into shared components.
@@ -162,7 +162,7 @@ const APPROVED_SUBPAGE_BLOBS = Object.freeze({
   "src/components/before-after-slider.tsx": "50fd54034216e8e6e4f8a61a7313084f8d75c1f6",
   "src/components/city-landing.tsx": "f8814b08ecf410de9ae140b7f702c639a1ae00e4",
   // Mount later steps on first use. All copy and the visited form match revision 1d605b6.
-  "src/components/configurator.tsx": "9283755f25ee47b4948b6f693e673e9dbab67415",
+  "src/components/configurator.tsx": "e7f910f09209032634c426649a142b749e1d3978",
   "src/components/customer-video-gallery.tsx": "8317df4f3c9e283a2078ce4d1e95275af6145a9a",
   "src/components/dark/dark-chrome.tsx": "fac06e546c9c3fc28af72a0c1547ab87543d7dd8",
   "src/components/full-service.tsx": "659be1c7fa84d81ab9cf207a3874131103b063d7",
@@ -171,7 +171,7 @@ const APPROVED_SUBPAGE_BLOBS = Object.freeze({
   "src/components/not-found.tsx": "d51d876dacc59d458fdf2352e227fc3012e9ae07",
   "src/components/page-hero.tsx": "9717fc09fa3c3d6e6edd2aa02c231c93f4c11428",
   "src/components/photo-inquiry.tsx": "7725bca81ff7014ceb9c59e5045c5b5862dc98ee",
-  "src/components/regional-home-details.tsx": "618c2352a0d0ce96750503465588bfeb8eefcdbf",
+  "src/components/regional-home-details.tsx": "2d21d94b64c34e4543533390a9dab25562ec05af",
   "src/components/results-teaser.tsx": "e83305034ab50f33bb98a029c89db5fa8b5c0f0d",
   "src/components/rundum-service-form.tsx": "b4df4e86dbbed968f068e5c89bde7777c8d8132d",
   "src/components/service-sections.tsx": "b9fef29a5aca35cea9b971bca63501e80d88a764",
@@ -182,7 +182,7 @@ const APPROVED_SUBPAGE_BLOBS = Object.freeze({
   "src/routes/__root.tsx": "2659725a9a043d38c2405662be1a798dda73f727",
   "src/routes/abholservice.$city.tsx": "ff730ef5b5733cd3f6b44a128338a861d36be387",
   "src/routes/abholservice.index.tsx": "8759e690fb97667711fd9054de1aa25e37b618ba",
-  "src/routes/agb.tsx": "b7c8e3d55a45ed6bb3998c28aeb07550841524eb",
+  "src/routes/agb.tsx": "48594226ffad6ca4c70fcbc6b1ff35e37b219660",
   "src/routes/auftragsstatus.tsx": "0a156a04e81fa47a3988dc3926c05c29c964c341",
   "src/routes/b2b.tsx": "e2e9bfecc1bb149bb4093068a7bc926e66dc0fe5",
   "src/routes/barrierefreiheit.tsx": "4b55056195f54ada1eb43c3700be72e58d44d57b",
@@ -222,14 +222,14 @@ const APPROVED_PARTNER_SERVICES_BLOBS = Object.freeze({
   "src/routes/leistungen.index.tsx": "80861dbf872a770f73dd48e55fe9cc2d5a366081",
   "public/llms.txt": "a4fc563e86a8b9ffa094cf637770f01170bc2170",
   "src/data/editorial-guides.json": "94b535fb2dfcb73a2cdbe14b759c6bfb5c133d01",
-  "src/routes/leistungen.$slug.$city.tsx": "b4e52ec90d79896a586dee94cb9f5d84a04607a2",
+  "src/routes/leistungen.$slug.$city.tsx": "9339856f769c1892a42bbff06b0a63c3e69049e2",
   "src/routes/leistungen.$slug.index.tsx": "2b7df5429bbc7d1bb87be147a416b3797becf628",
   "src/routes/ratgeber.$slug.tsx": "3780c2776ed81c57692d915a392b7c46e29b2758",
   "src/routes/ueber-uns.tsx": "e313103f342724e06af9b3327d3c2cf6c428bc6b",
   "src/lib/seo-policy.ts": "4a26dce0475b49b5b54ae549034909b6e0d8d9ef",
   "src/routes/dellen-hagelschaden.tsx": "c023db13858ba444fe446ecd3ae66ef884fff8b1",
   "src/routes/luxusfahrzeuge.tsx": "baa8da7c2319f5fcf13ea7a515a7210771075dbb",
-  "src/components/city-landing.tsx": "1730e7c8420dd52ada7c7085c332063cb7b4d798",
+  "src/components/city-landing.tsx": "5272f8e5381451bae72ef27e7ca825b1b0a99dc9",
   "src/components/city-regional-service.tsx": "f3490447fd670158fd68e596985b386d25365166",
 });
 

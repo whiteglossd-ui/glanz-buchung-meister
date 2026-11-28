@@ -337,11 +337,10 @@ export function Configurator({
       </nav>
       <div className="booking-price" aria-live="polite" aria-atomic="true">
         <span>
-          Voraussichtlicher Gesamtpreis
-          {quote.pickupOnRequest ? " zzgl. Abholung nach Absprache" : ""}
+          Voraussichtlicher Gesamtpreis zzgl. Abholung
           <small> inkl. MwSt.</small>
         </span>
-        <strong>ab {eur(quote.total)}</strong>
+        <strong>ab {eur(quote.subtotal)}</strong>
       </div>
       <h3
         ref={stepHeading}
@@ -505,17 +504,11 @@ export function Configurator({
           <>
             <p className="text-xs uppercase tracking-[0.16em] text-subtle">Unverbindliche Anfrage</p>
             <p className="font-display text-3xl text-fg" aria-live="polite">
-              ab {eur(quote.total)}
+              ab {eur(quote.subtotal)}
             </p>
             <p className="text-sm text-muted">
               {quote.klass.label} · {quote.pack.name}
-              {quote.pickup === 0
-                ? " · Abholung kostenlos"
-                : quote.pickupOnRequest
-                  ? " · Abholung auf Anfrage"
-                  : quote.pickup
-                    ? ` · Abholung ${eur(quote.pickup)}`
-                    : ""}
+              {" · Abholung nach Entfernung, Preis mit dem Terminangebot"}
             </p>
             <p className="text-xs text-subtle">
               Dies ist der voraussichtliche Preis inkl. MwSt. Falls der Fahrzeugzustand zusätzlichen
@@ -765,11 +758,10 @@ export function Configurator({
                     </div>
                   ))}
                 <dt>Abholung · {quote.city?.name}</dt>
-                <dd>{quote.pickupOnRequest ? "Preis nach Absprache" : eur(quote.pickup ?? 0)}</dd>
+                <dd>Nach Entfernung, Preis mit dem Terminangebot</dd>
                 <dt>Gesamtpreis (voraussichtlich)</dt>
                 <dd>
-                  ab {eur(quote.total)}
-                  {quote.pickupOnRequest ? " zzgl. Abholung" : ""}
+                  ab {eur(quote.subtotal)} zzgl. Abholung
                 </dd>
                 <dt>Kontakt</dt>
                 <dd>

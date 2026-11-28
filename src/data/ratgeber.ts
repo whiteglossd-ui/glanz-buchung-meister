@@ -60,7 +60,7 @@ export const articles: Article[] = [
         heading: "Pflege danach",
         paragraphs: [
           "Die erste Wäsche und der Kontakt mit Wasser richten sich nach den Produktvorgaben. Beachte die Pflegehinweise, die du bei der Übergabe erhältst. Danach empfiehlt sich eine schonende Handwäsche mit geeignetem Shampoo. Bürstenanlagen erzeugen neue feine Waschkratzer in der Keramik genauso wie im Klarlack.",
-          "Der Hol- und Bringservice bis 60 km ist im Paket White-Gloss Ceramic enthalten. Wir holen dein Fahrzeug in Horb, Nagold, Tübingen und den weiteren Abholorten ab. Die Aufbereitung erfolgt in unserer Werkstatt.",
+          "Die Abholung wird nach Entfernung berechnet; den Preis nennen wir mit dem Terminangebot. Wir holen dein Fahrzeug in Horb, Nagold, Tübingen und den weiteren Abholorten ab. Die Aufbereitung erfolgt in unserer Werkstatt.",
         ],
       },
     ],
@@ -87,7 +87,7 @@ export const articles: Article[] = [
         heading: "Wofür dich bezahlen",
         paragraphs: [
           "Der größte Teil der Zeit entfällt nicht auf das Auftragen der Keramik, sondern auf Reinigung, Entfernung von Ablagerungen und Lackkorrektur. Ohne diese Schritte haftet die Beschichtung ungleichmäßig.",
-          "Im Paket enthalten sind außerdem Glas- und Felgenversiegelung, Lederpflege und der Hol- und Bringservice bis 60 km. Rechne mit rund zwei Tagen.",
+          "Im Paket enthalten sind außerdem Glas- und Felgenversiegelung, Lederpflege. Die Abholung wird nach Entfernung berechnet und mit dem Terminangebot genannt. Rechne mit rund zwei Tagen.",
         ],
       },
       {
@@ -155,9 +155,9 @@ export const articles: Article[] = [
   },
   {
     slug: "hol-und-bringservice",
-    seoExcerpt: `Kostenlos bis zur ersten Staffel, klare Preise laut aktueller Abholtabelle, Paket White-Gloss Ceramic inklusive. Ausführung immer in der Werkstatt in Horb am Neckar.`,
+    seoExcerpt: `Abholung nach Entfernung berechnet, Preis mit dem Terminangebot. Ausführung immer in der Werkstatt in Horb am Neckar.`,
     title: "Hol- und Bringservice: So funktioniert die Abholung um Horb",
-    excerpt: `Kostenlose Abholung bis 10 km, weitere Entfernungen nach Preistabelle. Im Paket White-Gloss Ceramic ist der Service bis 60 km enthalten.`,
+    excerpt: `Die Abholung wird nach Entfernung berechnet. Den Preis nennen wir mit dem Terminangebot.`,
     date: "2026-06-22",
     image: "/media/hero.webp",
     minutes: 4,

@@ -1,14 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { cities, cityPickupPriceText, pickupKeramikNote, site } from "@/data/site";
-
-function regionalCity(slug: "freudenstadt" | "lossburg") {
-  const city = cities.find((entry) => entry.slug === slug);
-  if (!city) throw new Error(`Der Abholort ${slug} fehlt.`);
-  return city;
-}
-
-const freudenstadt = regionalCity("freudenstadt");
-const lossburg = regionalCity("lossburg");
+import { pickupKeramikNote, site } from "@/data/site";
 
 /** Regionaler Nutzwert statt der allgemeinen Startseiten-Ablaufstrecke. */
 export function RegionalHomeDetails() {
@@ -38,9 +29,8 @@ export function RegionalHomeDetails() {
             <h3 className="h3">Abholung in Freudenstadt</h3>
             <p className="muted">
               Du nennst uns deine Übergabeadresse und das gewünschte Paket. Wir holen den Wagen nach
-              Absprache ab, bereiten ihn in Horb auf und bringen ihn zurück. Für die Ortsmitte nennt
-              unsere aktuelle Abholtabelle {cityPickupPriceText(freudenstadt)}; bei einer anderen
-              Adresse prüfen wir den Betrag vor deiner Zusage.
+              Absprache ab, bereiten ihn in Horb auf und bringen ihn zurück. Der Abholpreis
+              richtet sich nach der Entfernung; wir bestätigen ihn vor deiner Zusage anhand deiner Adresse.
             </p>
             <Link className="tlink min-h-11" to="/abholservice/$city" params={{ city: "freudenstadt" }}>
               Abholung in Freudenstadt <span aria-hidden="true">→</span>
@@ -49,9 +39,8 @@ export function RegionalHomeDetails() {
           <article className="loc" data-reveal>
             <h3 className="h3">Abholung in Loßburg</h3>
             <p className="muted">
-              In Loßburg bieten wir die Abholung ebenfalls nach Vereinbarung an. Für diesen Ort
-              nennt unsere Abholtabelle {cityPickupPriceText(lossburg)} statt eines pauschalen
-              Betrags. Bitte gib deine genaue Adresse an; wir bestätigen Kosten und Übergabezeit
+              In Loßburg bieten wir die Abholung ebenfalls nach Vereinbarung an. Der Abholpreis
+              richtet sich nach der Entfernung. Bitte gib deine genaue Adresse an; wir bestätigen Kosten und Übergabezeit
               persönlich.
             </p>
             <Link className="tlink min-h-11" to="/abholservice/$city" params={{ city: "lossburg" }}>

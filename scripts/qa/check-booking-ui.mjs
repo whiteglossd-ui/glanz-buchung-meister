@@ -361,13 +361,13 @@ try {
     await page.locator('input[name="klasse"][value="kompakt"]').check();
     await step(2);
     await page.selectOption("#city", "nagold");
-    await expectText(page, total, "518 €", "Kompakt · Politur + Felgen · Abholung Nagold 50 €");
+    await expectText(page, total, "468 €", "Kompakt · Politur + Felgen; Abholung Nagold wird nicht eingerechnet");
     await page.selectOption("#city", "sindelfingen");
-    await expectText(page, total, "468 €", "Pickup beyond 50 km is not priced");
-    await expectText(page, ".booking-price", "zzgl. Abholung nach Absprache", "Pickup on request");
+    await expectText(page, total, "468 €", "Abholung wird nie in den Rechner eingerechnet");
+    await expectText(page, ".booking-price", "zzgl. Abholung", "Abholung nach Entfernung im Angebot");
     await step(1);
     await page.locator('input[name="paket"][value="keramik"]').check();
-    await expectText(page, total, "1.018 €", "White-Gloss Ceramic includes pickup up to 60 km");
+    await expectText(page, total, "1.018 €", "White-Gloss Ceramic ohne Abholbetrag im Rechner");
 
     assert.equal(assets.includes("/api/availability"), false, "Selecting packages and extras does not start a calendar read");
     const calendarResponse = await observeReadDuringAction(page, (response) =>
@@ -385,11 +385,11 @@ try {
 
     const pickupLinks = page.getByRole("list", { name: "Abholorte und Preise", exact: true });
     for (const [slug, name, expected] of [
-      ["sulz-am-neckar", "Sulz am Neckar", "30 €"],
-      ["voehringen", "Vöhringen", "30 €"],
-      ["schopfloch", "Schopfloch", "30 €"],
-      ["empfingen", "Empfingen", "kostenlos"],
-      ["dornhan", "Dornhan", "50 €"],
+      ["sulz-am-neckar", "Sulz am Neckar", "je nach Entfernung"],
+      ["voehringen", "Vöhringen", "je nach Entfernung"],
+      ["schopfloch", "Schopfloch", "je nach Entfernung"],
+      ["empfingen", "Empfingen", "je nach Entfernung"],
+      ["dornhan", "Dornhan", "je nach Entfernung"],
       ["sindelfingen", "Sindelfingen", "auf Anfrage"],
     ]) {
       const chip = pickupLinks.locator(`a[href="/abholservice/${slug}"]`);
@@ -405,7 +405,7 @@ try {
       assert.ok(await price.isVisible(), `${name}: pickup price is visible`);
       assert.equal(flat(await price.innerText()), expected, `${name}: visible pickup price`);
     }
-    results.push("Homepage pickup prices: city overrides, free pickup, tier and on-request agree visually and accessibly");
+    results.push("Startseite: Abholorte zeigen „je nach Entfernung“ bzw. „auf Anfrage“, sichtbar und barrierefrei gleich");
     // Dark Edition: eigene leichte Bewegung (dark-motion), kein GSAP-Chunk nötig.
     await checkMediaCollections(page, 1280);
     await context.close();
