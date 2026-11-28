@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useState, type KeyboardEvent } from "react";
+import { useEffect, useState, type KeyboardEvent } from "react";
 import type { LucideIcon } from "lucide-react";
 import { PageCrumbs } from "@/components/page-hero";
 import { PhotoInquiry } from "@/components/photo-inquiry";
@@ -124,12 +124,14 @@ function FaqItem({ faq }: { faq: { q: string; a: string } }) {
 
 /**
  * Knowledge blocks as tabs: one topic visible at a time keeps the page calm.
- * All panels stay in the HTML (only `hidden`), so search engines and readers
- * without JavaScript still get every text.
+ * The server renders every panel open and without tabs; only after hydration
+ * do the tabs appear, so readers without JavaScript still see all texts.
  */
 function GuideTabs({ guides }: { guides: LandingGuide[] }) {
   const [active, setActive] = useState(0);
-  const single = guides.length === 1;
+  const [enhanced, setEnhanced] = useState(false);
+  useEffect(() => setEnhanced(true), []);
+  const asList = guides.length === 1 || !enhanced;
   const move = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
     const step = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
     if (!step) return;
@@ -143,9 +145,9 @@ function GuideTabs({ guides }: { guides: LandingGuide[] }) {
       <div className="wrap">
         <p className="label label--rule">Wissen</p>
         <h2 className="h2 chrome" id="wissen">
-          {single ? guides[0].title : "Gut zu wissen."}
+          {guides.length === 1 ? guides[0].title : "Gut zu wissen."}
         </h2>
-        {single ? null : (
+        {asList ? null : (
           <div className="pl-tabs" role="tablist" aria-label="Themen">
             {guides.map((guide, index) => (
               <button
@@ -168,13 +170,13 @@ function GuideTabs({ guides }: { guides: LandingGuide[] }) {
         {guides.map((guide, index) => (
           <div
             key={guide.id}
-            id={single ? undefined : `wissen-panel-${guide.id}`}
-            role={single ? undefined : "tabpanel"}
-            aria-labelledby={single ? undefined : `wissen-tab-${guide.id}`}
-            hidden={index !== active}
+            id={asList ? undefined : `wissen-panel-${guide.id}`}
+            role={asList ? undefined : "tabpanel"}
+            aria-labelledby={asList ? undefined : `wissen-tab-${guide.id}`}
+            hidden={!asList && index !== active}
             className="pl-tabs__panel"
           >
-            {single ? null : <h3 className="h3 pl-tabs__title">{guide.title}</h3>}
+            {guides.length === 1 ? null : <h3 className="h3 pl-tabs__title">{guide.title}</h3>}
             {guide.intro ? <p className="muted pl-split__text">{guide.intro}</p> : null}
             <ul className="pl-guide">
               {guide.items.map((item) => (

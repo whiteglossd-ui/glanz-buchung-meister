@@ -86,7 +86,7 @@ try {
       await page.screenshot({ path: `${output}/${name}-${slug}.png` });
     }
     await visit(page, "/");
-    for (const id of ["pakete", "kundenergebnisse", "bewertungen"]) {
+    for (const id of ["pakete", "ergebnisse", "bewertungen"]) {
       await page.locator(`#${id}`).scrollIntoViewIfNeeded();
       await page.waitForTimeout(900);
       await page.screenshot({ path: `${output}/${name}-start-${id}.png` });

@@ -359,3 +359,6 @@
   margin: 16px 0 0;
   font-size: 13px;
 }
+.wgt-page .pl-tabs__panel:not([hidden]) + .pl-tabs__panel:not([hidden]) {
+  margin-top: clamp(40px, 5vw, 64px);
+}
