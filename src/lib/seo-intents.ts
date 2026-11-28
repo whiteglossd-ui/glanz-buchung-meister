@@ -152,6 +152,16 @@ export const seoIntents: Record<string, SearchIntent> = {
     intent: "informational",
     purpose: "Zwischen Folierung, Lackierarbeiten und Dellen drücken entscheiden",
   },
+  "/ratgeber/autofolie-pflegen": {
+    cluster: "autofolie pflegen waschanlage",
+    intent: "informational",
+    purpose: "Foliertes Auto richtig waschen und matte Folie pflegen",
+  },
+  "/ratgeber/hagelschaden-was-tun": {
+    cluster: "hagelschaden auto was tun",
+    intent: "informational",
+    purpose: "Nach einem Hagelschaden Fotos machen, Versicherung informieren, Dellen prüfen lassen",
+  },
   ...Object.fromEntries(
     services
       .filter((s) => !s.pendingApproval && !isConsolidatedService(s.slug))

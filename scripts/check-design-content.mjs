@@ -215,19 +215,20 @@ const APPROVED_SUBPAGE_BLOBS = Object.freeze({
 // See docs/folierung-2026-11-27.md.
 const APPROVED_PARTNER_SERVICES_BLOBS = Object.freeze({
   "src/components/dark/dark-chrome.tsx": "fbefca9e32d42e3b5187464d4d4a652a6681909d",
-  "src/components/dark/dark-home.tsx": "6403fd43981fafbfd55d95ac37754af38d794448",
+  "src/components/dark/dark-home.tsx": "3f95606289cb44557520b39bc12d44e7c70f44fd",
   "src/components/full-service.tsx": "594b5d8668735332cf15c8f5df35d976a1cd55b3",
-  "src/data/sitemap-static.xml": "3e2b9109565eaefad1dc20e071abcfbbcd227da6",
-  "src/lib/seo-intents.ts": "7307d2d34fa6967347f7d451e3679f8787053f78",
+  "src/data/sitemap-static.xml": "dea2fb6ebf56d25d410ee1f4c4b0ebe27a3bedad",
+  "src/lib/seo-intents.ts": "1556e6f24ffc420424241638dd5767c79d3ae41a",
   "src/routes/leistungen.index.tsx": "80861dbf872a770f73dd48e55fe9cc2d5a366081",
   "public/llms.txt": "a4fc563e86a8b9ffa094cf637770f01170bc2170",
-  "src/data/editorial-guides.json": "86d063708824415b881c84f0b25486b31098236e",
+  "src/data/editorial-guides.json": "94b535fb2dfcb73a2cdbe14b759c6bfb5c133d01",
   "src/routes/leistungen.$slug.$city.tsx": "b4e52ec90d79896a586dee94cb9f5d84a04607a2",
   "src/routes/leistungen.$slug.index.tsx": "2b7df5429bbc7d1bb87be147a416b3797becf628",
   "src/routes/ratgeber.$slug.tsx": "3780c2776ed81c57692d915a392b7c46e29b2758",
   "src/routes/ueber-uns.tsx": "e313103f342724e06af9b3327d3c2cf6c428bc6b",
   "src/lib/seo-policy.ts": "4a26dce0475b49b5b54ae549034909b6e0d8d9ef",
   "src/routes/dellen-hagelschaden.tsx": "c023db13858ba444fe446ecd3ae66ef884fff8b1",
+  "src/routes/luxusfahrzeuge.tsx": "baa8da7c2319f5fcf13ea7a515a7210771075dbb",
 });
 
 function sourceBlobId(source) {

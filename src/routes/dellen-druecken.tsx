@@ -87,6 +87,41 @@ const config: PartnerLandingConfig = {
       icon: Search,
     },
   ],
+  guides: [
+    {
+      id: "technik",
+      label: "Wissen",
+      title: "So funktioniert Ausbeulen ohne Lackieren.",
+      intro:
+        "Beim Dellen drücken wird das Blech zurück in Form gebracht, ohne Spachtel und ohne neuen Lack. Was dabei passiert und wann es nicht geht, einfach erklärt.",
+      items: [
+        {
+          title: "Von innen drücken",
+          text: "Mit Hebeln und Drückwerkzeugen wird das Blech von der Rückseite in vielen kleinen Schritten zurückgeformt. Der Originallack bleibt dabei erhalten.",
+        },
+        {
+          title: "Von außen ziehen",
+          text: "Ist die Rückseite nicht erreichbar, gibt es Techniken, bei denen die Delle von außen herausgezogen wird. Welche Technik passt, entscheidet der Partner am Fahrzeug.",
+        },
+        {
+          title: "Kontrolle mit Licht",
+          text: "Unter einer speziellen Lampe oder im Streiflicht sieht man jede Unebenheit. So wird die Delle Schritt für Schritt geprüft, bis die Fläche wieder glatt ist.",
+        },
+        {
+          title: "Wann es nicht geht",
+          text: "Bei gerissenem Lack, scharfen Knicken oder sehr großen Dellen ist meist eine andere Reparatur nötig. Das sagen wir dir vorher ehrlich.",
+        },
+        {
+          title: "Hagel und Versicherung",
+          text: "Hagelschäden sind in der Regel über die Teilkasko versichert. Was deine Police genau abdeckt, klärst du mit deiner Versicherung. Melde den Schaden dort zeitnah.",
+        },
+        {
+          title: "Gute Fotos machen",
+          text: "Fotografiere schräg mit Licht von der Seite, einmal aus etwa einem Meter und einmal aus der Nähe. Spiegelt sich eine gerade Linie im Lack, sieht man Dellen besonders gut.",
+        },
+      ],
+    },
+  ],
   steps: [
     ["Anfragen", "Schick uns ein Foto der Delle, am besten schräg mit Licht von der Seite. So können wir eine erste Einschätzung geben."],
     ["Begutachten", "Wir schauen uns die Delle an und stimmen die Reparatur mit dem Partner ab. Den Preis erfährst du, bevor du zusagst."],
@@ -111,6 +146,14 @@ const config: PartnerLandingConfig = {
       a: "Für eine erste Einschätzung oft ja. Fotografiere die Delle schräg mit Licht von der Seite. Verbindlich wird es erst, wenn wir das Fahrzeug gesehen haben.",
     },
     {
+      q: "Zahlt die Versicherung einen Hagelschaden?",
+      a: "Hagelschäden sind in der Regel über die Teilkasko versichert. Was deine Police genau abdeckt und wie die Abwicklung läuft, klärst du mit deiner Versicherung. Melde den Schaden dort zeitnah und mach vorher Fotos.",
+    },
+    {
+      q: "Wie funktioniert Dellen drücken genau?",
+      a: "Der Partner formt das Blech mit Spezialwerkzeug in vielen kleinen Schritten zurück, meist von innen. Ist die Rückseite nicht erreichbar, gibt es Techniken, die Delle von außen zu ziehen. Unter Speziallicht wird kontrolliert, bis die Fläche wieder glatt ist.",
+    },
+    {
       q: "Muss danach lackiert werden?",
       a: "Wenn die Delle gedrückt werden kann, nein. Der Originallack bleibt erhalten. Ist der Lack beschädigt, koordinieren wir die Lackierarbeiten mit unserem Partner-Lackierbetrieb.",
     },
@@ -126,7 +169,10 @@ const config: PartnerLandingConfig = {
   inquiryTitle: "Delle oder Hagelschaden prüfen lassen",
   inquiryHint:
     "Schreib kurz, wo die Delle sitzt und wie groß sie ungefähr ist. Fotos ergänzt du nach der Anfrage in deinem Kundenbereich.",
-  articles: [{ slug: "smart-repair-oder-lackkorrektur", label: "Dellenentfernung oder Lackkorrektur" }],
+  articles: [
+    { slug: "hagelschaden-was-tun", label: "Hagelschaden: Was tun?" },
+    { slug: "smart-repair-oder-lackkorrektur", label: "Dellenentfernung oder Lackkorrektur" },
+  ],
 };
 
 export const Route = createFileRoute("/dellen-druecken")({

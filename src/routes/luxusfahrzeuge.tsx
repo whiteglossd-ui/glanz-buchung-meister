@@ -1,11 +1,17 @@
 import { EditorialLayout } from "@/components/editorial-layout";
 import { serializeJsonLd } from "@/lib/json-ld";
 import { createFileRoute } from "@tanstack/react-router";
-import { PhotoNote, Shot } from "@/components/media";
+import { PhotoNote } from "@/components/media";
+import { customerPhotos } from "@/data/customer-photos";
 import { PageHero } from "@/components/page-hero";
 import { ctaGhost, ctaPrimary } from "@/components/ui";
 import { site } from "@/data/site";
 import { absUrl, pageHead, pageHeroSizes } from "@/lib/seo";
+
+/** Mercedes S-Klasse Coupé (Inhaberfotos 24.11.2026, freigegeben). */
+const luxuryPhotos = ["sclass-01", "sclass-02", "sclass-04"].map(
+  (id) => customerPhotos.find((photo) => photo.id === id)!,
+);
 
 const DESCRIPTION =
   "Aufbereitung für Luxus-, Sport- und Sammlerfahrzeuge ab ca. 80.000 € in Horb am Neckar. Erst anrufen, dann anschauen – nicht über den Online-Konfigurator.";
@@ -127,31 +133,24 @@ function LuxuryPage() {
             Das gezeigte Kundenfahrzeug veröffentlichen wir mit ausdrücklicher Freigabe.
             Das Kennzeichen ist in den verwendeten Motiven nicht sichtbar.
           </p>
-          <figure className="mt-12">
-            <Shot
-              name="private"
-              alt="Freigegebenes Kundenfahrzeug nach der Aufbereitung bei White-Gloss Detailing"
-              className="aspect-[2/1] w-full"
-              sizes="100vw"
-            />
-          </figure>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            <figure>
-              <Shot
-                name="lack"
-                alt="Frontpartie und Felge eines schwarzen BMW nach der Lackpflege"
-                className="aspect-[4/3] w-full"
-                sizes="(min-width: 640px) 50vw, 100vw"
-              />
-            </figure>
-            <figure>
-              <Shot
-                name="leder"
-                alt="Leder nach der Pflege"
-                className="aspect-[4/3] w-full"
-                sizes="(min-width: 640px) 50vw, 100vw"
-              />
-            </figure>
+          <div className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {luxuryPhotos.map((photo, index) => (
+              <figure key={photo.id} className={index === 0 ? "col-span-2 sm:col-span-1" : undefined}>
+                <img
+                  src={photo.src}
+                  srcSet={photo.srcSet}
+                  sizes="(min-width: 640px) 33vw, 50vw"
+                  alt={photo.alt}
+                  width={photo.width}
+                  height={photo.height}
+                  loading="lazy"
+                  decoding="async"
+                  className={`${index === 0 ? "aspect-[4/3] sm:aspect-[3/4]" : "aspect-[3/4]"} w-full object-cover outline outline-1 -outline-offset-1 outline-white/10`}
+                  style={{ objectPosition: photo.position }}
+                />
+                <figcaption className="mt-2 text-xs text-muted">{photo.title}</figcaption>
+              </figure>
+            ))}
           </div>
           <PhotoNote className="mt-4" />
           <a href={site.phoneHref} className={`${ctaPrimary} mt-8`}>

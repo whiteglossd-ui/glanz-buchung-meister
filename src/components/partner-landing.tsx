@@ -53,6 +53,18 @@ export type PartnerLandingConfig = {
   inquiryTitle: string;
   inquiryHint: string;
   articles?: { slug: string; label: string }[];
+  /** Explanatory knowledge blocks between the options and the steps. */
+  guides?: LandingGuide[];
+};
+
+export type LandingGuide = {
+  id: string;
+  label: string;
+  title: string;
+  intro?: string;
+  items: { title: string; text: string }[];
+  /** Plain-text note under the cards, e.g. where a figure comes from. */
+  note?: string;
 };
 
 /** Cross-links between the four partner pages. */
@@ -211,6 +223,11 @@ export function PartnerLanding({ config }: { config: PartnerLandingConfig }) {
                 <a href={`#${option.id}`}>{option.label}</a>
               </li>
             ))}
+            {config.guides?.map((guide) => (
+              <li key={guide.id}>
+                <a href={`#${guide.id}`}>{guide.label}</a>
+              </li>
+            ))}
             <li>
               <a href="#fragen">Häufige Fragen</a>
             </li>
@@ -261,6 +278,31 @@ export function PartnerLanding({ config }: { config: PartnerLandingConfig }) {
           </ol>
         </div>
       </section>
+
+      {config.guides?.map((guide) => (
+        <section key={guide.id} className="psvc-sec" aria-labelledby={guide.id}>
+          <div className="wrap">
+            <div className="pl-split">
+              <div>
+                <p className="label label--rule">{guide.label}</p>
+                <h2 className="h2 chrome" id={guide.id}>
+                  {guide.title}
+                </h2>
+              </div>
+              {guide.intro ? <p className="muted pl-split__text">{guide.intro}</p> : null}
+            </div>
+            <ul className="pl-guide">
+              {guide.items.map((item) => (
+                <li key={item.title}>
+                  <h3 className="h3">{item.title}</h3>
+                  <p className="muted">{item.text}</p>
+                </li>
+              ))}
+            </ul>
+            {guide.note ? <p className="muted pl-guide__note">{guide.note}</p> : null}
+          </div>
+        </section>
+      ))}
 
       <section className="psvc-sec" aria-labelledby="ablauf">
         <div className="wrap">

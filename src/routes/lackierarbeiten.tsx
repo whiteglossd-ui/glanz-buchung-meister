@@ -81,6 +81,41 @@ const config: PartnerLandingConfig = {
       icon: Sparkles,
     },
   ],
+  guides: [
+    {
+      id: "lackaufbau",
+      label: "Wissen",
+      title: "Wie tief geht der Schaden?",
+      intro:
+        "Autolack besteht aus mehreren Schichten. Ob eine Politur reicht oder lackiert werden muss, hängt davon ab, welche Schicht beschädigt ist.",
+      items: [
+        {
+          title: "Klarlack",
+          text: "Die oberste, durchsichtige Schicht schützt die Farbe und sorgt für den Glanz. Feine Kratzer, die nur hier sitzen, lassen sich oft polieren.",
+        },
+        {
+          title: "Basislack",
+          text: "Darunter liegt die Farbschicht. Ist sie verletzt, siehst du oft einen helleren Strich. Dann hilft Politur allein nicht mehr.",
+        },
+        {
+          title: "Grundierung und Blech",
+          text: "Sieht man die Grundierung oder sogar Blech, sollte die Stelle bald repariert werden. Sonst kann Feuchtigkeit an das Blech kommen.",
+        },
+        {
+          title: "Faustregel Fingernagel",
+          text: "Fahr vorsichtig mit dem Fingernagel quer über den Kratzer. Bleibt er hängen, geht der Kratzer meist tiefer als der Klarlack. Sicher sagen können wir es erst am Fahrzeug.",
+        },
+        {
+          title: "Farbton abstimmen",
+          text: "Lack verändert sich mit den Jahren durch Sonne und Wetter. Deshalb stimmt der Lackierbetrieb den Farbton auf dein Auto ab, nicht nur auf den Farbcode.",
+        },
+        {
+          title: "Nach der Lackierung",
+          text: "Frischer Lack braucht Zeit zum Aushärten. Wann du wieder polieren oder versiegeln kannst, sagt dir der Lackierbetrieb. Danach übernehmen wir das gern.",
+        },
+      ],
+    },
+  ],
   steps: [
     ["Anfragen", "Schreib uns, wo der Schaden sitzt. Fotos vom ganzen Bauteil und aus der Nähe helfen für eine erste Einschätzung."],
     ["Begutachten", "Wir schauen uns den Schaden an und stimmen die Reparatur mit dem Lackierbetrieb ab. Den Preis erfährst du, bevor du zusagst."],
@@ -99,6 +134,14 @@ const config: PartnerLandingConfig = {
     {
       q: "Passt der neue Lack zum Rest des Autos?",
       a: "Der Lackierbetrieb stimmt den Farbton auf dein Fahrzeug ab. Wie der Übergang gelöst wird, bespricht er vorher mit dir.",
+    },
+    {
+      q: "Woher weiß ich, wie tief ein Kratzer ist?",
+      a: "Eine Faustregel: Fahr vorsichtig mit dem Fingernagel quer über den Kratzer. Bleibt er hängen, geht der Kratzer meist tiefer als der Klarlack, und eine Politur reicht oft nicht. Sicher sagen können wir es erst, wenn wir die Stelle gesehen haben.",
+    },
+    {
+      q: "Wann kann ich nach der Lackierung wieder versiegeln?",
+      a: "Frischer Lack braucht Zeit zum Aushärten. Den richtigen Zeitpunkt nennt dir der Lackierbetrieb. Danach übernehmen wir Politur und Versiegelung gern bei uns.",
     },
     {
       q: "Wer lackiert mein Auto?",

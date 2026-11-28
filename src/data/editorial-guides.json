@@ -138,23 +138,32 @@
         "slug": "auto-folieren-lassen",
         "title": "Auto folieren lassen: Ablauf, Folienarten und Vorbereitung",
         "seoTitle": "Auto folieren lassen in Horb: Ablauf & Folien | White-Gloss",
-        "excerpt": "Farbwechsel ohne Neulackierung: Wie eine Autofolierung abläuft, welche Folien es gibt und worauf du vorher achten solltest.",
+        "excerpt": "Farbwechsel ohne Neulackierung: Wie eine Autofolierung abläuft, welche Folien es gibt, wie lange sie hält und was erlaubt ist.",
         "seoExcerpt": "Auto folieren lassen in Horb am Neckar: Ablauf einer Autofolierung, Voll- oder Teilfolierung, Glanz, Matt und Satin und warum der Lack vorher geprüft wird.",
         "date": "2026-11-27",
         "image": "/media/finish.webp",
         "imageAlt": "Glänzende Heckpartie eines dunklen Fahrzeugs",
-        "minutes": 4,
+        "minutes": 6,
         "category": "Folierung",
         "link": {
           "path": "/folierung",
           "label": "Autofolierung anfragen"
         },
         "related": [
+          "autofolie-pflegen",
           "folieren-oder-lackieren",
-          "smart-repair-oder-lackkorrektur",
-          "keramikversiegelung-langzeitschutz"
+          "smart-repair-oder-lackkorrektur"
         ],
-        "sources": [],
+        "sources": [
+          {
+            "label": "ADAC: Auto folieren – neue Optik und Schutz",
+            "url": "https://www.adac.de/rund-ums-fahrzeug/reparatur-pflege-wartung/pflege/auto-folieren/"
+          },
+          {
+            "label": "3M: Wrap Film Series 2080 (Herstellerangaben)",
+            "url": "https://www.3m.com/3M/en_XL/p/d/b5005081006/"
+          }
+        ],
         "sections": [
           {
             "heading": "Was bei einer Autofolierung passiert",
@@ -171,10 +180,32 @@
             ]
           },
           {
+            "heading": "Gegossene oder kalandrierte Folie?",
+            "paragraphs": [
+              "Für eine Vollfolierung nutzt man in der Regel gegossene Hochleistungsfolie. Sie ist dünn und dehnbar. Deshalb legt sie sich auch an Rundungen, Sicken und Kanten sauber an, ohne sich später zurückzuziehen.",
+              "Kalandrierte Folie ist weniger dehnbar. Sie passt eher zu flachen Flächen, Beschriftungen und einfachen Teilfolierungen. Für stark geformte Bauteile ist sie meist nicht die richtige Wahl."
+            ]
+          },
+          {
+            "heading": "Wie lange hält eine Autofolierung?",
+            "paragraphs": [
+              "Eine gute Folierung hält mehrere Jahre. Wie lange genau, hängt von drei Dingen ab: von der Folie, von der Fläche und von der Pflege.",
+              "Waagerechte Flächen wie Dach, Motorhaube und Kofferraumdeckel bekommen am meisten Sonne und Wetter ab. Hersteller geben dafür kürzere Zeiten an als für Türen und Seitenteile. Ein Beispiel: 3M nennt für die Wrap-Film-Serie 2080 eine Garantie von bis zu 7 Jahren an senkrechten und 2 Jahren an waagerechten Flächen.",
+              "Welche Folie bei deinem Auto verwendet wird und was dafür gilt, erfährst du vor der Zusage."
+            ]
+          },
+          {
             "heading": "Warum der Lack vorher geprüft wird",
             "paragraphs": [
               "Die Folie haftet auf dem Lack. Auf intaktem Originallack lässt sie sich in der Regel später wieder ablösen. Bei nachlackierten oder beschädigten Stellen kann beim Entfernen Lack mitgehen.",
               "Deshalb schauen wir uns den Lack vor der Folierung an, auch mit Lackdickenmessung. So weißt du vorher, ob dein Lack geeignet ist oder ob zuerst eine Reparatur sinnvoll ist."
+            ]
+          },
+          {
+            "heading": "Was beim Folieren erlaubt ist",
+            "paragraphs": [
+              "Fast jede Farbe ist möglich. Kennzeichen, Scheinwerfer und Rückleuchten dürfen aber nicht foliert werden. Großflächige Chrom- oder Spiegelfolie ist ebenfalls nicht erlaubt, weil sie andere blenden kann. Kleine Chrom-Akzente werden meist toleriert.",
+              "Auch reflektierende Warn- und Signalfarben, geschützte Begriffe wie „Polizei“ und Hoheitszeichen sind tabu. Ob du einen Farbwechsel deiner Zulassungsstelle oder Versicherung melden solltest, klärst du am besten vorher kurz direkt dort."
             ]
           },
           {
@@ -186,7 +217,7 @@
           }
         ]
       },
-      {
+{
         "slug": "folieren-oder-lackieren",
         "title": "Folieren oder Lackieren: Was passt zu deinem Auto?",
         "seoTitle": "Auto folieren oder lackieren? Unterschiede | White-Gloss",
@@ -234,6 +265,135 @@
             "paragraphs": [
               "Weder Folie noch Lack beseitigen eine Delle. Parkdellen oder Hagelschäden lassen sich oft ohne Lackieren herausdrücken, wenn Lack und Blech es zulassen.",
               "Für Folierung, Lackierarbeiten und Dellen drücken arbeiten wir mit spezialisierten Partnerbetrieben. Wir schauen uns dein Auto an und sagen dir ehrlich, welcher Weg sinnvoll ist. Den Preis erfährst du, bevor du zusagst."
+            ]
+          }
+        ]
+      },
+{
+        "slug": "autofolie-pflegen",
+        "title": "Autofolie pflegen: Waschen, Waschanlage und matte Folien",
+        "seoTitle": "Autofolie pflegen: Waschanlage, Hochdruck, Matt | White-Gloss",
+        "excerpt": "So bleibt deine Folierung lange schön: Handwäsche, Waschanlage, Hochdruckreiniger, matte Folien und die ersten Tage nach der Folierung.",
+        "seoExcerpt": "Autofolie richtig pflegen: Darf ein foliertes Auto in die Waschanlage? Wie viel Abstand mit dem Hochdruckreiniger? Was matte Folie braucht. Ratgeber aus Horb.",
+        "date": "2026-11-28",
+        "image": "/media/hero-gloss.webp",
+        "imageAlt": "Glänzende schwarze Seitenpartie eines klassischen Fahrzeugs mit Lichtreflexen",
+        "minutes": 4,
+        "category": "Folierung",
+        "link": {
+          "path": "/folierung",
+          "label": "Autofolierung anfragen"
+        },
+        "related": [
+          "auto-folieren-lassen",
+          "folieren-oder-lackieren",
+          "auto-im-winter-waschen"
+        ],
+        "sources": [
+          {
+            "label": "ADAC: Auto folieren – neue Optik und Schutz",
+            "url": "https://www.adac.de/rund-ums-fahrzeug/reparatur-pflege-wartung/pflege/auto-folieren/"
+          }
+        ],
+        "sections": [
+          {
+            "heading": "Die ersten Tage nach der Folierung",
+            "paragraphs": [
+              "Nach der Folierung braucht der Kleber etwas Zeit, bis er voll hält. Wann du das erste Mal waschen kannst, sagen wir dir bei der Übergabe.",
+              "Kleine Bläschen in den ersten Tagen können normal sein. Bleiben sie oder löst sich eine Kante, melde dich bei uns. Dann schauen wir uns das gemeinsam mit dem Folierer an."
+            ]
+          },
+          {
+            "heading": "Handwäsche ist am schonendsten",
+            "paragraphs": [
+              "Wasche dein foliertes Auto am besten von Hand. Nimm ein mildes Autoshampoo und einen weichen Mikrofaser-Handschuh. Arbeite von oben nach unten und spüle den Handschuh oft aus.",
+              "Zum Trocknen eignet sich ein weiches Mikrofasertuch. Nicht reiben, sondern das Wasser abnehmen. So bleiben Oberfläche und Kanten geschont."
+            ]
+          },
+          {
+            "heading": "Waschanlage und Hochdruckreiniger",
+            "paragraphs": [
+              "Wenn du in die Waschanlage fährst, dann mit Textilbürsten und ohne Heißwachs. Ob das für deine Folie passt, erfährst du bei der Übergabe.",
+              "Beim Hochdruckreiniger mindestens 50 Zentimeter Abstand halten. Richte den Strahl nicht direkt auf Kanten und Folienränder. Sonst kann Wasser unter die Folie drücken und sie dort lösen."
+            ]
+          },
+          {
+            "heading": "Matte und satinierte Folien",
+            "paragraphs": [
+              "Matte und satinierte Folien werden nicht poliert und nicht gewachst. Politur und Wachs füllen die raue Oberfläche, und es entstehen glänzende Stellen. Die lassen sich nicht mehr entfernen.",
+              "Für matte Oberflächen gibt es eigene Pflegeprodukte. Welche zu deiner Folie passen, sagen wir dir gern."
+            ]
+          },
+          {
+            "heading": "Flecken schnell entfernen",
+            "paragraphs": [
+              "Vogelkot, Baumharz und Insekten am besten bald entfernen. Weiche sie mit Wasser ein und nimm sie mit einem weichen Tuch ab. Nicht kratzen und nicht scheuern.",
+              "Eine Garage oder ein Carport schützt die Folie vor Sonne und Wetter. Das verlängert ihre Lebensdauer, vor allem auf Dach und Motorhaube."
+            ]
+          },
+          {
+            "heading": "Pflege bei White-Gloss",
+            "paragraphs": [
+              "Du willst dich nicht selbst darum kümmern? Wir reinigen auch folierte Fahrzeuge schonend von Hand. Auf Wunsch holen wir dein Auto in Horb am Neckar, Loßburg und Umgebung ab und bringen es zurück."
+            ]
+          }
+        ]
+      },
+{
+        "slug": "hagelschaden-was-tun",
+        "title": "Hagelschaden am Auto: Was tun?",
+        "seoTitle": "Hagelschaden am Auto: Was tun? Horb & Loßburg | White-Gloss",
+        "excerpt": "Nach dem Hagel: Wie du Dellen richtig fotografierst, was die Versicherung wissen will und wann Dellen drücken ohne Lackieren möglich ist.",
+        "seoExcerpt": "Hagelschaden am Auto in Horb und Loßburg: Fotos richtig machen, Teilkasko informieren und Hageldellen ohne Lackieren entfernen lassen. Schritt für Schritt erklärt.",
+        "date": "2026-11-28",
+        "image": "/media/dellen.webp",
+        "imageAlt": "Delle im hellen Autolack, sichtbar im Streiflicht",
+        "minutes": 4,
+        "category": "Karosserie",
+        "link": {
+          "path": "/dellen-druecken",
+          "label": "Delle prüfen lassen"
+        },
+        "related": [
+          "smart-repair-oder-lackkorrektur",
+          "folieren-oder-lackieren",
+          "auto-folieren-lassen"
+        ],
+        "sources": [],
+        "sections": [
+          {
+            "heading": "Direkt nach dem Hagel",
+            "paragraphs": [
+              "Bring dein Auto in Sicherheit, wenn es noch hagelt, und schau dir den Schaden erst danach in Ruhe an. Hageldellen sitzen meist auf Dach, Motorhaube und Kofferraumdeckel, oft auch an den Dachholmen.",
+              "Viele Hageldellen sieht man auf den ersten Blick nicht. Erst im Streiflicht, also mit Licht von der Seite, werden sie richtig sichtbar."
+            ]
+          },
+          {
+            "heading": "So fotografierst du die Dellen richtig",
+            "paragraphs": [
+              "Fotografiere schräg mit Licht von der Seite. Mach ein Foto vom ganzen Bauteil aus etwa einem Meter und eines aus der Nähe. Spiegelt sich eine gerade Linie im Lack, etwa eine Hauskante, sieht man Dellen besonders gut.",
+              "Fotografiere auch das ganze Auto und das Kennzeichen. Das hilft dir bei der Meldung an die Versicherung."
+            ]
+          },
+          {
+            "heading": "Versicherung informieren",
+            "paragraphs": [
+              "Hagelschäden sind in der Regel über die Teilkasko versichert. Was deine Police genau abdeckt, ob es eine Selbstbeteiligung gibt und wie die Abwicklung läuft, klärst du mit deiner Versicherung.",
+              "Melde den Schaden zeitnah. Frag dabei auch, ob die Versicherung ein Gutachten oder einen Kostenvoranschlag braucht, bevor repariert wird."
+            ]
+          },
+          {
+            "heading": "Dellen drücken statt lackieren",
+            "paragraphs": [
+              "Ist der Lack nicht gerissen, lassen sich Hageldellen oft ohne Lackieren entfernen. Dabei wird das Blech mit Spezialwerkzeug in vielen kleinen Schritten zurückgeformt. Der Originallack bleibt erhalten.",
+              "Ist der Lack beschädigt oder sitzt eine Delle an einer Kante oder einem scharfen Knick, ist oft eine andere Reparatur nötig. Das sagen wir dir vorher ehrlich."
+            ]
+          },
+          {
+            "heading": "So läuft es bei White-Gloss ab",
+            "paragraphs": [
+              "Schick uns deine Fotos. Wir geben dir eine erste Einschätzung und schauen uns das Auto dann vor Ort an. Die Reparatur übernimmt ein erfahrener Partnerbetrieb, der auf Ausbeulen ohne Lackieren spezialisiert ist. Den Preis erfährst du, bevor du zusagst.",
+              "Auf Wunsch holen wir dein Auto in Horb am Neckar, Loßburg, Freudenstadt und Umgebung ab und bringen es zurück."
             ]
           }
         ]
