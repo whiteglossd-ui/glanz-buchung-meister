@@ -49,7 +49,7 @@ describe("pickup pricing source of truth", () => {
 
   it("shows no pickup amounts publicly, only the distance rule", () => {
     const summary = pickupTierSummary();
-    assert.match(summary, /Entfernung/);
+    assert.match(summary, /Reichweite/);
     assert.doesNotMatch(summary, /€|Euro|kostenlos|\d+\s*km/i);
     assert.equal(pickupTierSummary({ includeCityExceptions: false }), summary);
     assert.doesNotMatch(pickupKeramikNote(), /\d+\s*km|inklusive|enthalten/i);

@@ -364,7 +364,7 @@ try {
     await expectText(page, total, "468 €", "Kompakt · Politur + Felgen; Abholung Nagold wird nicht eingerechnet");
     await page.selectOption("#city", "sindelfingen");
     await expectText(page, total, "468 €", "Abholung wird nie in den Rechner eingerechnet");
-    await expectText(page, ".booking-price", "zzgl. Abholung", "Abholung nach Entfernung im Angebot");
+    await expectText(page, ".booking-price", "zzgl. Abholung", "Abholung nach Reichweite im Angebot");
     await step(1);
     await page.locator('input[name="paket"][value="keramik"]').check();
     await expectText(page, total, "1.018 €", "White-Gloss Ceramic ohne Abholbetrag im Rechner");
@@ -385,11 +385,11 @@ try {
 
     const pickupLinks = page.getByRole("list", { name: "Abholorte und Preise", exact: true });
     for (const [slug, name, expected] of [
-      ["sulz-am-neckar", "Sulz am Neckar", "je nach Entfernung"],
-      ["voehringen", "Vöhringen", "je nach Entfernung"],
-      ["schopfloch", "Schopfloch", "je nach Entfernung"],
-      ["empfingen", "Empfingen", "je nach Entfernung"],
-      ["dornhan", "Dornhan", "je nach Entfernung"],
+      ["sulz-am-neckar", "Sulz am Neckar", "nach Reichweite"],
+      ["voehringen", "Vöhringen", "nach Reichweite"],
+      ["schopfloch", "Schopfloch", "nach Reichweite"],
+      ["empfingen", "Empfingen", "nach Reichweite"],
+      ["dornhan", "Dornhan", "nach Reichweite"],
       ["sindelfingen", "Sindelfingen", "auf Anfrage"],
     ]) {
       const chip = pickupLinks.locator(`a[href="/abholservice/${slug}"]`);
@@ -405,7 +405,7 @@ try {
       assert.ok(await price.isVisible(), `${name}: pickup price is visible`);
       assert.equal(flat(await price.innerText()), expected, `${name}: visible pickup price`);
     }
-    results.push("Startseite: Abholorte zeigen „je nach Entfernung“ bzw. „auf Anfrage“, sichtbar und barrierefrei gleich");
+    results.push("Startseite: Abholorte zeigen „nach Reichweite“ bzw. „auf Anfrage“, sichtbar und barrierefrei gleich");
     // Dark Edition: eigene leichte Bewegung (dark-motion), kein GSAP-Chunk nötig.
     await checkMediaCollections(page, 1280);
     await context.close();

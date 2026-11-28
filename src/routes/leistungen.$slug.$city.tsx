@@ -139,7 +139,7 @@ function ServiceCityPage() {
             ? `Du kannst das Fahrzeug nach Terminvereinbarung direkt zu ${site.street} bringen. Die Uhrzeit der Anfrage bezeichnet die Fahrzeugabgabe.`
             : cityPickupFee(city, "basis") === null
               ? `Für ${city.name} ist die Abholung nur nach individueller Absprache möglich. Den Preis nennen wir mit dem Terminangebot.`
-              : `Der Hol- und Bringservice aus ${city.name} wird nach Entfernung berechnet. Den Preis nennen wir mit dem Terminangebot.`}</p>
+              : `Der Hol- und Bringservice aus ${city.name} richtet sich nach der Reichweite. Den Preis nennen wir dir gern mit dem Terminangebot.`}</p>
           <p className="text-sm text-muted">Abholort, Übergabezeit und Rückgabe werden persönlich bestätigt. Aktuell bereite ich dein Fahrzeug in {site.city} auf.</p>
           <Link to="/abholservice/$city" params={{ city: city.slug }} className="inline-flex min-h-11 items-center text-sm underline">Abholbedingungen für {city.name}</Link>
           {evidence && serviceCitySeo(service.slug, city.slug).status === "index" ? <div className="space-y-3">

@@ -508,7 +508,7 @@ export function Configurator({
             </p>
             <p className="text-sm text-muted">
               {quote.klass.label} · {quote.pack.name}
-              {" · Abholung nach Entfernung, Preis mit dem Terminangebot"}
+              {" · Abholung nach Reichweite, Preis mit deinem Terminangebot"}
             </p>
             <p className="text-xs text-subtle">
               Dies ist der voraussichtliche Preis inkl. MwSt. Falls der Fahrzeugzustand zusätzlichen
@@ -758,7 +758,7 @@ export function Configurator({
                     </div>
                   ))}
                 <dt>Abholung · {quote.city?.name}</dt>
-                <dd>Nach Entfernung, Preis mit dem Terminangebot</dd>
+                <dd>Nach Reichweite, Preis mit deinem Terminangebot</dd>
                 <dt>Gesamtpreis (voraussichtlich)</dt>
                 <dd>
                   ab {eur(quote.subtotal)} zzgl. Abholung

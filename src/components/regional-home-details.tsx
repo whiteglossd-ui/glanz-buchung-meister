@@ -30,7 +30,7 @@ export function RegionalHomeDetails() {
             <p className="muted">
               Du nennst uns deine Übergabeadresse und das gewünschte Paket. Wir holen den Wagen nach
               Absprache ab, bereiten ihn in Horb auf und bringen ihn zurück. Der Abholpreis
-              richtet sich nach der Entfernung; wir bestätigen ihn vor deiner Zusage anhand deiner Adresse.
+              richtet sich nach der Reichweite; wir bestätigen ihn vor deiner Zusage anhand deiner Adresse.
             </p>
             <Link className="tlink min-h-11" to="/abholservice/$city" params={{ city: "freudenstadt" }}>
               Abholung in Freudenstadt <span aria-hidden="true">→</span>
@@ -40,7 +40,7 @@ export function RegionalHomeDetails() {
             <h3 className="h3">Abholung in Loßburg</h3>
             <p className="muted">
               In Loßburg bieten wir die Abholung ebenfalls nach Vereinbarung an. Der Abholpreis
-              richtet sich nach der Entfernung. Bitte gib deine genaue Adresse an; wir bestätigen Kosten und Übergabezeit
+              richtet sich nach der Reichweite. Bitte gib deine genaue Adresse an; wir bestätigen Kosten und Übergabezeit
               persönlich.
             </p>
             <Link className="tlink min-h-11" to="/abholservice/$city" params={{ city: "lossburg" }}>

@@ -123,7 +123,7 @@ function AdminSettings() {
               {e.name} · ab {eur(e.price)}
             </li>
           ))}
-          <li>Abholung: nach Entfernung, Preis mit dem Terminangebot</li>
+          <li>Abholung: nach Reichweite, Preis mit dem Terminangebot</li>
         </ul>
       </section>
 

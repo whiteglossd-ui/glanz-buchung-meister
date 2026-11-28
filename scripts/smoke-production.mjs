@@ -178,7 +178,7 @@ for (const check of pageChecks) {
       }
     }
     if (check.path === "/preise") {
-      if (!/richtet sich nach der Entfernung/i.test(body)) {
+      if (!/richtet sich nach der Reichweite/i.test(body)) {
         fail(label, "Hinweis zum entfernungsabhängigen Abholpreis fehlt");
       }
       if (/bis 10 km kostenlos|bis 20 km 50|bis 50 km 70/i.test(body)) {

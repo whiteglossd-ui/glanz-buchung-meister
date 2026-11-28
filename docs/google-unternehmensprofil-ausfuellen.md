@@ -176,8 +176,8 @@ Textilien sowie Wachs mit einer Haltbarkeit von ca. 6 Monaten.
 ```
 Reinigung und Innenraumpflege wie im Paket Reinigung & Politur, mehrstufige
 Lackkorrektur, Keramikversiegelung, Glas- und Felgenversiegelung, Lederpflege.
-Hol- und Bringservice bis 60 km inklusive. Standzeit abhängig von
-Beschichtung, Nutzung und Pflege.
+Die Abholung richtet sich nach der Reichweite; den Preis nennen wir mit
+dem Terminangebot. Standzeit abhängig von Beschichtung, Nutzung und Pflege.
 ```
 
 ## 11 – Attribute
@@ -224,9 +224,10 @@ Zeit nötig sein. Den Rahmen stimmen wir bei der Terminvereinbarung ab.
 
 ```
 Ja, in unseren Abholgebieten, unter anderem aus Nagold, Rottenburg,
-Freudenstadt, Tübingen, Reutlingen, Böblingen und Rottweil. Im Paket
-Keramikschutz ist die Abholung bis 60 km enthalten, sonst richtet sich der
-Preis nach der Entfernung. Alle Orte und Preise stehen auf white-gloss.de.
+Freudenstadt, Tübingen, Reutlingen, Böblingen und Rottweil. Bei allen
+Paketen, auch beim Keramikschutz, richtet sich die Abholung nach der
+Reichweite; den Preis nennen wir mit dem Terminangebot. Alle Orte stehen auf
+white-gloss.de.
 ```
 
 **Was kostet eine Keramikversiegelung?**

@@ -19,8 +19,8 @@ export function cityPlanningText(city: City) {
     calw: `Für die Strecke aus Calw gelten ${journey} als Richtwert. Der Hol- und Bringservice kostet ${price}. Alternativ kannst du das Fahrzeug nach Terminvereinbarung selbst nach Horb bringen. Nenne bei der Anfrage deine gewünschte Übergabeart; Zustand, Leistungsumfang und Rückgabe klären wir anschließend mit dir.`,
     balingen: `Wenn du eine Aufbereitung vor Verkauf oder Leasingrückgabe planst, nenne uns den gewünschten Fertigstellungstermin und zeig die betroffenen Stellen. Für die Abholung aus Balingen rechnen wir mit ${journey}; der Hol- und Bringservice kostet ${price}. Welche Gebrauchsspuren sich behandeln lassen, klären wir anhand deines Fahrzeugs.`,
     rottweil: `Für Fahrzeuge aus Rottweil beträgt der Richtwert ${journey}; der Hol- und Bringservice kostet ${price}. Beschreib bei der Anfrage, ob eine Reinigung genügt oder ob du auch Lackkorrektur wünschst. Das vereinbarte Ergebnis und der Fahrzeugzustand bestimmen den Umfang, nicht die Entfernung zur Werkstatt.`,
-    boeblingen: `Böblingen liegt mit ca. ${city.km} km am Rand unseres Abholgebiets. Der Hol- und Bringservice kostet ${price}; den Betrag nennen wir mit dem Terminangebot. Bitte nenne die genaue Übergabeadresse, damit wir die Konditionen vor dem Termin bestätigen können.`,
-    reutlingen: `Für die Abholung aus Reutlingen rechnen wir mit ${journey}. Der Hol- und Bringservice kostet ${price}; den Betrag nennen wir mit dem Terminangebot. Beschreib die Verschmutzung im Innenraum oder die betroffenen Lackstellen, damit wir die gewünschte Leistung und Rückgabe abstimmen können.`,
+    boeblingen: `Böblingen liegt mit ca. ${city.km} km am Rand unseres Abholgebiets. Der Hol- und Bringservice erfolgt ${price}; den Preis nennen wir dir gern mit dem Terminangebot. Bitte nenne die genaue Übergabeadresse, damit wir die Konditionen vor dem Termin bestätigen können.`,
+    reutlingen: `Für die Abholung aus Reutlingen rechnen wir mit ${journey}. Der Hol- und Bringservice erfolgt ${price}; den Preis nennen wir dir gern mit dem Terminangebot. Beschreib die Verschmutzung im Innenraum oder die betroffenen Lackstellen, damit wir die gewünschte Leistung und Rückgabe abstimmen können.`,
     sindelfingen: `Sindelfingen liegt mit ca. ${city.km} km außerhalb unseres festen Abholradius: Hier erfolgt der Hol- und Bringservice ${price}. Nenne deshalb bei der Anfrage deine Übergabeadresse und das gewünschte Paket; den Preis nennen wir mit dem Terminangebot.`,
   };
   return plans[city.slug] ?? `Für ${city.name} beträgt der Richtwert ${journey}. Hol- und Bringservice: ${price}. Bitte nenne die vollständige Übergabeadresse und beschreib den Fahrzeugzustand. Leistungsumfang, Preis und Rückgabe stimmen wir vor dem Termin ab.`;
@@ -43,12 +43,12 @@ export function cityLogisticsFaq(city: City): { question: string; answer: string
     case "boeblingen":
       return {
         question: "Welche Abholkonditionen gelten für Böblingen am Rand des Abholradius?",
-        answer: `Böblingen liegt ca. ${city.km} km von unserer Werkstatt in Horb entfernt. Der Hol- und Bringservice kostet ${price}; den Betrag nennen wir mit dem Terminangebot. Maßgeblich für die Abstimmung ist deine tatsächliche Übergabeadresse.`,
+        answer: `Böblingen liegt ca. ${city.km} km von unserer Werkstatt in Horb entfernt. Der Hol- und Bringservice erfolgt ${price}; den Preis nennen wir dir gern mit dem Terminangebot. Maßgeblich für die Abstimmung ist deine tatsächliche Übergabeadresse.`,
       };
     case "reutlingen":
       return {
         question: "Wie wird die Abholung aus Reutlingen berechnet?",
-        answer: `Die Strecke von Reutlingen nach Horb beträgt als Richtwert ca. ${city.km} km. Der Hol- und Bringservice kostet ${price}; den Betrag nennen wir mit dem Terminangebot. Gib die genaue Adresse an, damit wir die Konditionen bestätigen können.`,
+        answer: `Die Strecke von Reutlingen nach Horb beträgt als Richtwert ca. ${city.km} km. Der Hol- und Bringservice erfolgt ${price}; den Preis nennen wir dir gern mit dem Terminangebot. Gib die genaue Adresse an, damit wir die Konditionen bestätigen können.`,
       };
     case "sindelfingen":
       return {

@@ -149,7 +149,7 @@ export const packages: Package[] = [
     name: "White-Gloss Ceramic",
     searchLabel: "Lackkorrektur und Versiegelung",
     seoName: "White-Gloss Ceramic – Keramikversiegelung inkl. Lackkorrektur in Horb",
-    body: "Sorgfältig vorbereiteter Lack, anschließend mit Keramik versiegelt: Das Paket umfasst eine mehrstufige Lackkorrektur, Glas- und Felgenversiegelung sowie Lederpflege. Die Abholung wird nach Entfernung berechnet; den Preis nennen wir mit dem Terminangebot. Standzeit und Pflege richten sich nach der verwendeten Beschichtung und der Fahrzeugnutzung. Ab 899 € inkl. MwSt. für die Kompaktklasse, Dauer ca. 2 Tage.",
+    body: "Sorgfältig vorbereiteter Lack, anschließend mit Keramik versiegelt: Das Paket umfasst eine mehrstufige Lackkorrektur, Glas- und Felgenversiegelung sowie Lederpflege. Wir holen dein Fahrzeug gern ab: Die Abholung richtet sich nach der Reichweite, den Preis nennen wir dir mit dem Terminangebot. Standzeit und Pflege richten sich nach der verwendeten Beschichtung und der Fahrzeugnutzung. Ab 899 € inkl. MwSt. für die Kompaktklasse, Dauer ca. 2 Tage.",
     price: 899,
     duration: "ca. 2 Tage",
     items: [
@@ -509,8 +509,8 @@ export function pickupFee(km: number | null, packageId?: PackageId) {
   return null;
 }
 
-/** Öffentlich keine Abholbeträge: Der Preis richtet sich nach der Entfernung und wird vorab bestätigt. */
-export const PICKUP_BY_DISTANCE = "je nach Entfernung";
+/** Öffentlich keine Abholbeträge: Der Preis richtet sich nach der Reichweite und wird vorab bestätigt. */
+export const PICKUP_BY_DISTANCE = "nach Reichweite";
 
 export function pickupPriceText(km: number | null, _packageId?: PackageId) {
   const fee = pickupFee(km, "basis");
@@ -533,7 +533,7 @@ export function cityPickupPriceText(city: PickupCity, packageId?: PackageId) {
 }
 
 export function pickupTierSummary(_opts: { includeCityExceptions?: boolean } = {}): string {
-  return "Die Abholung wird nach Entfernung berechnet; den Preis nennen wir mit dem Terminangebot";
+  return "Wir holen dein Fahrzeug gern ab: Die Abholung richtet sich nach der Reichweite, den Preis nennen wir dir mit dem Terminangebot";
 }
 
 export function pickupKeramikNote(): string {
@@ -825,7 +825,7 @@ export const services: ServicePage[] = [
     body: [
       "Eine Keramikversiegelung braucht einen sorgfältig vorbereiteten Lack. Wir reinigen die Oberfläche, reduzieren behandelbare Waschkratzer durch mehrstufige Politur und entfetten den Lack vor dem Auftrag der Beschichtung.",
       "Die Beschichtung ergänzt den Oberflächenschutz und erleichtert die Pflege. Aushärtezeit, erster Kontakt mit Wasser und erste Wäsche richten sich nach den Vorgaben des verwendeten Produkts. Bei der Übergabe erhältst du die passenden Pflegehinweise.",
-      "Plane ca. 2 Tage ein. Glas- und Felgenversiegelung, Lederpflege sind im Paket enthalten. Die Abholung wird nach Entfernung berechnet und mit dem Terminangebot genannt.",
+      "Plane ca. 2 Tage ein. Glas- und Felgenversiegelung, Lederpflege sind im Paket enthalten. Die Abholung richtet sich nach der Reichweite; den Preis nennen wir dir mit dem Terminangebot.",
     ],
     comparison: {
       heading: "Lackversiegelung im Vergleich",
