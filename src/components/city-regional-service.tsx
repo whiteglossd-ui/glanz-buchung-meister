@@ -3,7 +3,8 @@ import { Shot } from "@/components/media";
 import { ctaGhost, ctaPrimary } from "@/components/ui";
 import { packages, pickupKeramikNote, services, site, type City } from "@/data/site";
 import { cityPlanningText } from "@/lib/city-logistics";
-import { serviceAreaLink } from "@/lib/seo-policy";
+import { PartnerCityLinks } from "@/components/partner-city-links";
+import { isConsolidatedService, serviceAreaLink } from "@/lib/seo-policy";
 import type { CityLocalProof } from "@/data/local-proof";
 import { eur } from "@/lib/utils";
 
@@ -78,7 +79,7 @@ export function CityRegionalService({
           </summary>
           <ul className="grid gap-x-6 sm:grid-cols-2">
             {services
-              .filter((service) => !service.pendingApproval)
+              .filter((service) => !service.pendingApproval && !isConsolidatedService(service.slug))
               .map((service) => (
                 <li key={service.slug}>
                   <Link
@@ -91,6 +92,7 @@ export function CityRegionalService({
               ))}
           </ul>
         </details>
+        <PartnerCityLinks city={city} />
       </section>
       {faqs?.length ? (
         <section className="section mx-auto max-w-7xl px-4 sm:px-6" aria-labelledby="region-faq">

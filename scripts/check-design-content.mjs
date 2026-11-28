@@ -214,7 +214,7 @@ const APPROVED_SUBPAGE_BLOBS = Object.freeze({
 // (seo-policy consolidatedPaths/consolidatedServices); links updated site-wide.
 // See docs/folierung-2026-11-27.md.
 const APPROVED_PARTNER_SERVICES_BLOBS = Object.freeze({
-  "src/components/dark/dark-chrome.tsx": "fbefca9e32d42e3b5187464d4d4a652a6681909d",
+  "src/components/dark/dark-chrome.tsx": "8693eaa63d289419138921842d12abbc0c19fbcf",
   "src/components/dark/dark-home.tsx": "3f95606289cb44557520b39bc12d44e7c70f44fd",
   "src/components/full-service.tsx": "594b5d8668735332cf15c8f5df35d976a1cd55b3",
   "src/data/sitemap-static.xml": "dea2fb6ebf56d25d410ee1f4c4b0ebe27a3bedad",
@@ -229,6 +229,8 @@ const APPROVED_PARTNER_SERVICES_BLOBS = Object.freeze({
   "src/lib/seo-policy.ts": "4a26dce0475b49b5b54ae549034909b6e0d8d9ef",
   "src/routes/dellen-hagelschaden.tsx": "c023db13858ba444fe446ecd3ae66ef884fff8b1",
   "src/routes/luxusfahrzeuge.tsx": "baa8da7c2319f5fcf13ea7a515a7210771075dbb",
+  "src/components/city-landing.tsx": "1730e7c8420dd52ada7c7085c332063cb7b4d798",
+  "src/components/city-regional-service.tsx": "f3490447fd670158fd68e596985b386d25365166",
 });
 
 function sourceBlobId(source) {

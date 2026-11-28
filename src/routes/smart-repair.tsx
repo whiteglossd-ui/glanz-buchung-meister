@@ -1,23 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Armchair, CircleDot, PaintRoller, Search } from "lucide-react";
 import { PartnerLanding, type PartnerLandingConfig } from "@/components/partner-landing";
+import { atmosphere } from "@/data/partner-photos";
 import { site } from "@/data/site";
 import { pageHead } from "@/lib/seo";
 
-/** Photos: fill `photo` on an option (files under public/media/partner/). */
+/** Option images are illustrative atmosphere (caption "Symbolbilder"); swap in released partner photos via `photo`. */
 const config: PartnerLandingConfig = {
   id: "smart-repair",
   path: "/smart-repair",
   serviceName: "Smart Repair",
   alternateNames: ["Spot Repair", "Kleinschadenreparatur", "Felgenreparatur", "Innenraumreparatur"],
   description:
-    "Smart Repair in Horb am Neckar und Loßburg: kleine Lackschäden, Felgen mit Bordsteinschäden, Leder, Kunststoff und Brandlöcher gezielt reparieren. Mit erfahrenen Partnerbetrieben.",
+    "Smart Repair in Horb am Neckar, Dornhan und Loßburg: kleine Lackschäden, Felgen mit Bordsteinschäden, Leder, Kunststoff und Brandlöcher gezielt reparieren. Mit erfahrenen Partnerbetrieben.",
   crumb: "Smart Repair",
-  heroImage: "wheel-wide",
+  heroImage: "taillight",
   kicker: "Smart Repair · Kleine Schäden",
   title: "Smart Repair für kleine Schäden.",
   lead:
-    "Kleine Schäden gezielt an der betroffenen Stelle reparieren, statt ganze Teile zu tauschen. Außen am Lack und an den Felgen genauso wie im Innenraum. Für Horb am Neckar, Loßburg und die Region. Dein Ansprechpartner bleibt White-Gloss.",
+    "Kleine Schäden gezielt an der betroffenen Stelle reparieren, statt ganze Teile zu tauschen. Außen am Lack und an den Felgen genauso wie im Innenraum. Für Horb am Neckar, Dornhan, Loßburg und die Region. Dein Ansprechpartner bleibt White-Gloss.",
   primaryCta: "Schaden anfragen",
   introLabel: "Smart Repair",
   introTitle: "Klein reparieren statt groß tauschen.",
@@ -37,6 +38,7 @@ const config: PartnerLandingConfig = {
         "Größere Schäden über Lackierarbeiten",
       ],
       icon: PaintRoller,
+      photo: atmosphere("applicator", 1024, 1536),
     },
     {
       id: "felgen",
@@ -51,6 +53,7 @@ const config: PartnerLandingConfig = {
         "Felgenreinigung bei uns auf Wunsch",
       ],
       icon: CircleDot,
+      photo: atmosphere("wheel-wide"),
     },
     {
       id: "innenraum",
@@ -65,6 +68,7 @@ const config: PartnerLandingConfig = {
         "Lederpflege bei uns auf Wunsch",
       ],
       icon: Armchair,
+      photo: atmosphere("leather-wide"),
     },
     {
       id: "pruefung",
@@ -79,6 +83,7 @@ const config: PartnerLandingConfig = {
         "Ein Ansprechpartner für alles",
       ],
       icon: Search,
+      photo: atmosphere("inspection", 1024, 1536),
     },
   ],
   guides: [
@@ -148,8 +153,8 @@ const config: PartnerLandingConfig = {
       a: "Die Arbeit übernimmt ein erfahrener Partnerbetrieb, der auf die jeweilige Reparatur spezialisiert ist. Dein Ansprechpartner bleibt White-Gloss.",
     },
     {
-      q: "Gibt es Smart Repair auch in Loßburg und Freudenstadt?",
-      a: `Ja. Unsere Werkstatt ist in ${site.city}, in Loßburg entsteht unser neuer Standort. Auf Wunsch holen wir dein Auto in Loßburg, Freudenstadt, Nagold, Rottenburg und weiteren Orten ab und bringen es zurück.`,
+      q: "Gibt es Smart Repair auch in Dornhan, Loßburg und Freudenstadt?",
+      a: `Ja. Unsere Werkstatt ist in ${site.city}. Aus Dornhan sind es rund 20 Kilometer, in Loßburg entsteht unser neuer Standort. Auf Wunsch holen wir dein Auto in Dornhan, Loßburg, Freudenstadt, Sulz, Nagold und weiteren Orten ab und bringen es zurück. Den Abholpreis bestätigen wir vorher anhand deiner Adresse.`,
     },
   ],
   inquiryTitle: "Smart Repair anfragen",
@@ -162,7 +167,7 @@ export const Route = createFileRoute("/smart-repair")({
   component: () => <PartnerLanding config={config} />,
   head: () =>
     pageHead({
-      title: `Smart Repair Horb & Loßburg: Lack, Felgen, Leder | ${site.name}`,
+      title: `Smart Repair Horb, Dornhan & Loßburg: Lack, Felgen | ${site.name}`,
       description: config.description,
       path: config.path,
     }),

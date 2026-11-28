@@ -213,7 +213,7 @@
   color: var(--ink-3);
   transition: transform 0.4s var(--ease);
 }
-.wgt-page .pl-faq details[open] .pl-faq__plus {
+.wgt-page .pl-faq details[open] > summary .pl-faq__plus {
   transform: rotate(45deg);
 }
 .wgt-page .pl-faq details > p {
@@ -295,4 +295,70 @@
   max-width: 48em;
   font-size: 13.5px;
   line-height: 1.6;
+}
+
+/* Tabs for the knowledge blocks: one topic at a time. */
+.wgt-page .pl-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: clamp(24px, 3vw, 36px) 0 clamp(24px, 3vw, 32px);
+}
+.wgt-page .pl-tabs__tab {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-2);
+  font: 500 14px/1 var(--ui);
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: border-color 0.25s var(--ease), color 0.25s var(--ease), background-color 0.25s var(--ease);
+}
+.wgt-page .pl-tabs__tab[aria-selected="true"] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--bg);
+}
+@media (hover: hover) {
+  .wgt-page .pl-tabs__tab[aria-selected="false"]:hover {
+    border-color: var(--ink-3);
+    color: var(--ink);
+  }
+}
+.wgt-page .pl-tabs__tab:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+.wgt-page .pl-tabs__panel[hidden] {
+  display: none;
+}
+.wgt-page .pl-tabs__title {
+  margin: 0 0 12px;
+}
+.wgt-page .pl-tabs__panel > .pl-split__text {
+  margin-top: 0;
+}
+
+/* FAQ: remaining questions behind one toggle. */
+.wgt-page .pl-faq__more > summary span:first-child {
+  color: var(--ink-2);
+}
+.wgt-page .pl-faq__more[open] > summary {
+  border-bottom: 1px solid var(--line);
+}
+.wgt-page .pl-faq__more[open] > summary .pl-faq__plus {
+  transform: rotate(45deg);
+}
+.wgt-page .pl-faq__more > details:last-child {
+  border-bottom: 0;
+}
+
+.wgt-page .pl-photo-note {
+  margin: 16px 0 0;
+  font-size: 13px;
+}
+.wgt-page .pl-tabs__panel:not([hidden]) + .pl-tabs__panel:not([hidden]) {
+  margin-top: clamp(40px, 5vw, 64px);
 }
