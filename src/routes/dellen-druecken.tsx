@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { CloudHail, DoorOpen, ScanSearch, Search } from "lucide-react";
 import { PartnerLanding, type PartnerLandingConfig } from "@/components/partner-landing";
+import { atmosphere, dentPhoto } from "@/data/partner-photos";
 import { site } from "@/data/site";
 import { pageHead } from "@/lib/seo";
 
-/** Photos: fill `photo` on an option (files under public/media/partner/). */
+/** Option images are illustrative atmosphere (caption "Symbolbilder"); swap in released partner photos via `photo`. */
 const config: PartnerLandingConfig = {
   id: "dellen-druecken",
   path: "/dellen-druecken",
@@ -17,13 +18,13 @@ const config: PartnerLandingConfig = {
     "Dellen entfernen",
   ],
   description:
-    "Dellen drücken und Hagelschaden in Horb am Neckar und Loßburg: Parkdellen und Hagel ohne Lackieren entfernen, mit erfahrenem Partnerbetrieb. Erste Einschätzung per Foto.",
+    "Dellen drücken und Hagelschaden in Horb am Neckar, Dornhan und Loßburg: Parkdellen und Hagel ohne Lackieren entfernen, mit erfahrenem Partnerbetrieb. Erste Einschätzung per Foto.",
   crumb: "Dellen drücken",
   heroImage: "inspection",
   kicker: "Dellen drücken · Hagelschaden · Ausbeulen ohne Lackieren",
   title: "Dellen und Hagelschäden ohne Lackieren.",
   lead:
-    "Parkdellen, Türkantendellen oder Hagel: Der Partner drückt die Delle von innen heraus, ohne neu zu lackieren, wenn Lack und Blech es zulassen. Eine erste Einschätzung bekommst du oft schon per Foto. Für Horb am Neckar, Loßburg und die Region. Dein Ansprechpartner bleibt White-Gloss.",
+    "Parkdellen, Türkantendellen oder Hagel: Der Partner drückt die Delle von innen heraus, ohne neu zu lackieren, wenn Lack und Blech es zulassen. Eine erste Einschätzung bekommst du oft schon per Foto. Für Horb am Neckar, Dornhan, Loßburg und die Region. Dein Ansprechpartner bleibt White-Gloss.",
   primaryCta: "Foto-Begutachtung anfragen",
   introLabel: "Ausbeulen ohne Lackieren",
   introTitle: "Blech zurück in Form. Lack bleibt original.",
@@ -43,6 +44,7 @@ const config: PartnerLandingConfig = {
         "Erste Einschätzung oft per Foto",
       ],
       icon: DoorOpen,
+      photo: dentPhoto,
     },
     {
       id: "hagel",
@@ -57,6 +59,7 @@ const config: PartnerLandingConfig = {
         "Lackprüfung vor der Arbeit",
       ],
       icon: CloudHail,
+      photo: atmosphere("drops-wide"),
     },
     {
       id: "karosserie",
@@ -71,6 +74,7 @@ const config: PartnerLandingConfig = {
         "Sonst Hinweis auf die passende Reparatur",
       ],
       icon: ScanSearch,
+      photo: atmosphere("hood-wide", 1600, 800),
     },
     {
       id: "pruefung",
@@ -85,6 +89,7 @@ const config: PartnerLandingConfig = {
         "Preis vor der Zusage",
       ],
       icon: Search,
+      photo: atmosphere("studio-wide"),
     },
   ],
   guides: [
@@ -162,8 +167,8 @@ const config: PartnerLandingConfig = {
       a: "Die Arbeit übernimmt ein erfahrener Partnerbetrieb, der auf Ausbeulen ohne Lackieren spezialisiert ist. Dein Ansprechpartner bleibt White-Gloss.",
     },
     {
-      q: "Gibt es das auch in Loßburg und Freudenstadt?",
-      a: `Ja. Unsere Werkstatt ist in ${site.city}, in Loßburg entsteht unser neuer Standort. Auf Wunsch holen wir dein Auto in Loßburg, Freudenstadt, Nagold, Rottenburg und weiteren Orten ab und bringen es zurück.`,
+      q: "Gibt es Dellen drücken auch in Dornhan, Loßburg und Freudenstadt?",
+      a: `Ja. Unsere Werkstatt ist in ${site.city}. Aus Dornhan sind es rund 20 Kilometer, in Loßburg entsteht unser neuer Standort. Auf Wunsch holen wir dein Auto in Dornhan, Loßburg, Freudenstadt, Sulz, Nagold und weiteren Orten ab und bringen es zurück. Den Abholpreis bestätigen wir vorher anhand deiner Adresse.`,
     },
   ],
   inquiryTitle: "Delle oder Hagelschaden prüfen lassen",
@@ -179,7 +184,7 @@ export const Route = createFileRoute("/dellen-druecken")({
   component: () => <PartnerLanding config={config} />,
   head: () =>
     pageHead({
-      title: `Dellen & Hagelschaden Horb, Loßburg: ohne Lackieren | ${site.name}`,
+      title: `Dellen drücken Horb, Dornhan & Loßburg: Hagelschaden | ${site.name}`,
       description: config.description,
       path: config.path,
     }),

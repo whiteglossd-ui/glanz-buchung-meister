@@ -1,23 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Car, Crown, Layers, Palette } from "lucide-react";
 import { PartnerLanding, type PartnerLandingConfig } from "@/components/partner-landing";
+import { atmosphere } from "@/data/partner-photos";
 import { site } from "@/data/site";
 import { pageHead } from "@/lib/seo";
 
-/** Photos: fill `photo` on an option (see docs/folierung-2026-11-27.md). */
+/** Option images are illustrative atmosphere (caption "Symbolbilder"); swap in released partner photos via `photo`. */
 const config: PartnerLandingConfig = {
   id: "folierung",
   path: "/folierung",
   serviceName: "Autofolierung und Farbwechsel",
   alternateNames: ["Car Wrapping", "Fahrzeugfolierung", "Auto folieren"],
   description:
-    "Autofolierung und Car Wrapping in Horb am Neckar und Loßburg: Farbwechsel, Voll- und Teilfolierung bis zur Luxuskarosserie mit erfahrenem Partner-Folierer.",
+    "Autofolierung und Car Wrapping in Horb am Neckar, Dornhan und Loßburg: Farbwechsel, Voll- und Teilfolierung bis zur Luxuskarosserie mit erfahrenem Partner-Folierer.",
   crumb: "Autofolierung",
   heroImage: "profile-wide",
   kicker: "Autofolierung · Car Wrapping",
   title: "Autofolierung und Farbwechsel.",
   lead:
-    "Neue Farbe ohne Neulackierung: Wir folieren dein Auto ganz oder in Teilen, vom Alltagsauto bis zur Luxuskarosserie. Für Horb am Neckar, Loßburg und die Region. Die Folierung übernimmt ein erfahrener Partner-Folierer, dein Ansprechpartner bleibt White-Gloss.",
+    "Neue Farbe ohne Neulackierung: Dein Auto wird ganz oder in Teilen foliert, vom Alltagsauto bis zur Luxuskarosserie. Für Horb am Neckar, Dornhan, Loßburg und die Region. Die Folierung übernimmt ein erfahrener Partner-Folierer, dein Ansprechpartner bleibt White-Gloss.",
   primaryCta: "Folierung anfragen",
   introLabel: "Auto folieren lassen",
   introTitle: "Neue Farbe. Originallack bleibt.",
@@ -37,6 +38,7 @@ const config: PartnerLandingConfig = {
         "Folie lässt sich in der Regel wieder entfernen",
       ],
       icon: Palette,
+      photo: atmosphere("studio-wide"),
     },
     {
       id: "teilfolierung",
@@ -51,6 +53,7 @@ const config: PartnerLandingConfig = {
         "Kombinierbar mit Aufbereitung bei uns",
       ],
       icon: Layers,
+      photo: atmosphere("chrome-curves"),
     },
     {
       id: "finish",
@@ -65,6 +68,7 @@ const config: PartnerLandingConfig = {
         "Beratung zu Farbe und Finish am Muster",
       ],
       icon: Car,
+      photo: atmosphere("hood-wide", 1600, 800),
     },
     {
       id: "luxus",
@@ -79,6 +83,7 @@ const config: PartnerLandingConfig = {
         "Auf Wunsch Hol- und Bringservice",
       ],
       icon: Crown,
+      photo: atmosphere("taillight", 1600, 800),
     },
   ],
   guides: [
@@ -254,15 +259,15 @@ const config: PartnerLandingConfig = {
     },
     {
       q: "Foliert ihr auch Luxus- und Sportwagen?",
-      a: "Ja. Wir folieren vom Alltagsauto bis zur Luxuskarosserie. Gerade bei hochwertigen Fahrzeugen prüfen wir den Lack vorher besonders genau.",
+      a: "Ja, vom Alltagsauto bis zur Luxuskarosserie. Gerade bei hochwertigen Fahrzeugen prüfen wir den Lack vorher besonders genau.",
     },
     {
       q: "Wer foliert mein Auto?",
       a: "Die Folierung übernimmt ein erfahrener Partnerbetrieb, der auf Fahrzeugfolierung spezialisiert ist. Dein Ansprechpartner bleibt White-Gloss, von der Anfrage bis zur Übergabe.",
     },
     {
-      q: "Gibt es die Folierung auch in Loßburg und Freudenstadt?",
-      a: `Ja. Unsere Werkstatt ist in ${site.city}, in Loßburg entsteht unser neuer Standort. Auf Wunsch holen wir dein Auto in Loßburg, Freudenstadt, Nagold, Rottenburg und weiteren Orten ab und bringen es zurück.`,
+      q: "Gibt es die Folierung auch in Dornhan, Loßburg und Freudenstadt?",
+      a: `Ja. Unsere Werkstatt ist in ${site.city}. Aus Dornhan sind es rund 20 Kilometer, in Loßburg entsteht unser neuer Standort. Auf Wunsch holen wir dein Auto in Dornhan, Loßburg, Freudenstadt, Sulz, Nagold und weiteren Orten ab und bringen es zurück. Den Abholpreis bestätigen wir vorher anhand deiner Adresse.`,
     },
   ],
   inquiryTitle: "Autofolierung anfragen",
@@ -279,7 +284,7 @@ export const Route = createFileRoute("/folierung")({
   component: () => <PartnerLanding config={config} />,
   head: () =>
     pageHead({
-      title: `Autofolierung Horb & Loßburg: Car Wrapping | ${site.name}`,
+      title: `Autofolierung Horb, Dornhan & Loßburg: Car Wrapping | ${site.name}`,
       description: config.description,
       path: config.path,
     }),

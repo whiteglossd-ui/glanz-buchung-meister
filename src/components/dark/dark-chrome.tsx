@@ -214,14 +214,21 @@ export function DarkHeader() {
         <div className="menu__inner">
           <nav className="menu__nav" aria-label="Menü">
             <Link to="/leistungen" onClick={close}><span aria-hidden="true">01</span>Leistungen</Link>
-            <Link to="/preise" onClick={close}><span aria-hidden="true">02</span>Preise &amp; Pakete</Link>
-            <Link to="/galerie" onClick={close}><span aria-hidden="true">03</span>Ergebnisse</Link>
-            <Link to={homePath} hash="standorte" onClick={close}><span aria-hidden="true">04</span>Standorte</Link>
-            <Link to="/abholservice" onClick={close}><span aria-hidden="true">05</span>Hol- und Bringservice</Link>
+            <Link to="/folierung-smart-repair" onClick={close}><span aria-hidden="true">02</span>Folierung &amp; Karosserie</Link>
+            <div className="menu__sub" role="group" aria-label="Folierung und Karosserie">
+              <Link to="/folierung" onClick={close}>Autofolierung</Link>
+              <Link to="/lackierarbeiten" onClick={close}>Lackierarbeiten</Link>
+              <Link to="/dellen-druecken" onClick={close}>Dellen drücken</Link>
+              <Link to="/smart-repair" onClick={close}>Smart Repair</Link>
+            </div>
+            <Link to="/preise" onClick={close}><span aria-hidden="true">03</span>Preise &amp; Pakete</Link>
+            <Link to="/galerie" onClick={close}><span aria-hidden="true">04</span>Ergebnisse</Link>
+            <Link to={homePath} hash="standorte" onClick={close}><span aria-hidden="true">05</span>Standorte</Link>
+            <Link to="/abholservice" onClick={close}><span aria-hidden="true">06</span>Hol- und Bringservice</Link>
             <Link to={homePath} hash="buchung" hashScrollIntoView={BOOKING_JUMP} onClick={(e) => { close(); focusBookingHeading(e); }}>
-              <span aria-hidden="true">06</span>Jetzt Termin anfragen
+              <span aria-hidden="true">07</span>Jetzt Termin anfragen
             </Link>
-            <Link to="/luxusfahrzeuge" onClick={close}><span aria-hidden="true">07</span>Luxusfahrzeuge</Link>
+            <Link to="/luxusfahrzeuge" onClick={close}><span aria-hidden="true">08</span>Luxusfahrzeuge</Link>
           </nav>
           <div className="menu__aside">
             <p className="label">Dein Standort</p>
@@ -241,11 +248,6 @@ export function DarkHeader() {
               {services.filter((s) => !isConsolidatedService(s.slug)).map((s) => (
                 <Link key={s.slug} to="/leistungen/$slug" params={{ slug: s.slug }} onClick={close}>{s.nav}</Link>
               ))}
-              <Link to="/folierung" onClick={close}>Autofolierung</Link>
-              <Link to="/lackierarbeiten" onClick={close}>Lackierarbeiten</Link>
-              <Link to="/dellen-druecken" onClick={close}>Dellen &amp; Hagelschäden</Link>
-              <Link to="/smart-repair" onClick={close}>Smart Repair</Link>
-              <Link to="/folierung-smart-repair" onClick={close}>Folierung, Lack &amp; Smart Repair</Link>
             </div>
             <p className="label menu__gap" id="wgt-menu-info">Informationen</p>
             <nav className="menu__svc" aria-labelledby="wgt-menu-info">

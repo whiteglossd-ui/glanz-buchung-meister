@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { useState, type KeyboardEvent } from "react";
 import type { LucideIcon } from "lucide-react";
 import { PageCrumbs } from "@/components/page-hero";
 import { PhotoInquiry } from "@/components/photo-inquiry";
@@ -16,7 +17,7 @@ import "@/styles/partner-landing.css";
  * full-bleed hero, chrome headlines, large numbered steps.
  * Content must stay factual: no prices, durations, partner names or certificates.
  */
-export type SlotPhoto = { src: string; alt: string; width: number; height: number };
+export type SlotPhoto = { src: string; srcSet?: string; alt: string; width: number; height: number };
 
 export type LandingOption = {
   id: string;
@@ -53,6 +54,8 @@ export type PartnerLandingConfig = {
   inquiryTitle: string;
   inquiryHint: string;
   articles?: { slug: string; label: string }[];
+  /** Caption under the option images. Defaults to "Symbolbilder." */
+  photoNote?: string;
   /** Explanatory knowledge blocks between the options and the steps. */
   guides?: LandingGuide[];
 };
@@ -104,6 +107,91 @@ const facts = [
 
 const lossburg = cities.find((city) => city.slug === "lossburg");
 
+/** Questions shown open; the rest sit behind one "more" toggle so the page stays calm. */
+const FAQ_VISIBLE = 6;
+
+function FaqItem({ faq }: { faq: { q: string; a: string } }) {
+  return (
+    <details>
+      <summary>
+        <span>{faq.q}</span>
+        <span className="pl-faq__plus" aria-hidden="true">+</span>
+      </summary>
+      <p className="muted">{faq.a}</p>
+    </details>
+  );
+}
+
+/**
+ * Knowledge blocks as tabs: one topic visible at a time keeps the page calm.
+ * All panels stay in the HTML (only `hidden`), so search engines and readers
+ * without JavaScript still get every text.
+ */
+function GuideTabs({ guides }: { guides: LandingGuide[] }) {
+  const [active, setActive] = useState(0);
+  const single = guides.length === 1;
+  const move = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+    const step = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
+    if (!step) return;
+    event.preventDefault();
+    const next = (index + step + guides.length) % guides.length;
+    setActive(next);
+    document.getElementById(`wissen-tab-${guides[next].id}`)?.focus();
+  };
+  return (
+    <section className="psvc-sec" aria-labelledby="wissen">
+      <div className="wrap">
+        <p className="label label--rule">Wissen</p>
+        <h2 className="h2 chrome" id="wissen">
+          {single ? guides[0].title : "Gut zu wissen."}
+        </h2>
+        {single ? null : (
+          <div className="pl-tabs" role="tablist" aria-label="Themen">
+            {guides.map((guide, index) => (
+              <button
+                key={guide.id}
+                type="button"
+                role="tab"
+                id={`wissen-tab-${guide.id}`}
+                aria-selected={index === active}
+                aria-controls={`wissen-panel-${guide.id}`}
+                tabIndex={index === active ? 0 : -1}
+                className="pl-tabs__tab"
+                onClick={() => setActive(index)}
+                onKeyDown={(event) => move(event, index)}
+              >
+                {guide.label}
+              </button>
+            ))}
+          </div>
+        )}
+        {guides.map((guide, index) => (
+          <div
+            key={guide.id}
+            id={single ? undefined : `wissen-panel-${guide.id}`}
+            role={single ? undefined : "tabpanel"}
+            aria-labelledby={single ? undefined : `wissen-tab-${guide.id}`}
+            hidden={index !== active}
+            className="pl-tabs__panel"
+          >
+            {single ? null : <h3 className="h3 pl-tabs__title">{guide.title}</h3>}
+            {guide.intro ? <p className="muted pl-split__text">{guide.intro}</p> : null}
+            <ul className="pl-guide">
+              {guide.items.map((item) => (
+                <li key={item.title}>
+                  <h3 className="h3">{item.title}</h3>
+                  <p className="muted">{item.text}</p>
+                </li>
+              ))}
+            </ul>
+            {guide.note ? <p className="muted pl-guide__note">{guide.note}</p> : null}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function OptionFigure({ option }: { option: LandingOption }) {
   const Icon = option.icon;
   if (option.photo) {
@@ -111,6 +199,8 @@ function OptionFigure({ option }: { option: LandingOption }) {
       <figure className="psvc__media">
         <img
           src={option.photo.src}
+          srcSet={option.photo.srcSet}
+          sizes="(min-width: 1100px) 45vw, (min-width: 760px) 50vw, 100vw"
           alt={option.photo.alt}
           width={option.photo.width}
           height={option.photo.height}
@@ -173,6 +263,9 @@ export function PartnerLanding({ config }: { config: PartnerLandingConfig }) {
     ],
   };
   const others = partnerPages.filter((page) => page.id !== config.id);
+  const visibleFaqs = config.faqs.slice(0, FAQ_VISIBLE);
+  const moreFaqs = config.faqs.slice(FAQ_VISIBLE);
+  const hasPhotos = config.options.some((option) => option.photo);
   const img = `/media/dark/gen/${config.heroImage}`;
 
   return (
@@ -223,11 +316,11 @@ export function PartnerLanding({ config }: { config: PartnerLandingConfig }) {
                 <a href={`#${option.id}`}>{option.label}</a>
               </li>
             ))}
-            {config.guides?.map((guide) => (
-              <li key={guide.id}>
-                <a href={`#${guide.id}`}>{guide.label}</a>
+            {config.guides?.length ? (
+              <li>
+                <a href="#wissen">Wissen</a>
               </li>
-            ))}
+            ) : null}
             <li>
               <a href="#fragen">Häufige Fragen</a>
             </li>
@@ -276,33 +369,11 @@ export function PartnerLanding({ config }: { config: PartnerLandingConfig }) {
               </li>
             ))}
           </ol>
+          {hasPhotos ? <p className="muted pl-photo-note">{config.photoNote ?? "Symbolbilder."}</p> : null}
         </div>
       </section>
 
-      {config.guides?.map((guide) => (
-        <section key={guide.id} className="psvc-sec" aria-labelledby={guide.id}>
-          <div className="wrap">
-            <div className="pl-split">
-              <div>
-                <p className="label label--rule">{guide.label}</p>
-                <h2 className="h2 chrome" id={guide.id}>
-                  {guide.title}
-                </h2>
-              </div>
-              {guide.intro ? <p className="muted pl-split__text">{guide.intro}</p> : null}
-            </div>
-            <ul className="pl-guide">
-              {guide.items.map((item) => (
-                <li key={item.title}>
-                  <h3 className="h3">{item.title}</h3>
-                  <p className="muted">{item.text}</p>
-                </li>
-              ))}
-            </ul>
-            {guide.note ? <p className="muted pl-guide__note">{guide.note}</p> : null}
-          </div>
-        </section>
-      ))}
+      {config.guides?.length ? <GuideTabs guides={config.guides} /> : null}
 
       <section className="psvc-sec" aria-labelledby="ablauf">
         <div className="wrap">
@@ -329,7 +400,7 @@ export function PartnerLanding({ config }: { config: PartnerLandingConfig }) {
           <div>
             <p className="label label--rule">Region</p>
             <h2 className="h2 chrome" id="region">
-              Horb am Neckar, Loßburg und Freudenstadt.
+              Horb, Dornhan, Loßburg und Freudenstadt.
             </h2>
           </div>
           <div>
@@ -360,15 +431,20 @@ export function PartnerLanding({ config }: { config: PartnerLandingConfig }) {
             </h2>
           </div>
           <div className="pl-faq">
-            {config.faqs.map((faq) => (
-              <details key={faq.q}>
+            {visibleFaqs.map((faq) => (
+              <FaqItem key={faq.q} faq={faq} />
+            ))}
+            {moreFaqs.length ? (
+              <details className="pl-faq__more">
                 <summary>
-                  <span>{faq.q}</span>
+                  <span>Weitere {moreFaqs.length} Fragen anzeigen</span>
                   <span className="pl-faq__plus" aria-hidden="true">+</span>
                 </summary>
-                <p className="muted">{faq.a}</p>
+                {moreFaqs.map((faq) => (
+                  <FaqItem key={faq.q} faq={faq} />
+                ))}
               </details>
-            ))}
+            ) : null}
           </div>
         </div>
       </section>

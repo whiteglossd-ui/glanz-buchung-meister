@@ -59,7 +59,20 @@ try {
   ];
   for (const { name, viewport, mobile } of viewports) {
     const { context, page } = await openContext(viewport, mobile);
-    for (const path of ["/", "/galerie", "/leistungen", "/preise", "/impressum"]) {
+    for (const path of [
+      "/",
+      "/galerie",
+      "/leistungen",
+      "/preise",
+      "/impressum",
+      "/folierung",
+      "/lackierarbeiten",
+      "/dellen-druecken",
+      "/smart-repair",
+      "/luxusfahrzeuge",
+      "/abholservice/dornhan",
+      "/ratgeber/autofolie-pflegen",
+    ]) {
       const response = await visit(page, path);
       const state = await page.evaluate(() => ({
         h1: [...document.querySelectorAll("h1")].map((h) => h.textContent?.trim()),
@@ -69,7 +82,7 @@ try {
       assert.equal(response?.status(), 200, `${path} @${name}`);
       assert.equal(state.h1.length, 1, `${path} @${name}: one H1`);
       assert.ok(state.overflow <= 2, `${path} @${name}: horizontal overflow ${state.overflow}`);
-      const slug = path === "/" ? "start" : path.slice(1);
+      const slug = path === "/" ? "start" : path.slice(1).replaceAll("/", "-");
       await page.screenshot({ path: `${output}/${name}-${slug}.png` });
     }
     await visit(page, "/");

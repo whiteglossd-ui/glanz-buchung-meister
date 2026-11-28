@@ -1,23 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Paintbrush, ShieldCheck, Sparkles, SprayCan } from "lucide-react";
 import { PartnerLanding, type PartnerLandingConfig } from "@/components/partner-landing";
+import { atmosphere } from "@/data/partner-photos";
 import { site } from "@/data/site";
 import { pageHead } from "@/lib/seo";
 
-/** Photos: fill `photo` on an option (files under public/media/partner/). */
+/** Option images are illustrative atmosphere (caption "Symbolbilder"); swap in released partner photos via `photo`. */
 const config: PartnerLandingConfig = {
   id: "lackierarbeiten",
   path: "/lackierarbeiten",
   serviceName: "Lackierarbeiten",
   alternateNames: ["Autolackierung", "Auto lackieren", "Teillackierung", "Lackschaden reparieren"],
   description:
-    "Lackierarbeiten in Horb am Neckar und Loßburg: Kratzer, Steinschläge, Teil- und Bauteillackierung mit erfahrenem Lackierbetrieb. Preis nach Begutachtung.",
+    "Lackierarbeiten in Horb am Neckar, Dornhan und Loßburg: Kratzer, Steinschläge, Teil- und Bauteillackierung mit erfahrenem Lackierbetrieb. Preis nach Begutachtung.",
   crumb: "Lackierarbeiten",
   heroImage: "hood-wide",
   kicker: "Lackierarbeiten · Partner-Lackierbetrieb",
   title: "Lackierarbeiten vom Fachbetrieb.",
   lead:
-    "Kratzer bis auf die Grundierung, Steinschläge oder ein beschädigtes Bauteil: Wir koordinieren die Reparatur mit einem erfahrenen Lackierbetrieb. Für Horb am Neckar, Loßburg und die Region. Dein Ansprechpartner bleibt White-Gloss.",
+    "Kratzer bis auf die Grundierung, Steinschläge oder ein beschädigtes Bauteil: Wir koordinieren die Reparatur mit einem erfahrenen Lackierbetrieb. Für Horb am Neckar, Dornhan, Loßburg und die Region. Dein Ansprechpartner bleibt White-Gloss.",
   primaryCta: "Lackschaden anfragen",
   introLabel: "Auto lackieren lassen",
   introTitle: "Erst prüfen. Dann lackieren.",
@@ -37,6 +38,7 @@ const config: PartnerLandingConfig = {
         "Ehrliche Einschätzung vorab",
       ],
       icon: Paintbrush,
+      photo: atmosphere("inspection", 1024, 1536),
     },
     {
       id: "steinschlag",
@@ -51,6 +53,7 @@ const config: PartnerLandingConfig = {
         "Auf Wunsch danach Versiegelung bei uns",
       ],
       icon: ShieldCheck,
+      photo: atmosphere("headlight-wide"),
     },
     {
       id: "bauteil",
@@ -65,6 +68,7 @@ const config: PartnerLandingConfig = {
         "Umfang und Preis vor der Zusage",
       ],
       icon: SprayCan,
+      photo: atmosphere("chrome-curves"),
     },
     {
       id: "finish",
@@ -79,6 +83,7 @@ const config: PartnerLandingConfig = {
         "Alles mit einem Ansprechpartner",
       ],
       icon: Sparkles,
+      photo: atmosphere("polish-sq", 1254, 1254),
     },
   ],
   guides: [
@@ -152,8 +157,8 @@ const config: PartnerLandingConfig = {
       a: "Das hängt vom Umfang ab. Den Termin und die Dauer stimmen wir mit dem Lackierbetrieb ab und sagen sie dir vorher.",
     },
     {
-      q: "Gibt es Lackierarbeiten auch in Loßburg und Freudenstadt?",
-      a: `Ja. Unsere Werkstatt ist in ${site.city}, in Loßburg entsteht unser neuer Standort. Auf Wunsch holen wir dein Auto in Loßburg, Freudenstadt, Nagold, Rottenburg und weiteren Orten ab und bringen es zurück.`,
+      q: "Gibt es Lackierarbeiten auch in Dornhan, Loßburg und Freudenstadt?",
+      a: `Ja. Unsere Werkstatt ist in ${site.city}. Aus Dornhan sind es rund 20 Kilometer, in Loßburg entsteht unser neuer Standort. Auf Wunsch holen wir dein Auto in Dornhan, Loßburg, Freudenstadt, Sulz, Nagold und weiteren Orten ab und bringen es zurück. Den Abholpreis bestätigen wir vorher anhand deiner Adresse.`,
     },
   ],
   inquiryTitle: "Lackierarbeiten anfragen",
@@ -169,7 +174,7 @@ export const Route = createFileRoute("/lackierarbeiten")({
   component: () => <PartnerLanding config={config} />,
   head: () =>
     pageHead({
-      title: `Lackierarbeiten Horb & Loßburg: Kratzer, Steinschlag | ${site.name}`,
+      title: `Lackierarbeiten Horb, Dornhan & Loßburg: Kratzer | ${site.name}`,
       description: config.description,
       path: config.path,
     }),

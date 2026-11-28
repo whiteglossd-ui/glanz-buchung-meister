@@ -15,12 +15,13 @@ import {
 } from "@/data/site";
 import { money } from "@/lib/utils";
 import { IconMessage } from "@/components/icons";
-import { serviceAreaLink } from "@/lib/seo-policy";
+import { isConsolidatedService, serviceAreaLink } from "@/lib/seo-policy";
 import { cityJourneyText, citySeoCopy } from "@/lib/city-copy";
 import { cityPlanningText, cityLogisticsFaq } from "@/lib/city-logistics";
 import { serviceBookingSelection } from "@/lib/booking-selection";
 import { localProofFor } from "@/lib/local-proof";
 import { CityRegionalService } from "@/components/city-regional-service";
+import { PartnerCityLinks } from "@/components/partner-city-links";
 import { CityLocalProofSection } from "@/components/city-local-proof";
 import { WebsiteStudioContent } from "@/components/website-studio-content";
 import { studioHero, type PublishedStudioDocument } from "@/lib/studio-public";
@@ -196,7 +197,7 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
           <h2 className="heading-2">Leistungen mit Abholung in {city.name}</h2>
           <ul className="mt-8 columns-1 gap-x-10 sm:columns-2">
             {services
-              .filter((s) => !s.pendingApproval)
+              .filter((s) => !s.pendingApproval && !isConsolidatedService(s.slug))
               .map((s) => (
                 <li key={s.slug} className="break-inside-avoid">
                   <Link
@@ -208,6 +209,7 @@ export function CityLanding({ city, serviceSlug, editorial }: { city: City; serv
                 </li>
               ))}
           </ul>
+          <PartnerCityLinks city={city} />
           <div className="mt-12 flex flex-wrap gap-3">
             <Link
               to={request.leistung ? "/fahrzeug-zustand" : "/"}
